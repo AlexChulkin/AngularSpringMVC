@@ -1,6 +1,7 @@
 package com.luxoft.snp.service;
 
 import com.luxoft.snp.dao.ComptDao;
+import com.luxoft.snp.dao.ComptDaoImpl;
 import com.luxoft.snp.domain.Compt;
 import com.luxoft.snp.domain.State;
 

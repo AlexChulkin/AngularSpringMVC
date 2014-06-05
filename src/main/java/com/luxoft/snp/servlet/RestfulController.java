@@ -8,11 +8,9 @@ import com.luxoft.snp.service.ComptService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.portlet.ModelAndView;
-import org.springframework.web.portlet.mvc.AbstractController;
 
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+
+
 import java.util.List;
 
 import org.springframework.stereotype.Controller;
