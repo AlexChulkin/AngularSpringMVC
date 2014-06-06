@@ -18,13 +18,6 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 @Configuration
 public class Config extends WebMvcConfigurerAdapter {
 
-
-//    @Bean
-//    public Date dateTest(){
-//        Date date = new Date();
-//        return date;
-//    }
-
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
@@ -37,6 +30,5 @@ public class Config extends WebMvcConfigurerAdapter {
         urlBasedViewResolver.setSuffix(".jsp");
         return urlBasedViewResolver;
     }
-
 
 }

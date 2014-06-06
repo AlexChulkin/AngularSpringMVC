@@ -45,7 +45,5 @@ public class RestfulController {
         this.comptService = comptService;
     }
 
-
-
 }
 
