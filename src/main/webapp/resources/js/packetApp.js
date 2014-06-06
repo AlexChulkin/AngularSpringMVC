@@ -5,14 +5,17 @@ angular.module("packetControllers",[])
     .constant("packetId",0)
     .controller("packetCtrl", function ($scope,$http,packetId) {
 
+        $scope.test = "GGGGGGG";
         var simpleConfig = {withCredentials:true};
+//        simpleConfig.params = {packetId:packetId};
         var complConfig = {withCredentials:true, params:{packetId:packetId}};
 
-        $http.get(contextPath + '/web/compt/view.action',complConfig).success(function (data) {
+        $http.get(contextPath + '/getAll',complConfig).success(function (data) {
             $scope.compts = data;
         }).error(function (error) {
             $scope.errorCompts = error;
         });
+/*
 
         $http.get(contextPath + '/web/data/view.action',complConfig).success(function (data) {
             $scope.data = data;
@@ -52,7 +55,7 @@ angular.module("packetControllers",[])
         $scope.labels.defaultLabel = $scope.states[$scope.defaultState].label;
 
         $scope.allLabels = $scope.labels;
-        $scope.allLabels.unshift('Label');
+        $scope.allLabels.unshift('Label');*/
     });
 
 
@@ -70,5 +73,3 @@ angular.module("packetFilters",[])
     });
 
 angular.module("packetApp",["packetFilters", "packetControllers"]);
-
-angular.bootstrap(document.getElementById('packetDiv'), ['packetApp']);
