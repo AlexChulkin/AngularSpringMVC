@@ -1,69 +1,48 @@
 package com.luxoft.snp.dao;
 
 import com.luxoft.snp.domain.*;
-import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 
 @Repository("comptDao")
 public class ComptDaoImpl implements ComptDao {
 
-    private SessionFactory sessionFactory;
+    @PersistenceContext
+    private EntityManager em;
 
     @SuppressWarnings("unchecked")
     public List<Compt> getComponents(int packetId){
-        return sessionFactory.getCurrentSession().createQuery("from Compt as compt where compt.packet.id=:packetId order by compt.id")
-                .setParameter("packetId",packetId).list();
+        return em.createQuery("select compt from Compt  where compt.packet.id=:packetId order by compt.id")
+                .setParameter("packetId",packetId).getResultList();
     }
     @SuppressWarnings("unchecked")
     public List<PseudoData> getStaticData(int packetId){
-        List<Object[]> tempList =  sessionFactory.getCurrentSession().createQuery("from StaticData as sd, Compt as compt, DataCompt as dc" +
+        List<Object[]> tempList =  em.createQuery("select sd.label, compt.id, dc.id, dc.state.id, dc.checked from StaticData sd, Compt compt, DataCompt dc" +
                 " where compt.packet.id = :packetId and dc.compt = compt and sd = dc.staticData order by compt.id, dc.state")
-                .setParameter("packetId",packetId).list();
+                .setParameter("packetId",packetId).getResultList();
         List<PseudoData> returnList = new ArrayList<PseudoData>();
         for(Object[] o : tempList){
-            DataCompt dc = (DataCompt) o[2];
-            returnList.add(new PseudoData(dc.getId(),((Compt)o[1]).getId(), dc.getState().getId(), ((StaticData)o[0]).getLabel(), dc.getChecked()));
+            returnList.add(new PseudoData((Integer)o[2],(Integer)o[1], (Integer)o[3], ((String)o[0]), (Integer)o[4]));
         }
         return returnList;
     }
 
+    @SuppressWarnings("unchecked")
     public Integer getPacketState(int packetId) {
-        List<Packet> returnList =  sessionFactory.getCurrentSession().createQuery("from Packet as p where p.id=:packetId")
-                .setParameter("packetId",packetId).list();
+        List<Packet> returnList =  em.createQuery("select p from Packet where p.id=:packetId")
+                .setParameter("packetId",packetId).getResultList();
 
-        return (returnList!=null && !returnList.isEmpty()) ? ((Packet)returnList.get(0)).getState() : null;
+        return (returnList!=null && !returnList.isEmpty()) ? (returnList.get(0)).getState() : null;
     }
 
+    @SuppressWarnings("unchecked")
     public List<State> getStates(){
-        return  sessionFactory.getCurrentSession().createQuery("from State as s").list();
+        return em.createQuery("select s from State").getResultList();
 
-    }
-    /**
-     * Delete a compt with the id passed as parameter
-     * @param id
-     */
-    public void deleteCompt(int id){
-        Object record = sessionFactory.getCurrentSession().load(Compt.class, id);
-        sessionFactory.getCurrentSession().delete(record);
-    }
-
-    /**
-     * Create a new compt on the database or
-     * Update compt
-     * @param compt
-     * @return contact added or updated in DB
-     */
-    public Compt saveCompt(Compt compt){
-        sessionFactory.getCurrentSession().saveOrUpdate(compt);
-        return compt;
-    }
-    @Autowired
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
     }
 
 }

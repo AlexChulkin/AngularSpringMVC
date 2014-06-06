@@ -3,27 +3,26 @@ package com.luxoft.snp.domain;
 
 import javax.persistence.*;
 
-@Entity(name="Packet")
-@Table(name="PACKET")
+@Entity
 public class Packet {
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	@Column(name="PACKET_ID", unique = true, nullable=false)
-	private int id;
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name="PACKET_ID", unique = true, nullable=false)
+    private int id;
 
 
     @Column(name="STATE_ID_FK", nullable=false, length=1)
-	private int state;
+    private int state;
 
-	public Packet() {
-		
-	}
-	
-	public Packet(int id, int state) {
-		this.id = id;
-		this.state = state;
+    public Packet() {
 
-	}
+    }
+
+    public Packet(int id, int state) {
+        this.id = id;
+        this.state = state;
+
+    }
     public int getState() {
         return state;
     }
@@ -39,7 +38,7 @@ public class Packet {
     public void setId(int id) {
         this.id = id;
     }
-	public String toString() {
-		return "packageId " + id + " state " + state ;
-	}
+    public String toString() {
+        return "packageId " + id + " state " + state ;
+    }
 }

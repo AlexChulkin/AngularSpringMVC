@@ -18,7 +18,7 @@ import java.util.List;
 @Service("comptService")
 public class ComptService {
 
-
+    @Autowired
     private ComptDao comptDao;
 
 
@@ -42,52 +42,5 @@ public class ComptService {
         return comptDao.getPacketState(packageId);
     }
 
-    /**
-     * Create new Compt/Compts
-     * @param compt
-     * @return created compts
-     */
-    @Transactional
-    public List<Compt> create(Compt compt){
-
-        List<Compt> newCompts = new ArrayList<Compt>();
-
-        newCompts.add(comptDao.saveCompt(compt));
-
-        return newCompts;
-    }
-
-
-    /**
-     * Update compt/compts
-     * @param compt
-     * @return updated compts
-     */
-    @Transactional
-    public List<Compt> update(Compt compt){
-
-        List<Compt> returnCompts = new ArrayList<Compt>();
-
-        returnCompts.add(comptDao.saveCompt(compt));
-
-        return returnCompts;
-    }
-
-    /**
-     * Delete contact/contacts
-     * @param compt - json data from request
-     */
-    @Transactional
-    public void delete(Compt compt){
-
-        comptDao.deleteCompt(compt.getId());
-    }
-
-
-    @Autowired
-    @Qualifier("comptDao")
-    public void setComptDao(ComptDao comptDao) {
-        this.comptDao = comptDao;
-    }
 
 }

@@ -11,8 +11,4 @@ public interface ComptDao {
     List<PseudoData> getStaticData(int packetId);
     Integer getPacketState(int packetId);
     List<State> getStates();
-    void deleteCompt(int id);
-    Compt saveCompt(Compt compt);
-
-
 }

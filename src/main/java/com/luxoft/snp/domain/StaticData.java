@@ -3,7 +3,7 @@ package com.luxoft.snp.domain;
 
 import javax.persistence.*;
 
-@Entity(name="StaticData")
+@Entity
 @Table(name="STATIC_DATA")
 public class StaticData {
 

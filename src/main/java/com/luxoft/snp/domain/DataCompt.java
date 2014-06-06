@@ -3,7 +3,7 @@ package com.luxoft.snp.domain;
 
 import javax.persistence.*;
 
-@Entity(name="DataCompt")
+@Entity
 @Table(name="DATA_COMPT")
 public class DataCompt {
 
