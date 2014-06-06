@@ -20,7 +20,6 @@ public class ComptDao {
 
         Compt compt = new Compt();
         compt.setLabel("test lable ");
-        System.out.println("samveComopt");
 
         em.persist(compt);
     }
@@ -30,7 +29,5 @@ public class ComptDao {
         return query.getResultList();
 
     }
-
-
 
 }

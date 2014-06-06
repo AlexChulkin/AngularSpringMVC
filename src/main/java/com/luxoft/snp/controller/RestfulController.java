@@ -9,12 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
-/**
- * RestfulController class represents the portlet class responsible for
- * handling portlet requests.
- *
- * @author asarin
- */
+
 @Controller
 public class RestfulController {
 
@@ -34,6 +29,12 @@ public class RestfulController {
 
         List<Compt> allCompts = comptService.getAllCompts();
         return allCompts;
+    }
+    @RequestMapping("/home")
+    public String error(){
+
+
+        return "home";
     }
 
     public ComptService getComptService() {
