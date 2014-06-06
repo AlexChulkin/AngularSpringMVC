@@ -1,10 +1,8 @@
 package com.luxoft.snp.domain;
 
-import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 import javax.persistence.*;
 
-@JsonAutoDetect
 @Entity(name="DataCompt")
 @Table(name="DATA_COMPT")
 public class DataCompt {

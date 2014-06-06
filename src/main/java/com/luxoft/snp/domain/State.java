@@ -1,13 +1,11 @@
 package com.luxoft.snp.domain;
 
-import org.codehaus.jackson.annotate.JsonAutoDetect;
 
 import javax.persistence.*;
 
 /**
  * Created by achulkin on 03.06.14.
  */
-@JsonAutoDetect
 @Entity(name="State")
 @Table(name="STATE")
 public class State {
