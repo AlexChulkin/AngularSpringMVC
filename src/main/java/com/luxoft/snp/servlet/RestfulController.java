@@ -8,11 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-<<<<<<< HEAD
-=======
 
-
->>>>>>> f12fd891c9353ce480275251a3ac603670b030bb
 import java.util.List;
 
 /**
