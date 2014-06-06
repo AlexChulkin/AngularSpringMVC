@@ -1,21 +1,14 @@
 package com.luxoft.snp.servlet;
 
 import com.luxoft.snp.domain.Compt;
-
 import com.luxoft.snp.domain.PseudoData;
 import com.luxoft.snp.domain.State;
 import com.luxoft.snp.service.ComptService;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.portlet.ModelAndView;
-import org.springframework.web.portlet.mvc.AbstractController;
-
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
-import java.util.List;
-
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * RestfulController class represents the portlet class responsible for
@@ -27,7 +20,7 @@ import org.springframework.stereotype.Controller;
 public class RestfulController {
 
 
-    private Logger logger = Logger.getLogger(RestfulController.class);
+//    private Logger logger = Logger.getLogger(RestfulController.class);
     private ComptService comptService;
 
 
