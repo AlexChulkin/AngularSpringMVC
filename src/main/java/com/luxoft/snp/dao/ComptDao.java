@@ -1,18 +1,28 @@
 package com.luxoft.snp.dao;
 
-import java.util.List;
-import com.luxoft.snp.domain.*;
+import com.luxoft.snp.domain.Compt;
+import org.springframework.stereotype.Repository;
 
-/**
- * Created by achulkin on 05.06.14.
- */
-public interface ComptDao {
-    List<Compt> getComponents(int packetId);
-    List<PseudoData> getStaticData(int packetId);
-    Integer getPacketState(int packetId);
-    List<State> getStates();
-    void deleteCompt(int id);
-    Compt saveCompt(Compt compt);
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
+
+@Repository
+public class ComptDao {
+
+    @PersistenceContext
+    private EntityManager em;
+
+    @Transactional
+    public void sameCompt(){
+
+        Compt compt = new Compt();
+        compt.setLabel("test lable ");
+        System.out.println("samveComopt");
+
+        em.persist(compt);
+    }
+
 
 
 }
