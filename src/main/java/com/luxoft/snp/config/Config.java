@@ -22,6 +22,8 @@ public class Config extends WebMvcConfigurerAdapter {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
     }
+
+
     @Bean
     public ViewResolver viewResolver(){
         UrlBasedViewResolver urlBasedViewResolver = new UrlBasedViewResolver();
