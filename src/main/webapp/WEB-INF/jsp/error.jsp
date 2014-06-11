@@ -1,15 +1,21 @@
-<%@include file="include.jsp"%>
+<html >
 
-<portlet:defineObjects/>
-<table>
-    <tr>
-        <td><a class="anchor" href='<portlet:renderURL portletMode="view"/>'><b>HOME</b></a></td>
-    </tr>
-</table>
-<table>
-    <tr>
-        <td>Error <c:out value="${exceptionMsg}" /></td>
-    </tr>
-</table>
-<br></br>
-<br></br>
+<head>
+    <title>
+        Error page title
+    </title>
+
+
+
+</head>
+
+<body>
+<h1>
+    Error page
+</h1>
+
+
+
+</body>
+
+</html>

@@ -13,11 +13,9 @@ public class Compt  {
 
 
 
-
-
-//    @ManyToOne(fetch = FetchType.EAGER)
-//    @JoinColumn(name="packet_id_fk", nullable=false)
-//	  private Packet packet;
+    @ManyToOne
+    @JoinColumn(name="packet_id_fk", nullable=false)
+	private Packet packet;
 
 
     public int getId() {
@@ -34,5 +32,13 @@ public class Compt  {
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public Packet getPacket() {
+        return packet;
+    }
+
+    public void setPacket(Packet packet) {
+        this.packet = packet;
     }
 }

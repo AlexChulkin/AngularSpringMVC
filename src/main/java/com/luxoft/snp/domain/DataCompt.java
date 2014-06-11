@@ -13,16 +13,16 @@ public class DataCompt {
     @Column(name="DATA_COMPT_ID", unique = true, nullable=false)
     private int id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name="COMPT_ID_FK", nullable=false)
     private Compt compt;
 
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name="STATIC_DATA_ID_FK", nullable=false)
     private StaticData staticData;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne
     @JoinColumn(name="STATE_ID_FK", nullable=false)
     private State state;
 

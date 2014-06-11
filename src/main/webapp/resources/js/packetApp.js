@@ -2,70 +2,76 @@
  * Created by achulkin on 04.06.14.
  */
 angular.module("packetControllers",[])
-    .constant("packetId",0)
-    .controller("packetCtrl", function ($scope,$http,packetId) {
+    .constant("packetId",1)
+    .constant("labelLabel","Label")
+    .controller("packetCtrl", function ($scope,$http,packetId,labelLabel) {
 
-        $scope.test = "GGGGGGG";
-        var simpleConfig = {withCredentials:true};
-//        simpleConfig.params = {packetId:packetId};
-        var complConfig = {withCredentials:true, params:{packetId:packetId}};
+    var simpleConfig = {withCredentials:true};
+    var complConfig = {withCredentials:true, params:{packetId:packetId}};
 
-        $http.get(contextPath + '/getAll',complConfig).success(function (data) {
-            $scope.compts = data;
-        }).error(function (error) {
-            $scope.errorCompts = error;
+    $http.post(contextPath + '/removeData',simpleConfig).error(function (error) {
+        $http.post(contextPath + '/insertDataIntoTables',simpleConfig).error(function (error) {
+            $http.get(contextPath + '/compts',complConfig).success(function (data) {
+                $scope.compts = data;
+                $http.get(contextPath + '/states',simpleConfig).success(function (data) {
+                    $scope.states = data;
+                    $scope.labels = [];
+
+                    for(var j=0; j<$scope.states.length; j++) {
+                        $scope.labels.push($scope.states[j].label);
+                    }
+                    $scope.labels.unshift(labelLabel);
+                    $http.get(contextPath + '/packetState',complConfig).success(function (data) {
+                        $scope.labels.defaultLabel = $scope.labels[data];
+                        $http.get(contextPath + '/staticData',complConfig).success(function (data) {
+                            $scope.staticData = data;
+                            $scope.defaultValues = [];
+                            $scope.comboData = [];
+                            var defaultArray = [];
+                            for(var j=0; j<$scope.staticData.length; j++) {
+                                var comboEl = {};
+                                comboEl.comptId =$scope.staticData[j][1];
+                                comboEl.stateId = $scope.staticData[j][2];
+                                comboEl.label = $scope.staticData[j][3];
+                                $scope.comboData.push(comboEl);
+
+                                if($scope.staticData[j][4] === 1) {
+                                    defaultArray.push(comboEl.label);
+                                    if(defaultArray.length===$scope.states.length) {
+                                        $scope.defaultValues.push(defaultArray);
+                                        var defaultArray = [];
+                                    }
+                                }
+                            }
+                        }).error(function (error) {
+                            $scope.errorData = error;
+                            return;
+                        });
+                    }).error(function (error) {
+                        $scope.errorDefaultState = error;
+                    });
+
+
+                }).error(function (error) {
+                    $scope.errorStates = error;
+                });
+            }).error(function (error) {
+                $scope.errorCompts = error;
+                return;
+            });
+
         });
-/*
 
-        $http.get(contextPath + '/web/data/view.action',complConfig).success(function (data) {
-            $scope.data = data;
-        }).error(function (error) {
-            $scope.errorData = error;
-        });
-        $scope.defaultValues = [];
-        var tempArray = [];
-        var i = 0;
-        for(var data in $scope.data) {
-            if(data.checked === 1) {
-                i++;
-                tempArray.push(data);
-                if(i===$scope.states.length) {
-                    $scope.defaultValues.push(tempArray);
-                    i=0;
-                    var tempArray = [];
-                }
-            }
-        }
-
-        $http.get(contextPath + '/web/packetState/view.action',complConfig).success(function (data) {
-            $scope.defaultState = data;
-        }).error(function (error) {
-            $scope.errorDefaultState = error;
-        });
-
-        $http.get(contextPath + '/web/states/view.action',simpleConfig).success(function (data) {
-            $scope.states = data;
-        }).error(function (error) {
-            $scope.errorStates = error;
-        });
-        $scope.labels = [];
-        for(var state in $scope.states){
-            $scope.labels.push(state.label);
-        }
-        $scope.labels.defaultLabel = $scope.states[$scope.defaultState].label;
-
-        $scope.allLabels = $scope.labels;
-        $scope.allLabels.unshift('Label');*/
     });
-
+ });
 
 angular.module("packetFilters",[])
     .filter('applyFilter', function () {
-        return function(data,comptId,stateId){
+        return function(comboData,comptId,stateId){
             var returnArray = [];
-            for (var d in data){
-                if(d.comptId===comptId && d.stateId===stateId){
-                    returnArray.push(d);
+            for(var j=0; j<comboData.length; j++) {
+                if(comboData[j].comptId===comptId && comboData[j].stateId===stateId){
+                    returnArray.push(comboData[j].label);
                 }
             }
             return returnArray;
