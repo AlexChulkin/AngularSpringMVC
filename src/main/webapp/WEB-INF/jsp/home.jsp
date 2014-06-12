@@ -15,6 +15,9 @@
         var contextPath = '${pageContext.request.contextPath}';
     </script>
 
+    <style>
+        select.standard {background-color: lightcyan; font-weight: bold; }
+    </style>
 </head>
 
 <body>
@@ -40,7 +43,7 @@
                 <td  ng-repeat="state in states">
                     <span ng-bind="defaultValues[compt.id-1][state.id-1]" ng-hide="labels.defaultLabel===labels[state.id]"></span>
                     <span ng-show="labels.defaultLabel===labels[state.id]">
-                          <select ng-options="el for el in comboData | applyFilter:compt.id:state.id" ng-model="defaultValues[compt.id-1][state.id-1]">
+                          <select class="standard" ng-options="el for el in comboData | applyFilter:compt.id:state.id" ng-model="defaultValues[compt.id-1][state.id-1]">
                           </select>
                     </span>
                 </td>
@@ -55,7 +58,6 @@
     </div>
 
     <div class="well" ng-hide="errorStates">
-        <!--<input type="radio"  ng-repeat="label in labels" ng-model="labels.defaultLabel"  ng-value="label">  <span ng-bind="label"></span>-->
         <input type="radio"  ng-model="labels.defaultLabel"  ng-value="labels[1]">  <span ng-bind="labels[1]"></span>
         <input type="radio"  ng-model="labels.defaultLabel"  ng-value="labels[2]">  <span ng-bind="labels[2]"></span>
         <input type="radio"  ng-model="labels.defaultLabel"  ng-value="labels[3]">  <span ng-bind="labels[3]"></span>
