@@ -19,7 +19,7 @@ public class RestfulController {
     private ComptService comptService;
 
 
-    @RequestMapping("/home")
+    @RequestMapping({"/home", ""})
     public String home(){
         return "home";
     }
