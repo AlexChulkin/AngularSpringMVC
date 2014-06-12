@@ -45,11 +45,7 @@ angular.module("packetControllers",[])
                             $scope.errorData = error;
                             return;
                         });
-                    }).error(function (error) {
-                        $scope.errorDefaultState = error;
-                    });
-
-
+                    })
                 }).error(function (error) {
                     $scope.errorStates = error;
                 });
