@@ -9,8 +9,6 @@ angular.module("packetControllers",[])
     var simpleConfig = {withCredentials:true};
     var complConfig = {withCredentials:true, params:{packetId:packetId}};
 
-    $http.post(contextPath + '/removeData',simpleConfig).error(function (error) {
-        $http.post(contextPath + '/insertDataIntoTables',simpleConfig).error(function (error) {
             $http.get(contextPath + '/compts',complConfig).success(function (data) {
                 $scope.compts = data;
                 $http.get(contextPath + '/states',simpleConfig).success(function (data) {
@@ -60,9 +58,6 @@ angular.module("packetControllers",[])
                 return;
             });
 
-        });
-
-    });
  });
 
 angular.module("packetFilters",[])

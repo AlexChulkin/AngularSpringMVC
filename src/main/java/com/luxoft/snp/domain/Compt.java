@@ -11,8 +11,6 @@ public class Compt  {
     private int id;
     private String label;
 
-
-
     @ManyToOne
     @JoinColumn(name="packet_id_fk", nullable=false)
 	private Packet packet;

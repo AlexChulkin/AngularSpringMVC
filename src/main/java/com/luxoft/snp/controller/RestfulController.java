@@ -25,19 +25,6 @@ public class RestfulController {
     }
 
 
-
-    @RequestMapping(value = "/insertDataIntoTables", method = RequestMethod.POST)
-    public void insertData() throws Exception {
-        System.out.println("/insertDataIntoTables");
-        comptService.insertData();
-    }
-
-    @RequestMapping(value = "/removeData", method = RequestMethod.POST)
-    public void removeData() throws Exception {
-        System.out.println("/removeData");
-        comptService.removeData();
-    }
-
     @RequestMapping(value = "/compts", method = RequestMethod.GET)
     public
     @ResponseBody

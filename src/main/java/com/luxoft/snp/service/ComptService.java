@@ -15,13 +15,7 @@ public class ComptService {
     @Autowired
     private ComptDao comptDao;
 
-    public  void insertData() {
-        comptDao.insertData();
-    }
 
-    public  void removeData() {
-        comptDao.removeData();
-    }
 
     public List<Compt> getComponents(int packetId) {
         return comptDao.getComponents(packetId);
