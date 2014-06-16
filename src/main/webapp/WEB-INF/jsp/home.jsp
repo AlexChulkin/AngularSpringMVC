@@ -2,7 +2,7 @@
 
 <head>
     <title>
-        The packet with components app
+        AngularSpring
     </title>
 
     <link href="resources/css/bootstrap.css"  type="text/css" rel="stylesheet"/>

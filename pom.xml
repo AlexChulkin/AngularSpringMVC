@@ -12,11 +12,9 @@
     <properties>
         <spring-version>4.0.3.RELEASE</spring-version>
         <hibernate-version>4.3.5.Final</hibernate-version>
-
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
@@ -85,12 +83,12 @@
         </dependency>
 
 
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.4</version>
-            <scope>provided</scope>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>javax.servlet</groupId>-->
+            <!--<artifactId>servlet-api</artifactId>-->
+            <!--<version>2.4</version>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>mysql</groupId>
@@ -140,27 +138,68 @@
             <artifactId>xml-apis</artifactId>
             <version>1.4.01</version>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+
+
+        <!--<dependency>-->
+            <!--<groupId>org.mortbay.jetty</groupId>-->
+            <!--<artifactId>jsp-2.1</artifactId>-->
+            <!--<version>6.0.0</version>-->
+        <!--</dependency>-->
+
+
     </dependencies>
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+
+                <configuration>
+                    <fork>true</fork>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>vahe</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>shutdown</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.11</version>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.apache.maven.surefire</groupId>
-                        <artifactId>surefire-junit47</artifactId>
-                        <version>2.12</version>
-                    </dependency>
-                </dependencies>
-                <configuration>
-                    <includes>
-                        <include>**/*.class</include>
-                    </includes>
-                    <excludedGroups>com.luxoft.snp.test.IntegrationTest</excludedGroups>
-                </configuration>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.17</version>
+                <executions>
+                    <execution>
+                         <id>tttvahe</id>
+                        <phase>integration-test</phase>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+
+                    <execution>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
         </plugins>
