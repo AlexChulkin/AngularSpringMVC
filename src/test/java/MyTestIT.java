@@ -1,3 +1,4 @@
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -13,11 +14,14 @@ public class MyTestIT {
 
 
     private static WebDriver webDriver;
-
+    private static final int EXPECTED_SPAN_LIST_SIZE = 7;
+    private static final int EXPECTED_NUMBER_OF_ELEMENTS_IN_COMBO = 6;
     private static final String NEW_LABEL = "Vahe Alex Ratio";
-    private static final String NEW_IN_COMMITEE = "STRONG";
     private static final String NEW_PRE_COMMITEE = "ADEQUATE";
+    private static final String NEW_IN_COMMITEE = "STRONG";
     private static final String NEW_FINAL = "VERY_WEAK";
+    private static final String EXPECTED_COMBO_VALUE = "WEAK";
+
 
     @BeforeClass
     public static void init() {
@@ -25,60 +29,26 @@ public class MyTestIT {
         webDriver.get("localhost:8080/AngularSpringTest/");
     }
 
-//    @AfterClass
+    @AfterClass
     public static void finish(){
-        webDriver.close();
-    }
-
-
-    @Test
-    public void test() {
-        System.out.println("Test 1 is running");
-        String title = webDriver.getTitle();
-        Assert.assertEquals("AngularSpring", title);
+//        webDriver.close();
     }
 
     @Test
     public void test2() throws InterruptedException {
-        System.out.println("Test 2 is running");
 
-        TimeUnit.SECONDS.sleep(2);
-
-        WebElement element = webDriver.findElement(By.cssSelector("input[value=IN_COMMITEE]"));
-        Assert.assertNotNull(element);
-        element.click();
-        TimeUnit.SECONDS.sleep(2);
+        String title = webDriver.getTitle();//check title
+        Assert.assertEquals("Title is unproper","AngularSpring", title);
 
 
-//        List<WebElement> combos = webDriver.findElements(By.cssSelector("select[class^='standard']"));
+        TimeUnit.SECONDS.sleep(5);
 
+        //check and click the radio btn(In Commitee)
+        WebElement inElement = webDriver.findElement(By.cssSelector("input[value=IN_COMMITEE]"));
+        Assert.assertNotNull("In commitee radio btn is not found",inElement);
+        inElement.click();
 
-
-
-        List<WebElement> spanElements = webDriver.findElements(By.cssSelector("span[ng-show='labels.defaultLabel===labels[state.id]']"));
-
-
-        for(WebElement we : spanElements) {
-            try {
-
-                we.click();
-                System.out.println(we.getText());
-            } catch (Exception e) {
-//                e.printStackTrace();
-            }
-            System.out.println(we.getText());
-        }
-
-        TimeUnit.SECONDS.sleep(2);
-
-    }
-
-
-    @Test
-    public void test3() throws InterruptedException {
-
-        System.out.println("Test 2 is running");
-
+        //check and input in the input elements
         WebElement labelInputElement = webDriver.findElement(By.cssSelector("#newLabel"));
         Assert.assertNotNull("New Label input is not found", labelInputElement);
         labelInputElement.sendKeys(NEW_LABEL);
@@ -92,6 +62,7 @@ public class MyTestIT {
         Assert.assertNotNull("New Final input is not found",finalInputElement);
         finalInputElement.sendKeys(NEW_FINAL);
 
+        //check and click the add btn
         WebElement btnElement = webDriver.findElement(By.cssSelector("#addBtn"));
         Assert.assertNotNull("Add btn is not found",btnElement);
         btnElement.click();
@@ -99,15 +70,33 @@ public class MyTestIT {
 
         TimeUnit.SECONDS.sleep(1);
 
-
-
+        //get the new row(list of the spans)
         WebElement lastTr = webDriver.findElement(By.cssSelector("tr.ng-scope:last-child"));
-
-        System.out.println(lastTr.getText());
         List<WebElement> spanList = lastTr.findElements(By.cssSelector("td>span"));
-        Assert.assertEquals(NEW_LABEL, spanList.get(0).getText());
+
+        //check the list's size
+        Assert.assertEquals("The new row spanlist's size is unproper", EXPECTED_SPAN_LIST_SIZE, spanList.size());
+
+        //check all the labels except for In Commitee - it should be replaced by the combobox
+        Assert.assertEquals("New Label is unproper", NEW_LABEL, spanList.get(0).getText());
+        Assert.assertEquals("New Pre Commitee label is unproper",NEW_PRE_COMMITEE, spanList.get(1).getText());
+        Assert.assertEquals("New Final label is unproper",NEW_FINAL, spanList.get(5).getText());
+
+        //check the In Commitee's label invisibility
+        Assert.assertEquals("New In Commitee label shouldn't be visible",false, spanList.get(3).isDisplayed());
+
+        //check the In Commitee's combobox
+        Assert.assertEquals("The number of elements in In Commitee Combobox is unproper",spanList.get(4).findElements(By.cssSelector("option")).size(), EXPECTED_NUMBER_OF_ELEMENTS_IN_COMBO);
+        Assert.assertEquals("The second el in In Commitee Combobox is unproper",spanList.get(4).findElements(By.cssSelector("option")).get(1).getText(), EXPECTED_COMBO_VALUE);
+
+        //check and click the radio btn(Final)
+        WebElement finalElement = webDriver.findElement(By.cssSelector("input[value=FINAL]"));
+        Assert.assertNotNull("Final radio btn is not found",finalElement);
+        finalElement.click();
+
+        // The In Commitee label now should be visible
+        Assert.assertEquals("New In Commitee label shouldn't be visible",true, spanList.get(3).isDisplayed());
 
     }
-
 
 }
