@@ -38,11 +38,11 @@
             <tbody>
             <tr ng-repeat="compt in compts" ng-hide="errorStates || errorData">
                 <td>
-                    <span ng-bind="compt.label" />
+                    <span id="defaultLabelIds[compt.id-1]" ng-bind="compt.label" />
                 </td>
                 <td  ng-repeat="state in states">
-                    <span ng-bind="defaultValues[compt.id-1][state.id-1]" ng-hide="labels.defaultLabel===labels[state.id]"></span>
-                    <span ng-show="labels.defaultLabel===labels[state.id]">
+                    <span id="defaultInputIds[compt.id-1][state.id-1]" ng-bind="defaultValues[compt.id-1][state.id-1]" ng-hide="labels.defaultLabel===labels[state.id]"></span>
+                    <span id="defaultComboIds[compt.id-1][state.id-1]" ng-show="labels.defaultLabel===labels[state.id]">
                           <select class="standard" ng-options="el for el in comboData | applyFilter:compt.id:state.id" ng-model="defaultValues[compt.id-1][state.id-1]">
                           </select>
                     </span>
@@ -66,6 +66,31 @@
     <div class="alert alert-danger" ng-show="errorStates">
         Error (<span ng-bind = "errorStates.status"></span>). The packet labels data was not loaded.
         <a href="/WEB-INF/jsp/home.jsp" class="alert-link">Click here to try again</a>
+    </div>
+
+    <div class="input-group">
+        <div class="form-group">
+            <label>Input label:</label>
+            <input class="form-control" id="newLabel" ng-model="newLabel" />
+        </div>
+        <div class="form-group">
+            <label>Input new PreCommitee val:</label>
+            <input class="form-control"  id="proCommiteeNewVal" ng-model="proCommiteeNewVal" />
+        </div>
+        <div class="form-group">
+            <label>Input new InCommitee val:</label>
+            <input class="form-control" id="inCommiteeNewVal" ng-model="inCommiteeNewVal" />
+        </div>
+        <div class="form-group">
+            <label>Input new Final val:</label>
+            <input class="form-control" id="finalNewVal" ng-model="finalNewVal" />
+        </div>
+
+    </div>
+        <span class="input-group-btn">
+              <button class="btn btn-default" id="addBtn"
+                      ng-click="addNewCompt(newLabel,proCommiteeNewVal,inCommiteeNewVal,finalNewVal)">Add</button>
+        </span>
     </div>
 
 </div>
