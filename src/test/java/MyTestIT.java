@@ -1,4 +1,3 @@
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -6,54 +5,77 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class MyTestIT {
 
 
     private static WebDriver webDriver;
+
     private static final String NEW_LABEL = "Vahe Alex Ratio";
     private static final String NEW_IN_COMMITEE = "STRONG";
     private static final String NEW_PRE_COMMITEE = "ADEQUATE";
     private static final String NEW_FINAL = "VERY_WEAK";
 
-
     @BeforeClass
     public static void init() {
         webDriver = new FirefoxDriver();
+        webDriver.get("localhost:8080/AngularSpringTest/");
     }
 
-    @AfterClass
+//    @AfterClass
     public static void finish(){
         webDriver.close();
     }
 
 
-//    @Test
+    @Test
     public void test() {
-        webDriver.get("http://localhost:8080/AngularSpringTest/home");
-
         System.out.println("Test 1 is running");
-
-
-
         String title = webDriver.getTitle();
         Assert.assertEquals("AngularSpring", title);
-        try {
-            TimeUnit.SECONDS.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("before closing !!!!!!!");
-        webDriver.close();
     }
 
     @Test
     public void test2() throws InterruptedException {
-        webDriver.get("http://localhost:8080/AngularSpringTest/home");
+        System.out.println("Test 2 is running");
+
+        TimeUnit.SECONDS.sleep(2);
+
+        WebElement element = webDriver.findElement(By.cssSelector("input[value=IN_COMMITEE]"));
+        Assert.assertNotNull(element);
+        element.click();
+        TimeUnit.SECONDS.sleep(2);
+
+
+//        List<WebElement> combos = webDriver.findElements(By.cssSelector("select[class^='standard']"));
+
+
+
+
+        List<WebElement> spanElements = webDriver.findElements(By.cssSelector("span[ng-show='labels.defaultLabel===labels[state.id]']"));
+
+
+        for(WebElement we : spanElements) {
+            try {
+
+                we.click();
+                System.out.println(we.getText());
+            } catch (Exception e) {
+//                e.printStackTrace();
+            }
+            System.out.println(we.getText());
+        }
+
+        TimeUnit.SECONDS.sleep(2);
+
+    }
+
+
+    @Test
+    public void test3() throws InterruptedException {
 
         System.out.println("Test 2 is running");
 
@@ -74,28 +96,18 @@ public class MyTestIT {
         Assert.assertNotNull("Add btn is not found",btnElement);
         btnElement.click();
 
-        (new WebDriverWait(webDriver, 10000))
-                .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#lbl_6")));
 
-
-        WebElement labelElement = webDriver.findElement(By.cssSelector("#lbl_6"));
-        Assert.assertNotNull("New Label is not inserted",labelElement);
-        Assert.assertEquals("New Label is inserted but is unproper", labelElement.getText(), NEW_LABEL);
-        WebElement preElement = webDriver.findElement(By.cssSelector("#6_inp_0"));
-        Assert.assertNotNull("New Pre Commitee is not inserted",preElement);
-        Assert.assertEquals("New Pre Commitee is inserted but is unproper", preElement.getText(), NEW_PRE_COMMITEE);
-        WebElement inElement = webDriver.findElement(By.cssSelector("#6_inp_1"));
-        Assert.assertNotNull("New In Commitee is not inserted",inElement);
-        Assert.assertEquals("New In Commitee is inserted but is unproper", inElement.getText(), NEW_IN_COMMITEE);
-        WebElement finalElement = webDriver.findElement(By.cssSelector("#6_inp_2"));
-        Assert.assertNotNull("New Final is not inserted",finalElement);
-        Assert.assertEquals("New Final is inserted but is unproper", finalElement.getText(), NEW_FINAL);
+        TimeUnit.SECONDS.sleep(1);
 
 
 
+        WebElement lastTr = webDriver.findElement(By.cssSelector("tr.ng-scope:last-child"));
 
-
+        System.out.println(lastTr.getText());
+        List<WebElement> spanList = lastTr.findElements(By.cssSelector("td>span"));
+        Assert.assertEquals(NEW_LABEL, spanList.get(0).getText());
 
     }
+
 
 }
