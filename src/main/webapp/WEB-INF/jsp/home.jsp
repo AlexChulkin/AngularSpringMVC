@@ -39,14 +39,22 @@
             <tbody>
             <tr ng-repeat="compt in compts" ng-hide="errorStates || errorData">
                 <td>
-                    <span id="defaultLabelIds[compt.id-1]" ng-bind="compt.label" />
+                    <span  ng-bind="compt.label" />
                 </td>
                 <td  ng-repeat="state in states">
-                    <span ng-bind="defaultValues[compt.id-1][state.id-1]" ng-hide="labels.defaultLabel===labels[state.id]"></span>
-                    <span id="defaultComboIds[compt.id-1][state.id-1]" ng-show="labels.defaultLabel===labels[state.id]">
-                          <select class="standard" ng-options="el for el in comboData | applyFilter:compt.id:state.id" ng-model="defaultValues[compt.id-1][state.id-1]">
+                    <span  ng-bind="defaultValues[compt.id-1][state.id-1]" ng-hide="labels.defaultLabel===labels[state.id]"></span>
+                    <span  ng-show="labels.defaultLabel===labels[state.id]">
+                          <select class="standard"
+                                  ng-options="el for el in comboData | applyFilter:compt.id:state.id"
+                                  ng-model="defaultValues[compt.id-1][state.id-1]"
+                                  ng-change="markAsUpdated(compt)">
                           </select>
                     </span>
+                </td>
+                <td>
+                    <button ng-click="deleteCompt(compt)" class="btn btn-xs btn-primary">
+                        Delete
+                    </button>
                 </td>
             </tr>
             </tbody>
@@ -88,9 +96,16 @@
         </div>
 
     </div>
+    <div>
         <span class="input-group-btn">
               <button class="btn btn-default" id="addBtn"
                       ng-click="addNewCompt(newLabel,proCommiteeNewVal,inCommiteeNewVal,finalNewVal)">Add</button>
+        </span>
+    </div>
+    <div>
+        <span class="input-group-btn">
+              <button class="btn btn-default" id="saveBtn"
+                      ng-click="save()">Save</button>
         </span>
     </div>
 

@@ -10,24 +10,24 @@ public class Packet {
     @Column(name="PACKET_ID", unique = true, nullable=false)
     private int id;
 
-
-    @Column(name="STATE_ID_FK", nullable=false, length=1)
-    private int state;
+    @ManyToOne
+    @JoinColumn(name="STATE_ID_FK", nullable=false)
+    private State state;
 
     public Packet() {
 
     }
 
-    public Packet(int id, int state) {
+    public Packet(int id, State state) {
         this.id = id;
         this.state = state;
 
     }
-    public int getState() {
+    public State getState() {
         return state;
     }
 
-    public void setState(int state) {
+    public void setState(State state) {
         this.state = state;
     }
 

@@ -16,7 +16,15 @@ public class ComptService {
     private ComptDao comptDao;
 
 
-
+    public void addCompt(String label, int packetId, String[] defaultVals) {
+        comptDao.addCompt(label, packetId, defaultVals);
+    }
+    public void removeCompts(String idsToRemove) {
+        comptDao.removeCompts(idsToRemove);
+    }
+    public void updateCompt(int comptId, String[] defaultVals) {
+        comptDao.updateCompt(comptId,defaultVals);
+    }
     public List<Compt> getComponents(int packetId) {
         return comptDao.getComponents(packetId);
     }
@@ -33,7 +41,7 @@ public class ComptService {
 
     
     public  Integer getPacketState(int packetId) {
-        return comptDao.getPacketState(packetId);
+        return comptDao.getPacket(packetId).getState().getId();
     }
 
 

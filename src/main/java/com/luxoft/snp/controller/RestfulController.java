@@ -36,6 +36,28 @@ public class RestfulController {
        LOGGER.info("viewCompts");
         return comptService.getComponents(packetId);
     }
+    @RequestMapping(value = "/addCompt", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    void addCompt(@RequestParam String label, @RequestParam int packetId, @RequestParam String[] defaultVals) throws Exception {
+        System.out.println("addCompt");
+        comptService.addCompt(label, packetId, defaultVals);
+
+    }
+    @RequestMapping(value = "/removeCompts", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    void removeCompts(@RequestParam String idsToRemove) throws Exception {
+        System.out.println("removeCompts");
+        comptService.removeCompts(idsToRemove);
+    }
+    @RequestMapping(value = "/updateCompt", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    void updateCompt(@RequestParam int comptId, @RequestParam String[] defaultVals) throws Exception {
+        System.out.println("updateCompt");
+        comptService.updateCompt(comptId,defaultVals);
+    }
 
     @RequestMapping(value = "/staticData", method = RequestMethod.GET)
     public
