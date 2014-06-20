@@ -2,19 +2,23 @@ package com.luxoft.snp.controller;
 
 import com.luxoft.snp.domain.Compt;
 import com.luxoft.snp.domain.State;
-
 import com.luxoft.snp.service.ComptService;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 
 @Controller
 public class RestfulController {
 
+    private static final Logger LOGGER = Logger.getLogger(RestfulController.class);
+    
     @Autowired
     private ComptService comptService;
 
@@ -29,7 +33,7 @@ public class RestfulController {
     public
     @ResponseBody
     List<Compt> view(@RequestParam int packetId) throws Exception {
-        System.out.println("viewCompts");
+       LOGGER.info("viewCompts");
         return comptService.getComponents(packetId);
     }
 
@@ -37,7 +41,7 @@ public class RestfulController {
     public
     @ResponseBody
     List<Object[]> viewStaticData(@RequestParam int packetId) throws Exception {
-        System.out.println("viewStaticData");
+        LOGGER.info("viewStaticData");
         return comptService.getStaticData(packetId);
     }
 
@@ -45,7 +49,7 @@ public class RestfulController {
     public
     @ResponseBody
     List<State> viewStates() throws Exception {
-        System.out.println("viewStates");
+        LOGGER.info("viewStates");
         return comptService.getStates();
     }
 
@@ -53,12 +57,9 @@ public class RestfulController {
          public
          @ResponseBody
          Integer viewPacketState(@RequestParam int packetId) throws Exception {
-        System.out.println("viewPacketState");
+        LOGGER.info("viewPacketState");
         return comptService.getPacketState(packetId);
     }
-
-
-
 
 }
 
