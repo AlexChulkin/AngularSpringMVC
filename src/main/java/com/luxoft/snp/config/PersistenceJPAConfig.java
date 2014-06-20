@@ -1,8 +1,11 @@
 package com.luxoft.snp.config;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -12,12 +15,17 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.io.IOException;
 import java.util.Properties;
 
 
 @Configuration
+@PropertySource(value = "classpath:db.properties")
 @EnableTransactionManagement
 public class PersistenceJPAConfig {
+
+    @Autowired
+    Environment environment;
 
     @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
@@ -36,14 +44,16 @@ public class PersistenceJPAConfig {
     }
 
 
-
     @Bean
-    public DataSource dataSource(){
-        BasicDataSource dataSource = new BasicDataSource ();
-        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-        dataSource.setUrl("jdbc:mysql://localhost:3306/testspring");
-        dataSource.setUsername("root");
-        dataSource.setPassword("");
+    public DataSource dataSource() {
+        BasicDataSource dataSource = new BasicDataSource();
+//        dataSource.setDriverClassName("com.mysql.jdbc.Driver");
+        Properties properties = additionalProperties();
+        dataSource.setDriverClassName(properties.getProperty("className"));
+//        dataSource.setUrl("jdbc:mysql://localhost:3306/testspring");
+        dataSource.setUrl(properties.getProperty("url"));
+        dataSource.setUsername(properties.getProperty("username"));
+        dataSource.setPassword(properties.getProperty("password"));
 
         dataSource.setMaxActive(10);
         dataSource.setMaxWait(100);
@@ -54,7 +64,7 @@ public class PersistenceJPAConfig {
     }
 
     @Bean
-     public PlatformTransactionManager transactionManager(EntityManagerFactory emf){
+    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(emf);
 
@@ -62,19 +72,31 @@ public class PersistenceJPAConfig {
     }
 
     @Bean
-    public PersistenceExceptionTranslationPostProcessor exceptionTranslation(){
+    public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();
     }
 
-    Properties additionalProperties() {
+    //    Properties additionalProperties() {
+//        Properties properties = new Properties();
+//        properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
+//        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
+//        properties.setProperty("hibernate.show_sql", "true");
+//        properties.setProperty("hibernate.hbm2ddl.import_files", "/import.sql");
+//
+//
+//        return properties;
+//    }
+
+    @Bean
+    public   Properties additionalProperties() {
         Properties properties = new Properties();
-        properties.setProperty("hibernate.hbm2ddl.auto", "create-drop");
-        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQL5Dialect");
-        properties.setProperty("hibernate.show_sql", "true");
-        properties.setProperty("hibernate.hbm2ddl.import_files", "/import.sql");
+        try {
+            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream("db.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
-        return properties;
+            return properties;
     }
-
 }

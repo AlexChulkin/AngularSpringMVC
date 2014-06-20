@@ -28,12 +28,13 @@
 
 
 <div id="packetDiv" ng-controller="packetCtrl">
-    <div class="panel" ng-hide="errorCompts ">
+    <div class="panel" ng-hide="errorCompts">
+    
         <table class="table table-striped">
             <thead>
-            <tr>
-                <th ng-show="labels" ng-repeat="label in allLabels"> <span ng-bind="label"/></th>
-            </tr>
+                <tr>
+                      <th ng-show="labels" ng-repeat="label in labels"> <span ng-bind="label"/></th>
+                </tr>
             </thead>
             <tbody>
             <tr ng-repeat="compt in compts" ng-hide="errorStates || errorData">
@@ -41,7 +42,7 @@
                     <span id="defaultLabelIds[compt.id-1]" ng-bind="compt.label" />
                 </td>
                 <td  ng-repeat="state in states">
-                    <span id="defaultInputIds[compt.id-1][state.id-1]" ng-bind="defaultValues[compt.id-1][state.id-1]" ng-hide="labels.defaultLabel===labels[state.id]"></span>
+                    <span ng-bind="defaultValues[compt.id-1][state.id-1]" ng-hide="labels.defaultLabel===labels[state.id]"></span>
                     <span id="defaultComboIds[compt.id-1][state.id-1]" ng-show="labels.defaultLabel===labels[state.id]">
                           <select class="standard" ng-options="el for el in comboData | applyFilter:compt.id:state.id" ng-model="defaultValues[compt.id-1][state.id-1]">
                           </select>

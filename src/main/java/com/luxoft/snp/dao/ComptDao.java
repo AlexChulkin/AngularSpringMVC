@@ -40,7 +40,7 @@ public class ComptDao {
     @SuppressWarnings("unchecked")
     @Transactional(readOnly=true)
     public List<State> getStates(){
-        return em.createQuery("select distinct s from State s ", State.class).getResultList();
+        return em.createQuery("select distinct s from State s order by s.id", State.class).getResultList();
 
     }
 
