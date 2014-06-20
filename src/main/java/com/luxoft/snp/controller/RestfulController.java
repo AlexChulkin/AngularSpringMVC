@@ -1,15 +1,13 @@
 package com.luxoft.snp.controller;
 
 import com.luxoft.snp.domain.Compt;
+import com.luxoft.snp.domain.RequstObj;
 import com.luxoft.snp.domain.State;
 import com.luxoft.snp.service.ComptService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -45,11 +43,10 @@ public class RestfulController {
 
     }
     @RequestMapping(value = "/removeCompts", method = RequestMethod.POST)
-    public
-    @ResponseBody
-    void removeCompts(@RequestParam String idsToRemove) throws Exception {
-        System.out.println("removeCompts");
-        comptService.removeCompts(idsToRemove);
+    public void removeCompts(@RequestBody RequstObj requstObj) throws Exception {
+
+        System.out.println(requstObj.getParams().getIdsToRemove());
+//        comptService.removeCompts(idsToRemove);
     }
     @RequestMapping(value = "/updateCompt", method = RequestMethod.POST)
     public

@@ -34,7 +34,7 @@ public class MyTestIT {
 //        webDriver.close();
     }
 
-//    @Test
+    @Test
     public void test2() throws InterruptedException {
 
         String title = webDriver.getTitle();//check title
