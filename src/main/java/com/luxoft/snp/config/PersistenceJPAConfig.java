@@ -1,6 +1,7 @@
 package com.luxoft.snp.config;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,6 +24,8 @@ import java.util.Properties;
 @PropertySource(value = "classpath:db.properties")
 @EnableTransactionManagement
 public class PersistenceJPAConfig {
+
+    private static final Logger LOGGER = Logger.getLogger(PersistenceJPAConfig.class);
 
     @Autowired
     Environment environment;
@@ -93,7 +96,7 @@ public class PersistenceJPAConfig {
         try {
             properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream("db.properties"));
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error("Error in additionalProperties", e);
         }
 
 
