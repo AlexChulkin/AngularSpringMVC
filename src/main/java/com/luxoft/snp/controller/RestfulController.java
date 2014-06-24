@@ -1,7 +1,7 @@
 package com.luxoft.snp.controller;
 
 import com.luxoft.snp.domain.Compt;
-import com.luxoft.snp.domain.RequstObj;
+import com.luxoft.snp.domain.RequestObj;
 import com.luxoft.snp.domain.State;
 import com.luxoft.snp.service.ComptService;
 import org.apache.log4j.Logger;
@@ -37,23 +37,26 @@ public class RestfulController {
     @RequestMapping(value = "/addCompt", method = RequestMethod.POST)
     public
     @ResponseBody
-    void addCompt(@RequestParam String label, @RequestParam int packetId, @RequestParam String[] defaultVals) throws Exception {
+    void addCompt(@RequestBody RequestObj requestObj) throws Exception {
         System.out.println("addCompt");
-        comptService.addCompt(label, packetId, defaultVals);
+        comptService.addCompt(requestObj.getParams().getComptLabel(),
+                requestObj.getParams().getPacketId(),
+                requestObj.getParams().getDefaultVals());
 
     }
     @RequestMapping(value = "/removeCompts", method = RequestMethod.POST)
-    public void removeCompts(@RequestBody RequstObj requstObj) throws Exception {
+    public void removeCompts(@RequestBody RequestObj requestObj) throws Exception {
 
-        System.out.println(requstObj.getParams().getIdsToRemove());
-//        comptService.removeCompts(idsToRemove);
+        System.out.println("removeCompts");
+        comptService.removeCompts(requestObj.getParams().getIdsToRemove());
     }
     @RequestMapping(value = "/updateCompt", method = RequestMethod.POST)
     public
     @ResponseBody
-    void updateCompt(@RequestParam int comptId, @RequestParam String[] defaultVals) throws Exception {
+    void updateCompt(@RequestBody RequestObj requestObj) throws Exception {
         System.out.println("updateCompt");
-        comptService.updateCompt(comptId,defaultVals);
+        comptService.updateCompt(requestObj.getParams().getComptId(),
+                requestObj.getParams().getDefaultVals());
     }
 
     @RequestMapping(value = "/staticData", method = RequestMethod.GET)

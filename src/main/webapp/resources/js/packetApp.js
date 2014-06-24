@@ -87,15 +87,16 @@ angular.module("packetControllers",[])
             }
             $scope.save = function() {
                 $scope.collectIdsForRemoval();
-                for(var compt in $scope.compts) {
-                    if(compt.new===true){
-                        $scope.addComptToBase(compt.label, $scope.getDefaultValsForCompt(compt));
-                        compt.new = false;
-                    }else if (compt.updated===true) {
-                        $scope.updateComptInBase(compt.id,  $scope.getDefaultValsForCompt(compt));
-                        compt.updated=false;
+                for(var i=0;i<$scope.compts.length; i++) {
+                    if($scope.compts[i].new===true){
+                        $scope.addComptToBase($scope.compts[i].label, $scope.getDefaultValsForCompt($scope.compts[i]));
+                        $scope.compts[i].new = false;
+                    } else if ($scope.compts[i].updated===true) {
+                        $scope.updateComptInBase($scope.compts[i].id,  $scope.getDefaultValsForCompt($scope.compts[i]));
+                        $scope.compts[i].updated=false;
                     }
                 }
+
             }
             $scope.getDefaultValsForCompt = function(compt){
                 var defaultVals=[];
@@ -105,12 +106,16 @@ angular.module("packetControllers",[])
                 return defaultVals;
             }
             $scope.collectIdsForRemoval = function() {
+                if($scope.removeList.length===0) {
+                    return;
+                }
                 var ids = "";
                 for( var id in $scope.removeList) {
                     ids=ids+id+","
                 }
                 ids=ids.substring(0,ids.length-1);
-                $scope.removeComptsFromBase(ids);
+                $scope.removeComptsFromBase($scope.removeList);
+                $scope.removeList = [];
             }
 
             $scope.removeComptsFromBase = function (ids) {

@@ -19,7 +19,7 @@ public class ComptService {
     public void addCompt(String label, int packetId, String[] defaultVals) {
         comptDao.addCompt(label, packetId, defaultVals);
     }
-    public void removeCompts(String idsToRemove) {
+    public void removeCompts(int[] idsToRemove) {
         comptDao.removeCompts(idsToRemove);
     }
     public void updateCompt(int comptId, String[] defaultVals) {

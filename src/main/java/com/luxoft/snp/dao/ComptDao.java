@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -68,6 +69,7 @@ public class ComptDao {
     @SuppressWarnings("unchecked")
     private int[] getDefaultIndeces(String[] defaultVals) {
 
+        System.out.println("defaultVals: " + Arrays.toString(defaultVals));
         int[] defaultIndeces;
         defaultIndeces = new int[defaultVals.length];
         for(int i=0;i<defaultIndeces.length;i++) {
@@ -79,12 +81,16 @@ public class ComptDao {
 
         for (int j=0;j<defaultVals.length;j++) {
             for (int i=0; i<defaultStaticData.size(); i++) {
+                System.out.println("defaultVals j : " +defaultVals[j]);
+                System.out.println("defaultStaticData.get(i).getLabel() : " +defaultStaticData.get(i).getLabel());
+
                 if(defaultVals[j].equals(defaultStaticData.get(i).getLabel())){
                     defaultIndeces[j] = i;
                     break;
                 }
             }
         }
+        System.out.println("defaultIndeces: " + Arrays.toString(defaultIndeces));
         return defaultIndeces;
     }
 
@@ -93,32 +99,41 @@ public class ComptDao {
     public void updateCompt(int comptId, String[] defaultVals) {
         int[] defaultIndeces = getDefaultIndeces( defaultVals);
         List<DataCompt> dataComptsList = getDataCompts(comptId);
-
         for(DataCompt dc : dataComptsList){
-            if(defaultIndeces[dc.getState().getId()-1]==-1 && dc.getChecked()!=0
-                    || defaultIndeces[dc.getState().getId()-1]!=-1 && dc.getChecked()==0){
+            if(defaultIndeces[dc.getState().getId()-1]==(dc.getStaticData().getId()-1) && dc.getChecked()==0
+                    || defaultIndeces[dc.getState().getId()-1]!=(dc.getStaticData().getId()-1) && dc.getChecked()==1){
                 dc.setChecked(1-dc.getChecked());
                 em.merge(dc);
+                System.out.println("update: "+dc.getId());
+
             }
         }
     }
 
     @Transactional
     @SuppressWarnings("unchecked")
-    public void removeCompts(String idsToRemove) {
-        em.createQuery("DELETE from Compt c where c.id in (:ids)")
-                .setParameter("ids",idsToRemove)
+    public void removeCompts(int[] idsToRemove) {
+        System.out.println("toremove: "+idsToRemove);
+        String idsString="";
+        for(int i=0; i<idsToRemove.length; i++) {
+            idsString = idsString+idsToRemove[i]+",";
+        }
+        idsString = idsString.substring(0,idsString.length()-1);
+        em.createQuery("DELETE from DataCompt dc where dc.compt.id in ("+idsString+")")
                 .executeUpdate();
+        em.createQuery("DELETE from Compt c where c.id in (" + idsString + ")")
+                .executeUpdate();
+
     }
     @Transactional
     @SuppressWarnings("unchecked")
     public void addCompt(String label, int packetId, String[] defaultVals) {
-
         int[] defaultIndeces = getDefaultIndeces(defaultVals);
         Compt newCompt = new Compt();
         newCompt.setLabel(label);
         newCompt.setPacket(getPacket(packetId));
-        em.merge(newCompt);
+        newCompt = em.merge(newCompt);
+        System.out.println("new Compt: "+newCompt);
 
         List<State> statesList = getStates();
         if(defaultStaticData==null) {
@@ -132,6 +147,7 @@ public class ComptDao {
                 dc.setStaticData(defaultStaticData.get(i));
                 dc.setChecked(defaultIndeces[j]==i?1:0);
                 em.merge(dc);
+                System.out.println("new dc: "+dc);
             }
         }
 
