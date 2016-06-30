@@ -8,6 +8,11 @@ import org.springframework.stereotype.Repository;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Predicate;
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -48,11 +53,25 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<Object[]> getStaticData(long packetId){
-        return em.createQuery("select dc.id , compt.id , dc.state.id , sd.label , dc.checked  from StaticData sd, Compt compt, DataCompt dc" +
-                " where compt.packet.id = :packetId and dc.compt.id = compt.id and sd.id = dc.staticData.id order by dc.id")
-                .setParameter("packetId",packetId).getResultList();
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+        Root<StaticData> sd = cq.from(StaticData.class);
+        Root<Compt> c = cq.from(Compt.class);
+        Root<DataCompt> dc = cq.from(DataCompt.class);
+        cq.multiselect(dc.get("id"),c.get("id"), dc.get("state").get("id"), sd.get("label"), dc.get("checked"));
+        cq.orderBy(cb.asc(dc.get("id")));
+
+        Predicate criteria = cb.conjunction();
+        Predicate p = cb.equal(c.get("packet").get("id"),packetId);
+        criteria = cb.and(criteria, p);
+        p = cb.equal(dc.get("compt").get("id"),c.get("id"));
+        criteria = cb.and(criteria, p);
+        p = cb.equal(dc.get("staticData").get("id"),sd.get("id"));
+        criteria = cb.and(criteria, p);
+
+        cq.where(criteria);
+        return em.createQuery(cq).getResultList();
     }
 
     @Override
@@ -79,10 +98,8 @@ public class ComptDaoImpl implements  ComptDao {
 
     @SuppressWarnings("unchecked")
     private int[] getDefaultIndeces(String[] defaultVals) {
-
         LOGGER.info("defaultVals: " + Arrays.toString(defaultVals));
-        int[] defaultIndeces;
-        defaultIndeces = new int[defaultVals.length];
+        int[] defaultIndeces = new int[defaultVals.length];
         for(int i=0;i<defaultIndeces.length;i++) {
             defaultIndeces[i]=-1;
         }
@@ -106,15 +123,14 @@ public class ComptDaoImpl implements  ComptDao {
     @Transactional
     @SuppressWarnings("unchecked")
     public void updateCompt(int comptId, String[] defaultVals) {
-        int[] defaultIndeces = getDefaultIndeces( defaultVals);
+        int[] defaultIndeces = getDefaultIndeces(defaultVals);
         List<DataCompt> dataComptsList = getDataCompts(comptId);
         for(DataCompt dc : dataComptsList){
             if(defaultIndeces[dc.getState().getId()-1]==(dc.getStaticData().getId()-1) && dc.getChecked()==0
                     || defaultIndeces[dc.getState().getId()-1]!=(dc.getStaticData().getId()-1) && dc.getChecked()==1){
                 dc.setChecked(1-dc.getChecked());
                 em.merge(dc);
-                LOGGER.info("update: "+dc.getId());
-
+                LOGGER.info("Updated data compt with id = "+dc.getId());
             }
         }
     }
