@@ -1,4 +1,4 @@
-package com.luxoft.snp.config;
+package com.somecode.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -13,7 +13,7 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 
 @EnableWebMvc
-@ComponentScan(basePackages = {"com.luxoft.snp"})
+@ComponentScan(basePackages = {"com.somecode"})
 @Import(PersistenceJPAConfig.class)
 @Configuration
 public class Config extends WebMvcConfigurerAdapter {

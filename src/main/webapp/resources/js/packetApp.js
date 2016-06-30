@@ -106,7 +106,7 @@ angular.module("packetControllers",[])
                 return defaultVals;
             }
             $scope.collectIdsForRemoval = function() {
-                if($scope.removeList.length===0) {
+                if(!$scope.removeList) {
                     return;
                 }
                 var ids = "";

@@ -1,4 +1,4 @@
-package com.luxoft.snp.domain;
+package com.somecode.domain;
 
 
 import javax.persistence.*;
@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Compt  {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private int id;
     private String label;
 

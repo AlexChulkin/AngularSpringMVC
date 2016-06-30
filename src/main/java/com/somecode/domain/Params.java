@@ -1,4 +1,4 @@
-package com.luxoft.snp.domain;
+package com.somecode.domain;
 
 /**
  * Created by vharutyunyan on 20.06.2014.

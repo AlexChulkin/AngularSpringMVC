@@ -16,7 +16,7 @@ public class MyTestIT {
     private static WebDriver webDriver;
     private static final int EXPECTED_SPAN_LIST_SIZE = 7;
     private static final int EXPECTED_NUMBER_OF_ELEMENTS_IN_COMBO = 6;
-    private static final String NEW_LABEL = "Vahe Alex Ratio";
+    private static final String NEW_LABEL = "Alex Ratio";
     private static final String NEW_PRE_COMMITEE = "ADEQUATE";
     private static final String NEW_IN_COMMITEE = "STRONG";
     private static final String NEW_FINAL = "VERY_WEAK";
@@ -26,7 +26,7 @@ public class MyTestIT {
     @BeforeClass
     public static void init() {
         webDriver = new FirefoxDriver();
-        webDriver.get("localhost:8080/AngularSpringTest/");
+        webDriver.get("localhost:8080/AngularSpringMVC/");
     }
 
     @AfterClass

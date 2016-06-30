@@ -1,8 +1,8 @@
-package com.luxoft.snp.service;
+package com.somecode.service;
 
-import com.luxoft.snp.dao.ComptDao;
-import com.luxoft.snp.domain.Compt;
-import com.luxoft.snp.domain.State;
+import com.somecode.dao.ComptDao;
+import com.somecode.domain.Compt;
+import com.somecode.domain.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

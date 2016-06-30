@@ -1,9 +1,9 @@
-package com.luxoft.snp.controller;
+package com.somecode.controller;
 
-import com.luxoft.snp.domain.Compt;
-import com.luxoft.snp.domain.RequestObj;
-import com.luxoft.snp.domain.State;
-import com.luxoft.snp.service.ComptService;
+import com.somecode.domain.Compt;
+import com.somecode.domain.RequestObj;
+import com.somecode.domain.State;
+import com.somecode.service.ComptService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -38,7 +38,7 @@ public class RestfulController {
     public
     @ResponseBody
     void addCompt(@RequestBody RequestObj requestObj) throws Exception {
-        System.out.println("addCompt");
+        LOGGER.info("addCompt");
         comptService.addCompt(requestObj.getParams().getComptLabel(),
                 requestObj.getParams().getPacketId(),
                 requestObj.getParams().getDefaultVals());
@@ -47,14 +47,14 @@ public class RestfulController {
     @RequestMapping(value = "/removeCompts", method = RequestMethod.POST)
     public void removeCompts(@RequestBody RequestObj requestObj) throws Exception {
 
-        System.out.println("removeCompts");
+        LOGGER.info("removeCompts");
         comptService.removeCompts(requestObj.getParams().getIdsToRemove());
     }
     @RequestMapping(value = "/updateCompt", method = RequestMethod.POST)
     public
     @ResponseBody
     void updateCompt(@RequestBody RequestObj requestObj) throws Exception {
-        System.out.println("updateCompt");
+        LOGGER.info("updateCompt");
         comptService.updateCompt(requestObj.getParams().getComptId(),
                 requestObj.getParams().getDefaultVals());
     }

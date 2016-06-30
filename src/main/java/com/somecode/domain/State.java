@@ -1,19 +1,17 @@
-package com.luxoft.snp.domain;
+package com.somecode.domain;
 
 
 import javax.persistence.*;
 
+/**
+ * Created by achulkin on 03.06.14.
+ */
 @Entity
-@Table(name="STATIC_DATA")
-public class StaticData {
-
+public class State {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
-    @Column(name="STATIC_DATA_ID", unique = true, nullable=false)
+    @GeneratedValue(strategy= GenerationType.IDENTITY)
+    @Column(name="STATE_ID", unique = true, nullable=false)
     private int id;
-
-
-
 
     @Column(name="LABEL", nullable=false, length = 20)
     private String label;

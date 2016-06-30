@@ -1,4 +1,4 @@
-package com.luxoft.snp.domain;
+package com.somecode.domain;
 
 
 import javax.persistence.*;
@@ -9,7 +9,7 @@ public class DataCompt {
 
 
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="DATA_COMPT_ID", unique = true, nullable=false)
     private int id;
 

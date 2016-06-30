@@ -1,8 +1,11 @@
-package com.luxoft.snp.dao;
+package com.somecode.dao;
 
-import com.luxoft.snp.domain.*;
+import com.google.common.collect.Lists;
+import com.somecode.domain.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
@@ -13,27 +16,33 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public class ComptDao {
+public class ComptDaoImpl implements  ComptDao {
     private  List<StaticData> defaultStaticData ;
 
     @PersistenceContext
     private EntityManager em;
 
-    @SuppressWarnings("unchecked")
+    @Autowired
+    private StaticDataRepository staticDataRepository;
+
+
+    @PostConstruct
+    @Transactional(readOnly = true)
     private List<StaticData> getDefaultStaticData(){
-        return em.createQuery("select  sd  from StaticData sd  order by sd.id").getResultList();
+        return Lists.newArrayList(staticDataRepository.findAllByOrderByIdAsc());
     }
 
-
+    @Override
     @SuppressWarnings("unchecked")
-    public List<Object[]> getStaticData(int packetId){
+    public List<Object[]> getStaticData(long packetId){
         return em.createQuery("select dc.id , compt.id , dc.state.id , sd.label , dc.checked  from StaticData sd, Compt compt, DataCompt dc" +
                 " where compt.packet.id = :packetId and dc.compt.id = compt.id and sd.id = dc.staticData.id order by dc.id")
                 .setParameter("packetId",packetId).getResultList();
     }
 
+    @Override
     @SuppressWarnings("unchecked")
-    public Packet getPacket(int packetId) {
+    public Packet getPacket(long packetId) {
         List<Packet> packetList =  em.createQuery("select p from Packet p where p.id=:packetId")
                 .setParameter("packetId",packetId).getResultList();
         if(packetList!=null && !packetList.isEmpty()){
@@ -42,6 +51,7 @@ public class ComptDao {
         return null;
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     @Transactional(readOnly=true)
     public List<State> getStates(){
@@ -49,12 +59,10 @@ public class ComptDao {
 
     }
 
-
-
-
+    @Override
     @Transactional(readOnly=true)
     @SuppressWarnings("unchecked")
-    public List<Compt> getComponents(int packetId){
+    public List<Compt> getComponents(long packetId){
         return em.createQuery("select compt from Compt compt where compt.packet.id=:packetId")
                 .setParameter("packetId", packetId).getResultList();
     }
@@ -94,6 +102,7 @@ public class ComptDao {
         return defaultIndeces;
     }
 
+    @Override
     @Transactional
     @SuppressWarnings("unchecked")
     public void updateCompt(int comptId, String[] defaultVals) {
@@ -110,6 +119,7 @@ public class ComptDao {
         }
     }
 
+    @Override
     @Transactional
     @SuppressWarnings("unchecked")
     public void removeCompts(int[] idsToRemove) {
@@ -125,6 +135,8 @@ public class ComptDao {
                 .executeUpdate();
 
     }
+
+    @Override
     @Transactional
     @SuppressWarnings("unchecked")
     public void addCompt(String label, int packetId, String[] defaultVals) {

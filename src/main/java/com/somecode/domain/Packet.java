@@ -1,4 +1,4 @@
-package com.luxoft.snp.domain;
+package com.somecode.domain;
 
 
 import javax.persistence.*;
@@ -6,9 +6,9 @@ import javax.persistence.*;
 @Entity
 public class Packet {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="PACKET_ID", unique = true, nullable=false)
-    private int id;
+    private long id;
 
     @ManyToOne
     @JoinColumn(name="STATE_ID_FK", nullable=false)
@@ -18,7 +18,7 @@ public class Packet {
 
     }
 
-    public Packet(int id, State state) {
+    public Packet(long id, State state) {
         this.id = id;
         this.state = state;
 
@@ -31,11 +31,11 @@ public class Packet {
         this.state = state;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
     public String toString() {

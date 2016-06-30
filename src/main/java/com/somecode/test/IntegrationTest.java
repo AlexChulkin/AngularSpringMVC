@@ -1,4 +1,4 @@
-package com.luxoft.snp.test;
+package com.somecode.test;
 
 /**
  * Created by Vharutyunyan on 12.06.2014.

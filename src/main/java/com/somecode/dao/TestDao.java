@@ -1,4 +1,4 @@
-package com.luxoft.snp.dao;
+package com.somecode.dao;
 
 import org.springframework.stereotype.Repository;
 
