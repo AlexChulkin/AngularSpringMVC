@@ -65,7 +65,7 @@ angular.module("packetControllers",[])
 
                 $scope.compts.push({ id: $scope.compts.length+1, label: newLabel, new:true});
                 $scope.defaultValues.push([preCommiteeNewVal,inCommiteeNewVal,finalNewVal]);
-                var comboEl;
+                var comboEl = {};
                 for(var j=0; j<dummyComboData.length; j++){
                     for (var i=1; i<=$scope.states.length; i++) {
                         comboEl = {};

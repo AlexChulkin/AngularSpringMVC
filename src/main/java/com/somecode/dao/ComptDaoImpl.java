@@ -11,13 +11,16 @@ import javax.persistence.PersistenceContext;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
+import org.apache.log4j.Logger;
+
 
 
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class ComptDaoImpl implements  ComptDao {
+    private static final Logger LOGGER = Logger.getLogger(ComptDaoImpl.class);
+
     private  List<StaticData> defaultStaticData ;
 
     @PersistenceContext
@@ -76,7 +79,7 @@ public class ComptDaoImpl implements  ComptDao {
     @SuppressWarnings("unchecked")
     private int[] getDefaultIndeces(String[] defaultVals) {
 
-        System.out.println("defaultVals: " + Arrays.toString(defaultVals));
+        LOGGER.info("defaultVals: " + Arrays.toString(defaultVals));
         int[] defaultIndeces;
         defaultIndeces = new int[defaultVals.length];
         for(int i=0;i<defaultIndeces.length;i++) {
@@ -85,8 +88,8 @@ public class ComptDaoImpl implements  ComptDao {
 
         for (int j=0;j<defaultVals.length;j++) {
             for (int i=0; i<defaultStaticData.size(); i++) {
-                System.out.println("defaultVals j : " +defaultVals[j]);
-                System.out.println("defaultStaticData.get(i).getLabel() : " +defaultStaticData.get(i).getLabel());
+                LOGGER.info("defaultVals j : " +defaultVals[j]);
+                LOGGER.info("defaultStaticData.get(i).getLabel() : " +defaultStaticData.get(i).getLabel());
 
                 if(defaultVals[j].equals(defaultStaticData.get(i).getLabel())){
                     defaultIndeces[j] = i;
@@ -94,7 +97,7 @@ public class ComptDaoImpl implements  ComptDao {
                 }
             }
         }
-        System.out.println("defaultIndeces: " + Arrays.toString(defaultIndeces));
+        LOGGER.info("defaultIndeces: " + Arrays.toString(defaultIndeces));
         return defaultIndeces;
     }
 
@@ -109,7 +112,7 @@ public class ComptDaoImpl implements  ComptDao {
                     || defaultIndeces[dc.getState().getId()-1]!=(dc.getStaticData().getId()-1) && dc.getChecked()==1){
                 dc.setChecked(1-dc.getChecked());
                 em.merge(dc);
-                System.out.println("update: "+dc.getId());
+                LOGGER.info("update: "+dc.getId());
 
             }
         }
@@ -119,7 +122,7 @@ public class ComptDaoImpl implements  ComptDao {
     @Transactional
     @SuppressWarnings("unchecked")
     public void removeCompts(int[] idsToRemove) {
-        System.out.println("toremove: "+Arrays.toString(idsToRemove));
+        LOGGER.info("toremove: "+Arrays.toString(idsToRemove));
         String idsString="";
         for(int idToR : idsToRemove) {
             idsString = idsString+idToR+",";
@@ -129,7 +132,6 @@ public class ComptDaoImpl implements  ComptDao {
                 .executeUpdate();
         em.createQuery("DELETE from Compt c where c.id in (" + idsString + ")")
                 .executeUpdate();
-
     }
 
     @Override
@@ -141,7 +143,7 @@ public class ComptDaoImpl implements  ComptDao {
         newCompt.setLabel(label);
         newCompt.setPacket(getPacket(packetId));
         newCompt = em.merge(newCompt);
-        System.out.println("new Compt: "+newCompt);
+        LOGGER.info("new Compt: "+newCompt);
 
         List<State> statesList = getStates();
 
@@ -153,7 +155,7 @@ public class ComptDaoImpl implements  ComptDao {
                 dc.setStaticData(defaultStaticData.get(i));
                 dc.setChecked(defaultIndeces[j]==i?1:0);
                 em.merge(dc);
-                System.out.println("new dc: "+dc);
+                LOGGER.info("new dc: "+dc);
             }
         }
 
