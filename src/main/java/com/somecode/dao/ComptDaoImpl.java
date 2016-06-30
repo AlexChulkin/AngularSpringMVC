@@ -25,6 +25,9 @@ public class ComptDaoImpl implements  ComptDao {
     @Autowired
     private StaticDataRepository staticDataRepository;
 
+    @Autowired
+    private PacketRepository packetRepository;
+
 
     @PostConstruct
     @Transactional(readOnly = true)
@@ -41,14 +44,8 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Packet getPacket(long packetId) {
-        List<Packet> packetList =  em.createQuery("select p from Packet p where p.id=:packetId")
-                .setParameter("packetId",packetId).getResultList();
-        if(packetList!=null && !packetList.isEmpty()){
-            return packetList.get(0);
-        }
-        return null;
+        return packetRepository.findOne(packetId);
     }
 
     @Override
