@@ -30,10 +30,11 @@ public class RestfulController {
     @RequestMapping(value = "/compts", method = RequestMethod.GET)
     public
     @ResponseBody
-    List<Compt> view(@RequestParam int packetId) throws Exception {
+    List<Compt> view(@RequestParam long packetId) throws Exception {
        LOGGER.info("viewCompts");
         return comptService.getComponents(packetId);
     }
+
     @RequestMapping(value = "/addCompt", method = RequestMethod.POST)
     public
     @ResponseBody
@@ -62,7 +63,7 @@ public class RestfulController {
     @RequestMapping(value = "/staticData", method = RequestMethod.GET)
     public
     @ResponseBody
-    List<Object[]> viewStaticData(@RequestParam int packetId) throws Exception {
+    List<Object[]> viewStaticData(@RequestParam long packetId) throws Exception {
         LOGGER.info("viewStaticData");
         return comptService.getStaticData(packetId);
     }
@@ -78,7 +79,7 @@ public class RestfulController {
     @RequestMapping(value = "/packetState", method = RequestMethod.GET)
          public
          @ResponseBody
-         Integer viewPacketState(@RequestParam int packetId) throws Exception {
+         Long viewPacketState(@RequestParam long packetId) throws Exception {
         LOGGER.info("viewPacketState");
         return comptService.getPacketState(packetId);
     }

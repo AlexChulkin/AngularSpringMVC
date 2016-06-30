@@ -11,16 +11,16 @@ public class State {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="STATE_ID", unique = true, nullable=false)
-    private int id;
+    private long id;
 
     @Column(name="LABEL", nullable=false, length = 20)
     private String label;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
     public String getLabel() {

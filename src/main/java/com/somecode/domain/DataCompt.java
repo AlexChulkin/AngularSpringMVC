@@ -11,7 +11,7 @@ public class DataCompt {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="DATA_COMPT_ID", unique = true, nullable=false)
-    private int id;
+    private long id;
 
     @ManyToOne
     @JoinColumn(name="COMPT_ID_FK", nullable=false)
@@ -27,7 +27,7 @@ public class DataCompt {
     private State state;
 
     @Column(name="CHECKED", nullable=false, length=1)
-    private int checked;
+    private long checked;
 
 
 
@@ -35,7 +35,7 @@ public class DataCompt {
 
     }
 
-    public DataCompt(Compt compt, StaticData staticData, State state, int selected) {
+    public DataCompt(Compt compt, StaticData staticData, State state, long selected) {
         this.compt = compt;
         this.staticData = staticData;
 
@@ -43,11 +43,11 @@ public class DataCompt {
 
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -75,11 +75,11 @@ public class DataCompt {
         this.state = state;
     }
 
-    public int getChecked() {
+    public long getChecked() {
         return checked;
     }
 
-    public void setChecked(int checked) {
+    public void setChecked(long checked) {
         this.checked = checked;
     }
 

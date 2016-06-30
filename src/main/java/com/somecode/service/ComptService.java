@@ -16,21 +16,21 @@ public class ComptService {
     private ComptDao comptDao;
 
 
-    public void addCompt(String label, int packetId, String[] defaultVals) {
+    public void addCompt(String label, long packetId, String[] defaultVals) {
         comptDao.addCompt(label, packetId, defaultVals);
     }
-    public void removeCompts(int[] idsToRemove) {
+    public void removeCompts(long[] idsToRemove) {
         comptDao.removeCompts(idsToRemove);
     }
-    public void updateCompt(int comptId, String[] defaultVals) {
+    public void updateCompt(long comptId, String[] defaultVals) {
         comptDao.updateCompt(comptId,defaultVals);
     }
-    public List<Compt> getComponents(int packetId) {
+    public List<Compt> getComponents(long packetId) {
         return comptDao.getComponents(packetId);
     }
 
     
-    public  List<Object[]> getStaticData(int packetId) {
+    public  List<Object[]> getStaticData(long packetId) {
         return comptDao.getStaticData(packetId);
     }
 
@@ -40,7 +40,7 @@ public class ComptService {
     }
 
     
-    public  Integer getPacketState(int packetId) {
+    public  long getPacketState(long packetId) {
         return comptDao.getPacket(packetId).getState().getId();
     }
 

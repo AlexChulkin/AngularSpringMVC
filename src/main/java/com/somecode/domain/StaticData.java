@@ -10,7 +10,7 @@ public class StaticData {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="STATIC_DATA_ID", unique = true, nullable=false)
-    private int id;
+    private long id;
 
 
 
@@ -18,11 +18,11 @@ public class StaticData {
     @Column(name="LABEL", nullable=false, length = 20)
     private String label;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
     public String getLabel() {

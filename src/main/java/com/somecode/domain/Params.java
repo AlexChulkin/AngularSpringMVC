@@ -5,10 +5,10 @@ package com.somecode.domain;
  */
 public class Params {
 
-    private int[] idsToRemove;
+    private long[] idsToRemove;
     private String comptLabel;
-    private int comptId;
-    private int packetId;
+    private long comptId;
+    private long packetId;
     private String[] defaultVals;
 
     public String getComptLabel() {
@@ -19,19 +19,19 @@ public class Params {
         this.comptLabel = comptLabel;
     }
 
-    public int getComptId() {
+    public long getComptId() {
         return comptId;
     }
 
-    public void setComptId(int comptId) {
+    public void setComptId(long comptId) {
         this.comptId = comptId;
     }
 
-    public int getPacketId() {
+    public long getPacketId() {
         return packetId;
     }
 
-    public void setPacketId(int packetId) {
+    public void setPacketId(long packetId) {
         this.packetId = packetId;
     }
 
@@ -43,11 +43,11 @@ public class Params {
         this.defaultVals = defaultVals;
     }
 
-    public int[] getIdsToRemove() {
+    public long[] getIdsToRemove() {
         return idsToRemove;
     }
 
-    public void setIdsToRemove(int[] idsToRemove) {
+    public void setIdsToRemove(long[] idsToRemove) {
         this.idsToRemove = idsToRemove;
     }
 }

@@ -97,9 +97,9 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @SuppressWarnings("unchecked")
-    private int[] getDefaultIndeces(String[] defaultVals) {
+    private long[] getDefaultIndeces(String[] defaultVals) {
         LOGGER.info("defaultVals: " + Arrays.toString(defaultVals));
-        int[] defaultIndeces = new int[defaultVals.length];
+        long[] defaultIndeces = new long[defaultVals.length];
         for(int i=0;i<defaultIndeces.length;i++) {
             defaultIndeces[i]=-1;
         }
@@ -122,12 +122,14 @@ public class ComptDaoImpl implements  ComptDao {
     @Override
     @Transactional
     @SuppressWarnings("unchecked")
-    public void updateCompt(int comptId, String[] defaultVals) {
-        int[] defaultIndeces = getDefaultIndeces(defaultVals);
+    public void updateCompt(long comptId, String[] defaultVals) {
+        long [] defaultIndeces = getDefaultIndeces(defaultVals);
         List<DataCompt> dataComptsList = getDataCompts(comptId);
         for(DataCompt dc : dataComptsList){
-            if(defaultIndeces[dc.getState().getId()-1]==(dc.getStaticData().getId()-1) && dc.getChecked()==0
-                    || defaultIndeces[dc.getState().getId()-1]!=(dc.getStaticData().getId()-1) && dc.getChecked()==1){
+            int defaultStateIndex = (int) dc.getState().getId()-1;
+            int staticDataIndex = (int) dc.getStaticData().getId()-1;
+            if(defaultIndeces[defaultStateIndex]==staticDataIndex && dc.getChecked()==0
+                    || defaultIndeces[defaultStateIndex]!=staticDataIndex && dc.getChecked()==1){
                 dc.setChecked(1-dc.getChecked());
                 em.merge(dc);
                 LOGGER.info("Updated data compt with id = "+dc.getId());
@@ -138,10 +140,10 @@ public class ComptDaoImpl implements  ComptDao {
     @Override
     @Transactional
     @SuppressWarnings("unchecked")
-    public void removeCompts(int[] idsToRemove) {
+    public void removeCompts(long[] idsToRemove) {
         LOGGER.info("toremove: "+Arrays.toString(idsToRemove));
         String idsString="";
-        for(int idToR : idsToRemove) {
+        for(long idToR : idsToRemove) {
             idsString = idsString+idToR+",";
         }
         idsString = idsString.substring(0,idsString.length()-1);
@@ -154,8 +156,8 @@ public class ComptDaoImpl implements  ComptDao {
     @Override
     @Transactional
     @SuppressWarnings("unchecked")
-    public void addCompt(String label, int packetId, String[] defaultVals) {
-        int[] defaultIndeces = getDefaultIndeces(defaultVals);
+    public void addCompt(String label, long packetId, String[] defaultVals) {
+        long[] defaultIndeces = getDefaultIndeces(defaultVals);
         Compt newCompt = new Compt();
         newCompt.setLabel(label);
         newCompt.setPacket(getPacket(packetId));
