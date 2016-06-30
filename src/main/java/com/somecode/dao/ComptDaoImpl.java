@@ -38,6 +38,9 @@ public class ComptDaoImpl implements  ComptDao {
     @Autowired
     private ComptRepository comptRepository;
 
+    @Autowired
+    private DataComptRepository dataComptRepository;
+
     @PostConstruct
     @Transactional(readOnly = true)
     private void setDefaultStaticData(){
@@ -70,10 +73,8 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Transactional(readOnly=true)
-    @SuppressWarnings("unchecked")
-    private List<DataCompt> getDataCompts(int comptId){
-        return  em.createQuery("select dc from DataCompt dc where dc.compt.id=:comptId")
-                .setParameter("comptId", comptId).getResultList();
+    private List<DataCompt> getDataCompts(long comptId){
+        return dataComptRepository.findByCompt_id(comptId);
     }
 
     @SuppressWarnings("unchecked")
