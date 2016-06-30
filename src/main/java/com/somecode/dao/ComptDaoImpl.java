@@ -28,6 +28,8 @@ public class ComptDaoImpl implements  ComptDao {
     @Autowired
     private PacketRepository packetRepository;
 
+    @Autowired
+    private StateRepository stateRepository;
 
     @PostConstruct
     @Transactional(readOnly = true)
@@ -49,11 +51,9 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     @Transactional(readOnly=true)
     public List<State> getStates(){
-        return em.createQuery("select distinct s from State s order by s.id", State.class).getResultList();
-
+        return Lists.newArrayList(stateRepository.findAll());
     }
 
     @Override
