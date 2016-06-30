@@ -11,6 +11,7 @@ import javax.persistence.PersistenceContext;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 
 import org.springframework.transaction.annotation.Transactional;
@@ -31,10 +32,13 @@ public class ComptDaoImpl implements  ComptDao {
     @Autowired
     private StateRepository stateRepository;
 
+    @Autowired
+    private ComptRepository comptRepository;
+
     @PostConstruct
     @Transactional(readOnly = true)
-    private List<StaticData> getDefaultStaticData(){
-        return Lists.newArrayList(staticDataRepository.findAllByOrderByIdAsc());
+    private void setDefaultStaticData(){
+        defaultStaticData = Lists.newArrayList(staticDataRepository.findAllByOrderByIdAsc());
     }
 
     @Override
@@ -58,10 +62,8 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     @Transactional(readOnly=true)
-    @SuppressWarnings("unchecked")
     public List<Compt> getComponents(long packetId){
-        return em.createQuery("select compt from Compt compt where compt.packet.id=:packetId")
-                .setParameter("packetId", packetId).getResultList();
+        return comptRepository.findByPacket_id(packetId);
     }
 
     @Transactional(readOnly=true)
@@ -117,10 +119,10 @@ public class ComptDaoImpl implements  ComptDao {
     @Transactional
     @SuppressWarnings("unchecked")
     public void removeCompts(int[] idsToRemove) {
-        System.out.println("toremove: "+idsToRemove);
+        System.out.println("toremove: "+Arrays.toString(idsToRemove));
         String idsString="";
-        for(int i=0; i<idsToRemove.length; i++) {
-            idsString = idsString+idsToRemove[i]+",";
+        for(int idToR : idsToRemove) {
+            idsString = idsString+idToR+",";
         }
         idsString = idsString.substring(0,idsString.length()-1);
         em.createQuery("DELETE from DataCompt dc where dc.compt.id in ("+idsString+")")
