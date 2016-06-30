@@ -80,9 +80,6 @@ public class ComptDaoImpl implements  ComptDao {
         for(int i=0;i<defaultIndeces.length;i++) {
             defaultIndeces[i]=-1;
         }
-        if(defaultStaticData==null) {
-            defaultStaticData = getDefaultStaticData();
-        }
 
         for (int j=0;j<defaultVals.length;j++) {
             for (int i=0; i<defaultStaticData.size(); i++) {
@@ -145,9 +142,7 @@ public class ComptDaoImpl implements  ComptDao {
         System.out.println("new Compt: "+newCompt);
 
         List<State> statesList = getStates();
-        if(defaultStaticData==null) {
-            defaultStaticData = getDefaultStaticData();
-        }
+
         for(int j=0; j<statesList.size(); j++) {
             for(int i=0; i<defaultStaticData.size();i++) {
                 DataCompt dc = new DataCompt();
