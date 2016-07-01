@@ -14,6 +14,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Predicate;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.apache.log4j.Logger;
@@ -96,26 +97,15 @@ public class ComptDaoImpl implements  ComptDao {
         return dataComptRepository.findByCompt_id(comptId);
     }
 
-    @SuppressWarnings("unchecked")
-    private long[] getDefaultIndeces(String[] defaultVals) {
-        LOGGER.info("defaultVals: " + Arrays.toString(defaultVals));
-        long[] defaultIndeces = new long[defaultVals.length];
-        for(int i=0;i<defaultIndeces.length;i++) {
-            defaultIndeces[i]=-1;
-        }
+    private List<Integer> getDefaultIndeces(String[] defaultVals) {
+        LOGGER.info("The default Values: " + Arrays.toString(defaultVals));
+        List<String> defaultValsList = Arrays.asList(defaultVals);
+        List<String> defaultStaticDataLabels = new ArrayList<>();
+        defaultStaticData.forEach(e -> defaultStaticDataLabels.add(e.getLabel()));
 
-        for (int j=0;j<defaultVals.length;j++) {
-            for (int i=0; i<defaultStaticData.size(); i++) {
-                LOGGER.info("defaultVals j : " +defaultVals[j]);
-                LOGGER.info("defaultStaticData.get(i).getLabel() : " +defaultStaticData.get(i).getLabel());
-
-                if(defaultVals[j].equals(defaultStaticData.get(i).getLabel())){
-                    defaultIndeces[j] = i;
-                    break;
-                }
-            }
-        }
-        LOGGER.info("defaultIndeces: " + Arrays.toString(defaultIndeces));
+        List<Integer> defaultIndeces = new ArrayList<>(defaultVals.length);
+        defaultValsList.forEach(e -> defaultIndeces.add(defaultStaticDataLabels.indexOf(e)));
+        LOGGER.info("The default Indeces found: " + defaultIndeces);
         return defaultIndeces;
     }
 
@@ -123,14 +113,15 @@ public class ComptDaoImpl implements  ComptDao {
     @Transactional
     @SuppressWarnings("unchecked")
     public void updateCompt(long comptId, String[] defaultVals) {
-        long [] defaultIndeces = getDefaultIndeces(defaultVals);
+        List<Integer>  defaultIndeces = getDefaultIndeces(defaultVals);
         List<DataCompt> dataComptsList = getDataCompts(comptId);
         for(DataCompt dc : dataComptsList){
             int defaultStateIndex = (int) dc.getState().getId()-1;
             int staticDataIndex = (int) dc.getStaticData().getId()-1;
-            if(defaultIndeces[defaultStateIndex]==staticDataIndex && dc.getChecked()==0
-                    || defaultIndeces[defaultStateIndex]!=staticDataIndex && dc.getChecked()==1){
-                dc.setChecked(1-dc.getChecked());
+            int checked = dc.getChecked();
+            if(defaultIndeces.get(defaultStateIndex)==staticDataIndex && checked==0
+                    || defaultIndeces.get(defaultStateIndex)!=staticDataIndex && checked==1){
+                dc.setChecked(1-checked);
                 em.merge(dc);
                 LOGGER.info("Updated data compt with id = "+dc.getId());
             }
@@ -141,7 +132,7 @@ public class ComptDaoImpl implements  ComptDao {
     @Transactional
     @SuppressWarnings("unchecked")
     public void removeCompts(long[] idsToRemove) {
-        LOGGER.info("toremove: "+Arrays.toString(idsToRemove));
+        LOGGER.info("Ids To remove: "+Arrays.toString(idsToRemove));
         String idsString="";
         for(long idToR : idsToRemove) {
             idsString = idsString+idToR+",";
@@ -157,7 +148,7 @@ public class ComptDaoImpl implements  ComptDao {
     @Transactional
     @SuppressWarnings("unchecked")
     public void addCompt(String label, long packetId, String[] defaultVals) {
-        long[] defaultIndeces = getDefaultIndeces(defaultVals);
+        List<Integer> defaultIndeces = getDefaultIndeces(defaultVals);
         Compt newCompt = new Compt();
         newCompt.setLabel(label);
         newCompt.setPacket(getPacket(packetId));
@@ -172,7 +163,7 @@ public class ComptDaoImpl implements  ComptDao {
                 dc.setCompt(newCompt);
                 dc.setState(statesList.get(j));
                 dc.setStaticData(defaultStaticData.get(i));
-                dc.setChecked(defaultIndeces[j]==i?1:0);
+                dc.setChecked(defaultIndeces.get(j)==i?1:0);
                 em.merge(dc);
                 LOGGER.info("new dc: "+dc);
             }

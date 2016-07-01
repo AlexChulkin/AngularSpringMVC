@@ -27,7 +27,7 @@ public class DataCompt {
     private State state;
 
     @Column(name="CHECKED", nullable=false, length=1)
-    private long checked;
+    private int checked;
 
 
 
@@ -75,11 +75,11 @@ public class DataCompt {
         this.state = state;
     }
 
-    public long getChecked() {
+    public int getChecked() {
         return checked;
     }
 
-    public void setChecked(long checked) {
+    public void setChecked(int checked) {
         this.checked = checked;
     }
 
