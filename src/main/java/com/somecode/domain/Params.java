@@ -5,7 +5,7 @@ package com.somecode.domain;
  */
 public class Params {
 
-    private long[] idsToRemove;
+    private Long[] idsToRemove;
     private String comptLabel;
     private long comptId;
     private long packetId;
@@ -43,11 +43,11 @@ public class Params {
         this.defaultVals = defaultVals;
     }
 
-    public long[] getIdsToRemove() {
+    public Long[] getIdsToRemove() {
         return idsToRemove;
     }
 
-    public void setIdsToRemove(long[] idsToRemove) {
+    public void setIdsToRemove(Long[] idsToRemove) {
         this.idsToRemove = idsToRemove;
     }
 }

@@ -130,18 +130,15 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     @Transactional
-    @SuppressWarnings("unchecked")
-    public void removeCompts(long[] idsToRemove) {
+//    @SuppressWarnings("unchecked")
+    public void removeCompts(Long[] idsToRemove) {
         LOGGER.info("Ids To remove: "+Arrays.toString(idsToRemove));
-        String idsString="";
-        for(long idToR : idsToRemove) {
-            idsString = idsString+idToR+",";
-        }
-        idsString = idsString.substring(0,idsString.length()-1);
-        em.createQuery("DELETE from DataCompt dc where dc.compt.id in ("+idsString+")")
-                .executeUpdate();
-        em.createQuery("DELETE from Compt c where c.id in (" + idsString + ")")
-                .executeUpdate();
+        List<Long> idsToRemoveList = Arrays.asList(idsToRemove);
+        List<DataCompt> removedDataCompts = dataComptRepository.removeByCompt_IdIn(idsToRemoveList);
+        List<Compt> removedCompts = comptRepository.removeByIdIn(idsToRemoveList);
+
+        LOGGER.info("Data Components removed: "+removedDataCompts);
+        LOGGER.info("Components removed: "+removedCompts);
     }
 
     @Override

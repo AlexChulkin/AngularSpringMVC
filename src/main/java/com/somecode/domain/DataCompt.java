@@ -83,4 +83,10 @@ public class DataCompt {
         this.checked = checked;
     }
 
+    @Override
+    public String toString() {
+        return "Data Component with id: " + id + " and checked flag: " + checked + "\nand component: " + compt +
+                "\nand state: " + state + "\nand static data: " + staticData;
+    }
+
 }

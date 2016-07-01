@@ -15,6 +15,6 @@ public interface ComptDao {
     List<State> getStates();
     List<Compt> getComponents(long packetId);
     void updateCompt(long comptId, String[] defaultVals);
-    void removeCompts(long[] idsToRemove);
+    void removeCompts(Long[] idsToRemove);
     void addCompt(String label, long packetId, String[] defaultVals);
 }

@@ -10,4 +10,5 @@ import java.util.List;
  */
 public interface ComptRepository extends CrudRepository<Compt,Long> {
     List<Compt> findByPacket_id(long packetId);
+    List<Compt> removeByIdIn(List<Long> idsList);
 }

@@ -10,5 +10,5 @@ import java.util.List;
  */
 public interface DataComptRepository extends CrudRepository<DataCompt, Long> {
     List<DataCompt> findByCompt_id(long comptId);
-
+    List<DataCompt> removeByCompt_IdIn(List<Long> comptIdsList);
 }

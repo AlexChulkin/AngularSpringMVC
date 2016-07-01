@@ -38,7 +38,9 @@ public class Packet {
     public void setId(long id) {
         this.id = id;
     }
+
+    @Override
     public String toString() {
-        return "packageId " + id + " state " + state ;
+        return "Packet with id: " + id + "\nand state: " + state ;
     }
 }

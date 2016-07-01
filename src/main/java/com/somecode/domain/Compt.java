@@ -39,4 +39,9 @@ public class Compt  {
     public void setPacket(Packet packet) {
         this.packet = packet;
     }
+
+    @Override
+    public String toString() {
+        return "Component with id: " + id + " and label: "+label+"\nand packet: " + packet ;
+    }
 }

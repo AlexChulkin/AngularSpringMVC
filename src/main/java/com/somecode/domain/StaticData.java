@@ -32,4 +32,9 @@ public class StaticData {
     public void setLabel(String label) {
         this.label = label;
     }
+
+    @Override
+    public String toString() {
+        return "Static data with id: "+id+" and label: "+label;
+    }
 }
