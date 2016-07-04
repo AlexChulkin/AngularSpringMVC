@@ -2,26 +2,21 @@ package com.somecode.dao;
 
 import com.google.common.collect.Lists;
 import com.somecode.domain.*;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Predicate;
-
-
+import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.apache.log4j.Logger;
-
-
-
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 public class ComptDaoImpl implements  ComptDao {
@@ -118,10 +113,10 @@ public class ComptDaoImpl implements  ComptDao {
         for(DataCompt dc : dataComptsList){
             int defaultStateIndex = (int) dc.getState().getId()-1;
             int staticDataIndex = (int) dc.getStaticData().getId()-1;
-            int checked = dc.getChecked();
-            if(defaultIndeces.get(defaultStateIndex)==staticDataIndex && checked==0
-                    || defaultIndeces.get(defaultStateIndex)!=staticDataIndex && checked==1){
-                dc.setChecked(1-checked);
+            boolean checked = dc.getChecked();
+            if(!checked && defaultIndeces.get(defaultStateIndex)==staticDataIndex
+                    || checked && defaultIndeces.get(defaultStateIndex)!=staticDataIndex){
+                dc.setChecked(!checked);
                 em.merge(dc);
                 LOGGER.info("Updated data compt with id = "+dc.getId());
             }
@@ -160,7 +155,7 @@ public class ComptDaoImpl implements  ComptDao {
                 dc.setCompt(newCompt);
                 dc.setState(statesList.get(j));
                 dc.setStaticData(defaultStaticData.get(i));
-                dc.setChecked(defaultIndeces.get(j)==i?1:0);
+                dc.setChecked(defaultIndeces.get(j)==i);
                 em.merge(dc);
                 LOGGER.info("new dc: "+dc);
             }

@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class State {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="STATE_ID", unique = true, nullable=false)
+    @Column(name="STATE_ID", length = 2, unique = true, nullable=false)
     private long id;
 
     @Column(name="LABEL", nullable=false, length = 20)

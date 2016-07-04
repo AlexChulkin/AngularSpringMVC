@@ -1,6 +1,8 @@
 package com.somecode.domain;
 
 
+import org.hibernate.annotations.Type;
+
 import javax.persistence.*;
 
 @Entity
@@ -10,7 +12,7 @@ public class DataCompt {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="DATA_COMPT_ID", unique = true, nullable=false)
+    @Column(name="DATA_COMPT_ID", length = 21, unique = true, nullable=false)
     private long id;
 
     @ManyToOne
@@ -26,8 +28,9 @@ public class DataCompt {
     @JoinColumn(name="STATE_ID_FK", nullable=false)
     private State state;
 
-    @Column(name="CHECKED", nullable=false, length=1)
-    private int checked;
+    @Column(name="CHECKED", nullable=false, length = 1)
+    @Type(type="yes_no")
+    private boolean checked;
 
 
 
@@ -75,11 +78,11 @@ public class DataCompt {
         this.state = state;
     }
 
-    public int getChecked() {
+    public boolean getChecked() {
         return checked;
     }
 
-    public void setChecked(int checked) {
+    public void setChecked(boolean checked) {
         this.checked = checked;
     }
 

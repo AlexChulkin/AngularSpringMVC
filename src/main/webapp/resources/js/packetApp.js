@@ -38,8 +38,8 @@ angular.module("packetControllers",[])
                                 comboEl.stateId = $scope.staticData[j][2];
                                 comboEl.label = $scope.staticData[j][3];
                                 $scope.comboData.push(comboEl);
-
-                                if($scope.staticData[j][4] === 1) {
+                                var checked = $scope.staticData[j][4];
+                                if(checked) {
                                     defaultArray.push(comboEl.label);
                                     if(defaultArray.length===$scope.states.length) {
                                         $scope.defaultValues.push(defaultArray);

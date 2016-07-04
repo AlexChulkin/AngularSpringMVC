@@ -8,6 +8,7 @@ public class Compt  {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name="COMPT_ID", length = 11, unique = true, nullable=false)
     private long id;
     private String label;
 
