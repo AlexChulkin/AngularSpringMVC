@@ -9,43 +9,23 @@ import javax.persistence.*;
 @Table(name="DATA_COMPT")
 public class DataCompt {
 
-
-    @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="DATA_COMPT_ID", length = 21, unique = true, nullable=false)
     private long id;
-
-    @ManyToOne
-    @JoinColumn(name="COMPT_ID_FK", nullable=false)
     private Compt compt;
-
-
-    @ManyToOne
-    @JoinColumn(name="STATIC_DATA_ID_FK", nullable=false)
     private StaticData staticData;
-
-    @ManyToOne
-    @JoinColumn(name="STATE_ID_FK", nullable=false)
     private State state;
-
-    @Column(name="CHECKED", nullable=false, length = 1)
-    @Type(type="yes_no")
     private boolean checked;
 
-
-
-    public DataCompt() {
-
-    }
+    public DataCompt() {  }
 
     public DataCompt(Compt compt, StaticData staticData, State state, long selected) {
         this.compt = compt;
         this.staticData = staticData;
-
         this.state = state;
-
     }
 
+    @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @Column(name="DATA_COMPT_ID", length = 21, unique = true, nullable=false)
     public long getId() {
         return id;
     }
@@ -54,6 +34,8 @@ public class DataCompt {
         this.id = id;
     }
 
+    @ManyToOne
+    @JoinColumn(name="STATIC_DATA_ID_FK", nullable=false)
     public StaticData getStaticData() {
         return staticData;
     }
@@ -62,6 +44,8 @@ public class DataCompt {
         this.staticData = staticData;
     }
 
+    @ManyToOne
+    @JoinColumn(name="COMPT_ID_FK", nullable=false)
     public Compt getCompt() {
         return compt;
     }
@@ -70,6 +54,8 @@ public class DataCompt {
         this.compt = compt;
     }
 
+    @ManyToOne
+    @JoinColumn(name="STATE_ID_FK", nullable=false)
     public State getState() {
         return state;
     }
@@ -78,6 +64,8 @@ public class DataCompt {
         this.state = state;
     }
 
+    @Column(name="CHECKED", nullable=false, length = 1)
+    @Type(type="yes_no")
     public boolean getChecked() {
         return checked;
     }

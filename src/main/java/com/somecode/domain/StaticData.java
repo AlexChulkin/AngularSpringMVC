@@ -7,17 +7,13 @@ import javax.persistence.*;
 @Table(name="STATIC_DATA")
 public class StaticData {
 
+    private long id;
+
+    private String label;
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="STATIC_DATA_ID", length = 11, unique = true, nullable=false)
-    private long id;
-
-
-
-
-    @Column(name="LABEL", nullable=false, length = 20)
-    private String label;
-
     public long getId() {
         return id;
     }
@@ -25,6 +21,8 @@ public class StaticData {
     public void setId(long id) {
         this.id = id;
     }
+
+    @Column(name="LABEL", nullable=false, length = 20)
     public String getLabel() {
         return label;
     }

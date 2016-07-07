@@ -16,7 +16,6 @@ public class Compt  {
     @JoinColumn(name="packet_id_fk", nullable=false)
 	private Packet packet;
 
-
     public long getId() {
         return id;
     }

@@ -8,14 +8,14 @@ import javax.persistence.*;
  */
 @Entity
 public class State {
+
+    private long id;
+
+    private String label;
+
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="STATE_ID", length = 2, unique = true, nullable=false)
-    private long id;
-
-    @Column(name="LABEL", nullable=false, length = 20)
-    private String label;
-
     public long getId() {
         return id;
     }
@@ -23,6 +23,8 @@ public class State {
     public void setId(long id) {
         this.id = id;
     }
+
+    @Column(name="LABEL", nullable=false, length = 20)
     public String getLabel() {
         return label;
     }
