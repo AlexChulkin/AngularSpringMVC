@@ -125,7 +125,6 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     @Transactional
-//    @SuppressWarnings("unchecked")
     public void removeCompts(Long[] idsToRemove) {
         LOGGER.info("Ids To remove: "+Arrays.toString(idsToRemove));
         List<Long> idsToRemoveList = Arrays.asList(idsToRemove);
@@ -138,7 +137,7 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     @Transactional
-    @SuppressWarnings("unchecked")
+//    @SuppressWarnings("unchecked")
     public void addCompt(String label, long packetId, String[] defaultVals) {
         List<Integer> defaultIndeces = getDefaultIndeces(defaultVals);
         Compt newCompt = new Compt();
@@ -157,7 +156,7 @@ public class ComptDaoImpl implements  ComptDao {
                 dc.setStaticData(defaultStaticData.get(i));
                 dc.setChecked(defaultIndeces.get(j)==i);
                 em.merge(dc);
-                LOGGER.info("new dc: "+dc);
+                LOGGER.info("New dataCompt: "+dc);
             }
         }
 

@@ -42,11 +42,11 @@
                     <span  ng-bind="compt.label" />
                 </td>
                 <td  ng-repeat="state in states">
-                    <span  ng-bind="defaultValues[compt.id-1][state.id-1]" ng-hide="labels.defaultLabel===labels[state.id]"></span>
+                    <span  ng-bind="defaultValues[compt.id][state.id]" ng-hide="labels.defaultLabel===labels[state.id]"></span>
                     <span  ng-show="labels.defaultLabel===labels[state.id]">
                           <select class="standard"
-                                  ng-options="el for el in comboData | applyFilter:compt.id:state.id"
-                                  ng-model="defaultValues[compt.id-1][state.id-1]"
+                                  ng-options="el for el in comboData[compt.id][state.id]"
+                                  ng-model="defaultValues[compt.id][state.id]"
                                   ng-change="markAsUpdated(compt)">
                           </select>
                     </span>

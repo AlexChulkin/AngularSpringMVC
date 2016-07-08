@@ -4,47 +4,50 @@
 angular.module("packetControllers",[])
     .constant("packetId",1)
     .constant("labelLabel","Label")
-    .controller("packetCtrl", function ($scope,$http,packetId,labelLabel) {
+    .controller("packetCtrl", function ($scope,$http,$filter,packetId,labelLabel) {
 
     var simpleConfig = {withCredentials:true};
     var complConfig = {withCredentials:true, params:{packetId:packetId}};
     var dummyComboData = ["VERY_WEAK", "WEAK", "MODERATE", "ADEQUATE", "STRONG", "VERY_STRONG"];
 
             $http.get(contextPath + '/compts',complConfig).success(function (data) {
-                $scope.compts = data;
-                $scope.removeList = [];
-
+                $scope.compts = {};
+                angular.forEach(data, function(key) {
+                    $scope.compts[key.id] = key;
+                });
+                $scope.maximalIndex = data.length;
+                $scope.persistedRecentlyRemovedItemIds = [];
 
                 $http.get(contextPath + '/states',simpleConfig).success(function (data) {
                     $scope.states = data;
 
                     $scope.labels = [];
-
+                    $scope.labels.push(labelLabel);
                     for(var j=0; j<$scope.states.length; j++) {
                         $scope.labels.push($scope.states[j].label);
                     }
-                    $scope.labels.unshift(labelLabel);
                     $http.get(contextPath + '/packetState',complConfig).success(function (data) {
                         $scope.labels.defaultLabel = $scope.labels[data];
                         $http.get(contextPath + '/staticData',complConfig).success(function (data) {
-                            $scope.staticData = data;
-                            $scope.defaultValues = [];
-
-                            $scope.comboData = [];
-                            var defaultArray = [];
-                            for(var j=0; j<$scope.staticData.length; j++) {
-                                var comboEl = {};
-                                comboEl.comptId =$scope.staticData[j][1];
-                                comboEl.stateId = $scope.staticData[j][2];
-                                comboEl.label = $scope.staticData[j][3];
-                                $scope.comboData.push(comboEl);
-                                var checked = $scope.staticData[j][4];
+                            $scope.defaultValues = {};
+                            $scope.comboData = {};
+                            for(var j = 0; j < data.length; j++) {
+                                var comptId = data[j][1];
+                                var stateId = data[j][2];
+                                var label = data[j][3];
+                                if (!$scope.comboData[comptId]) {
+                                    $scope.comboData[comptId] = {};
+                                }
+                                if (!$scope.comboData[comptId][stateId]) {
+                                    $scope.comboData[comptId][stateId] = [];
+                                }
+                                $scope.comboData[comptId][stateId].push(label);
+                                var checked = data[j][4];
                                 if(checked) {
-                                    defaultArray.push(comboEl.label);
-                                    if(defaultArray.length===$scope.states.length) {
-                                        $scope.defaultValues.push(defaultArray);
-                                        var defaultArray = [];
+                                    if (!$scope.defaultValues[comptId]) {
+                                        $scope.defaultValues[comptId] = {};
                                     }
+                                    $scope.defaultValues[comptId][stateId] = label;
                                 }
                             }
                         }).error(function (error) {
@@ -62,62 +65,62 @@ angular.module("packetControllers",[])
 
 
             $scope.addNewCompt = function(newLabel, preCommiteeNewVal, inCommiteeNewVal, finalNewVal) {
+                var comptId = ++$scope.maximalIndex;
+                $scope.compts[comptId] = { id: comptId, label: newLabel, new:true};
+                var newVals = [preCommiteeNewVal,inCommiteeNewVal,finalNewVal];
 
-                $scope.compts.push({ id: $scope.compts.length+1, label: newLabel, new:true});
-                $scope.defaultValues.push([preCommiteeNewVal,inCommiteeNewVal,finalNewVal]);
-                var comboEl = {};
-                for(var j=0; j<dummyComboData.length; j++){
-                    for (var i=1; i<=$scope.states.length; i++) {
-                        comboEl = {};
-                        comboEl.comptId =$scope.compts.length;
-                        comboEl.stateId = i;
-                        comboEl.label = dummyComboData[j];
-                        $scope.comboData.push(comboEl);
-                    }
+                $scope.comboData[comptId] = {};
+                $scope.defaultValues[comptId] = {};
+                for (var i = 1; i <= $scope.states.length; i++) {
+                    var stateId = i;
+                    $scope.comboData[comptId][i] = dummyComboData;
+                    $scope.defaultValues[comptId][i] = newVals[i-1];
                 }
             }
             $scope.deleteCompt = function (compt) {
-                $scope.compts.splice($scope.compts.indexOf(compt), 1);
+                var id = compt.id;
+
+                delete $scope.compts[id];
+                delete $scope.defaultValues[id];
+                delete $scope.comboData[id];
+
                 if(compt.new!==true) {
-                    $scope.removeList.push(compt.id);
+                    $scope.persistedRecentlyRemovedItemIds.push(id);
                 }
             }
+
             $scope.markAsUpdated = function (compt) {
                 compt.updated = true;
             }
             $scope.save = function() {
                 $scope.collectIdsForRemoval();
-                for(var i=0;i<$scope.compts.length; i++) {
-                    if($scope.compts[i].new===true){
-                        $scope.addComptToBase($scope.compts[i].label, $scope.getDefaultValsForCompt($scope.compts[i]));
-                        $scope.compts[i].new = false;
-                    } else if ($scope.compts[i].updated===true) {
-                        $scope.updateComptInBase($scope.compts[i].id,  $scope.getDefaultValsForCompt($scope.compts[i]));
-                        $scope.compts[i].updated=false;
+                for(var i=0;i<=$scope.maximalIndex; i++) {
+                    if($scope.compts[i]) {
+                        if ($scope.compts[i].new === true) {
+                            $scope.addComptToBase($scope.compts[i].label, $scope.getDefaultValsForCompt($scope.compts[i]));
+                            $scope.compts[i].new = false;
+                        } else if ($scope.compts[i].updated === true) {
+                            $scope.updateComptInBase($scope.compts[i].id, $scope.getDefaultValsForCompt($scope.compts[i]));
+                            $scope.compts[i].updated = false;
+                        }
                     }
                 }
-
             }
             $scope.getDefaultValsForCompt = function(compt){
                 var defaultVals=[];
                 for(var i=0; i<$scope.states.length; i++){
-                    defaultVals.push($scope.defaultValues[compt.id-1][i]);
+                    defaultVals.push($scope.defaultValues[compt.id][i]);
                 }
                 return defaultVals;
             }
             $scope.collectIdsForRemoval = function() {
-                if(!$scope.removeList) {
+                if(!$scope.persistedRecentlyRemovedItemIds) {
                     return;
                 }
-                var ids = "";
-                for( var id in $scope.removeList) {
-                    ids=ids+id+","
-                }
-                ids=ids.substring(0,ids.length-1);
-                $scope.removeComptsFromBase($scope.removeList);
-                $scope.removeList = [];
-            }
 
+                $scope.removeComptsFromBase($scope.persistedRecentlyRemovedItemIds);
+                $scope.persistedRecentlyRemovedItemIds = [];
+            }
             $scope.removeComptsFromBase = function (ids) {
                 var removeConfig = {withCredentials:true, params:{idsToRemove:ids}};
                 $http.post(contextPath + '/removeCompts',removeConfig).success(function (data) {
@@ -141,13 +144,13 @@ angular.module("packetControllers",[])
 angular.module("packetFilters",[])
     .filter('applyFilter', function () {
         return function(comboData,comptId,stateId){
-            var returnArray = [];
-            for(var j=0; j<comboData.length; j++) {
-                if(comboData[j].comptId===comptId && comboData[j].stateId===stateId){
-                    returnArray.push(comboData[j].label);
-                }
-            }
-            return returnArray;
+            // var returnArray = [];
+            // for(var j = 0; j < comboData.length; j++) {
+            //     if(comboData[comptId === comptId && comboData[j].stateId === stateId){
+            //         returnArray.push(comboData[j].label);
+            //     }
+            // }
+            return comboData[comptId][stateId];
         }
     });
 
