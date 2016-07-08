@@ -13,8 +13,8 @@ angular.module("packetControllers",[])
                 $scope.defaultComboData = ["VERY_WEAK", "WEAK", "MODERATE", "ADEQUATE", "STRONG", "VERY_STRONG"];
                 $scope.newValues = [];
                 $scope.compts = {};
-                angular.forEach(data, function(key) {
-                    $scope.compts[key.id] = key;
+                data.forEach(function(el) {
+                    $scope.compts[el.id] = el;
                 });
                 $scope.maximalIndex = data.length;
                 $scope.persistedRecentlyRemovedItemIds = [];
@@ -24,18 +24,18 @@ angular.module("packetControllers",[])
 
                     $scope.labels = [];
                     $scope.labels.push(labelLabel);
-                    for(var j=0; j<$scope.states.length; j++) {
-                        $scope.labels.push($scope.states[j].label);
-                    }
+                    $scope.states.forEach(function (state) {
+                        $scope.labels.push(state.label);
+                    });
                     $http.get(contextPath + '/packetState',complConfig).success(function (data) {
                         $scope.labels.defaultLabel = $scope.labels[data];
                         $http.get(contextPath + '/staticData',complConfig).success(function (data) {
                             $scope.defaultValues = {};
                             $scope.comboData = {};
-                            for(var j = 0; j < data.length; j++) {
-                                var comptId = data[j][1];
-                                var stateId = data[j][2];
-                                var label = data[j][3];
+                            data.forEach(function (el, ind) {
+                                var comptId = el[1];
+                                var stateId = el[2];
+                                var label = el[3];
                                 if (!$scope.comboData[comptId]) {
                                     $scope.comboData[comptId] = {};
                                 }
@@ -43,14 +43,14 @@ angular.module("packetControllers",[])
                                     $scope.comboData[comptId][stateId] = [];
                                 }
                                 $scope.comboData[comptId][stateId].push(label);
-                                var checked = data[j][4];
+                                var checked = el[4];
                                 if(checked) {
                                     if (!$scope.defaultValues[comptId]) {
                                         $scope.defaultValues[comptId] = {};
                                     }
                                     $scope.defaultValues[comptId][stateId] = label;
                                 }
-                            }
+                            })
                         }).error(function (error) {
                             $scope.errorData = error;
                             return;
@@ -68,7 +68,6 @@ angular.module("packetControllers",[])
             $scope.addNewCompt = function(newLabel) {
                 var comptId = ++$scope.maximalIndex;
                 $scope.compts[comptId] = { id: comptId, label: newLabel, new:true};
-                // var newVals = [preCommiteeNewVal,inCommiteeNewVal,finalNewVal];
 
                 $scope.comboData[comptId] = {};
                 $scope.defaultValues[comptId] = {};
@@ -94,7 +93,7 @@ angular.module("packetControllers",[])
             }
             $scope.save = function() {
                 $scope.collectIdsForRemoval();
-                for(var i=0;i<=$scope.maximalIndex; i++) {
+                for(var i=1;i<=$scope.maximalIndex; i++) {
                     if($scope.compts[i]) {
                         if ($scope.compts[i].new === true) {
                             $scope.addComptToBase($scope.compts[i].label, $scope.getDefaultValsForCompt($scope.compts[i]));
@@ -108,16 +107,15 @@ angular.module("packetControllers",[])
             }
             $scope.getDefaultValsForCompt = function(compt){
                 var defaultVals=[];
-                for(var i=1; i<=$scope.states.length; i++){
-                    defaultVals.push($scope.defaultValues[compt.id][i]);
-                }
+                $scope.states.forEach(function (state,ind) {
+                    defaultVals.push($scope.defaultValues[compt.id][ind+1]);
+                });
                 return defaultVals;
             }
             $scope.collectIdsForRemoval = function() {
                 if(!$scope.persistedRecentlyRemovedItemIds) {
                     return;
                 }
-
                 $scope.removeComptsFromBase($scope.persistedRecentlyRemovedItemIds);
                 $scope.persistedRecentlyRemovedItemIds = [];
             }
@@ -144,17 +142,4 @@ angular.module("packetControllers",[])
             }
     });
 
-angular.module("packetFilters",[])
-    .filter('applyFilter', function () {
-        return function(comboData,comptId,stateId){
-            // var returnArray = [];
-            // for(var j = 0; j < comboData.length; j++) {
-            //     if(comboData[comptId === comptId && comboData[j].stateId === stateId){
-            //         returnArray.push(comboData[j].label);
-            //     }
-            // }
-            return comboData[comptId][stateId];
-        }
-    });
-
-angular.module("packetApp",["packetFilters", "packetControllers"]);
+angular.module("packetApp",["packetControllers"]);
