@@ -33,7 +33,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                      <th ng-show="labels" ng-repeat="label in labels"> <span ng-bind="label"/></th>
+                    <th ng-show="labels" ng-repeat="label in labels"> <span ng-bind="label"/></th>
                 </tr>
             </thead>
             <tbody>
@@ -82,30 +82,26 @@
             <label>Input label:</label>
             <input class="form-control" id="newLabel" ng-model="newLabel" />
         </div>
-        <div class="form-group">
-            <label>Input new PreCommitee val:</label>
-            <input class="form-control"  id="proCommiteeNewVal" ng-model="proCommiteeNewVal" />
+        <div ng-repeat="state in states track by $index">
+            <div class="form-group">
+                <label>Input new {{labels[$index+1]}} val:</label>
+                <select class="standard"
+                        ng-options="el for el in defaultComboData"
+                        ng-model="newValues[$index]">
+                </select>
+            </div>
         </div>
-        <div class="form-group">
-            <label>Input new InCommitee val:</label>
-            <input class="form-control" id="inCommiteeNewVal" ng-model="inCommiteeNewVal" />
-        </div>
-        <div class="form-group">
-            <label>Input new Final val:</label>
-            <input class="form-control" id="finalNewVal" ng-model="finalNewVal" />
-        </div>
-
     </div>
     <div>
         <span class="input-group-btn">
               <button class="btn btn-default" id="addBtn"
-                      ng-click="addNewCompt(newLabel,proCommiteeNewVal,inCommiteeNewVal,finalNewVal)">Add</button>
+                      ng-click="addNewCompt(newLabel)">Add</button>
         </span>
     </div>
     <div>
         <span class="input-group-btn">
               <button class="btn btn-default" id="saveBtn"
-                      ng-click="save()">Save</button>
+                      ng-click="save()">Update the database</button>
         </span>
     </div>
 

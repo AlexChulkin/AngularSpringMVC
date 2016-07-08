@@ -8,9 +8,10 @@ angular.module("packetControllers",[])
 
     var simpleConfig = {withCredentials:true};
     var complConfig = {withCredentials:true, params:{packetId:packetId}};
-    var dummyComboData = ["VERY_WEAK", "WEAK", "MODERATE", "ADEQUATE", "STRONG", "VERY_STRONG"];
 
             $http.get(contextPath + '/compts',complConfig).success(function (data) {
+                $scope.defaultComboData = ["VERY_WEAK", "WEAK", "MODERATE", "ADEQUATE", "STRONG", "VERY_STRONG"];
+                $scope.newValues = [];
                 $scope.compts = {};
                 angular.forEach(data, function(key) {
                     $scope.compts[key.id] = key;
@@ -64,17 +65,16 @@ angular.module("packetControllers",[])
             });
 
 
-            $scope.addNewCompt = function(newLabel, preCommiteeNewVal, inCommiteeNewVal, finalNewVal) {
+            $scope.addNewCompt = function(newLabel) {
                 var comptId = ++$scope.maximalIndex;
                 $scope.compts[comptId] = { id: comptId, label: newLabel, new:true};
-                var newVals = [preCommiteeNewVal,inCommiteeNewVal,finalNewVal];
+                // var newVals = [preCommiteeNewVal,inCommiteeNewVal,finalNewVal];
 
                 $scope.comboData[comptId] = {};
                 $scope.defaultValues[comptId] = {};
                 for (var i = 1; i <= $scope.states.length; i++) {
-                    var stateId = i;
-                    $scope.comboData[comptId][i] = dummyComboData;
-                    $scope.defaultValues[comptId][i] = newVals[i-1];
+                    $scope.comboData[comptId][i] = $scope.defaultComboData;
+                    $scope.defaultValues[comptId][i] = $scope.newValues[i-1];
                 }
             }
             $scope.deleteCompt = function (compt) {
@@ -108,7 +108,7 @@ angular.module("packetControllers",[])
             }
             $scope.getDefaultValsForCompt = function(compt){
                 var defaultVals=[];
-                for(var i=0; i<$scope.states.length; i++){
+                for(var i=1; i<=$scope.states.length; i++){
                     defaultVals.push($scope.defaultValues[compt.id][i]);
                 }
                 return defaultVals;
@@ -122,6 +122,9 @@ angular.module("packetControllers",[])
                 $scope.persistedRecentlyRemovedItemIds = [];
             }
             $scope.removeComptsFromBase = function (ids) {
+                if (!ids) {
+                    return;
+                }
                 var removeConfig = {withCredentials:true, params:{idsToRemove:ids}};
                 $http.post(contextPath + '/removeCompts',removeConfig).success(function (data) {
                 }).error(function (error) {

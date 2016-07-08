@@ -137,13 +137,13 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     @Transactional
-//    @SuppressWarnings("unchecked")
     public void addCompt(String label, long packetId, String[] defaultVals) {
+        LOGGER.info("entered the addCompt");
         List<Integer> defaultIndeces = getDefaultIndeces(defaultVals);
         Compt newCompt = new Compt();
         newCompt.setLabel(label);
         newCompt.setPacket(getPacket(packetId));
-        newCompt = em.merge(newCompt);
+        newCompt = comptRepository.save(newCompt);
         LOGGER.info("new Compt: "+newCompt);
 
         List<State> statesList = getStates();
@@ -155,7 +155,7 @@ public class ComptDaoImpl implements  ComptDao {
                 dc.setState(statesList.get(j));
                 dc.setStaticData(defaultStaticData.get(i));
                 dc.setChecked(defaultIndeces.get(j)==i);
-                em.merge(dc);
+                dataComptRepository.save(dc);
                 LOGGER.info("New dataCompt: "+dc);
             }
         }
