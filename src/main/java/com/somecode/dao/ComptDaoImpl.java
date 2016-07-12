@@ -106,7 +106,6 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     @Transactional
-    @SuppressWarnings("unchecked")
     public void updateCompt(long comptId, String[] defaultVals) {
         List<Integer>  defaultIndeces = getDefaultIndeces(defaultVals);
         List<DataCompt> dataComptsList = getDataCompts(comptId);
@@ -131,8 +130,8 @@ public class ComptDaoImpl implements  ComptDao {
         List<DataCompt> removedDataCompts = dataComptRepository.removeByCompt_IdIn(idsToRemoveList);
         List<Compt> removedCompts = comptRepository.removeByIdIn(idsToRemoveList);
 
-        LOGGER.info("Data Components removed: "+removedDataCompts);
-        LOGGER.info("Components removed: "+removedCompts);
+        LOGGER.info("Data Components removed: " + removedDataCompts);
+        LOGGER.info("Components removed: " + removedCompts);
     }
 
     @Override
@@ -144,7 +143,7 @@ public class ComptDaoImpl implements  ComptDao {
         newCompt.setLabel(label);
         newCompt.setPacket(getPacket(packetId));
         newCompt = comptRepository.save(newCompt);
-        LOGGER.info("new Compt: "+newCompt);
+        LOGGER.info("new Compt: " + newCompt);
 
         List<State> statesList = getStates();
 
