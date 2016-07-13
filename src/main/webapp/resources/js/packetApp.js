@@ -11,7 +11,7 @@ angular.module("packetControllers",[])
 
             $http.get(contextPath + '/compts',complConfig).success(function (data) {
                 $scope.defaultComboData = ["VERY_WEAK", "WEAK", "MODERATE", "ADEQUATE", "STRONG", "VERY_STRONG"];
-                $scope.newValues = [];
+                // $scope.noValidationErrors = (Object.keys(form.newLabel.$error).length > 0);
                 $scope.compts = {};
                 data.forEach(function(el) {
                     $scope.compts[el.id] = el;
@@ -24,15 +24,17 @@ angular.module("packetControllers",[])
 
                     $scope.labels = [];
                     $scope.labels.push(labelLabel);
+                    $scope.newValues = [];
                     $scope.states.forEach(function (state) {
                         $scope.labels.push(state.label);
+                        $scope.newValues.push($scope.defaultComboData[0]);
                     });
                     $http.get(contextPath + '/packetState',complConfig).success(function (data) {
                         $scope.labels.defaultLabel = $scope.labels[data];
                         $http.get(contextPath + '/staticData',complConfig).success(function (data) {
                             $scope.defaultValues = {};
                             $scope.comboData = {};
-                            data.forEach(function (el, ind) {
+                            data.forEach(function (el) {
                                 var comptId = el[1];
                                 var stateId = el[2];
                                 var label = el[3];
@@ -53,7 +55,6 @@ angular.module("packetControllers",[])
                             })
                         }).error(function (error) {
                             $scope.errorData = error;
-                            return;
                         });
                     })
                 }).error(function (error) {
@@ -61,7 +62,6 @@ angular.module("packetControllers",[])
                 });
             }).error(function (error) {
                 $scope.errorCompts = error;
-                return;
             });
 
 
@@ -75,7 +75,7 @@ angular.module("packetControllers",[])
                     $scope.comboData[comptId][i] = $scope.defaultComboData;
                     $scope.defaultValues[comptId][i] = $scope.newValues[i-1];
                 }
-            }
+            };
             $scope.deleteCompt = function (compt) {
                 var id = compt.id;
 
@@ -86,11 +86,11 @@ angular.module("packetControllers",[])
                 if(compt.new!==true) {
                     $scope.persistedRecentlyRemovedItemIds.push(id);
                 }
-            }
+            };
 
             $scope.markAsUpdated = function (compt) {
                 compt.updated = true;
-            }
+            };
             $scope.save = function() {
                 $scope.collectIdsForRemoval();
                 for(var i=1;i<=$scope.maximalIndex; i++) {
@@ -104,21 +104,21 @@ angular.module("packetControllers",[])
                         }
                     }
                 }
-            }
+            };
             $scope.getDefaultValsForCompt = function(compt){
                 var defaultVals=[];
                 $scope.states.forEach(function (state,ind) {
                     defaultVals.push($scope.defaultValues[compt.id][ind+1]);
                 });
                 return defaultVals;
-            }
+            };
             $scope.collectIdsForRemoval = function() {
                 if(!$scope.persistedRecentlyRemovedItemIds) {
                     return;
                 }
                 $scope.removeComptsFromBase($scope.persistedRecentlyRemovedItemIds);
                 $scope.persistedRecentlyRemovedItemIds = [];
-            }
+            };
             $scope.removeComptsFromBase = function (ids) {
                 if (!ids) {
                     return;
@@ -127,19 +127,19 @@ angular.module("packetControllers",[])
                 $http.post(contextPath + '/removeCompts',removeConfig).success(function (data) {
                 }).error(function (error) {
                 });
-            }
+            };
             $scope.updateComptInBase = function(comptId, defaultVals) {
                 var updateConfig = {withCredentials:true, params:{comptId:comptId,defaultVals:defaultVals}};
                 $http.post(contextPath + '/updateCompt',updateConfig).success(function (data) {
                 }).error(function (error) {
                 });
-            }
+            };
             $scope.addComptToBase = function(comptLabel, defaultVals) {
                 var addConfig = {withCredentials:true, params:{comptLabel:comptLabel, packetId:packetId,defaultVals:defaultVals}};
                 $http.post(contextPath + '/addCompt',addConfig).success(function (data) {
                 }).error(function (error) {
                 });
-            }
+            };
     });
 
 angular.module("packetApp",["packetControllers"]);

@@ -67,9 +67,14 @@
     </div>
 
     <div class="well" ng-hide="errorStates">
-        <input type="radio"  ng-model="labels.defaultLabel"  ng-value="labels[1]">  <span ng-bind="labels[1]"></span>
-        <input type="radio"  ng-model="labels.defaultLabel"  ng-value="labels[2]">  <span ng-bind="labels[2]"></span>
-        <input type="radio"  ng-model="labels.defaultLabel"  ng-value="labels[3]">  <span ng-bind="labels[3]"></span>
+            <div class="inline">
+                <div class="inline-radio" ng-repeat="state in states track by $index">
+                    <input type="radio"
+                           ng-model="labels.defaultLabel"
+                           ng-value="labels[$index+1]">
+                    <span ng-bind="labels[$index+1]"></span>
+                </div>
+            </div>
     </div>
 
     <div class="alert alert-danger" ng-show="errorStates">
@@ -77,32 +82,45 @@
         <a href="/WEB-INF/jsp/home.jsp" class="alert-link">Click here to try again</a>
     </div>
 
-    <div class="input-group">
-        <div class="form-group">
-            <label>Input label:</label>
-            <input class="form-control" id="newLabel" ng-model="newLabel" />
-        </div>
-        <div ng-repeat="state in states track by $index">
-            <div class="form-group">
-                <label>Input new {{labels[$index+1]}} val:</label>
-                <select class="standard"
-                        ng-options="el for el in defaultComboData"
-                        ng-model="newValues[$index]">
-                </select>
+        <form name="form">
+            <label>
+                Enter new label:
+                <input class="text"
+                       name="newLabelName"
+                       ng-model="newLabel"
+                       ng-maxlength="75"
+                       required />
+            </label>
+
+            <div style="color:maroon" role="alert">
+                <div ng-show="form.newLabelName.$error.required">You did not enter a field</div>
+                <div ng-show="form.newLabelName.$error.maxlength">Your field is too long</div>
             </div>
-        </div>
-    </div>
-    <div>
-        <span class="input-group-btn">
-              <button class="btn btn-default" id="addBtn"
-                      ng-click="addNewCompt(newLabel)">Add</button>
-        </span>
-    </div>
-    <div>
-        <span class="input-group-btn">
-              <button class="btn btn-default" id="saveBtn"
-                      ng-click="save()">Update the database</button>
-        </span>
+            <div ng-repeat="state in states track by $index">
+                <div class="form-group">
+                    <label>Input new {{labels[$index+1]}} val:</label>
+                    <select class="standard"
+                            ng-options="el for el in defaultComboData"
+                            ng-model="newValues[$index]">
+                    </select>
+                </div>
+            </div>
+            <div>
+                <span class="input-group-btn">
+                      <button class="btn btn-default" id="addBtn"
+                              ng-click="addNewCompt(newLabel)"
+                              ng-disabled="form.$invalid"
+                      >Add</button>
+                </span>
+            </div>
+            <div>
+                <span class="input-group-btn">
+                      <button class="btn btn-default" id="saveBtn"
+                              ng-click="save()">Update the database</button>
+                </span>
+            </div>
+        </form>
+
     </div>
 
 </div>

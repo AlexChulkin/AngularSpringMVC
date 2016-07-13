@@ -6,16 +6,14 @@ import javax.persistence.*;
 @Entity
 public class Compt  {
 
+
+    private long id;
+    private String label;
+	private Packet packet;
+
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name="COMPT_ID", length = 11, unique = true, nullable=false)
-    private long id;
-    private String label;
-
-    @ManyToOne
-    @JoinColumn(name="packet_id_fk", nullable=false)
-	private Packet packet;
-
     public long getId() {
         return id;
     }
@@ -24,6 +22,7 @@ public class Compt  {
         this.id = id;
     }
 
+    @Column(name="LABEL", length = 75)
     public String getLabel() {
         return label;
     }
@@ -32,6 +31,8 @@ public class Compt  {
         this.label = label;
     }
 
+    @ManyToOne
+    @JoinColumn(name="packet_id_fk", nullable=false)
     public Packet getPacket() {
         return packet;
     }
