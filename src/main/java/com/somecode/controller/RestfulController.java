@@ -1,6 +1,5 @@
 package com.somecode.controller;
 
-import com.somecode.domain.Compt;
 import com.somecode.domain.RequestObj;
 import com.somecode.domain.State;
 import com.somecode.service.ComptService;
@@ -30,7 +29,7 @@ public class RestfulController {
     @RequestMapping(value = "/compts", method = RequestMethod.GET)
     public
     @ResponseBody
-    List<Compt> view(@RequestParam long packetId) throws Exception {
+    List<Object[]> view(@RequestParam long packetId) throws Exception {
        LOGGER.info("viewCompts");
         return comptService.getComponents(packetId);
     }

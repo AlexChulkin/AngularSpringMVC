@@ -11,11 +11,13 @@ angular.module("packetControllers",[])
 
             $http.get(contextPath + '/compts',complConfig).success(function (data) {
                 $scope.defaultComboData = ["VERY_WEAK", "WEAK", "MODERATE", "ADEQUATE", "STRONG", "VERY_STRONG"];
-                // $scope.noValidationErrors = (Object.keys(form.newLabel.$error).length > 0);
                 $scope.compts = {};
                 data.forEach(function(el) {
-                    $scope.compts[el.id] = el;
+                    var id = el[0];
+                    var label = el[1];
+                    $scope.compts[id] = {id : id, label : label};
                 });
+                
                 $scope.maximalIndex = data.length;
                 $scope.persistedRecentlyRemovedItemIds = [];
 
@@ -67,7 +69,7 @@ angular.module("packetControllers",[])
 
             $scope.addNewCompt = function(newLabel) {
                 var comptId = ++$scope.maximalIndex;
-                $scope.compts[comptId] = { id: comptId, label: newLabel, new:true};
+                $scope.compts[comptId] = {id : comptId, label : newLabel, new : true};
 
                 $scope.comboData[comptId] = {};
                 $scope.defaultValues[comptId] = {};
@@ -96,19 +98,19 @@ angular.module("packetControllers",[])
                 for(var i=1;i<=$scope.maximalIndex; i++) {
                     if($scope.compts[i]) {
                         if ($scope.compts[i].new === true) {
-                            $scope.addComptToBase($scope.compts[i].label, $scope.getDefaultValsForCompt($scope.compts[i]));
+                            $scope.addComptToBase($scope.compts[i].label, $scope.getDefaultValsForCompt(i));
                             $scope.compts[i].new = false;
                         } else if ($scope.compts[i].updated === true) {
-                            $scope.updateComptInBase($scope.compts[i].id, $scope.getDefaultValsForCompt($scope.compts[i]));
+                            $scope.updateComptInBase(i, $scope.getDefaultValsForCompt(i));
                             $scope.compts[i].updated = false;
                         }
                     }
                 }
             };
-            $scope.getDefaultValsForCompt = function(compt){
+            $scope.getDefaultValsForCompt = function(comptId){
                 var defaultVals=[];
                 $scope.states.forEach(function (state,ind) {
-                    defaultVals.push($scope.defaultValues[compt.id][ind+1]);
+                    defaultVals.push($scope.defaultValues[comptId][ind+1]);
                 });
                 return defaultVals;
             };

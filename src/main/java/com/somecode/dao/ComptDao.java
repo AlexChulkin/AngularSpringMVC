@@ -1,6 +1,5 @@
 package com.somecode.dao;
 
-import com.somecode.domain.Compt;
 import com.somecode.domain.Packet;
 import com.somecode.domain.State;
 
@@ -13,7 +12,7 @@ public interface ComptDao {
     List<Object[]> getStaticData(long packetId);
     Packet getPacket(long packetId);
     List<State> getStates();
-    List<Compt> getComponents(long packetId);
+    List<Object[]> getComponents(long packetId);
     void updateCompt(long comptId, String[] defaultVals);
     void removeCompts(Long[] idsToRemove);
     void addCompt(String label, long packetId, String[] defaultVals);

@@ -39,7 +39,7 @@
             <tbody>
             <tr ng-repeat="compt in compts" ng-hide="errorStates || errorData">
                 <td>
-                    <span  ng-bind="compt.label" />
+                    <span ng-bind="compt.label" />
                 </td>
                 <td  ng-repeat="state in states">
                     <span  ng-bind="defaultValues[compt.id][state.id]" ng-hide="labels.defaultLabel===labels[state.id]"></span>

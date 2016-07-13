@@ -5,6 +5,7 @@ import com.somecode.domain.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Repository
+@Transactional
 public class ComptDaoImpl implements  ComptDao {
     private static final Logger LOGGER = Logger.getLogger(ComptDaoImpl.class);
 
@@ -83,8 +85,18 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     @Transactional(readOnly=true)
-    public List<Compt> getComponents(long packetId){
-        return comptRepository.findByPacket_id(packetId);
+    public List<Object[]> getComponents(long packetId){
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+        Root<Compt> c = cq.from(Compt.class);
+        cq.multiselect(c.get("id"), c.get("label"));
+        cq.orderBy(cb.asc(c.get("id")));
+
+        Predicate p = cb.equal(c.get("packet").get("id"),packetId);
+
+        cq.where(p);
+
+        return em.createQuery(cq).getResultList();
     }
 
     @Transactional(readOnly=true)
@@ -92,6 +104,7 @@ public class ComptDaoImpl implements  ComptDao {
         return dataComptRepository.findByCompt_id(comptId);
     }
 
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     private List<Integer> getDefaultIndeces(String[] defaultVals) {
         LOGGER.info("The default Values: " + Arrays.toString(defaultVals));
         List<String> defaultValsList = Arrays.asList(defaultVals);
@@ -105,7 +118,6 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    @Transactional
     public void updateCompt(long comptId, String[] defaultVals) {
         List<Integer>  defaultIndeces = getDefaultIndeces(defaultVals);
         List<DataCompt> dataComptsList = getDataCompts(comptId);
@@ -123,27 +135,23 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    @Transactional
     public void removeCompts(Long[] idsToRemove) {
         LOGGER.info("Ids To remove: "+Arrays.toString(idsToRemove));
         List<Long> idsToRemoveList = Arrays.asList(idsToRemove);
-        List<DataCompt> removedDataCompts = dataComptRepository.removeByCompt_IdIn(idsToRemoveList);
+//        List<DataCompt> removedDataCompts = dataComptRepository.removeByCompt_IdIn(idsToRemoveList);
         List<Compt> removedCompts = comptRepository.removeByIdIn(idsToRemoveList);
 
-        LOGGER.info("Data Components removed: " + removedDataCompts);
+//        LOGGER.info("Data Components removed: " + removedDataCompts);
         LOGGER.info("Components removed: " + removedCompts);
     }
 
     @Override
-    @Transactional
     public void addCompt(String label, long packetId, String[] defaultVals) {
         LOGGER.info("entered the addCompt");
         List<Integer> defaultIndeces = getDefaultIndeces(defaultVals);
         Compt newCompt = new Compt();
         newCompt.setLabel(label);
         newCompt.setPacket(getPacket(packetId));
-        newCompt = comptRepository.save(newCompt);
-        LOGGER.info("new Compt: " + newCompt);
 
         List<State> statesList = getStates();
 
@@ -154,10 +162,12 @@ public class ComptDaoImpl implements  ComptDao {
                 dc.setState(statesList.get(j));
                 dc.setStaticData(defaultStaticData.get(i));
                 dc.setChecked(defaultIndeces.get(j)==i);
-                dataComptRepository.save(dc);
-                LOGGER.info("New dataCompt: "+dc);
+//                dataComptRepository.save(dc);
+//                LOGGER.info("New dataCompt: "+dc);
             }
         }
 
+        newCompt = comptRepository.save(newCompt);
+        LOGGER.info("new Compt: " + newCompt);
     }
 }
