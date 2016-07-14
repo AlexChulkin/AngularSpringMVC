@@ -47,7 +47,7 @@
                           <select class="standard"
                                   ng-options="el for el in comboData[compt.id][state.id]"
                                   ng-model="defaultValues[compt.id][state.id]"
-                                  ng-change="markAsUpdated(compt)">
+                                  ng-change="markAsUpdated(compt.id)">
                           </select>
                     </span>
                 </td>

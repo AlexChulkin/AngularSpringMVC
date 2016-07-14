@@ -2,7 +2,6 @@ package com.somecode.domain;
 
 
 import javax.persistence.*;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,10 +27,22 @@ public class Compt  {
 
     @OneToMany(mappedBy = "compt", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     public Set<DataCompt> getDataCompts() {
-        return Collections.unmodifiableSet(dataCompts);
+        return dataCompts;
     }
 
-    public void setDataCompts(Set<DataCompt> dataCompts) {  }
+    public void setDataCompts(Set<DataCompt> dataCompts) {
+        this.dataCompts = dataCompts;
+    }
+
+    public void addDataCompt(DataCompt dataCompt){
+        dataCompt.setCompt(this);
+        dataCompts.add(dataCompt);
+    }
+
+    public void removeDataCompt(DataCompt dataCompt) {
+        dataCompt.setCompt(null);
+        dataCompts.remove(dataCompt);
+    }
 
     @Column(name="LABEL", length = 75)
     public String getLabel() {

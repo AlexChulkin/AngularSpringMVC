@@ -18,6 +18,7 @@ import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 @Transactional
@@ -40,9 +41,6 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Autowired
     private ComptRepository comptRepository;
-
-    @Autowired
-    private DataComptRepository dataComptRepository;
 
     @PostConstruct
     @Transactional(readOnly = true)
@@ -100,8 +98,9 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Transactional(readOnly=true)
-    private List<DataCompt> getDataCompts(long comptId){
-        return dataComptRepository.findByCompt_id(comptId);
+    private Set<DataCompt> getDataCompts(long comptId){
+        Compt compt = comptRepository.findOne(comptId);
+        return compt.getDataCompts();
     }
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
@@ -120,8 +119,8 @@ public class ComptDaoImpl implements  ComptDao {
     @Override
     public void updateCompt(long comptId, String[] defaultVals) {
         List<Integer>  defaultIndeces = getDefaultIndeces(defaultVals);
-        List<DataCompt> dataComptsList = getDataCompts(comptId);
-        for(DataCompt dc : dataComptsList){
+        Set<DataCompt> dataCompts = getDataCompts(comptId);
+        for(DataCompt dc : dataCompts){
             int defaultStateIndex = (int) dc.getState().getId()-1;
             int staticDataIndex = (int) dc.getStaticData().getId()-1;
             boolean checked = dc.getChecked();
@@ -129,25 +128,24 @@ public class ComptDaoImpl implements  ComptDao {
                     || checked && defaultIndeces.get(defaultStateIndex)!=staticDataIndex){
                 dc.setChecked(!checked);
                 em.merge(dc);
-                LOGGER.info("Updated data compt with id = "+dc.getId());
+                LOGGER.info("Updated data compt with id = " + dc.getId());
             }
         }
     }
 
     @Override
     public void removeCompts(Long[] idsToRemove) {
-        LOGGER.info("Ids To remove: "+Arrays.toString(idsToRemove));
+        String idsToRemoveString = Arrays.toString(idsToRemove);
+        LOGGER.info("The component ids To remove: " + idsToRemoveString);
         List<Long> idsToRemoveList = Arrays.asList(idsToRemove);
-//        List<DataCompt> removedDataCompts = dataComptRepository.removeByCompt_IdIn(idsToRemoveList);
-        List<Compt> removedCompts = comptRepository.removeByIdIn(idsToRemoveList);
 
-//        LOGGER.info("Data Components removed: " + removedDataCompts);
-        LOGGER.info("Components removed: " + removedCompts);
+        comptRepository.removeByIdIn(idsToRemoveList);
+
+        LOGGER.info("Ids of the removed components: " + idsToRemoveString);
     }
 
     @Override
     public void addCompt(String label, long packetId, String[] defaultVals) {
-        LOGGER.info("entered the addCompt");
         List<Integer> defaultIndeces = getDefaultIndeces(defaultVals);
         Compt newCompt = new Compt();
         newCompt.setLabel(label);
@@ -158,16 +156,14 @@ public class ComptDaoImpl implements  ComptDao {
         for(int j=0; j<statesList.size(); j++) {
             for(int i=0; i<defaultStaticData.size();i++) {
                 DataCompt dc = new DataCompt();
-                dc.setCompt(newCompt);
                 dc.setState(statesList.get(j));
                 dc.setStaticData(defaultStaticData.get(i));
                 dc.setChecked(defaultIndeces.get(j)==i);
-//                dataComptRepository.save(dc);
-//                LOGGER.info("New dataCompt: "+dc);
+                newCompt.addDataCompt(dc);
             }
         }
 
         newCompt = comptRepository.save(newCompt);
-        LOGGER.info("new Compt: " + newCompt);
+        LOGGER.info("New Compt added: " + newCompt);
     }
 }
