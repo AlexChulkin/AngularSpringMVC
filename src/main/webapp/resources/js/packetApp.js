@@ -36,7 +36,7 @@ angular.module("packetControllers",[])
                 });
                 $http.get(contextPath + '/packetState',complConfig).success(function (data) {
                     $scope.labels.defaultLabel = $scope.labels[data];
-                    $http.get(contextPath + '/staticData',complConfig).success(function (data) {
+                    $http.get(contextPath + '/comptsData',complConfig).success(function (data) {
                         $scope.defaultValues = {};
                         $scope.comboData = {};
                         data.forEach(function (el) {

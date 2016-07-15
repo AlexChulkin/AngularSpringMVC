@@ -24,13 +24,13 @@ public class ComptService {
     public void updateCompt(long comptId, String[] defaultVals) {
         comptDao.updateCompt(comptId,defaultVals);
     }
-    public List<Object[]> getComponents(long packetId) {
-        return comptDao.getComponents(packetId);
+    public List<Object[]> getCompts(long packetId) {
+        return comptDao.getCompts(packetId);
     }
 
     
-    public  List<Object[]> getStaticData(long packetId) {
-        return comptDao.getStaticData(packetId);
+    public  List<Object[]> getComptsData(long packetId) {
+        return comptDao.getComptsData(packetId);
     }
 
     

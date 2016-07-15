@@ -3,8 +3,14 @@ package com.somecode.domain;
 
 import javax.persistence.*;
 
+
 @Entity
 @Table(name="STATIC_DATA")
+@NamedQuery(name="StaticData.getComptsData",
+        query="SELECT DISTINCT dc.id, c.id, dc.state.id, sd.label, dc.checked " +
+                "FROM Packet p JOIN p.compts c JOIN c.dataCompts dc JOIN dc.staticData sd " +
+                "WHERE p.id = :packetId ORDER BY dc.id")
+
 public class StaticData {
 
     private long id;

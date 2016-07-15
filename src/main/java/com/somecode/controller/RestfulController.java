@@ -29,9 +29,9 @@ public class RestfulController {
     @RequestMapping(value = "/compts", method = RequestMethod.GET)
     public
     @ResponseBody
-    List<Object[]> view(@RequestParam long packetId) throws Exception {
+    List<Object[]> viewCompts(@RequestParam long packetId) throws Exception {
        LOGGER.info("viewCompts");
-        return comptService.getComponents(packetId);
+        return comptService.getCompts(packetId);
     }
 
     @RequestMapping(value = "/addCompt", method = RequestMethod.POST)
@@ -44,12 +44,14 @@ public class RestfulController {
                 requestObj.getParams().getDefaultVals());
 
     }
+
     @RequestMapping(value = "/removeCompts", method = RequestMethod.POST)
     public void removeCompts(@RequestBody RequestObj requestObj) throws Exception {
 
         LOGGER.info("removeCompts");
         comptService.removeCompts(requestObj.getParams().getIdsToRemove());
     }
+
     @RequestMapping(value = "/updateCompt", method = RequestMethod.POST)
     public
     @ResponseBody
@@ -59,12 +61,12 @@ public class RestfulController {
                 requestObj.getParams().getDefaultVals());
     }
 
-    @RequestMapping(value = "/staticData", method = RequestMethod.GET)
+    @RequestMapping(value = "/comptsData", method = RequestMethod.GET)
     public
     @ResponseBody
-    List<Object[]> viewStaticData(@RequestParam long packetId) throws Exception {
+    List<Object[]> viewComptsData(@RequestParam long packetId) throws Exception {
         LOGGER.info("viewStaticData");
-        return comptService.getStaticData(packetId);
+        return comptService.getComptsData(packetId);
     }
 
     @RequestMapping(value = "/states", method = RequestMethod.GET)

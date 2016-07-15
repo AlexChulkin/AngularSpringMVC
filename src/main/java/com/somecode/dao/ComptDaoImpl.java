@@ -11,10 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,28 +45,15 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    public List<Object[]> getStaticData(long packetId){
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-        Root<StaticData> sd = cq.from(StaticData.class);
-        Root<Compt> c = cq.from(Compt.class);
-        Root<DataCompt> dc = cq.from(DataCompt.class);
-        cq.multiselect(dc.get("id"),c.get("id"), dc.get("state").get("id"), sd.get("label"), dc.get("checked"));
-        cq.orderBy(cb.asc(dc.get("id")));
-
-        Predicate criteria = cb.conjunction();
-        Predicate p = cb.equal(c.get("packet").get("id"),packetId);
-        criteria = cb.and(criteria, p);
-        p = cb.equal(dc.get("compt").get("id"),c.get("id"));
-        criteria = cb.and(criteria, p);
-        p = cb.equal(dc.get("staticData").get("id"),sd.get("id"));
-        criteria = cb.and(criteria, p);
-
-        cq.where(criteria);
-        return em.createQuery(cq).getResultList();
+    @Transactional(readOnly=true)
+    public List<Object[]> getComptsData(long packetId) {
+        return em.createNamedQuery("StaticData.getComptsData")
+                .setParameter("packetId", packetId)
+                .getResultList();
     }
 
     @Override
+    @Transactional(readOnly=true)
     public Packet getPacket(long packetId) {
         return packetRepository.findOne(packetId);
     }
@@ -83,18 +66,10 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     @Transactional(readOnly=true)
-    public List<Object[]> getComponents(long packetId){
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-        Root<Compt> c = cq.from(Compt.class);
-        cq.multiselect(c.get("id"), c.get("label"));
-        cq.orderBy(cb.asc(c.get("id")));
-
-        Predicate p = cb.equal(c.get("packet").get("id"),packetId);
-
-        cq.where(p);
-
-        return em.createQuery(cq).getResultList();
+    public List<Object[]> getCompts(long packetId){
+        return em.createNamedQuery("Compt.getCompts")
+                .setParameter("packetId", packetId)
+                .getResultList();
     }
 
     @Transactional(readOnly=true)

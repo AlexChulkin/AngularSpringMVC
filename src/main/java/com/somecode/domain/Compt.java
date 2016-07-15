@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
+@NamedQuery(name = "Compt.getCompts", query = "SELECT DISTINCT c.id, c.label " +
+                   "FROM Packet p JOIN p.compts c WHERE p.id = :packetId ORDER BY c.id ASC  ")
 public class Compt  {
 
 
@@ -36,12 +38,12 @@ public class Compt  {
 
     public void addDataCompt(DataCompt dataCompt){
         dataCompt.setCompt(this);
-        dataCompts.add(dataCompt);
+        getDataCompts().add(dataCompt);
     }
 
     public void removeDataCompt(DataCompt dataCompt) {
         dataCompt.setCompt(null);
-        dataCompts.remove(dataCompt);
+        getDataCompts().remove(dataCompt);
     }
 
     @Column(name="LABEL", length = 75)

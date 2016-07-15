@@ -2,6 +2,8 @@ package com.somecode.domain;
 
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 public class Packet {
@@ -9,6 +11,8 @@ public class Packet {
     private long id;
 
     private State state;
+
+    private Set<Compt> compts = new HashSet<>();
 
     public Packet() {  }
 
@@ -36,6 +40,24 @@ public class Packet {
 
     public void setState(State state) {
         this.state = state;
+    }
+
+    @OneToMany(mappedBy = "packet")
+    public Set<Compt> getCompts() {
+        return compts;
+    }
+
+    public void setCompts(Set<Compt> compts){
+        this.compts = compts;
+    }
+
+    public void addCompt(Compt compt) {
+        compt.setPacket(this);
+        getCompts().add(compt);
+    }
+
+    public void removeCompt(Compt compt){
+        getCompts().remove(compt);
     }
 
     @Override
