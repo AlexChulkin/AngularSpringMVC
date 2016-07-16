@@ -100,6 +100,7 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateCompt(long comptId, String[] defaultVals) {
         List<Integer>  defaultIndeces = getDefaultIndeces(defaultVals);
         Set<DataCompt> dataCompts = getDataCompts(comptId);
@@ -117,6 +118,7 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updatePacketsState(long packetId, long newStateId) {
         Packet packet = packetRepository.findOne(packetId);
         long oldStateId = packet.getState().getId();
@@ -129,6 +131,7 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeCompts(List<Long> idsToRemove) {
         List<Compt> compts = comptRepository.findByIdIn(idsToRemove);
         compts.forEach(compt -> em.remove(compt));
