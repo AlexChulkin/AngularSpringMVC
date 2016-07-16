@@ -1,11 +1,13 @@
 package com.somecode.domain;
 
+import java.util.List;
+
 /**
  * Created by vharutyunyan on 20.06.2014.
  */
 public class Params {
 
-    private Long[] idsToRemove;
+    private List<Long> idsToRemove;
     private String comptLabel;
     private long comptId;
     private long packetId;
@@ -44,11 +46,11 @@ public class Params {
         this.defaultVals = defaultVals;
     }
 
-    public Long[] getIdsToRemove() {
+    public List<Long> getIdsToRemove() {
         return idsToRemove;
     }
 
-    public void setIdsToRemove(Long[] idsToRemove) {
+    public void setIdsToRemove(List<Long> idsToRemove) {
         this.idsToRemove = idsToRemove;
     }
 

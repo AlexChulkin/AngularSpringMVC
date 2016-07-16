@@ -41,7 +41,7 @@ angular.module("packetControllers",[])
                     data.forEach(function (sd) {
                         $scope.defaultComboData.push(sd.label);
                     });
-                    $scope.states.forEach(function (state) {
+                    $scope.states.forEach(function () {
                         $scope.newValues.push($scope.defaultComboData[0]);
                     });
                     $http.get(contextPath + '/packetsState',complConfig).success(function (data) {
@@ -125,9 +125,9 @@ angular.module("packetControllers",[])
             });
             $scope.updatedItemIds = [];
             $scope.updatePacketsStateInBase(packetId,$scope.labels.defaultIndex);
-            alert($scope.labels.defaultIndex);
             $scope.reloadRoute();
         };
+
         $scope.getDefaultValsForCompt = function(comptId){
             var defaultVals=[];
             $scope.states.forEach(function (state,ind) {
@@ -135,6 +135,7 @@ angular.module("packetControllers",[])
             });
             return defaultVals;
         };
+
         $scope.collectIdsForRemoval = function() {
             if(!$scope.persistedRecentlyRemovedItemIds) {
                 return;
@@ -142,6 +143,7 @@ angular.module("packetControllers",[])
             $scope.removeComptsFromBase($scope.persistedRecentlyRemovedItemIds);
             $scope.persistedRecentlyRemovedItemIds = [];
         };
+
         $scope.removeComptsFromBase = function (ids) {
             if (!ids) {
                 return;
@@ -151,12 +153,14 @@ angular.module("packetControllers",[])
             }).error(function (error) {
             });
         };
+
         $scope.updateComptInBase = function(comptId, defaultVals) {
             var updateConfig = {withCredentials:true, params:{comptId:comptId,defaultVals:defaultVals}};
             $http.post(contextPath + '/updateCompt',updateConfig).success(function (data) {
             }).error(function (error) {
             });
         };
+
         $scope.addComptToBase = function(comptLabel, defaultVals) {
             var addConfig = {withCredentials:true, params:{comptLabel:comptLabel, packetId:packetId,defaultVals:defaultVals}};
             $http.post(contextPath + '/addCompt',addConfig).success(function (data) {
@@ -175,5 +179,4 @@ angular.module("packetControllers",[])
             $window.location.reload();
         };
     });
-
 angular.module("packetApp",["packetControllers"]);

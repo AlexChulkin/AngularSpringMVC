@@ -49,7 +49,6 @@ public class RestfulController {
         comptService.addCompt(requestObj.getParams().getComptLabel(),
                 requestObj.getParams().getPacketId(),
                 requestObj.getParams().getDefaultVals());
-
     }
 
     @RequestMapping(value = "/removeCompts", method = RequestMethod.POST)
@@ -102,6 +101,5 @@ public class RestfulController {
         LOGGER.info("getPacketState");
         return comptService.getPacketState(packetId);
     }
-
 }
 

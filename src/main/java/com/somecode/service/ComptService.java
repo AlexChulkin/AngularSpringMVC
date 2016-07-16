@@ -13,17 +13,17 @@ import java.util.List;
 
 @Service("comptService")
 public class ComptService {
-
     @Autowired
     private ComptDao comptDao;
-
 
     public void addCompt(String label, long packetId, String[] defaultVals) {
         comptDao.addCompt(label, packetId, defaultVals);
     }
-    public void removeCompts(Long[] idsToRemove) {
+
+    public void removeCompts(List<Long> idsToRemove) {
         comptDao.removeCompts(idsToRemove);
     }
+
     public void updateCompt(long comptId, String[] defaultVals) {
         comptDao.updateCompt(comptId,defaultVals);
     }
@@ -48,11 +48,7 @@ public class ComptService {
         return comptDao.getStates();
     }
 
-    
     public  long getPacketState(long packetId) {
         return comptDao.getPacket(packetId).getState().getId();
     }
-
-
-
 }

@@ -129,15 +129,11 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    public void removeCompts(Long[] idsToRemove) {
-        String idsToRemoveString = Arrays.toString(idsToRemove);
-        LOGGER.info("The component ids to remove: " + idsToRemoveString);
-        List<Long> idsToRemoveList = Arrays.asList(idsToRemove);
-
-        List<Compt> compts = comptRepository.findByIdIn(idsToRemoveList);
+    public void removeCompts(List<Long> idsToRemove) {
+        List<Compt> compts = comptRepository.findByIdIn(idsToRemove);
         compts.forEach(compt -> em.remove(compt));
 
-        LOGGER.info("Ids of the removed components: " + idsToRemoveString);
+        LOGGER.info("Ids of the removed components: " + idsToRemove);
     }
 
     @Override
