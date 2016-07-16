@@ -1,6 +1,8 @@
 package com.somecode.service;
 
 import com.somecode.dao.ComptDao;
+import com.somecode.domain.ComptInfo;
+import com.somecode.domain.GetComptsData;
 import com.somecode.domain.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,12 +26,12 @@ public class ComptService {
     public void updateCompt(long comptId, String[] defaultVals) {
         comptDao.updateCompt(comptId,defaultVals);
     }
-    public List<Object[]> getCompts(long packetId) {
+    public List<ComptInfo> getCompts(long packetId) {
         return comptDao.getCompts(packetId);
     }
 
     
-    public  List<Object[]> getComptsData(long packetId) {
+    public  List<GetComptsData> getComptsData(long packetId) {
         return comptDao.getComptsData(packetId);
     }
 

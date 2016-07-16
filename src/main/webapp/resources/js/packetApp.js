@@ -14,8 +14,8 @@ angular.module("packetControllers",[])
             $scope.defaultComboData = ["VERY_WEAK", "WEAK", "MODERATE", "ADEQUATE", "STRONG", "VERY_STRONG"];
             $scope.compts = {};
             data.forEach(function(el) {
-                var id = el[0];
-                var label = el[1];
+                var id = el.id;
+                var label = el.label;
                 $scope.compts[id] = {id : id, label : label};
             });
 
@@ -40,9 +40,9 @@ angular.module("packetControllers",[])
                         $scope.defaultValues = {};
                         $scope.comboData = {};
                         data.forEach(function (el) {
-                            var comptId = el[1];
-                            var stateId = el[2];
-                            var label = el[3];
+                            var comptId = el.comptId;
+                            var stateId = el.stateId;
+                            var label = el.label;
                             if (!$scope.comboData[comptId]) {
                                 $scope.comboData[comptId] = {};
                             }
@@ -50,7 +50,7 @@ angular.module("packetControllers",[])
                                 $scope.comboData[comptId][stateId] = [];
                             }
                             $scope.comboData[comptId][stateId].push(label);
-                            var checked = el[4];
+                            var checked = el.checked;
                             if(checked) {
                                 if (!$scope.defaultValues[comptId]) {
                                     $scope.defaultValues[comptId] = {};
@@ -58,8 +58,6 @@ angular.module("packetControllers",[])
                                 $scope.defaultValues[comptId][stateId] = label;
                             }
                         });
-                        // console.log($scope.defaultValues[7]);
-                        // console.log($scope.comboData[7]);
                     }).error(function (error) {
                         $scope.errorData = error;
                     });

@@ -1,5 +1,7 @@
 package com.somecode.controller;
 
+import com.somecode.domain.ComptInfo;
+import com.somecode.domain.GetComptsData;
 import com.somecode.domain.RequestObj;
 import com.somecode.domain.State;
 import com.somecode.service.ComptService;
@@ -29,7 +31,7 @@ public class RestfulController {
     @RequestMapping(value = "/compts", method = RequestMethod.GET)
     public
     @ResponseBody
-    List<Object[]> viewCompts(@RequestParam long packetId) throws Exception {
+    List<ComptInfo> viewCompts(@RequestParam long packetId) throws Exception {
        LOGGER.info("viewCompts");
         return comptService.getCompts(packetId);
     }
@@ -64,24 +66,24 @@ public class RestfulController {
     @RequestMapping(value = "/comptsData", method = RequestMethod.GET)
     public
     @ResponseBody
-    List<Object[]> viewComptsData(@RequestParam long packetId) throws Exception {
-        LOGGER.info("viewStaticData");
+    List<GetComptsData> getComptsData(@RequestParam long packetId) throws Exception {
+        LOGGER.info("getComptsData");
         return comptService.getComptsData(packetId);
     }
 
     @RequestMapping(value = "/states", method = RequestMethod.GET)
     public
     @ResponseBody
-    List<State> viewStates() throws Exception {
-        LOGGER.info("viewStates");
+    List<State> getStates() throws Exception {
+        LOGGER.info("getState");
         return comptService.getStates();
     }
 
     @RequestMapping(value = "/packetState", method = RequestMethod.GET)
          public
          @ResponseBody
-         Long viewPacketState(@RequestParam long packetId) throws Exception {
-        LOGGER.info("viewPacketState");
+         Long getPacketState(@RequestParam long packetId) throws Exception {
+        LOGGER.info("getPacketState");
         return comptService.getPacketState(packetId);
     }
 

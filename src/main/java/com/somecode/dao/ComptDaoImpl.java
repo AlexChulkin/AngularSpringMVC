@@ -46,8 +46,11 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     @Transactional(readOnly=true)
-    public List<Object[]> getComptsData(long packetId) {
-        return em.createNamedQuery("StaticData.getComptsData")
+    @SuppressWarnings(value = "unchecked")
+    public List<GetComptsData> getComptsData(long packetId) {
+        System.out.println("GET COMPTS DATA: ");
+
+        return em.createNamedQuery("GetComptsData.getComptsData")
                 .setParameter("packetId", packetId)
                 .getResultList();
     }
@@ -66,8 +69,10 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     @Transactional(readOnly=true)
-    public List<Object[]> getCompts(long packetId){
-        return em.createNamedQuery("Compt.getCompts")
+    @SuppressWarnings(value = "unchecked")
+    public List<ComptInfo> getCompts(long packetId){
+        System.out.println("GET COMPTS: ");
+        return em.createNamedQuery("ComptInfo.getCompts")
                 .setParameter("packetId", packetId)
                 .getResultList();
     }
