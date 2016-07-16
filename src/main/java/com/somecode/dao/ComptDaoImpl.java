@@ -117,14 +117,24 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
+    public void updatePacketsState(long packetId, long newStateId) {
+        Packet packet = packetRepository.findOne(packetId);
+        long oldStateId = packet.getState().getId();
+        if (oldStateId != newStateId) {
+            State newState = stateRepository.findOne(newStateId);
+            packet.setState(newState);
+            em.merge(packet);
+            LOGGER.info("The packet's " + packet.getId() + "state updated.");
+        }
+    }
+
+    @Override
     public void removeCompts(Long[] idsToRemove) {
         String idsToRemoveString = Arrays.toString(idsToRemove);
-        LOGGER.info("The component ids To remove: " + idsToRemoveString);
+        LOGGER.info("The component ids to remove: " + idsToRemoveString);
         List<Long> idsToRemoveList = Arrays.asList(idsToRemove);
 
-
         List<Compt> compts = comptRepository.findByIdIn(idsToRemoveList);
-        System.out.println("compts to remove: "+compts);
         compts.forEach(compt -> em.remove(compt));
 
         LOGGER.info("Ids of the removed components: " + idsToRemoveString);

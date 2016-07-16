@@ -9,6 +9,7 @@ public class Params {
     private String comptLabel;
     private long comptId;
     private long packetId;
+    private long newStateId;
     private String[] defaultVals;
 
     public String getComptLabel() {
@@ -49,5 +50,13 @@ public class Params {
 
     public void setIdsToRemove(Long[] idsToRemove) {
         this.idsToRemove = idsToRemove;
+    }
+
+    public long getNewStateId() {
+        return newStateId;
+    }
+
+    public void setNewStateId(long newStateId) {
+        this.newStateId = newStateId;
     }
 }

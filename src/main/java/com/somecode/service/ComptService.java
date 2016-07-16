@@ -28,6 +28,10 @@ public class ComptService {
         comptDao.updateCompt(comptId,defaultVals);
     }
 
+    public void updatePacketsState(long packetId, long newStateId) {
+        comptDao.updatePacketsState(packetId,newStateId);
+    }
+
     public List<StaticData> getStaticData() {
         return comptDao.getStaticData();
     }

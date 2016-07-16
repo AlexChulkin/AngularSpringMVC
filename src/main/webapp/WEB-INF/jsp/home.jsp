@@ -8,7 +8,7 @@
     <link href="resources/css/bootstrap.css"  type="text/css" rel="stylesheet"/>
     <link href="resources/css/bootstrap-theme.css" type="text/css" rel="stylesheet" />
 
-    <script type="application/javascript" src="resources/js/angular.min.js"></script>
+    <script type="application/javascript" src="resources/js/angular_v1.5_min.js"></script>
     <script type="application/javascript" src="resources/js/packetApp.js"></script>
 
     <script type="text/javascript" charset="utf-8">
@@ -42,8 +42,8 @@
                     <span ng-bind="compt.label" />
                 </td>
                 <td  ng-repeat="state in states">
-                    <span  ng-bind="defaultValues[compt.id][state.id]" ng-hide="labels.defaultLabel===labels[state.id]"></span>
-                    <span  ng-show="labels.defaultLabel===labels[state.id]">
+                    <span  ng-bind="defaultValues[compt.id][state.id]" ng-hide="labels.defaultIndex===state.id"></span>
+                    <span  ng-show="labels.defaultIndex===state.id">
                           <select class="standard"
                                   ng-options="el for el in comboData[compt.id][state.id]"
                                   ng-model="defaultValues[compt.id][state.id]"
@@ -91,8 +91,8 @@
             <div class="inline">
                 <div class="inline-radio" ng-repeat="state in states track by $index">
                     <input type="radio"
-                           ng-model="labels.defaultLabel"
-                           ng-value="labels[$index+1]">
+                           ng-model="labels.defaultIndex"
+                           ng-value="$index+1">
                     <span ng-bind="labels[$index+1]"></span>
                 </div>
             </div>

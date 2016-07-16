@@ -9,7 +9,6 @@ angular.module("packetControllers",[])
         var simpleConfig = {withCredentials:true};
         var complConfig = {withCredentials:true, params:{packetId:packetId}};
         
-
         $http.get(contextPath + '/compts',complConfig).success(function (data) {
             $scope.compts = {};
             $scope.sortType = 'id';
@@ -45,8 +44,8 @@ angular.module("packetControllers",[])
                     $scope.states.forEach(function (state) {
                         $scope.newValues.push($scope.defaultComboData[0]);
                     });
-                    $http.get(contextPath + '/packetState',complConfig).success(function (data) {
-                        $scope.labels.defaultLabel = $scope.labels[data];
+                    $http.get(contextPath + '/packetsState',complConfig).success(function (data) {
+                        $scope.labels.defaultIndex = data;
                         $http.get(contextPath + '/comptsSupplInfo',complConfig).success(function (data) {
                             $scope.defaultValues = {};
                             $scope.comboData = {};
@@ -125,6 +124,8 @@ angular.module("packetControllers",[])
                 $scope.updateComptInBase(id, $scope.getDefaultValsForCompt(id));
             });
             $scope.updatedItemIds = [];
+            $scope.updatePacketsStateInBase(packetId,$scope.labels.defaultIndex);
+            alert($scope.labels.defaultIndex);
             $scope.reloadRoute();
         };
         $scope.getDefaultValsForCompt = function(comptId){
@@ -159,6 +160,13 @@ angular.module("packetControllers",[])
         $scope.addComptToBase = function(comptLabel, defaultVals) {
             var addConfig = {withCredentials:true, params:{comptLabel:comptLabel, packetId:packetId,defaultVals:defaultVals}};
             $http.post(contextPath + '/addCompt',addConfig).success(function (data) {
+            }).error(function (error) {
+            });
+        };
+
+        $scope.updatePacketsStateInBase = function(packetId, newStateId) {
+            var updateConfig = {withCredentials:true, params:{packetId:packetId,newStateId:newStateId}};
+            $http.post(contextPath + '/updatePacketsState',updateConfig).success(function (data) {
             }).error(function (error) {
             });
         };

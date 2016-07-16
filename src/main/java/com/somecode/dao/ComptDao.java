@@ -13,6 +13,7 @@ public interface ComptDao {
     List<State> getStates();
     List<ComptInfo> getCompts(long packetId);
     void updateCompt(long comptId, String[] defaultVals);
+    void updatePacketsState(long packetId, long newStateId);
     void removeCompts(Long[] idsToRemove);
     void addCompt(String label, long packetId, String[] defaultVals);
     List<StaticData> getStaticData();
