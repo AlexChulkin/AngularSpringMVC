@@ -1,9 +1,6 @@
 package com.somecode.controller;
 
-import com.somecode.domain.ComptInfo;
-import com.somecode.domain.ComptSupplInfo;
-import com.somecode.domain.RequestObj;
-import com.somecode.domain.State;
+import com.somecode.domain.*;
 import com.somecode.service.ComptService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +33,14 @@ public class RestfulController {
         return comptService.getCompts(packetId);
     }
 
+    @RequestMapping(value = "/staticData", method = RequestMethod.GET)
+    public
+    @ResponseBody
+    List<StaticData> getStaticData() throws Exception {
+        LOGGER.info("getStaticData");
+        return comptService.getStaticData();
+    }
+
     @RequestMapping(value = "/addCompt", method = RequestMethod.POST)
     public
     @ResponseBody
@@ -63,11 +68,11 @@ public class RestfulController {
                 requestObj.getParams().getDefaultVals());
     }
 
-    @RequestMapping(value = "/comptsData", method = RequestMethod.GET)
+    @RequestMapping(value = "/comptsSupplInfo", method = RequestMethod.GET)
     public
     @ResponseBody
     List<ComptSupplInfo> getComptsSupplInfo(@RequestParam long packetId) throws Exception {
-        LOGGER.info("getComptsData");
+        LOGGER.info("getComptsSupplInfo");
         return comptService.getComptsSupplInfo(packetId);
     }
 

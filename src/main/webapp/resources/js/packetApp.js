@@ -11,15 +11,20 @@ angular.module("packetControllers",[])
         
 
         $http.get(contextPath + '/compts',complConfig).success(function (data) {
-            $scope.defaultComboData = ["VERY_WEAK", "WEAK", "MODERATE", "ADEQUATE", "STRONG", "VERY_STRONG"];
             $scope.compts = {};
+            $scope.sortType = 'id';
+            $scope.maximalIndex = 0;
             data.forEach(function(el) {
                 var id = el.id;
                 var label = el.label;
                 $scope.compts[id] = {id : id, label : label};
+                if(id > $scope.maximalIndex) {
+                    $scope.maximalIndex = id;
+                }
             });
 
-            $scope.maximalIndex = data.length;
+            $scope.defaultComboData = [];
+
             $scope.persistedRecentlyRemovedItemIds = [];
             $scope.updatedItemIds = [];
             $scope.newItemIds = [];
@@ -32,37 +37,46 @@ angular.module("packetControllers",[])
                 $scope.newValues = [];
                 $scope.states.forEach(function (state) {
                     $scope.labels.push(state.label);
-                    $scope.newValues.push($scope.defaultComboData[0]);
                 });
-                $http.get(contextPath + '/packetState',complConfig).success(function (data) {
-                    $scope.labels.defaultLabel = $scope.labels[data];
-                    $http.get(contextPath + '/comptsData',complConfig).success(function (data) {
-                        $scope.defaultValues = {};
-                        $scope.comboData = {};
-                        data.forEach(function (el) {
-                            var comptId = el.comptId;
-                            var stateId = el.stateId;
-                            var label = el.label;
-                            if (!$scope.comboData[comptId]) {
-                                $scope.comboData[comptId] = {};
-                            }
-                            if (!$scope.comboData[comptId][stateId]) {
-                                $scope.comboData[comptId][stateId] = [];
-                            }
-                            $scope.comboData[comptId][stateId].push(label);
-                            var checked = el.checked;
-                            if(checked) {
-                                if (!$scope.defaultValues[comptId]) {
-                                    $scope.defaultValues[comptId] = {};
+                $http.get(contextPath + '/staticData',simpleConfig).success(function (data) {
+                    data.forEach(function (sd) {
+                        $scope.defaultComboData.push(sd.label);
+                    });
+                    $scope.states.forEach(function (state) {
+                        $scope.newValues.push($scope.defaultComboData[0]);
+                    });
+                    $http.get(contextPath + '/packetState',complConfig).success(function (data) {
+                        $scope.labels.defaultLabel = $scope.labels[data];
+                        $http.get(contextPath + '/comptsSupplInfo',complConfig).success(function (data) {
+                            $scope.defaultValues = {};
+                            $scope.comboData = {};
+                            data.forEach(function (el) {
+                                var comptId = el.comptId;
+                                var stateId = el.stateId;
+                                var label = el.label;
+                                if (!$scope.comboData[comptId]) {
+                                    $scope.comboData[comptId] = {};
                                 }
-                                $scope.defaultValues[comptId][stateId] = label;
-                            }
+                                if (!$scope.comboData[comptId][stateId]) {
+                                    $scope.comboData[comptId][stateId] = [];
+                                }
+                                $scope.comboData[comptId][stateId].push(label);
+                                var checked = el.checked;
+                                if(checked) {
+                                    if (!$scope.defaultValues[comptId]) {
+                                        $scope.defaultValues[comptId] = {};
+                                    }
+                                    $scope.defaultValues[comptId][stateId] = label;
+                                }
+                            });
+                        }).error(function (error) {
+                            $scope.errorComptsSupplData = error;
                         });
                     }).error(function (error) {
-                        $scope.errorData = error;
+                        $scope.errorPacketState = error;
                     });
                 }).error(function (error) {
-                    $scope.errorPacketState = error;
+                    $scope.errorStaticData = error;
                 });
             }).error(function (error) {
                 $scope.errorStates = error;

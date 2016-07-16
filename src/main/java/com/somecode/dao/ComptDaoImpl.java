@@ -65,6 +65,13 @@ public class ComptDaoImpl implements  ComptDao {
         return Lists.newArrayList(stateRepository.findAll());
     }
 
+
+    @Override
+    @Transactional(readOnly=true)
+    public List<StaticData> getStaticData() {
+        return Lists.newArrayList(staticDataRepository.findAll());
+    }
+
     @Override
     @Transactional(readOnly=true)
     public List<ComptInfo> getCompts(long packetId){
@@ -115,7 +122,10 @@ public class ComptDaoImpl implements  ComptDao {
         LOGGER.info("The component ids To remove: " + idsToRemoveString);
         List<Long> idsToRemoveList = Arrays.asList(idsToRemove);
 
-        comptRepository.removeByIdIn(idsToRemoveList);
+
+        List<Compt> compts = comptRepository.findByIdIn(idsToRemoveList);
+        System.out.println("compts to remove: "+compts);
+        compts.forEach(compt -> em.remove(compt));
 
         LOGGER.info("Ids of the removed components: " + idsToRemoveString);
     }

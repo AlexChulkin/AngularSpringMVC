@@ -8,7 +8,7 @@
     <link href="resources/css/bootstrap.css"  type="text/css" rel="stylesheet"/>
     <link href="resources/css/bootstrap-theme.css" type="text/css" rel="stylesheet" />
 
-    <script type="application/javascript" src="resources/js/angular.js"></script>
+    <script type="application/javascript" src="resources/js/angular.min.js"></script>
     <script type="application/javascript" src="resources/js/packetApp.js"></script>
 
     <script type="text/javascript" charset="utf-8">
@@ -28,7 +28,7 @@
 
 
 <div id="packetDiv" ng-controller="packetCtrl">
-    <div class="panel" ng-hide="errorCompts">
+    <div class="panel" ng-hide="errorCompts || errorComptsSupplData || errorStates || errorStaticData || errorPacketState">
     
         <table class="table table-striped">
             <thead>
@@ -37,7 +37,7 @@
                 </tr>
             </thead>
             <tbody>
-            <tr ng-repeat="compt in compts" ng-hide="errorStates || errorData">
+            <tr ng-repeat="compt in compts">
                 <td>
                     <span ng-bind="compt.label" />
                 </td>
@@ -62,9 +62,30 @@
     </div>
 
     <div class="alert alert-danger" ng-show="errorCompts">
-        Error (<span ng-bind = "errorCompts.status"></span>). The packet compts data was not loaded.
-        <a href="/WEB-INF/jsp/home.jsp" class="alert-link">Click here to try again</a>
+        Error (<span ng-bind = "errorCompts.status"></span>). The packet compts data were not loaded.
+        <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
     </div>
+
+    <div class="alert alert-danger" ng-show="errorComptsSupplData">
+        Error (<span ng-bind = "errorComptsSupplData.status"></span>). The packet supplement data for components rendering were not loaded.
+        <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
+    </div>
+
+    <div class="alert alert-danger" ng-show="errorStates">
+        Error (<span ng-bind = "errorStates.status"></span>). The packet state labels data were not loaded.
+        <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
+    </div>
+
+    <div class="alert alert-danger" ng-show="errorStaticData">
+        Error (<span ng-bind = "errorStaticData.status"></span>). The static data for the comboboxes were not loaded.
+        <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
+    </div>
+
+    <div class="alert alert-danger" ng-show="errorPacketState">
+        Error (<span ng-bind = "errorPacketState.status"></span>). The packet state was not loaded.
+        <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
+    </div>
+
 
     <div class="well" ng-hide="errorStates">
             <div class="inline">
@@ -77,51 +98,44 @@
             </div>
     </div>
 
-    <div class="alert alert-danger" ng-show="errorStates">
-        Error (<span ng-bind = "errorStates.status"></span>). The packet labels data was not loaded.
-        <a href="/WEB-INF/jsp/home.jsp" class="alert-link">Click here to try again</a>
-    </div>
+    <form name="form" ng-hide="errorStates || errorStaticData">
+        <label>
+            Enter new label:
+            <input class="text"
+                   name="newLabelName"
+                   ng-model="newLabel"
+                   ng-maxlength="75"
+                   required />
+        </label>
 
-        <form name="form">
-            <label>
-                Enter new label:
-                <input class="text"
-                       name="newLabelName"
-                       ng-model="newLabel"
-                       ng-maxlength="75"
-                       required />
-            </label>
-
-            <div style="color:maroon" role="alert">
-                <div ng-show="form.newLabelName.$error.required">You did not enter a field</div>
-                <div ng-show="form.newLabelName.$error.maxlength">Your field is too long</div>
+        <div style="color:maroon" role="alert">
+            <div ng-show="form.newLabelName.$error.required">You did not enter a field</div>
+            <div ng-show="form.newLabelName.$error.maxlength">Your field is too long</div>
+        </div>
+        <div ng-repeat="state in states track by $index" >
+            <div class="form-group">
+                <label>Input new {{labels[$index+1]}} val:</label>
+                <select class="standard"
+                        ng-options="el for el in defaultComboData"
+                        ng-model="newValues[$index]">
+                </select>
             </div>
-            <div ng-repeat="state in states track by $index">
-                <div class="form-group">
-                    <label>Input new {{labels[$index+1]}} val:</label>
-                    <select class="standard"
-                            ng-options="el for el in defaultComboData"
-                            ng-model="newValues[$index]">
-                    </select>
-                </div>
-            </div>
-            <div>
-                <span class="input-group-btn">
-                      <button class="btn btn-default" id="addBtn"
-                              ng-click="addNewCompt(newLabel)"
-                              ng-disabled="form.$invalid"
-                      >Add</button>
-                </span>
-            </div>
-            <div>
-                <span class="input-group-btn">
-                      <button class="btn btn-default" id="saveBtn"
-                              ng-click="save()">Update the database</button>
-                </span>
-            </div>
-        </form>
-
-    </div>
+        </div>
+        <div>
+            <span class="input-group-btn">
+                  <button class="btn btn-default" id="addBtn"
+                          ng-click="addNewCompt(newLabel)"
+                          ng-disabled="form.$invalid"
+                  >Add</button>
+            </span>
+        </div>
+        <div>
+            <span class="input-group-btn">
+                  <button class="btn btn-default" id="saveBtn"
+                          ng-click="save()">Update the database</button>
+            </span>
+        </div>
+    </form>
 
 </div>
 

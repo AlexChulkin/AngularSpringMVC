@@ -1,9 +1,6 @@
 package com.somecode.dao;
 
-import com.somecode.domain.ComptInfo;
-import com.somecode.domain.ComptSupplInfo;
-import com.somecode.domain.Packet;
-import com.somecode.domain.State;
+import com.somecode.domain.*;
 
 import java.util.List;
 
@@ -18,4 +15,5 @@ public interface ComptDao {
     void updateCompt(long comptId, String[] defaultVals);
     void removeCompts(Long[] idsToRemove);
     void addCompt(String label, long packetId, String[] defaultVals);
+    List<StaticData> getStaticData();
 }

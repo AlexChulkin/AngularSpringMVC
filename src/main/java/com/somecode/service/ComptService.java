@@ -4,6 +4,7 @@ import com.somecode.dao.ComptDao;
 import com.somecode.domain.ComptInfo;
 import com.somecode.domain.ComptSupplInfo;
 import com.somecode.domain.State;
+import com.somecode.domain.StaticData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,11 @@ public class ComptService {
     public void updateCompt(long comptId, String[] defaultVals) {
         comptDao.updateCompt(comptId,defaultVals);
     }
+
+    public List<StaticData> getStaticData() {
+        return comptDao.getStaticData();
+    }
+
     public List<ComptInfo> getCompts(long packetId) {
         return comptDao.getCompts(packetId);
     }
