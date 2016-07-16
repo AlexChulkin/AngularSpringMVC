@@ -2,7 +2,7 @@ package com.somecode.service;
 
 import com.somecode.dao.ComptDao;
 import com.somecode.domain.ComptInfo;
-import com.somecode.domain.GetComptsData;
+import com.somecode.domain.ComptSupplInfo;
 import com.somecode.domain.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,12 +30,10 @@ public class ComptService {
         return comptDao.getCompts(packetId);
     }
 
-    
-    public  List<GetComptsData> getComptsData(long packetId) {
-        return comptDao.getComptsData(packetId);
+    public  List<ComptSupplInfo> getComptsSupplInfo(long packetId) {
+        return comptDao.getComptsSupplInfo(packetId);
     }
 
-    
     public  List<State> getStates() {
         return comptDao.getStates();
     }

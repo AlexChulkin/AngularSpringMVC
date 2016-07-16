@@ -46,11 +46,9 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     @Transactional(readOnly=true)
-    @SuppressWarnings(value = "unchecked")
-    public List<GetComptsData> getComptsData(long packetId) {
-        System.out.println("GET COMPTS DATA: ");
+    public List<ComptSupplInfo> getComptsSupplInfo(long packetId) {
 
-        return em.createNamedQuery("GetComptsData.getComptsData")
+        return em.createNamedQuery("Compt.getSupplInfo",ComptSupplInfo.class)
                 .setParameter("packetId", packetId)
                 .getResultList();
     }
@@ -69,10 +67,8 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     @Transactional(readOnly=true)
-    @SuppressWarnings(value = "unchecked")
     public List<ComptInfo> getCompts(long packetId){
-        System.out.println("GET COMPTS: ");
-        return em.createNamedQuery("ComptInfo.getCompts")
+        return em.createNamedQuery("Compt.getInfo",ComptInfo.class)
                 .setParameter("packetId", packetId)
                 .getResultList();
     }
@@ -143,7 +139,7 @@ public class ComptDaoImpl implements  ComptDao {
             }
         }
 
-        newCompt = comptRepository.save(newCompt);
+        em.persist(newCompt);
         LOGGER.info("New Compt added: " + newCompt);
     }
 }
