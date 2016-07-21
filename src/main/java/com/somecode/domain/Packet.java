@@ -10,6 +10,8 @@ public class Packet {
 
     private long id;
 
+    private int version;
+
     private State state;
 
     private Set<Compt> compts = new HashSet<>();
@@ -30,6 +32,16 @@ public class Packet {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    @Version
+    @Column(name = "VERSION")
+    public int getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     @ManyToOne

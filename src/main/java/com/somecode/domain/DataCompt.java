@@ -14,6 +14,7 @@ public class DataCompt {
     private StaticData staticData;
     private State state;
     private boolean checked;
+    private int version;
 
     public DataCompt() {  }
 
@@ -32,6 +33,16 @@ public class DataCompt {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    @Version
+    @Column(name = "VERSION")
+    public int getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     @ManyToOne

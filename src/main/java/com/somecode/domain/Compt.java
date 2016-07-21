@@ -21,6 +21,7 @@ public class Compt  {
     private String label;
 	private Packet packet;
     private Set<DataCompt> dataCompts = new HashSet<>();
+    private int version;
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -31,6 +32,16 @@ public class Compt  {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    @Version
+    @Column(name = "VERSION")
+    public int getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     @OneToMany(mappedBy = "compt", cascade = {CascadeType.PERSIST}, orphanRemoval = true)

@@ -13,6 +13,8 @@ public class State {
 
     private String label;
 
+    private int version;
+
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name="STATE_ID", length = 2, unique = true, nullable=false)
@@ -22,6 +24,16 @@ public class State {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    @Version
+    @Column(name = "VERSION")
+    public int getVersion() {
+        return this.version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     @Column(name="LABEL", nullable=false, length = 20)
