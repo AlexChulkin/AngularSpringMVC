@@ -33,7 +33,7 @@ public class Compt  {
         this.id = id;
     }
 
-    @OneToMany(mappedBy = "compt", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "compt", cascade = {CascadeType.PERSIST}, orphanRemoval = true)
     public Set<DataCompt> getDataCompts() {
         return dataCompts;
     }
