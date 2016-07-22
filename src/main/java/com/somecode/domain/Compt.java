@@ -2,8 +2,9 @@ package com.somecode.domain;
 
 
 import javax.persistence.*;
-import java.util.HashSet;
+import java.util.Comparator;
 import java.util.Set;
+import java.util.TreeSet;
 
 @Entity
 @NamedQueries( {
@@ -20,7 +21,9 @@ public class Compt  {
     private long id;
     private String label;
 	private Packet packet;
-    private Set<DataCompt> dataCompts = new HashSet<>();
+    private Comparator<DataCompt> dataComptComparator =
+            (DataCompt dc1, DataCompt dc2) -> (dc1.getId() > dc2.getId()) ? -1 : 1;
+    private Set<DataCompt> dataCompts = new TreeSet<>(dataComptComparator);
     private int version;
 
     @Id
@@ -41,10 +44,10 @@ public class Compt  {
     }
 
     public void setVersion(int version) {
-//        this.version = version;
+        this.version = version;
     }
 
-    @OneToMany(mappedBy = "compt", cascade = {CascadeType.PERSIST}, orphanRemoval = true)
+    @OneToMany(mappedBy = "compt", cascade = {CascadeType.ALL}, orphanRemoval = true)
     public Set<DataCompt> getDataCompts() {
         return dataCompts;
     }

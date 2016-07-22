@@ -54,7 +54,8 @@ public class Packet {
         this.state = state;
     }
 
-    @OneToMany(mappedBy = "packet")
+    @OneToMany(mappedBy = "packet", cascade = {CascadeType.PERSIST, CascadeType.MERGE,
+            CascadeType.DETACH, CascadeType.REFRESH})
     public Set<Compt> getCompts() {
         return compts;
     }
@@ -69,6 +70,7 @@ public class Packet {
     }
 
     public void removeCompt(Compt compt){
+        compt.setPacket(null);
         getCompts().remove(compt);
     }
 

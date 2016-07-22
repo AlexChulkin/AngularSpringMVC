@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,7 +57,7 @@ public class ComptDaoImpl implements  ComptDao {
     @Override
     @Transactional(readOnly=true)
     public Packet getPacket(long packetId) {
-        return packetRepository.findOne(packetId);
+        return em.find(Packet.class, packetId);
     }
 
     @Override
@@ -69,7 +70,7 @@ public class ComptDaoImpl implements  ComptDao {
     @Override
     @Transactional(readOnly=true)
     public List<StaticData> getStaticData() {
-        return Lists.newArrayList(staticDataRepository.findAll());
+        return defaultStaticData;
     }
 
     @Override
@@ -80,11 +81,6 @@ public class ComptDaoImpl implements  ComptDao {
                 .getResultList();
     }
 
-    @Transactional(readOnly=true)
-    private Set<DataCompt> getDataCompts(long comptId){
-        Compt compt = comptRepository.findOne(comptId);
-        return compt.getDataCompts();
-    }
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     private List<Integer> getDefaultIndeces(String[] defaultVals) {
@@ -103,7 +99,10 @@ public class ComptDaoImpl implements  ComptDao {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateCompt(long comptId, String[] defaultVals) {
         List<Integer>  defaultIndeces = getDefaultIndeces(defaultVals);
-        Set<DataCompt> dataCompts = getDataCompts(comptId);
+        Compt compt = em.find(Compt.class, comptId);
+        em.lock(compt, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+        Set<DataCompt> dataCompts = compt.getDataCompts();
+
         for(DataCompt dc : dataCompts){
             int defaultStateIndex = (int) dc.getState().getId()-1;
             int staticDataIndex = (int) dc.getStaticData().getId()-1;
@@ -111,7 +110,6 @@ public class ComptDaoImpl implements  ComptDao {
             if (!checked && defaultIndeces.get(defaultStateIndex) == staticDataIndex
                     || checked && defaultIndeces.get(defaultStateIndex) != staticDataIndex) {
                 dc.setChecked(!checked);
-                em.merge(dc);
             }
         }
     }
@@ -119,10 +117,10 @@ public class ComptDaoImpl implements  ComptDao {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updatePacketsState(long packetId, long newStateId) {
-        Packet packet = packetRepository.findOne(packetId);
+        Packet packet = em.find(Packet.class, packetId);
         long oldStateId = packet.getState().getId();
         if (oldStateId != newStateId) {
-            State newState = stateRepository.findOne(newStateId);
+            State newState = em.find(State.class, newStateId);
             packet.setState(newState);
             em.merge(packet);
             LOGGER.info("The packet's " + packet.getId() + "state updated.");
@@ -133,8 +131,12 @@ public class ComptDaoImpl implements  ComptDao {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeCompts(List<Long> idsToRemove) {
         List<Compt> compts = comptRepository.findByIdIn(idsToRemove);
-        compts.forEach(compt -> em.remove(compt));
-
+        Packet packet = getPacket(compts.get(0).getPacket().getId());
+        em.lock(packet, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+        compts.forEach(compt -> {
+            packet.removeCompt(compt);
+            em.remove(compt);
+        });
         LOGGER.info("Ids of the removed components: " + idsToRemove);
     }
 
@@ -143,7 +145,8 @@ public class ComptDaoImpl implements  ComptDao {
         List<Integer> defaultIndeces = getDefaultIndeces(defaultVals);
         Compt newCompt = new Compt();
         newCompt.setLabel(label);
-        newCompt.setPacket(getPacket(packetId));
+        Packet packet = getPacket(packetId);
+        em.lock(packet, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
 
         List<State> statesList = getStates();
 
@@ -156,6 +159,7 @@ public class ComptDaoImpl implements  ComptDao {
                 newCompt.addDataCompt(dc);
             }
         }
+        packet.addCompt(newCompt);
 
         em.persist(newCompt);
         LOGGER.info("New Compt added: " + newCompt);
