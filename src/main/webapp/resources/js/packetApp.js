@@ -37,7 +37,7 @@ angular.module("packetControllers",[])
                 $scope.states.forEach(function (state) {
                     $scope.labels.push(state.label);
                 });
-                $http.get(contextPath + '/staticData',simpleConfig).success(function (data) {
+                $http.get(contextPath + '/defaultComboData', simpleConfig).success(function (data) {
                     data.forEach(function (sd) {
                         $scope.defaultComboData.push(sd.label);
                     });
@@ -75,7 +75,7 @@ angular.module("packetControllers",[])
                         $scope.errorPacketState = error;
                     });
                 }).error(function (error) {
-                    $scope.errorStaticData = error;
+                    $scope.errorComboData = error;
                 });
             }).error(function (error) {
                 $scope.errorStates = error;

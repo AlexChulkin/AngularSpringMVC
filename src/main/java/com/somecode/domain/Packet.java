@@ -76,6 +76,6 @@ public class Packet {
 
     @Override
     public String toString() {
-        return "Packet with id: " + id + "\nand state: " + state ;
+        return "\nPacket with id: " + id + "\nand state: " + state;
     }
 }

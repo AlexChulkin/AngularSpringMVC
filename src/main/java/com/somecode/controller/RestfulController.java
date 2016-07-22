@@ -33,12 +33,12 @@ public class RestfulController {
         return comptService.getCompts(packetId);
     }
 
-    @RequestMapping(value = "/staticData", method = RequestMethod.GET)
+    @RequestMapping(value = "/defaultComboData", method = RequestMethod.GET)
     public
     @ResponseBody
-    List<StaticData> getStaticData() throws Exception {
-        LOGGER.info("getStaticData");
-        return comptService.getStaticData();
+    List<ComboData> getDefaultComboData() throws Exception {
+        LOGGER.info("getDefaultComboData");
+        return comptService.getDefaultComboData();
     }
 
     @RequestMapping(value = "/addCompt", method = RequestMethod.POST)

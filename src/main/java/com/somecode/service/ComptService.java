@@ -1,10 +1,10 @@
 package com.somecode.service;
 
 import com.somecode.dao.ComptDao;
+import com.somecode.domain.ComboData;
 import com.somecode.domain.ComptInfo;
 import com.somecode.domain.ComptSupplInfo;
 import com.somecode.domain.State;
-import com.somecode.domain.StaticData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +32,8 @@ public class ComptService {
         comptDao.updatePacketsState(packetId,newStateId);
     }
 
-    public List<StaticData> getStaticData() {
-        return comptDao.getStaticData();
+    public List<ComboData> getDefaultComboData() {
+        return comptDao.getDefaultComboData();
     }
 
     public List<ComptInfo> getCompts(long packetId) {

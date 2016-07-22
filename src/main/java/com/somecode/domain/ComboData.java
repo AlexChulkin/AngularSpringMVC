@@ -5,10 +5,10 @@ import javax.persistence.*;
 
 
 @Entity
-@Table(name="STATIC_DATA")
+@Table(name = "COMBO_DATA")
 
 
-public class StaticData {
+public class ComboData {
 
     private long id;
 
@@ -18,7 +18,7 @@ public class StaticData {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="STATIC_DATA_ID", length = 11, unique = true, nullable=false)
+    @Column(name = "COMBO_DATA_ID", length = 11, unique = true, nullable = false)
     public long getId() {
         return id;
     }
@@ -48,6 +48,6 @@ public class StaticData {
 
     @Override
     public String toString() {
-        return "Static data with id: "+id+" and label: "+label;
+        return "\nCombo data with id: " + id + " and label: " + label;
     }
 }

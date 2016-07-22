@@ -28,7 +28,8 @@
 
 
 <div id="packetDiv" ng-controller="packetCtrl">
-    <div class="panel" ng-hide="errorCompts || errorComptsSupplData || errorStates || errorStaticData || errorPacketState">
+    <div class="panel"
+         ng-hide="errorCompts || errorComptsSupplData || errorStates || errorComboData || errorPacketState">
     
         <table class="table table-striped">
             <thead>
@@ -76,8 +77,8 @@
         <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
     </div>
 
-    <div class="alert alert-danger" ng-show="errorStaticData">
-        Error (<span ng-bind = "errorStaticData.status"></span>). The static data for the comboboxes were not loaded.
+    <div class="alert alert-danger" ng-show="errorComboData">
+        Error (<span ng-bind="errorComboData.status"></span>). The combo data for the comboboxes were not loaded.
         <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
     </div>
 
@@ -98,7 +99,7 @@
             </div>
     </div>
 
-    <form name="form" ng-hide="errorStates || errorStaticData">
+    <form name="form" ng-hide="errorStates || errorComboData">
         <label>
             Enter new label:
             <input class="text"

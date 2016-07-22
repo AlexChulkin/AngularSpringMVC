@@ -12,7 +12,7 @@ import java.util.TreeSet;
                 "FROM Packet p JOIN p.compts c WHERE p.id = :packetId ORDER BY c.id ASC"),
         @NamedQuery(name="Compt.getSupplInfo",
                 query="SELECT NEW com.somecode.domain.ComptSupplInfo(c.id, dc.state.id, sd.label, dc.checked) " +
-                        "FROM Packet p JOIN p.compts c JOIN c.dataCompts dc JOIN dc.staticData sd " +
+                        "FROM Packet p JOIN p.compts c JOIN c.dataCompts dc JOIN dc.comboData sd " +
                         "WHERE p.id = :packetId ORDER BY dc.id ASC")
 })
 public class Compt  {

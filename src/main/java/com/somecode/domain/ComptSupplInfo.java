@@ -21,17 +21,11 @@ public class ComptSupplInfo {
         return comptId;
     }
 
-    public void setComptId(long comptId) {
-        this.comptId = comptId;
-    }
 
     public long getStateId() {
         return stateId;
     }
 
-    public void setStateId(long stateId) {
-        this.stateId = stateId;
-    }
 
     public String getLabel() {
         return label;
@@ -45,8 +39,5 @@ public class ComptSupplInfo {
         return checked;
     }
 
-    public void setChecked(boolean checked) {
-        this.checked = checked;
-    }
 }
 

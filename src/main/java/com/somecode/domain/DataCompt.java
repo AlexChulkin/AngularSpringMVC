@@ -11,16 +11,16 @@ public class DataCompt {
 
     private long id;
     private Compt compt;
-    private StaticData staticData;
+    private ComboData comboData;
     private State state;
     private boolean checked;
     private int version;
 
     public DataCompt() {  }
 
-    public DataCompt(Compt compt, StaticData staticData, State state, long selected) {
+    public DataCompt(Compt compt, ComboData comboData, State state, long selected) {
         this.compt = compt;
-        this.staticData = staticData;
+        this.comboData = comboData;
         this.state = state;
     }
 
@@ -46,13 +46,13 @@ public class DataCompt {
     }
 
     @ManyToOne
-    @JoinColumn(name="STATIC_DATA_ID_FK", nullable=false)
-    public StaticData getStaticData() {
-        return staticData;
+    @JoinColumn(name = "COMBO_DATA_ID_FK", nullable = false)
+    public ComboData getComboData() {
+        return comboData;
     }
 
-    public void setStaticData(StaticData staticData) {
-        this.staticData = staticData;
+    public void setComboData(ComboData comboData) {
+        this.comboData = comboData;
     }
 
     @ManyToOne
@@ -87,8 +87,8 @@ public class DataCompt {
 
     @Override
     public String toString() {
-        return "Data Component with id: " + id + " and checked flag: " + checked + "\nand component: " + compt +
-                "\nand state: " + state + "\nand static data: " + staticData;
+        return "\nData Component with id: " + id + " and checked flag: " + checked + "\nand component: " + compt +
+                "\nand state: " + state + "\nand combo data: " + comboData;
     }
 
 }

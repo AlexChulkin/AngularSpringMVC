@@ -1,6 +1,6 @@
 package com.somecode.dao;
 
-import com.somecode.domain.StaticData;
+import com.somecode.domain.ComboData;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,6 +10,6 @@ import java.util.List;
  * Created by alexc_000 on 2016-06-24.
  */
 @Repository
-public interface StaticDataRepository extends CrudRepository<StaticData,Long> {
-    List<StaticData> findAllByOrderByIdAsc();
+public interface ComboDataRepository extends CrudRepository<ComboData, Long> {
+    List<ComboData> findAllByOrderByIdAsc();
 }

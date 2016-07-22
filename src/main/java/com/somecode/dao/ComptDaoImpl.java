@@ -22,16 +22,13 @@ import java.util.Set;
 public class ComptDaoImpl implements  ComptDao {
     private static final Logger LOGGER = Logger.getLogger(ComptDaoImpl.class);
 
-    private  List<StaticData> defaultStaticData ;
+    private List<ComboData> defaultComboData;
 
     @PersistenceContext
     private EntityManager em;
 
     @Autowired
-    private StaticDataRepository staticDataRepository;
-
-    @Autowired
-    private PacketRepository packetRepository;
+    private ComboDataRepository comboDataRepository;
 
     @Autowired
     private StateRepository stateRepository;
@@ -41,8 +38,8 @@ public class ComptDaoImpl implements  ComptDao {
 
     @PostConstruct
     @Transactional(readOnly = true)
-    private void setDefaultStaticData(){
-        defaultStaticData = Lists.newArrayList(staticDataRepository.findAllByOrderByIdAsc());
+    private void setdefaultComboData() {
+        defaultComboData = Lists.newArrayList(comboDataRepository.findAllByOrderByIdAsc());
     }
 
     @Override
@@ -69,8 +66,8 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     @Transactional(readOnly=true)
-    public List<StaticData> getStaticData() {
-        return defaultStaticData;
+    public List<ComboData> getDefaultComboData() {
+        return defaultComboData;
     }
 
     @Override
@@ -86,11 +83,11 @@ public class ComptDaoImpl implements  ComptDao {
     private List<Integer> getDefaultIndeces(String[] defaultVals) {
         LOGGER.info("The default Values: " + Arrays.toString(defaultVals));
         List<String> defaultValsList = Arrays.asList(defaultVals);
-        List<String> defaultStaticDataLabels = new ArrayList<>();
-        defaultStaticData.forEach(e -> defaultStaticDataLabels.add(e.getLabel()));
+        List<String> defaultComboDataLabels = new ArrayList<>();
+        defaultComboData.forEach(e -> defaultComboDataLabels.add(e.getLabel()));
 
         List<Integer> defaultIndeces = new ArrayList<>(defaultVals.length);
-        defaultValsList.forEach(e -> defaultIndeces.add(defaultStaticDataLabels.indexOf(e)));
+        defaultValsList.forEach(e -> defaultIndeces.add(defaultComboDataLabels.indexOf(e)));
         LOGGER.info("The default Indeces found: " + defaultIndeces);
         return defaultIndeces;
     }
@@ -105,10 +102,10 @@ public class ComptDaoImpl implements  ComptDao {
 
         for(DataCompt dc : dataCompts){
             int defaultStateIndex = (int) dc.getState().getId()-1;
-            int staticDataIndex = (int) dc.getStaticData().getId()-1;
+            int comboDataIndex = (int) dc.getComboData().getId() - 1;
             boolean checked = dc.getChecked();
-            if (!checked && defaultIndeces.get(defaultStateIndex) == staticDataIndex
-                    || checked && defaultIndeces.get(defaultStateIndex) != staticDataIndex) {
+            if (!checked && defaultIndeces.get(defaultStateIndex) == comboDataIndex
+                    || checked && defaultIndeces.get(defaultStateIndex) != comboDataIndex) {
                 dc.setChecked(!checked);
             }
         }
@@ -151,10 +148,10 @@ public class ComptDaoImpl implements  ComptDao {
         List<State> statesList = getStates();
 
         for(int j=0; j<statesList.size(); j++) {
-            for(int i=0; i<defaultStaticData.size();i++) {
+            for (int i = 0; i < defaultComboData.size(); i++) {
                 DataCompt dc = new DataCompt();
                 dc.setState(statesList.get(j));
-                dc.setStaticData(defaultStaticData.get(i));
+                dc.setComboData(defaultComboData.get(i));
                 dc.setChecked(defaultIndeces.get(j)==i);
                 newCompt.addDataCompt(dc);
             }
