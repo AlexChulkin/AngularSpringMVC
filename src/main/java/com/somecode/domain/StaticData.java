@@ -28,7 +28,7 @@ public class StaticData {
     }
 
     @Version
-    @Column(name = "VERSION")
+    @Column(name = "VERSION", nullable = false)
     public int getVersion() {
         return this.version;
     }

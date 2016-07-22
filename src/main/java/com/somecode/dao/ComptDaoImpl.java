@@ -108,11 +108,10 @@ public class ComptDaoImpl implements  ComptDao {
             int defaultStateIndex = (int) dc.getState().getId()-1;
             int staticDataIndex = (int) dc.getStaticData().getId()-1;
             boolean checked = dc.getChecked();
-            if(!checked && defaultIndeces.get(defaultStateIndex)==staticDataIndex
-                    || checked && defaultIndeces.get(defaultStateIndex)!=staticDataIndex){
+            if (!checked && defaultIndeces.get(defaultStateIndex) == staticDataIndex
+                    || checked && defaultIndeces.get(defaultStateIndex) != staticDataIndex) {
                 dc.setChecked(!checked);
                 em.merge(dc);
-                LOGGER.info("Updated data compt with id = " + dc.getId());
             }
         }
     }

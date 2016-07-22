@@ -8,7 +8,7 @@ import java.util.Set;
 @Entity
 @NamedQueries( {
         @NamedQuery(name = "Compt.getInfo", query = "SELECT NEW com.somecode.domain.ComptInfo(c.id, c.label) " +
-                "FROM Packet p JOIN p.compts c WHERE p.id = :packetId ORDER BY c.id ASC "),
+                "FROM Packet p JOIN p.compts c WHERE p.id = :packetId ORDER BY c.id ASC"),
         @NamedQuery(name="Compt.getSupplInfo",
                 query="SELECT NEW com.somecode.domain.ComptSupplInfo(c.id, dc.state.id, sd.label, dc.checked) " +
                         "FROM Packet p JOIN p.compts c JOIN c.dataCompts dc JOIN dc.staticData sd " +
@@ -35,13 +35,13 @@ public class Compt  {
     }
 
     @Version
-    @Column(name = "VERSION")
+    @Column(name = "VERSION", nullable = false)
     public int getVersion() {
         return this.version;
     }
 
     public void setVersion(int version) {
-        this.version = version;
+//        this.version = version;
     }
 
     @OneToMany(mappedBy = "compt", cascade = {CascadeType.PERSIST}, orphanRemoval = true)
