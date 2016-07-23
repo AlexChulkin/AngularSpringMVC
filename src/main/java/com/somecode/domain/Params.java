@@ -7,7 +7,7 @@ import java.util.List;
  */
 public class Params {
 
-    private List<String> idsToRemove;
+    private List<Long> idsToRemove;
     private long comptId;
     private long packetId;
     private long newStateId;
@@ -47,11 +47,11 @@ public class Params {
     }
 
 
-    public List<String> getIdsToRemove() {
+    public List<Long> getIdsToRemove() {
         return idsToRemove;
     }
 
-    public void setIdsToRemove(List<String> idsToRemove) {
+    public void setIdsToRemove(List<Long> idsToRemove) {
         this.idsToRemove = idsToRemove;
     }
 

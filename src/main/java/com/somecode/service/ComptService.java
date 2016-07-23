@@ -17,7 +17,7 @@ public class ComptService {
         comptDao.addCompts(packetId, comptsParamsList);
     }
 
-    public void removeCompts(List<String> idsToRemove) {
+    public void removeCompts(List<Long> idsToRemove) {
         comptDao.removeCompts(idsToRemove);
     }
 

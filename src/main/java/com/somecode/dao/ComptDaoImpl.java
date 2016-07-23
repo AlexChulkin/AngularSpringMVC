@@ -15,7 +15,6 @@ import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Repository
 @Transactional(readOnly = true)
@@ -43,7 +42,6 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     public List<ComptSupplInfo> getComptsSupplInfo(long packetId) {
-
         return em.createNamedQuery("Compt.getSupplInfo",ComptSupplInfo.class)
                 .setParameter("packetId", packetId)
                 .getResultList();
@@ -121,10 +119,8 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void removeCompts(List<String> idsToRemove) {
-        List<Long> longIdsToRemove = idsToRemove.stream()
-                .mapToLong(Long::parseLong).boxed().collect(Collectors.toList());
-        List<Compt> compts = comptRepository.findByIdIn(longIdsToRemove);
+    public void removeCompts(List<Long> idsToRemove) {
+        List<Compt> compts = comptRepository.findByIdIn(idsToRemove);
 
         comptRepository.delete(compts);
         LOGGER.info("Ids of the removed components: " + idsToRemove);
