@@ -18,20 +18,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Repository
-@Transactional
+@Transactional(readOnly = true)
 public class ComptDaoImpl implements  ComptDao {
     private static final Logger LOGGER = Logger.getLogger(ComptDaoImpl.class);
 
     private List<ComboData> defaultComboData;
-
-//    private CriteriaBuilder cb;
-//    CriteriaDelete<DataCompt> dataComptCriteriaDelete;
-//    Path<DataCompt> dataComptPath;
-//    CriteriaDelete<Compt> comptCriteriaDelete;
-//    Path<Compt> comptPath;
-//
-//    private static String COMPT = "compt";
-//    private static String ID = "id";
 
     @PersistenceContext
     private EntityManager em;
@@ -46,18 +37,11 @@ public class ComptDaoImpl implements  ComptDao {
     private ComptRepository comptRepository;
 
     @PostConstruct
-    @Transactional(readOnly = true)
     private void setdefaultData() {
         defaultComboData = Lists.newArrayList(comboDataRepository.findAllByOrderByIdAsc());
-//        cb = em.getCriteriaBuilder();
-//        dataComptCriteriaDelete = cb.createCriteriaDelete(DataCompt.class);
-//        dataComptPath = dataComptCriteriaDelete.from(DataCompt.class).get(COMPT).get(ID);
-//        comptCriteriaDelete = cb.createCriteriaDelete(Compt.class);
-//        comptPath = comptCriteriaDelete.from(Compt.class).get(ID);
     }
 
     @Override
-    @Transactional(readOnly=true)
     public List<ComptSupplInfo> getComptsSupplInfo(long packetId) {
 
         return em.createNamedQuery("Compt.getSupplInfo",ComptSupplInfo.class)
@@ -66,26 +50,22 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    @Transactional(readOnly=true)
     public Packet getPacket(long packetId) {
         return em.find(Packet.class, packetId);
     }
 
     @Override
-    @Transactional(readOnly=true)
     public List<State> getStates(){
         return Lists.newArrayList(stateRepository.findAll());
     }
 
 
     @Override
-    @Transactional(readOnly=true)
     public List<ComboData> getDefaultComboData() {
         return defaultComboData;
     }
 
     @Override
-    @Transactional(readOnly=true)
     public List<ComptInfo> getCompts(long packetId){
         return em.createNamedQuery("Compt.getInfo",ComptInfo.class)
                 .setParameter("packetId", packetId)
@@ -135,7 +115,6 @@ public class ComptDaoImpl implements  ComptDao {
         if (oldStateId != newStateId) {
             State newState = em.find(State.class, newStateId);
             packet.setState(newState);
-//            em.merge(packet);
             LOGGER.info("The packet's " + packet.getId() + "state updated.");
         }
     }
@@ -145,51 +124,20 @@ public class ComptDaoImpl implements  ComptDao {
     public void removeCompts(List<String> idsToRemove) {
         List<Long> longIdsToRemove = idsToRemove.stream()
                 .mapToLong(Long::parseLong).boxed().collect(Collectors.toList());
-
-        Compt firstCompt = em.find(Compt.class, longIdsToRemove.get(0));
-//        System.out.println("firtcompt "+firstCompt);
-        Packet packet = firstCompt.getPacket();
-//        System.out.println("packet "+packet);
-//        em.lock(packet, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
         List<Compt> compts = comptRepository.findByIdIn(longIdsToRemove);
-//        List<DataCompt> dataCompts = dataComptRepository.findByCompt_IdIn(longIdsToRemove);
-//        System.out.println("comptscompts "+compts);
-//        compts.forEach(c -> em.lock(c, LockModeType.OPTIMISTIC_FORCE_INCREMENT));
-//        dataComptRepository.delete(dataCompts);
 
         comptRepository.delete(compts);
-//        dataComptCriteriaDelete.where(dataComptPath.in(idsToRemove));
-//        Query dataComptsDeleteQuery = em.createQuery(dataComptCriteriaDelete);
-//        dataComptsDeleteQuery.setHint("javax.persistence.query.timeout", 5000);
-//        try {
-//            dataComptsDeleteQuery.executeUpdate();
-//        } catch (QueryTimeoutException|PersistenceException e) {
-//            LOGGER.info("Data Compts delete query lasted too long, restarting...");
-//            dataComptsDeleteQuery.executeUpdate();
-//        }
-//
-//
-//        comptCriteriaDelete.where(comptPath.in(idsToRemove));
-//        Query comptsDeleteQuery = em.createQuery(comptCriteriaDelete);
-//        comptsDeleteQuery.setHint("javax.persistence.query.timeout", 5000);
-//        try {
-//            comptsDeleteQuery.executeUpdate();
-//        } catch (QueryTimeoutException|PersistenceException e) {
-//            LOGGER.info("Compts delete query lasted too long, restarting...");
-//            comptsDeleteQuery.executeUpdate();
-//        }
-
         LOGGER.info("Ids of the removed components: " + idsToRemove);
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void addCompts(long packetId, List<ComptsParams> comptsParamsList) {
         Packet packet = getPacket(packetId);
         List<State> statesList = getStates();
         List<Compt> comptList = new ArrayList<>(comptsParamsList.size());
         List<Long> comptIdsList = new ArrayList<>(comptsParamsList.size());
 
-//        em.lock(packet, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
         for (ComptsParams ComptsParams : comptsParamsList) {
             List<Integer> defaultIndeces = getDefaultIndeces(ComptsParams.getDefaultVals());
             Compt newCompt = new Compt();
