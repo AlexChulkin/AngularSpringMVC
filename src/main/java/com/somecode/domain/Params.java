@@ -7,19 +7,27 @@ import java.util.List;
  */
 public class Params {
 
-    private List<Long> idsToRemove;
-    private String comptLabel;
+    private List<String> idsToRemove;
     private long comptId;
     private long packetId;
     private long newStateId;
-    private String[] defaultVals;
+    private List<ComptsParams> comptsParamsList;
+    private List<String> defaultVals;
 
-    public String getComptLabel() {
-        return comptLabel;
+    public List<String> getDefaultVals() {
+        return defaultVals;
     }
 
-    public void setComptLabel(String comptLabel) {
-        this.comptLabel = comptLabel;
+    public void setDefaultVals(List<String> defaultVals) {
+        this.defaultVals = defaultVals;
+    }
+
+    public List<ComptsParams> getComptsParamsList() {
+        return comptsParamsList;
+    }
+
+    public void setComptsParamsList(List<ComptsParams> comptsParamsList) {
+        this.comptsParamsList = comptsParamsList;
     }
 
     public long getComptId() {
@@ -38,19 +46,12 @@ public class Params {
         this.packetId = packetId;
     }
 
-    public String[] getDefaultVals() {
-        return defaultVals;
-    }
 
-    public void setDefaultVals(String[] defaultVals) {
-        this.defaultVals = defaultVals;
-    }
-
-    public List<Long> getIdsToRemove() {
+    public List<String> getIdsToRemove() {
         return idsToRemove;
     }
 
-    public void setIdsToRemove(List<Long> idsToRemove) {
+    public void setIdsToRemove(List<String> idsToRemove) {
         this.idsToRemove = idsToRemove;
     }
 

@@ -1,10 +1,7 @@
 package com.somecode.service;
 
 import com.somecode.dao.ComptDao;
-import com.somecode.domain.ComboData;
-import com.somecode.domain.ComptInfo;
-import com.somecode.domain.ComptSupplInfo;
-import com.somecode.domain.State;
+import com.somecode.domain.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,16 +13,16 @@ public class ComptService {
     @Autowired
     private ComptDao comptDao;
 
-    public void addCompt(String label, long packetId, String[] defaultVals) {
-        comptDao.addCompt(label, packetId, defaultVals);
+    public void addCompts(long packetId, List<ComptsParams> comptsParamsList) {
+        comptDao.addCompts(packetId, comptsParamsList);
     }
 
-    public void removeCompts(List<Long> idsToRemove) {
+    public void removeCompts(List<String> idsToRemove) {
         comptDao.removeCompts(idsToRemove);
     }
 
-    public void updateCompt(long comptId, String[] defaultVals) {
-        comptDao.updateCompt(comptId,defaultVals);
+    public void updateCompts(List<ComptsParams> comptsParamsList) {
+        comptDao.updateCompts(comptsParamsList);
     }
 
     public void updatePacketsState(long packetId, long newStateId) {

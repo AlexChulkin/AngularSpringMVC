@@ -8,7 +8,7 @@ angular.module("packetControllers",[])
 
         var simpleConfig = {withCredentials:true};
         var complConfig = {withCredentials:true, params:{packetId:packetId}};
-        
+
         $http.get(contextPath + '/compts',complConfig).success(function (data) {
             $scope.compts = {};
             $scope.sortType = 'id';
@@ -114,18 +114,21 @@ angular.module("packetControllers",[])
         };
         
         $scope.save = function() {
-            $scope.collectIdsForRemoval();
+            var newCompts = [];
             $scope.newItemIds.forEach(function (id) {
-                $scope.addComptToBase($scope.compts[id].label, $scope.getDefaultValsForCompt(id));
+                newCompts.push({label: $scope.compts[id].label, defaultVals: $scope.getDefaultValsForCompt(id)});
                 $scope.compts[id].new = false;
             });
+            $scope.addComptsToBase(newCompts);
             $scope.newItemIds = [];
+            $scope.collectIdsForRemoval();
+            var updatedCompts = [];
             $scope.updatedItemIds.forEach(function (id) {
-                $scope.updateComptInBase(id, $scope.getDefaultValsForCompt(id));
+                updatedCompts.push({id: id, defaultVals: $scope.getDefaultValsForCompt(id)});
             });
+            $scope.updateComptsInBase(updatedCompts);
             $scope.updatedItemIds = [];
             $scope.updatePacketsStateInBase(packetId,$scope.labels.defaultIndex);
-            $scope.reloadRoute();
         };
 
         $scope.getDefaultValsForCompt = function(comptId){
@@ -154,16 +157,16 @@ angular.module("packetControllers",[])
             });
         };
 
-        $scope.updateComptInBase = function(comptId, defaultVals) {
-            var updateConfig = {withCredentials:true, params:{comptId:comptId,defaultVals:defaultVals}};
-            $http.post(contextPath + '/updateCompt',updateConfig).success(function (data) {
+        $scope.updateComptsInBase = function (updatedCompts) {
+            var updateConfig = {withCredentials: true, params: {comptsParamsList: updatedCompts}};
+            $http.post(contextPath + '/updateCompts', updateConfig).success(function (data) {
             }).error(function (error) {
             });
         };
 
-        $scope.addComptToBase = function(comptLabel, defaultVals) {
-            var addConfig = {withCredentials:true, params:{comptLabel:comptLabel, packetId:packetId,defaultVals:defaultVals}};
-            $http.post(contextPath + '/addCompt',addConfig).success(function (data) {
+        $scope.addComptsToBase = function (newCompts) {
+            var addConfig = {withCredentials: true, params: {packetId: packetId, comptsParamsList: newCompts}};
+            $http.post(contextPath + '/addCompts', addConfig).success(function (data) {
             }).error(function (error) {
             });
         };

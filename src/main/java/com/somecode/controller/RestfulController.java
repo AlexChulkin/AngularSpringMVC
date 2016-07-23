@@ -41,14 +41,13 @@ public class RestfulController {
         return comptService.getDefaultComboData();
     }
 
-    @RequestMapping(value = "/addCompt", method = RequestMethod.POST)
+    @RequestMapping(value = "/addCompts", method = RequestMethod.POST)
     public
     @ResponseBody
-    void addCompt(@RequestBody RequestObj requestObj) throws Exception {
-        LOGGER.info("addCompt");
-        comptService.addCompt(requestObj.getParams().getComptLabel(),
-                requestObj.getParams().getPacketId(),
-                requestObj.getParams().getDefaultVals());
+    void addCompts(@RequestBody RequestObj requestObj) throws Exception {
+        LOGGER.info("addCompts");
+        comptService.addCompts(requestObj.getParams().getPacketId(),
+                requestObj.getParams().getComptsParamsList());
     }
 
     @RequestMapping(value = "/removeCompts", method = RequestMethod.POST)
@@ -58,13 +57,12 @@ public class RestfulController {
         comptService.removeCompts(requestObj.getParams().getIdsToRemove());
     }
 
-    @RequestMapping(value = "/updateCompt", method = RequestMethod.POST)
+    @RequestMapping(value = "/updateCompts", method = RequestMethod.POST)
     public
     @ResponseBody
     void updateCompt(@RequestBody RequestObj requestObj) throws Exception {
-        LOGGER.info("updateCompt");
-        comptService.updateCompt(requestObj.getParams().getComptId(),
-                requestObj.getParams().getDefaultVals());
+        LOGGER.info("updateCompts");
+        comptService.updateCompts(requestObj.getParams().getComptsParamsList());
     }
 
     @RequestMapping(value = "/updatePacketsState", method = RequestMethod.POST)
@@ -72,7 +70,6 @@ public class RestfulController {
     @ResponseBody
     void updatePacket(@RequestBody RequestObj requestObj) throws Exception {
         LOGGER.info("updatePacketsState");
-        System.out.println(" newstateid "+requestObj.getParams().getNewStateId());
 
         comptService.updatePacketsState(requestObj.getParams().getPacketId(),
                 requestObj.getParams().getNewStateId());

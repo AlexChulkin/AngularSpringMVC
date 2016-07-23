@@ -12,11 +12,13 @@ public interface ComptDao {
     Packet getPacket(long packetId);
     List<State> getStates();
     List<ComptInfo> getCompts(long packetId);
-    void updateCompt(long comptId, String[] defaultVals);
+
+    void updateCompts(List<ComptsParams> comptsParamsList);
     void updatePacketsState(long packetId, long newStateId);
 
-    void removeCompts(List<Long> idsToRemove);
-    void addCompt(String label, long packetId, String[] defaultVals);
+    void removeCompts(List<String> idsToRemove);
+
+    void addCompts(long packetId, List<ComptsParams> comptsParamsList);
 
     List<ComboData> getDefaultComboData();
 }

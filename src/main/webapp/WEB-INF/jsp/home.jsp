@@ -129,6 +129,11 @@
                           ng-disabled="form.$invalid"
                   >Add</button>
             </span>
+                        <span class="input-group-btn">
+                  <button class="btn btn-default" id="reloadBtn"
+                          ng-click="reloadRoute()"
+                  >Reload</button>
+            </span>
         </div>
         <div>
             <span class="input-group-btn">
