@@ -48,7 +48,7 @@
                           <select class="standard"
                                   ng-options="el for el in comboData[compt.id][state.id]"
                                   ng-model="defaultValues[compt.id][state.id]"
-                                  ng-change="markAsUpdated(compt.id)">
+                                  ng-change="markComptAsUpdated(compt.id)">
                           </select>
                     </span>
                 </td>
@@ -138,7 +138,7 @@
         <div>
             <span class="input-group-btn">
                   <button class="btn btn-default" id="saveBtn"
-                          ng-click="save()">Update the database</button>
+                          ng-click="saveAllToBase()">Update the database</button>
             </span>
         </div>
     </form>

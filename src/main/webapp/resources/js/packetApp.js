@@ -109,11 +109,11 @@ angular.module("packetControllers",[])
             }
         };
 
-        $scope.markAsUpdated = function (comptId) {
+        $scope.markComptAsUpdated = function (comptId) {
             $scope.updatedItemIds.push(comptId);
         };
-        
-        $scope.save = function() {
+
+        $scope.saveAllToBase = function () {
             var newCompts = [];
             $scope.newItemIds.forEach(function (id) {
                 newCompts.push({label: $scope.compts[id].label, defaultVals: $scope.getDefaultValsForCompt(id)});
@@ -121,13 +121,17 @@ angular.module("packetControllers",[])
             });
             $scope.addComptsToBase(newCompts);
             $scope.newItemIds = [];
-            $scope.collectIdsForRemoval();
+
+            $scope.removeComptsFromBase();
+            $scope.persistedRecentlyRemovedItemIds = [];
+
             var updatedCompts = [];
             $scope.updatedItemIds.forEach(function (id) {
                 updatedCompts.push({id: id, defaultVals: $scope.getDefaultValsForCompt(id)});
             });
             $scope.updateComptsInBase(updatedCompts);
             $scope.updatedItemIds = [];
+
             $scope.updatePacketsStateInBase(packetId,$scope.labels.defaultIndex);
         };
 
@@ -139,25 +143,21 @@ angular.module("packetControllers",[])
             return defaultVals;
         };
 
-        $scope.collectIdsForRemoval = function() {
+        $scope.removeComptsFromBase = function () {
             if(!$scope.persistedRecentlyRemovedItemIds) {
                 return;
             }
-            $scope.removeComptsFromBase($scope.persistedRecentlyRemovedItemIds);
-            $scope.persistedRecentlyRemovedItemIds = [];
-        };
 
-        $scope.removeComptsFromBase = function (ids) {
-            if (!ids) {
-                return;
-            }
-            var removeConfig = {withCredentials:true, params:{idsToRemove:ids}};
+            var removeConfig = {withCredentials: true, params: {idsToRemove: $scope.persistedRecentlyRemovedItemIds}};
             $http.post(contextPath + '/removeCompts',removeConfig).success(function (data) {
             }).error(function (error) {
             });
         };
 
         $scope.updateComptsInBase = function (updatedCompts) {
+            if (!updatedCompts) {
+                return;
+            }
             var updateConfig = {withCredentials: true, params: {comptsParamsList: updatedCompts}};
             $http.post(contextPath + '/updateCompts', updateConfig).success(function (data) {
             }).error(function (error) {
@@ -165,6 +165,9 @@ angular.module("packetControllers",[])
         };
 
         $scope.addComptsToBase = function (newCompts) {
+            if (!newCompts) {
+                return;
+            }
             var addConfig = {withCredentials: true, params: {packetId: packetId, comptsParamsList: newCompts}};
             $http.post(contextPath + '/addCompts', addConfig).success(function (data) {
             }).error(function (error) {
