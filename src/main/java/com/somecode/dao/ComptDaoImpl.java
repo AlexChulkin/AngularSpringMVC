@@ -14,7 +14,6 @@ import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Repository
 @Transactional(readOnly = true)
@@ -90,7 +89,7 @@ public class ComptDaoImpl implements  ComptDao {
             List<Integer> defaultIndeces = getDefaultIndeces(comptsParams.getDefaultVals());
             Compt compt = em.find(Compt.class, comptsParams.getId());
             em.lock(compt, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
-            Set<DataCompt> dataCompts = compt.getDataCompts();
+            List<DataCompt> dataCompts = compt.getDataCompts();
 
             for (DataCompt dc : dataCompts) {
                 int defaultStateIndex = (int) dc.getState().getId() - 1;
