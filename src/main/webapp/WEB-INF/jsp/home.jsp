@@ -99,12 +99,14 @@
             </div>
     </div>
 
-    <form name="form" ng-hide="errorStates || errorComboData">
+    <form name="form"
+          ng-hide="errorStates || errorComboData || errorCompts || errorComptsSupplData || errorPacketState">
         <label>
             Enter new label:
             <input class="text"
                    name="newLabelName"
                    ng-model="newLabel"
+                   ng-trim="true"
                    ng-maxlength="75"
                    required />
         </label>

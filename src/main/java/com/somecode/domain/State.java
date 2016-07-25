@@ -17,7 +17,7 @@ public class State {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name="STATE_ID", length = 2, unique = true, nullable=false)
+    @Column(name = "STATE_ID", length = 2, nullable = false)
     public long getId() {
         return id;
     }

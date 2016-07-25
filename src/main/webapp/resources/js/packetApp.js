@@ -1,10 +1,11 @@
 /**
  * Created by achulkin on 04.06.14.
  */
-angular.module("packetControllers",[])
+var app = angular.module("packetApp", [])
     .constant("packetId",1)
-    .constant("labelLabel","Label")
-    .controller("packetCtrl", function ($scope,$http,$window,packetId,labelLabel) {
+    .constant("labelLabel", "Label");
+
+app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLabel) {
 
         var simpleConfig = {withCredentials:true};
         var complConfig = {withCredentials:true, params:{packetId:packetId}};
@@ -185,4 +186,3 @@ angular.module("packetControllers",[])
             $window.location.reload();
         };
     });
-angular.module("packetApp",["packetControllers"]);

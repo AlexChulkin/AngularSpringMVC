@@ -26,7 +26,7 @@ public class DataCompt {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="DATA_COMPT_ID", length = 21, unique = true, nullable=false)
+    @Column(name = "DATA_COMPT_ID", length = 21, nullable = false)
     public long getId() {
         return id;
     }

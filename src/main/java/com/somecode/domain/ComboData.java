@@ -18,7 +18,7 @@ public class ComboData {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name = "COMBO_DATA_ID", length = 11, unique = true, nullable = false)
+    @Column(name = "COMBO_DATA_ID", length = 11, nullable = false)
     public long getId() {
         return id;
     }

@@ -25,7 +25,7 @@ public class Compt  {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name="COMPT_ID", length = 11, unique = true, nullable=false)
+    @Column(name = "COMPT_ID", length = 11, nullable = false)
     public long getId() {
         return id;
     }
