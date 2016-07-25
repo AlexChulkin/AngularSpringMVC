@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"PACKET_ID_FK", "LABEL"}))
 @NamedQueries( {
         @NamedQuery(name = "Compt.getInfo", query = "SELECT NEW com.somecode.domain.ComptInfo(c.id, c.label) " +
                 "FROM Packet p JOIN p.compts c WHERE p.id = :packetId ORDER BY c.id ASC"),
@@ -15,7 +16,6 @@ import java.util.List;
                         "WHERE p.id = :packetId ORDER BY dc.id ASC")
 })
 public class Compt  {
-
 
     private long id;
     private String label;
@@ -64,7 +64,7 @@ public class Compt  {
         getDataCompts().remove(dataCompt);
     }
 
-    @Column(name="LABEL", length = 75)
+    @Column(length = 75)
     public String getLabel() {
         return label;
     }

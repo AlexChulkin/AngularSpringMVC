@@ -34,7 +34,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                    <th ng-show="labels" ng-repeat="label in labels"> <span ng-bind="label"/></th>
+                    <th ng-show="stateLabels" ng-repeat="label in stateLabels"><span ng-bind="label"/></th>
                 </tr>
             </thead>
             <tbody>
@@ -43,8 +43,9 @@
                     <span ng-bind="compt.label" />
                 </td>
                 <td  ng-repeat="state in states">
-                    <span  ng-bind="defaultValues[compt.id][state.id]" ng-hide="labels.defaultIndex===state.id"></span>
-                    <span  ng-show="labels.defaultIndex===state.id">
+                    <span ng-bind="defaultValues[compt.id][state.id]"
+                          ng-hide="stateLabels.defaultIndex===state.id"></span>
+                    <span ng-show="stateLabels.defaultIndex===state.id">
                           <select class="standard"
                                   ng-options="el for el in comboData[compt.id][state.id]"
                                   ng-model="defaultValues[compt.id][state.id]"
@@ -73,7 +74,7 @@
     </div>
 
     <div class="alert alert-danger" ng-show="errorStates">
-        Error (<span ng-bind = "errorStates.status"></span>). The packet state labels data were not loaded.
+        Error (<span ng-bind="errorStates.status"></span>). The packet state stateLabels data were not loaded.
         <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
     </div>
 
@@ -92,9 +93,9 @@
             <div class="inline">
                 <div class="inline-radio" ng-repeat="state in states track by $index">
                     <input type="radio"
-                           ng-model="labels.defaultIndex"
+                           ng-model="stateLabels.defaultIndex"
                            ng-value="$index+1">
-                    <span ng-bind="labels[$index+1]"></span>
+                    <span ng-bind="stateLabels[$index+1]"></span>
                 </div>
             </div>
     </div>
@@ -108,16 +109,18 @@
                    ng-model="newLabel"
                    ng-trim="true"
                    ng-maxlength="75"
+                   blacklist="blacklist"
                    required />
+            <div style="color:maroon" role="alert">
+                <div ng-show="form.newLabelName.$error.required">You did not enter a label</div>
+                <div ng-show="form.newLabelName.$error.maxlength">Your label is too long</div>
+                <div ng-show="form.newLabelName.$error.blacklist">Your label is not unique</div>
+            </div>
         </label>
 
-        <div style="color:maroon" role="alert">
-            <div ng-show="form.newLabelName.$error.required">You did not enter a field</div>
-            <div ng-show="form.newLabelName.$error.maxlength">Your field is too long</div>
-        </div>
         <div ng-repeat="state in states track by $index" >
             <div class="form-group">
-                <label>Input new {{labels[$index+1]}} val:</label>
+                <label>Input new {{stateLabels[$index+1]}} val:</label>
                 <select class="standard"
                         ng-options="el for el in defaultComboData"
                         ng-model="newValues[$index]">
