@@ -109,7 +109,7 @@
                    ng-model="newLabel"
                    ng-trim="true"
                    ng-maxlength="75"
-                   blacklist="blacklist"
+                   blacklist="_"
                    required />
             <div style="color:maroon" role="alert">
                 <div ng-show="form.newLabelName.$error.required">You did not enter a label</div>

@@ -14,6 +14,10 @@ import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Repository
 @Transactional(readOnly = true)
@@ -21,6 +25,10 @@ public class ComptDaoImpl implements  ComptDao {
     private static final Logger LOGGER = Logger.getLogger(ComptDaoImpl.class);
 
     private List<ComboData> defaultComboData;
+
+    private Map<String, Integer> mapComboLabelsToIndeces;
+
+    private List<State> states;
 
     @PersistenceContext
     private EntityManager em;
@@ -37,11 +45,14 @@ public class ComptDaoImpl implements  ComptDao {
     @PostConstruct
     private void setdefaultData() {
         defaultComboData = Lists.newArrayList(comboDataRepository.findAllByOrderByIdAsc());
+        mapComboLabelsToIndeces = IntStream.range(0, defaultComboData.size()).boxed()
+                .collect(Collectors.toMap(i -> defaultComboData.get(i).getLabel(), Function.identity()));
+        states = Lists.newArrayList(stateRepository.findAll());
     }
 
     @Override
     public List<ComptSupplInfo> getComptsSupplInfo(long packetId) {
-        return em.createNamedQuery("Compt.getSupplInfo",ComptSupplInfo.class)
+        return em.createNamedQuery("Compt.getSupplInfo", ComptSupplInfo.class)
                 .setParameter("packetId", packetId)
                 .getResultList();
     }
@@ -52,12 +63,13 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public List<State> getStates(){
-        return Lists.newArrayList(stateRepository.findAll());
+        return states;
     }
 
-
     @Override
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public List<ComboData> getDefaultComboData() {
         return defaultComboData;
     }
@@ -69,17 +81,9 @@ public class ComptDaoImpl implements  ComptDao {
                 .getResultList();
     }
 
-
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     private List<Integer> getDefaultIndeces(List<String> defaultVals) {
-        LOGGER.info("The default Values: " + defaultVals);
-        List<String> defaultComboDataLabels = new ArrayList<>();
-        defaultComboData.forEach(e -> defaultComboDataLabels.add(e.getLabel()));
-
-        List<Integer> defaultIndeces = new ArrayList<>(defaultVals.size());
-        defaultVals.forEach(e -> defaultIndeces.add(defaultComboDataLabels.indexOf(e)));
-        LOGGER.info("The default Indeces found: " + defaultIndeces);
-        return defaultIndeces;
+        return defaultVals.stream().map(mapComboLabelsToIndeces::get).collect(Collectors.toList());
     }
 
     @Override

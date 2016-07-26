@@ -6,7 +6,6 @@ var app = angular.module("packetApp", [])
     .constant("labelLabel", "Label");
 
 app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLabel) {
-
     var simpleConfig = {withCredentials: true};
     var complConfig = {withCredentials: true, params: {packetId: packetId}};
 
