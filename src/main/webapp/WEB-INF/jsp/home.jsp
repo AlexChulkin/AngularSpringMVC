@@ -109,7 +109,7 @@
                    ng-model="newLabel"
                    ng-trim="true"
                    ng-maxlength="75"
-                   blacklist="_"
+                   blacklist="blacklist"
                    required />
             <div style="color:maroon" role="alert">
                 <div ng-show="form.newLabelName.$error.required">You did not enter a label</div>
@@ -130,7 +130,7 @@
         <div>
             <span class="input-group-btn">
                   <button class="btn btn-default" id="addBtn"
-                          ng-click="addNewCompt(newLabel)"
+                          ng-click="addNewCompt()"
                           ng-disabled="form.$invalid"
                   >Add</button>
             </span>
