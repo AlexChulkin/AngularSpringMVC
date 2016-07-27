@@ -87,7 +87,7 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updateCompts(List<ComptsParams> comptsParamsList) {
         for (ComptsParams comptsParams : comptsParamsList) {
             List<Integer> defaultIndeces = getDefaultIndeces(comptsParams.getDefaultVals());
@@ -108,7 +108,7 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void updatePacketsState(long packetId, long newStateId) {
         Packet packet = em.find(Packet.class, packetId);
         em.lock(packet, LockModeType.OPTIMISTIC);
@@ -121,7 +121,7 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void removeCompts(List<Long> idsToRemove) {
         List<Compt> compts = comptRepository.findByIdIn(idsToRemove);
 
@@ -130,7 +130,7 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void addCompts(long packetId, List<ComptsParams> comptsParamsList) {
         Packet packet = getPacket(packetId);
         List<State> statesList = getStates();
