@@ -1,6 +1,5 @@
 package com.somecode.config;
 
-import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -9,6 +8,8 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -34,11 +35,23 @@ public class PersistenceJPAConfig {
     Environment environment;
 
     @Bean
+    private static Properties getProperties() {
+        Properties properties = new Properties();
+        try {
+            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream("db.properties"));
+        } catch (IOException e) {
+            LOGGER.error("Error in properties", e);
+        }
+
+        return properties;
+    }
+
+    @Bean
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 
         em.setDataSource(dataSource());
-        em.setPackagesToScan(new String[]{"com.somecode"});
+        em.setPackagesToScan("com.somecode");
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(true);
         vendorAdapter.setShowSql(Boolean.parseBoolean(properties.getProperty("hibernate.show_sql")));
@@ -51,16 +64,9 @@ public class PersistenceJPAConfig {
 
     @Bean
     public DataSource dataSource() {
-        BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(properties.getProperty("className"));
-        dataSource.setUrl(properties.getProperty("url"));
-        dataSource.setUsername(properties.getProperty("username"));
-        dataSource.setPassword(properties.getProperty("password"));
-        dataSource.setMaxActive(10);
-        dataSource.setMaxWait(100);
-        dataSource.setInitialSize(3);
-
-        return dataSource;
+        return new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript("classpath:META-INF/config/schema.sql").build();
     }
 
     @Bean
@@ -74,17 +80,5 @@ public class PersistenceJPAConfig {
     @Bean
     public PersistenceExceptionTranslationPostProcessor exceptionTranslation() {
         return new PersistenceExceptionTranslationPostProcessor();
-    }
-
-    @Bean
-    private static Properties getProperties() {
-        Properties properties = new Properties();
-        try {
-            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream("db.properties"));
-        } catch (IOException e) {
-            LOGGER.error("Error in properties", e);
-        }
-
-        return properties;
     }
 }
