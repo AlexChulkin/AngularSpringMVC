@@ -13,20 +13,20 @@ public class ComptService {
     @Autowired
     private ComptDao comptDao;
 
-    public void addCompts(long packetId, List<ComptsParams> comptsParamsList) {
-        comptDao.addCompts(packetId, comptsParamsList);
+    public List<Long> addCompts(long packetId, List<ComptsParams> comptsParamsList) {
+        return comptDao.addCompts(packetId, comptsParamsList);
     }
 
-    public void removeCompts(List<Long> idsToRemove) {
-        comptDao.removeCompts(idsToRemove);
+    public List<Long> removeCompts(List<Long> idsToRemove) {
+        return comptDao.removeCompts(idsToRemove);
     }
 
-    public void updateCompts(List<ComptsParams> comptsParamsList) {
-        comptDao.updateCompts(comptsParamsList);
+    public List<Long> updateCompts(List<ComptsParams> comptsParamsList) {
+        return comptDao.updateCompts(comptsParamsList);
     }
 
-    public void updatePacketsState(long packetId, long newStateId) {
-        comptDao.updatePacketsState(packetId,newStateId);
+    public Long updatePacketState(long packetId, long newStateId) {
+        return comptDao.updatePacketState(packetId, newStateId);
     }
 
     public List<ComboData> getDefaultComboData() {
@@ -45,7 +45,7 @@ public class ComptService {
         return comptDao.getStates();
     }
 
-    public  long getPacketState(long packetId) {
-        return comptDao.getPacket(packetId).getState().getId();
+    public Long getPacketStateId(long packetId) {
+        return comptDao.getPacketStateId(packetId);
     }
 }

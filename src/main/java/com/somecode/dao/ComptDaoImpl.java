@@ -8,13 +8,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -26,7 +23,7 @@ public class ComptDaoImpl implements  ComptDao {
 
     private List<ComboData> defaultComboData;
 
-    private Map<String, Integer> mapComboLabelsToIndeces;
+    private Map<String, Integer> mapComboLabelsToIndices;
 
     private List<State> states;
 
@@ -42,35 +39,46 @@ public class ComptDaoImpl implements  ComptDao {
     @Autowired
     private ComptRepository comptRepository;
 
-    @PostConstruct
-    private void setdefaultData() {
-        defaultComboData = Lists.newArrayList(comboDataRepository.findAllByOrderByIdAsc());
-        mapComboLabelsToIndeces = IntStream.range(0, defaultComboData.size()).boxed()
-                .collect(Collectors.toMap(i -> defaultComboData.get(i).getLabel(), Function.identity()));
-        states = Lists.newArrayList(stateRepository.findAll());
-    }
-
     @Override
     public List<ComptSupplInfo> getComptsSupplInfo(long packetId) {
-        return em.createNamedQuery("Compt.getSupplInfo", ComptSupplInfo.class)
+        return em
+                .createNamedQuery("Compt.getSupplInfo", ComptSupplInfo.class)
                 .setParameter("packetId", packetId)
                 .getResultList();
     }
 
     @Override
-    public Packet getPacket(long packetId) {
+    public Long getPacketStateId(long packetId) {
+        Optional<Long> longOptional = Optional.of(em.find(Packet.class, packetId))
+                .map(Packet::getState)
+                .map(State::getId);
+        return longOptional.isPresent() ? longOptional.get() : null;
+    }
+
+    private Packet getPacket(long packetId) {
         return em.find(Packet.class, packetId);
     }
 
     @Override
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public List<State> getStates(){
+        states = Lists.newArrayList(stateRepository.findAll());
+
         return states;
     }
 
     @Override
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public List<ComboData> getDefaultComboData() {
+        List<ComboData> oldDefaultComboData = defaultComboData;
+        defaultComboData = Lists.newArrayList(comboDataRepository.findAllByOrderByIdAsc());
+
+        if (defaultComboData.equals(oldDefaultComboData)) {
+            return defaultComboData;
+        }
+        mapComboLabelsToIndices = IntStream
+                .range(0, defaultComboData.size())
+                .boxed()
+                .collect(Collectors.toMap(i -> defaultComboData.get(i).getLabel(), Function.identity()));
+
         return defaultComboData;
     }
 
@@ -82,79 +90,114 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    private List<Integer> getDefaultIndeces(List<String> defaultVals) {
-        return defaultVals.stream().map(mapComboLabelsToIndeces::get).collect(Collectors.toList());
+    private List<Integer> getIndices(List<String> vals) {
+        return vals.stream().map(mapComboLabelsToIndices::get).collect(Collectors.toList());
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updateCompts(List<ComptsParams> comptsParamsList) {
+    public List<Long> updateCompts(List<ComptsParams> comptsParamsList) {
+        List<Long> result = new ArrayList<>();
+
         for (ComptsParams comptsParams : comptsParamsList) {
-            List<Integer> defaultIndeces = getDefaultIndeces(comptsParams.getDefaultVals());
-            Compt compt = em.find(Compt.class, comptsParams.getId());
-            em.lock(compt, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+            Compt compt = em.find(Compt.class, comptsParams.getId(), LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+            if (compt == null) {
+                LOGGER.info("Compt update. The compt with id " + comptsParams.getId() + "does not exist.");
+                continue;
+            }
+
+            List<Integer> newCheckedIndices = getIndices(comptsParams.getVals());
             List<DataCompt> dataCompts = compt.getDataCompts();
 
             for (DataCompt dc : dataCompts) {
                 int defaultStateIndex = (int) dc.getState().getId() - 1;
                 int comboDataIndex = (int) dc.getComboData().getId() - 1;
                 boolean checked = dc.getChecked();
-                if (!checked && defaultIndeces.get(defaultStateIndex) == comboDataIndex
-                        || checked && defaultIndeces.get(defaultStateIndex) != comboDataIndex) {
+                if (!checked && newCheckedIndices.get(defaultStateIndex) == comboDataIndex
+                        || checked && newCheckedIndices.get(defaultStateIndex) != comboDataIndex) {
                     dc.setChecked(!checked);
                 }
             }
+
+            result.add(compt.getId());
         }
+        return result;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void updatePacketsState(long packetId, long newStateId) {
-        Packet packet = em.find(Packet.class, packetId);
-        em.lock(packet, LockModeType.OPTIMISTIC);
+    public Long updatePacketState(long packetId, long newStateId) {
+        Packet packet = em.find(Packet.class, packetId, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
+        if (packet == null) {
+            LOGGER.info("Packet state update. The packet with id " + packetId + "does not exist.");
+            return null;
+        }
         long oldStateId = packet.getState().getId();
         if (oldStateId != newStateId) {
             State newState = em.find(State.class, newStateId);
+            if (newState == null) {
+                LOGGER.info("Packet state update. The state with id " + newStateId + "does not exist.");
+                return null;
+            }
             packet.setState(newState);
+            em.persist(packet);
             LOGGER.info("The packet's " + packet.getId() + "state updated.");
+            return packet.getId();
         }
+        return null;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void removeCompts(List<Long> idsToRemove) {
-        List<Compt> compts = comptRepository.findByIdIn(idsToRemove);
+    public List<Long> removeCompts(List<Long> idsToRemove) {
+        List<Compt> compts = comptRepository
+                .findByIdIn(idsToRemove)
+                .stream()
+                .filter(c -> c != null)
+                .collect(Collectors.toList());
 
         comptRepository.delete(compts);
-        LOGGER.info("Ids of the removed components: " + idsToRemove);
+        List<Long> result = compts.stream().mapToLong(Compt::getId).boxed().collect(Collectors.toList());
+        LOGGER.info("Ids of the removed components: " + result);
+        return result;
     }
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void addCompts(long packetId, List<ComptsParams> comptsParamsList) {
+    public List<Long> addCompts(long packetId, List<ComptsParams> comptsParamsList) {
         Packet packet = getPacket(packetId);
+        if (packet == null) {
+            LOGGER.info("Packet state add compts. The packet with id " + packetId + "does not exist.");
+            return Collections.EMPTY_LIST;
+        }
+
         List<State> statesList = getStates();
         List<Compt> comptList = new ArrayList<>(comptsParamsList.size());
         List<Long> comptIdsList = new ArrayList<>(comptsParamsList.size());
 
-        for (ComptsParams ComptsParams : comptsParamsList) {
-            List<Integer> defaultIndeces = getDefaultIndeces(ComptsParams.getDefaultVals());
+        for (ComptsParams comptsParams : comptsParamsList) {
+            List<Integer> defaultComboDataIndeces = getIndices(comptsParams.getVals());
             Compt newCompt = new Compt();
-            newCompt.setLabel(ComptsParams.getLabel());
+            newCompt.setLabel(comptsParams.getLabel());
             packet.addCompt(newCompt);
 
-            for (int j = 0; j < statesList.size(); j++) {
-                for (int i = 0; i < defaultComboData.size(); i++) {
+            int numOfStates = states.size();
+            int numOfComboDataItems = defaultComboData.size();
+
+            for (int j = 0; j < numOfStates; j++) {
+                for (int i = 0; i < numOfComboDataItems; i++) {
                     DataCompt dc = new DataCompt();
                     dc.setState(statesList.get(j));
                     dc.setComboData(defaultComboData.get(i));
-                    dc.setChecked(defaultIndeces.get(j) == i);
+                    dc.setChecked(defaultComboDataIndeces.get(j) == i);
                     newCompt.addDataCompt(dc);
                 }
             }
             comptList.add(newCompt);
         }
+
         comptRepository.save(comptList).forEach(compt -> comptIdsList.add(compt.getId()));
         LOGGER.info("Persisted compt ids: " + comptIdsList);
+        return comptIdsList;
     }
 }

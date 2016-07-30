@@ -65,13 +65,13 @@ public class RestfulController {
         comptService.updateCompts(requestObj.getParams().getComptsParamsList());
     }
 
-    @RequestMapping(value = "/updatePacketsState", method = RequestMethod.POST)
+    @RequestMapping(value = "/updatePacketState", method = RequestMethod.POST)
     public
     @ResponseBody
     void updatePacket(@RequestBody RequestObj requestObj) throws Exception {
-        LOGGER.info("updatePacketsState");
+        LOGGER.info("updatePacketState");
 
-        comptService.updatePacketsState(requestObj.getParams().getPacketId(),
+        comptService.updatePacketState(requestObj.getParams().getPacketId(),
                 requestObj.getParams().getNewStateId());
     }
 
@@ -91,12 +91,12 @@ public class RestfulController {
         return comptService.getStates();
     }
 
-    @RequestMapping(value = "/packetsState", method = RequestMethod.GET)
+    @RequestMapping(value = "/packetStateId", method = RequestMethod.GET)
          public
          @ResponseBody
-         Long getPacketState(@RequestParam long packetId) throws Exception {
+    Long getPacketStateId(@RequestParam long packetId) throws Exception {
         LOGGER.info("getPacketState");
-        return comptService.getPacketState(packetId);
+        return comptService.getPacketStateId(packetId);
     }
 }
 

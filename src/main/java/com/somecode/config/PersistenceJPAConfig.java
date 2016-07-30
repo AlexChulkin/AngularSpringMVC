@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
@@ -62,6 +63,7 @@ public class PersistenceJPAConfig {
         return em;
     }
 
+    @Profile("dev")
     @Bean
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()

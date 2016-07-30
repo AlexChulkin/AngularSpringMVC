@@ -1,14 +1,15 @@
 package com.somecode.domain;
 
 
+import org.hibernate.validator.constraints.NotEmpty;
+
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 
 
 @Entity
-@Table(name = "COMBO_DATA")
-
-
-public class ComboData {
+@Table(name = "COMBO_DATA", uniqueConstraints = @UniqueConstraint(columnNames = {"LABEL"}))
+public class ComboData implements HasLabel {
 
     private long id;
 
@@ -18,7 +19,7 @@ public class ComboData {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name = "COMBO_DATA_ID", length = 11, nullable = false)
+    @Column(name = "COMBO_DATA_ID", length = 11)
     public long getId() {
         return id;
     }
@@ -28,7 +29,7 @@ public class ComboData {
     }
 
     @Version
-    @Column(name = "VERSION", nullable = false)
+    @Column(name = "VERSION")
     public int getVersion() {
         return this.version;
     }
@@ -37,7 +38,9 @@ public class ComboData {
         this.version = version;
     }
 
-    @Column(name="LABEL", nullable=false, length = 20)
+    @NotEmpty(message = "ComboData label can't be empty")
+    @Size(max = 20, message = "ComboData label length can't exceed 20 symbols")
+    @Column(name = "LABEL")
     public String getLabel() {
         return label;
     }

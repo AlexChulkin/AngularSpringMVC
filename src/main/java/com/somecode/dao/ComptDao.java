@@ -9,16 +9,17 @@ import java.util.List;
  */
 public interface ComptDao {
     List<ComptSupplInfo> getComptsSupplInfo(long packetId);
-    Packet getPacket(long packetId);
+
+    Long getPacketStateId(long packetId);
     List<State> getStates();
     List<ComptInfo> getCompts(long packetId);
 
-    void updateCompts(List<ComptsParams> comptsParamsList);
-    void updatePacketsState(long packetId, long newStateId);
+    List<Long> updateCompts(List<ComptsParams> comptsParamsList);
 
-    void removeCompts(List<Long> idsToRemove);
+    Long updatePacketState(long packetId, long newStateId);
 
-    void addCompts(long packetId, List<ComptsParams> comptsParamsList);
+    List<Long> removeCompts(List<Long> idsToRemove);
 
+    List<Long> addCompts(long packetId, List<ComptsParams> comptsParamsList);
     List<ComboData> getDefaultComboData();
 }

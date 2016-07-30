@@ -2,8 +2,26 @@ package com.somecode.domain;
 
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
+
+@NamedQuery(name = "Packet.getPacketWithStateId",
+        query = "SELECT p FROM Packet p WHERE p.id = :id")
+
+@NamedEntityGraph(name = "Packet.getGraphWithStateId",
+        attributeNodes = {
+                @NamedAttributeNode("id"),
+                @NamedAttributeNode(value = "state", subgraph = "stateGraph"),
+        },
+        subgraphs = {
+                @NamedSubgraph(name = "stateGraph",
+                        attributeNodes = {
+                                @NamedAttributeNode("id")
+                        }
+                )
+        }
+)
 
 @Entity
 public class Packet {
@@ -25,7 +43,7 @@ public class Packet {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name = "PACKET_ID", length = 11, nullable = false)
+    @Column(name = "PACKET_ID", length = 11)
     public long getId() {
         return id;
     }
@@ -35,7 +53,7 @@ public class Packet {
     }
 
     @Version
-    @Column(name = "VERSION", nullable = false)
+    @Column(name = "VERSION")
     public int getVersion() {
         return this.version;
     }
@@ -44,8 +62,9 @@ public class Packet {
         this.version = version;
     }
 
+    @NotNull
     @ManyToOne
-    @JoinColumn(name="STATE_ID_FK", nullable=false)
+    @JoinColumn(name = "STATE_ID_FK")
     public State getState() {
         return state;
     }

@@ -26,7 +26,7 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
 
         $scope.defaultComboData = [];
         $scope.persistedRecentlyRemovedItemIds = [];
-        $scope.updatedItemIds = [];
+        $scope.updatedItemIds = {};
         $scope.newComptLabels = {};
 
         $http.get(contextPath + '/states', simpleConfig).success(function (data) {
@@ -45,10 +45,10 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
                 $scope.states.forEach(function () {
                     $scope.newValues.push($scope.defaultComboData[0]);
                 });
-                $http.get(contextPath + '/packetsState', complConfig).success(function (data) {
+                $http.get(contextPath + '/packetStateId', complConfig).success(function (data) {
                     $scope.stateLabels.defaultIndex = data;
                     $http.get(contextPath + '/comptsSupplInfo', complConfig).success(function (data) {
-                        $scope.defaultValues = {};
+                        $scope.checkedVals = {};
                         $scope.comboData = {};
                         data.forEach(function (el) {
                             var comptId = el.comptId;
@@ -63,10 +63,10 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
                             $scope.comboData[comptId][stateId].push(label);
                             var checked = el.checked;
                             if (checked) {
-                                if (!$scope.defaultValues[comptId]) {
-                                    $scope.defaultValues[comptId] = {};
+                                if (!$scope.checkedVals[comptId]) {
+                                    $scope.checkedVals[comptId] = {};
                                 }
-                                $scope.defaultValues[comptId][stateId] = label;
+                                $scope.checkedVals[comptId][stateId] = label;
                             }
                         });
                     }).error(function (error) {
@@ -92,10 +92,10 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
         $scope.newLabel = null;
 
         $scope.comboData[comptId] = {};
-        $scope.defaultValues[comptId] = {};
+        $scope.checkedVals[comptId] = {};
         for (var i = 1; i <= $scope.states.length; i++) {
             $scope.comboData[comptId][i] = $scope.defaultComboData;
-            $scope.defaultValues[comptId][i] = $scope.newValues[i - 1];
+            $scope.checkedVals[comptId][i] = $scope.newValues[i - 1];
         }
     };
 
@@ -103,8 +103,10 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
         var id = compts[label].id;
 
         delete $scope.compts[label];
-        delete $scope.defaultValues[id];
+        delete $scope.checkedVals[id];
         delete $scope.comboData[id];
+        delete $scope.updatedItemIds[id];
+
 
         if (!compt.new) {
             $scope.persistedRecentlyRemovedItemIds.push(id);
@@ -112,39 +114,42 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
     };
 
     $scope.markComptAsUpdated = function (comptId) {
-        $scope.updatedItemIds.push(comptId);
+        $scope.updatedItemIds[id] = true;
     };
 
     $scope.saveAllToBase = function () {
-        var newCompts = [];
-        for (var lbl in $scope.newComptLabels) {
-            var id = $scope.newComptLabels[lbl];
-            newCompts.push({label: lbl, defaultVals: $scope.getDefaultValsForCompt(id)});
-            $scope.compts[lbl].new = false;
-        }
-
-        $scope.addComptsToBase(newCompts);
-        $scope.newComptLabels = {};
+        $scope.updatePacketStateInBase(packetId, $scope.stateLabels.defaultIndex);
 
         $scope.removeComptsFromBase();
         $scope.persistedRecentlyRemovedItemIds = [];
 
-        var updatedCompts = [];
-        $scope.updatedItemIds.forEach(function (id) {
-            updatedCompts.push({id: id, defaultVals: $scope.getDefaultValsForCompt(id)});
-        });
-        $scope.updateComptsInBase(updatedCompts);
-        $scope.updatedItemIds = [];
+        var newCompts = [];
+        for (var lbl in $scope.newComptLabels) {
+            if ($scope.newComptLabels.hasOwnProperty(lbl)) {
+                var id = $scope.newComptLabels[lbl];
+                newCompts.push({label: lbl, vals: $scope.getCheckedValsForCompt(id)});
+                $scope.compts[lbl].new = false;
+            }
+        }
+        $scope.addComptsToBase(newCompts);
+        $scope.newComptLabels = {};
 
-        $scope.updatePacketsStateInBase(packetId, $scope.stateLabels.defaultIndex);
+        var updatedCompts = [];
+        for (var id in $scope.updatedItemIds) {
+            if ($scope.updatedItemIds.hasOwnProperty(id)) {
+                updatedCompts.push({id: id, vals: $scope.getCheckedValsForCompt(id)});
+            }
+        }
+        $scope.updateComptsInBase(updatedCompts);
+        $scope.updatedItemIds = {};
     };
 
-    $scope.getDefaultValsForCompt = function (comptId) {
-        var defaultVals = [];
+    $scope.getCheckedValsForCompt = function (comptId) {
+        var checkedVals = [];
         $scope.states.forEach(function (state, ind) {
-            defaultVals.push($scope.defaultValues[comptId][ind + 1]);
+            checkedVals.push($scope.checkedVals[comptId][ind + 1]);
         });
-        return defaultVals;
+        return checkedVals;
     };
 
     $scope.removeComptsFromBase = function () {
@@ -178,9 +183,9 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
         });
     };
 
-    $scope.updatePacketsStateInBase = function (packetId, newStateId) {
+    $scope.updatePacketStateInBase = function (packetId, newStateId) {
         var updateConfig = {withCredentials: true, params: {packetId: packetId, newStateId: newStateId}};
-        $http.post(contextPath + '/updatePacketsState', updateConfig).success(function (data) {
+        $http.post(contextPath + '/updatePacketState', updateConfig).success(function (data) {
         }).error(function (error) {
         });
     };

@@ -4,9 +4,10 @@ package com.somecode.domain;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name="DATA_COMPT")
+@Table(name = "DATA_COMPT", uniqueConstraints = @UniqueConstraint(columnNames = {"COMPT_ID_FK", "STATE_ID_FK", "COMBO_DATA_ID_FK"}))
 public class DataCompt {
 
     private long id;
@@ -26,7 +27,7 @@ public class DataCompt {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name = "DATA_COMPT_ID", length = 21, nullable = false)
+    @Column(name = "DATA_COMPT_ID", length = 21)
     public long getId() {
         return id;
     }
@@ -36,7 +37,7 @@ public class DataCompt {
     }
 
     @Version
-    @Column(name = "VERSION", nullable = false)
+    @Column(name = "VERSION")
     public int getVersion() {
         return this.version;
     }
@@ -45,8 +46,9 @@ public class DataCompt {
         this.version = version;
     }
 
+    @NotNull
     @ManyToOne
-    @JoinColumn(name = "COMBO_DATA_ID_FK", nullable = false)
+    @JoinColumn(name = "COMBO_DATA_ID_FK")
     public ComboData getComboData() {
         return comboData;
     }
@@ -55,8 +57,9 @@ public class DataCompt {
         this.comboData = comboData;
     }
 
+    @NotNull
     @ManyToOne
-    @JoinColumn(name="COMPT_ID_FK", nullable=false)
+    @JoinColumn(name = "COMPT_ID_FK")
     public Compt getCompt() {
         return compt;
     }
@@ -65,8 +68,9 @@ public class DataCompt {
         this.compt = compt;
     }
 
+    @NotNull
     @ManyToOne
-    @JoinColumn(name="STATE_ID_FK", nullable=false)
+    @JoinColumn(name = "STATE_ID_FK")
     public State getState() {
         return state;
     }
@@ -75,7 +79,7 @@ public class DataCompt {
         this.state = state;
     }
 
-    @Column(name="CHECKED", nullable=false, length = 1)
+    @Column(name = "CHECKED", length = 1)
     @Type(type="yes_no")
     public boolean getChecked() {
         return checked;
