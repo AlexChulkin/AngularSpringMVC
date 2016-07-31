@@ -118,7 +118,6 @@ public class ComptDaoImpl implements  ComptDao {
                     dc.setChecked(!checked);
                 }
             }
-
             result.add(compt.getId());
         }
         return result;

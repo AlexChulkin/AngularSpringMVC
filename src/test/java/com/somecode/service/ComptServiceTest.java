@@ -3,6 +3,7 @@ package com.somecode.service;
 import com.google.common.collect.Lists;
 import com.somecode.dao.ComptRepository;
 import com.somecode.domain.*;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
     @Test
     public void testGetCompts_positive() throws Exception {
         final long packetId = 1L;
-        final String expectedLabel = "compt_label";
+        final String expectedLabel = "compt_label_1";
         final int expectedResultLength = 1;
 
         final List<ComptInfo> result = comptService.getCompts(packetId);
@@ -64,13 +65,14 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
     public void testGetComptsSupplInfo_positive() throws Exception {
         final long packetId = 1L;
 
-        final int expectedNumOfStates = 3;
-        final int expectedNumOfComboData = 3;
-        final int expectedNumOfCompts = 1;
+        final Integer expectedNumOfStates = 3;
+        final Integer expectedNumOfComboData = 3;
+        final Integer expectedNumOfCompts = 1;
         final int expectedResultLength = calculateExpectedResultLength(expectedNumOfCompts, expectedNumOfStates,
                 expectedNumOfComboData);
 
-        findComboData(ComboDataGetTestCase.COMPTS_SUPPL_INFO, packetId, expectedResultLength);
+        findComboData(ComboDataGetTestCase.COMPTS_SUPPL_INFO, packetId, expectedResultLength,
+                expectedNumOfCompts, expectedNumOfStates, expectedNumOfComboData);
     }
 
     @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_Compt_SupplInfo.xls")
@@ -87,30 +89,33 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
     @Test
     public void testGetComboData_positive() throws Exception {
 
-        final int expectedNumOfStates = 3;
         final int expectedNumOfComboData = 3;
-        final int expectedNumOfCompts = 1;
-        final int expectedResultLength = calculateExpectedResultLength(expectedNumOfCompts, expectedNumOfStates,
-                expectedNumOfComboData);
 
-        findComboData(ComboDataGetTestCase.COMBO_DATA_PROPERLY, null, expectedResultLength);
+        findComboData(ComboDataGetTestCase.COMBO_DATA_PROPERLY, null, expectedNumOfComboData, null, null, null);
     }
 
     private void findComboData(ComboDataGetTestCase testCase, final Long packetId,
-                               final int expectedResultLength) throws Exception {
+                               final Integer expectedResultLength, final Integer expectedNumOfCompts,
+                               final Integer expectedNumOfStates, final Integer expectedNumOfComboData)
+            throws Exception {
         final String comboDataLabelPrefix = "combo_label_";
 
-        final List<String> expectedComboDataLabels = generateLabelsList(comboDataLabelPrefix, expectedResultLength);
+        final List<String> expectedComboDataLabels = (testCase == ComboDataGetTestCase.COMBO_DATA_PROPERLY)
+                ? generateLabelsList(comboDataLabelPrefix, expectedResultLength)
+                : (testCase == ComboDataGetTestCase.COMPTS_SUPPL_INFO)
+                ? generateIteratedLabelsList(comboDataLabelPrefix, expectedNumOfCompts,
+                expectedNumOfStates, expectedNumOfComboData)
+                : new ArrayList<>();
 
         List<HasLabel> result = new ArrayList<>();
 
         if (testCase == ComboDataGetTestCase.COMPTS_SUPPL_INFO) {
-            comptService.getComptsSupplInfo(packetId).forEach(c -> result.add(c));
+            comptService.getComptsSupplInfo(packetId).forEach(result::add);
         } else if (testCase == ComboDataGetTestCase.COMBO_DATA_PROPERLY) {
-            comptService.getDefaultComboData().forEach(c -> result.add(c));
+            comptService.getDefaultComboData().forEach(result::add);
         }
 
-        assertEquals(expectedResultLength, result.size());
+        assertEquals((long) expectedResultLength, result.size());
         IntStream.range(0, expectedResultLength)
                 .boxed()
                 .forEach(i ->
@@ -119,11 +124,26 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
     }
 
     private List<String> generateLabelsList(String labelPrefix, int numOfLabels) {
-        final List<String> expectedComboDataLabels = new ArrayList<>();
+        final List<String> comboDataLabels = new ArrayList<>();
         IntStream.rangeClosed(1, numOfLabels)
                 .boxed()
-                .forEach(i -> expectedComboDataLabels.add(labelPrefix + i.toString()));
-        return expectedComboDataLabels;
+                .forEach(i -> comboDataLabels.add(labelPrefix + i.toString()));
+        return comboDataLabels;
+    }
+
+    private List<String> generateIteratedLabelsList(final String labelPrefix,
+                                                    final Integer numOfCompts,
+                                                    final Integer numOfStates,
+                                                    final Integer numOfComboData) {
+
+        final List<String> comboDataLabels = new ArrayList<>();
+        final int numOfIterations = numOfCompts * numOfStates;
+        List<String> elementaryComboDataList = generateLabelsList(labelPrefix, numOfComboData);
+        IntStream.rangeClosed(1, numOfIterations)
+                .boxed()
+                .forEach(i -> comboDataLabels.addAll(elementaryComboDataList));
+
+        return comboDataLabels;
     }
 
     private int calculateExpectedResultLength(final int expectedNumOfCompts,
@@ -189,24 +209,23 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         assertNull(result);
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceImplTest.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceImplTest_Update_Compts.xls")
     @Test
     public void testUpdateCompts_positive() throws Exception {
         final int numOfComptsToUpdate = 2;
         final String comboDataLabelPrefix = "combo_label_";
         final int numOfStates = 3;
+        final int firstIdToUpdate = 1;
+
 
         final String[][] checkedValsForUpdate =
                 generateMultipleLabelsLists(comboDataLabelPrefix, numOfStates, numOfComptsToUpdate);
 
-        final int firstIdToUpdate = 1;
         final long[] idsForUpdate = generateIds(firstIdToUpdate, numOfComptsToUpdate);
 
-        final List<ComptsParams> paramsListForUpdate = new ArrayList<>();
-        IntStream.range(0, numOfComptsToUpdate).boxed()
-                .forEach(i -> paramsListForUpdate.add(new ComptsParams(Arrays.asList(checkedValsForUpdate[i]),
-                        idsForUpdate[i])));
-
+        final List<ComptsParams> paramsListForUpdate
+                = generateParamsList(OperationType.UPDATE, checkedValsForUpdate,
+                idsForUpdate, numOfComptsToUpdate, null);
 
         final long[] expectedUpdatedIds = idsForUpdate;
         final int expectedResultSize = numOfComptsToUpdate;
@@ -226,32 +245,55 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
                 expectedUpdatedIds, null);
     }
 
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceImplTest_Update_Compts.xls")
     @Test
     public void testUpdateCompts_negative() throws Exception {
         final int numOfComptsToUpdate = 1;
         final String comboDataLabelPrefix = "combo_label_";
         final int numOfStates = 3;
+        final int firstIdToUpdate = 3;
+
+        final int expectedResultSize = 0;
+        final long expectedUpdatedComptId = 3L;
 
         final String[][] checkedValsForUpdate =
                 generateMultipleLabelsLists(comboDataLabelPrefix, numOfStates, numOfComptsToUpdate);
 
-        final int firstIdToUpdate = 3;
         final long[] idsForUpdate = generateIds(firstIdToUpdate, numOfComptsToUpdate);
 
-        final List<ComptsParams> paramsListForUpdate = new ArrayList<>();
-        IntStream.range(0, numOfComptsToUpdate).boxed()
-                .forEach(i -> paramsListForUpdate.add(new ComptsParams(Arrays.asList(checkedValsForUpdate[i]),
-                        idsForUpdate[i])));
-
-        long expectedUpdatedComptId = idsForUpdate[0];
-        int expectedResultSize = 0;
+        List<ComptsParams> paramsListForUpdate
+                = generateParamsList(OperationType.UPDATE, checkedValsForUpdate,
+                idsForUpdate, numOfComptsToUpdate, null);
 
         List<Long> result = comptService.updateCompts(paramsListForUpdate);
         em.flush();
 
-        assertEquals(expectedResultSize, result.size());
         Compt expectedUpdatedCompt = em.find(Compt.class, expectedUpdatedComptId);
+
+        assertEquals(expectedResultSize, result.size());
         assertNull(expectedUpdatedCompt);
+    }
+
+    private List<ComptsParams> generateParamsList(final OperationType operationType,
+                                                  final String[][] checkedValsForAddOrUpdate,
+                                                  final long[] idsForAddOrUpdate,
+                                                  final int numOfComptsToAddOrUpdate,
+                                                  final String[] labelsForAdding) {
+
+        final List<ComptsParams> paramsList = new ArrayList<>();
+        if (operationType == OperationType.UPDATE) {
+            IntStream.range(0, numOfComptsToAddOrUpdate).boxed()
+                    .forEach(i -> paramsList.add(new ComptsParams(Arrays.asList(checkedValsForAddOrUpdate[i]),
+                            idsForAddOrUpdate[i])));
+        } else if (operationType == OperationType.ADD) {
+            IntStream.range(0, numOfComptsToAddOrUpdate).boxed()
+                    .forEach(i ->
+                            paramsList.add(new ComptsParams(Arrays.asList(checkedValsForAddOrUpdate[i]),
+                                    labelsForAdding[i])));
+        }
+
+
+        return paramsList;
     }
 
     private long[] generateIds(final int firstId, final int numOfIds) {
@@ -263,6 +305,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 
     private String[][] generateMultipleLabelsLists(final String labelPrefix, final int numOfStates,
                                                    final int numOfCompts) {
+
         List<String> vals = generateLabelsList(labelPrefix, numOfStates);
         String[] valsArray = vals.toArray(new String[0]);
         List<String> invertedVals = Lists.reverse(vals);
@@ -273,6 +316,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
                 .filter(i -> i % 2 == 0)
                 .boxed()
                 .forEach(i -> checkedVals[i] = valsArray);
+
         IntStream.range(0, numOfCompts)
                 .filter(i -> i % 2 != 0)
                 .boxed()
@@ -281,6 +325,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         return checkedVals;
     }
 
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_PacketState.xls")
     @Test
     public void testUpdatePacketState_positive() throws Exception {
         long packetId = 1L;
@@ -303,6 +348,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         assertEquals(expectedNewStateId, updatedPacket.getState().getId());
     }
 
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_PacketState.xls")
     @Test
     public void testUpdatePacketState_negative_nonExistingPacketId() throws Exception {
         long packetId = 2L;
@@ -319,6 +365,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         assertNull(result);
     }
 
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_PacketState.xls")
     @Test
     public void testUpdatePacketState_negative_nonExistingStateId() throws Exception {
         long packetId = 1L;
@@ -327,6 +374,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         ascertainPacketNotChanged(packetId, newStateId, packetId);
     }
 
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_PacketState.xls")
     @Test
     public void testUpdatePacketState_negative_notDifferentStateId() throws Exception {
         long packetId = 1L;
@@ -347,17 +395,18 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         assertNull(result);
     }
 
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceImplTest_Add_Compts.xls")
     @Test
     public void testAddCompts_positive() throws Exception {
         final int numOfComptsToAdd = 2;
-        final int packetId = 1;
-        final String[][] checkedValsForAdding = {{"combo-value1", "combo-value1", "combo-value1"},
-                {"combo-value2", "combo-value2", "combo-value2"}};
-        final String[] labelsForAdding = {"label1", "label2"};
-
-        final List<ComptsParams> paramsListForAdding = new ArrayList<>();
-        IntStream.range(0, numOfComptsToAdd).boxed()
-                .forEach(i -> paramsListForAdding.add(new ComptsParams(Arrays.asList(checkedValsForAdding[i]), labelsForAdding[i])));
+        final long packetId = 1L;
+        final String comboDataLabelPrefix = "combo_label_";
+        final String comptLabelPrefix = "compt_label_";
+        final int numOfStates = 3;
+        final String[][] checkedValsForAdding
+                = generateMultipleLabelsLists(comboDataLabelPrefix, numOfStates, numOfComptsToAdd);
+        final String[] labelsForAdding
+                = generateLabelsList(comptLabelPrefix, numOfComptsToAdd).toArray(new String[0]);
 
         final int expectedResultSize = numOfComptsToAdd;
         final String[][] expectedCheckedVals = checkedValsForAdding;
@@ -367,6 +416,10 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         final int[][][] checkedComboDataArray = new int[numOfComptsToAdd][expectedNumOfStates][expectedNumOfComboDataItemsPerState];
         final int numOfCheckedComboDataPerCompt = 1;
 
+        final List<ComptsParams> paramsListForAdding = generateParamsList(OperationType.ADD,
+                checkedValsForAdding, null,
+                numOfComptsToAdd, labelsForAdding);
+
         comptService.addCompts(packetId, paramsListForAdding);
         em.flush();
 
@@ -375,13 +428,18 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
                 null, labelsForAdding);
     }
 
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceImplTest_Add_Compts.xls")
     @Test
     public void testAddCompts_negative() throws Exception {
         final int numOfComptsToAdd = 2;
         final long packetId = 2L;
-        final String[][] checkedValsForAdding = {{"combo-value1", "combo-value1", "combo-value1"},
-                {"combo-value2", "combo-value2", "combo-value2"}};
-        final String[] labelsForAdding = {"label1", "label2"};
+        final String comboDataLabelPrefix = "combo_label_";
+        final String comptLabelPrefix = "compt_label_";
+        final int numOfStates = 3;
+        final String[][] checkedValsForAdding
+                = generateMultipleLabelsLists(comboDataLabelPrefix, numOfStates, numOfComptsToAdd);
+        final String[] labelsForAdding
+                = generateLabelsList(comptLabelPrefix, numOfComptsToAdd).toArray(new String[0]);
 
         final List<ComptsParams> paramsListForAdding = new ArrayList<>();
         IntStream.range(0, numOfComptsToAdd).boxed()
@@ -434,9 +492,12 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         }
     }
 
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceImplTest_Remove_Compts.xls")
     @Test
     public void testRemoveCompts_positive() throws Exception {
-        List<Long> comptIdsToRemove = Arrays.asList(1L, 2L);
+        final int firstComptId = 1;
+        final int numOfComptIds = 2;
+        List<Long> comptIdsToRemove = Arrays.asList(ArrayUtils.toObject(generateIds(firstComptId, numOfComptIds)));
 
         List<Long> expectedResult = comptIdsToRemove;
         int expectedNumOfComptsAfterRemoval = 0;
@@ -445,13 +506,18 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
                 expectedResult, null, expectedNumOfComptsAfterRemoval, null);
     }
 
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceImplTest_Remove_Compts.xls")
     @Test
     public void testRemoveCompts_negative() throws Exception {
         List<Long> comptIdsToRemove = Arrays.asList(3L);
 
-        int expectedResultSize = 0;
-        int expectedNumOfComptsAfterRemoval = 2;
-        List<Long> expectedComptIdsAfterRemoval = Arrays.asList(1L, 2L);
+        final int expectedResultSize = 0;
+        final int expectedNumOfComptsAfterRemoval = 2;
+        final int firstComptId = 1;
+
+        List<Long> expectedComptIdsAfterRemoval =
+                Arrays.asList(ArrayUtils.toObject(generateIds(firstComptId, expectedNumOfComptsAfterRemoval)));
+
 
         checkComptsAfterRemoval(RemoveComptsTestCase.NEGATIVE, comptIdsToRemove,
                 null, expectedResultSize, expectedNumOfComptsAfterRemoval,
@@ -460,7 +526,8 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 
     private void checkComptsAfterRemoval(RemoveComptsTestCase testCase, List<Long> comptIdsToRemove,
                                          List<Long> expectedResult, Integer expectedResultSize,
-                                         int expectedNumOfComptsAfterRemoval, List<Long> expectedComptIdsAfterRemoval) {
+                                         int expectedNumOfComptsAfterRemoval,
+                                         List<Long> expectedComptIdsAfterRemoval) {
 
         List<Long> result = comptService.removeCompts(comptIdsToRemove);
 
