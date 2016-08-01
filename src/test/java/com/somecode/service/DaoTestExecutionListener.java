@@ -18,12 +18,12 @@ public class DaoTestExecutionListener implements TestExecutionListener {
 
     @Override
     public void afterTestMethod(TestContext testCtx) throws Exception {
+        ((HasCachedData) testCtx.getTestInstance()).clearCachedData();
+
         if (databaseTester != null) {
             databaseTester.onTearDown();
         }
-        ((HasCaches) testCtx.getTestInstance()).clearCaches();
     }
-
 
     @Override
     public void beforeTestClass(TestContext testCtx) throws Exception {

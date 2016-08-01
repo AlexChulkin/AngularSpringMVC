@@ -11,7 +11,7 @@
     <name>AngularSpringMVC</name>
 
     <properties>
-        <spring-version>4.2.6.RELEASE</spring-version>
+        <spring-version>4.3.1.RELEASE</spring-version>
         <hibernate-version>5.1.0.Final</hibernate-version>
     </properties>
 
@@ -130,7 +130,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>4.12</version>
         </dependency>
 
         <dependency>
