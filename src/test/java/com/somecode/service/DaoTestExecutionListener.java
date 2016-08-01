@@ -6,16 +6,10 @@ import org.dbunit.util.fileloader.DataFileLoader;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestExecutionListener;
 
-import javax.persistence.Cache;
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceContext;
 import java.util.Map;
-import java.util.Optional;
 
-public class ServiceTestExecutionListener implements TestExecutionListener {
-    @PersistenceContext
-    EntityManager em;
+public class DaoTestExecutionListener implements TestExecutionListener {
+
     private IDatabaseTester databaseTester;
 
     @Override
@@ -23,25 +17,16 @@ public class ServiceTestExecutionListener implements TestExecutionListener {
     }
 
     @Override
-    public void afterTestMethod(TestContext arg0) throws Exception {
+    public void afterTestMethod(TestContext testCtx) throws Exception {
         if (databaseTester != null) {
             databaseTester.onTearDown();
         }
-
-        clearCaches();
+        ((HasCaches) testCtx.getTestInstance()).clearCaches();
     }
 
-    private void clearCaches() {
-        Optional.of(em)
-                .ifPresent(EntityManager::clear);
-        Optional.of(em)
-                .map(EntityManager::getEntityManagerFactory)
-                .map(EntityManagerFactory::getCache)
-                .ifPresent(Cache::evictAll);
-    }
 
     @Override
-    public void beforeTestClass(TestContext arg0) throws Exception {
+    public void beforeTestClass(TestContext testCtx) throws Exception {
     }
 
     @Override
@@ -66,7 +51,6 @@ public class ServiceTestExecutionListener implements TestExecutionListener {
 
     private <T> T getImplementingBeanFromContext(TestContext testCtx, Class<T> tClass) throws Exception {
         Map<String, T> implementations = testCtx.getApplicationContext().getBeansOfType(tClass);
-
         for (T t : implementations.values()) {
             return t;
         }

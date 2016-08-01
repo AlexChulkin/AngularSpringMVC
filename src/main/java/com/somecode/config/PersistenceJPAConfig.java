@@ -1,12 +1,9 @@
 package com.somecode.config;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -17,34 +14,49 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Properties;
 
-
 @Configuration
-@PropertySource(value = "classpath:db.properties")
+//@PropertySource(value = "classpath:db_dev.properties")
 @EnableTransactionManagement
 @EnableJpaRepositories("com.somecode")
 public class PersistenceJPAConfig {
 
     private static final Logger LOGGER = Logger.getLogger(PersistenceJPAConfig.class);
-    private static final Properties properties = getProperties();
+    private static Properties properties = new Properties();
 
-    @Autowired
-    Environment environment;
-
-    @Bean
-    private static Properties getProperties() {
-        Properties properties = new Properties();
+    @Profile("dev")
+    @PostConstruct
+    private static void setDevProperties() {
+        String propertiesPath = "db_dev.properties";
         try {
-            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream("db.properties"));
+            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream(propertiesPath));
         } catch (IOException e) {
             LOGGER.error("Error in properties", e);
         }
+    }
 
-        return properties;
+    @Profile("test")
+    @PostConstruct
+    private static void setTestProperties() {
+        String propertiesPath = "db_test.properties";
+        try {
+            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream(propertiesPath));
+        } catch (IOException e) {
+            LOGGER.error("Error in properties", e);
+        }
+    }
+
+    @Bean
+    public static DataSource dataSource() {
+        return new EmbeddedDatabaseBuilder()
+                .setType(EmbeddedDatabaseType.H2)
+                .addScript("classpath:META-INF/config/schema.sql")
+                .build();
     }
 
     @Bean
@@ -61,14 +73,6 @@ public class PersistenceJPAConfig {
         em.setJpaProperties(properties);
 
         return em;
-    }
-
-    @Profile("dev")
-    @Bean
-    public DataSource dataSource() {
-        return new EmbeddedDatabaseBuilder()
-                .setType(EmbeddedDatabaseType.H2)
-                .addScript("classpath:META-INF/config/schema.sql").build();
     }
 
     @Bean

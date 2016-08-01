@@ -3,7 +3,7 @@ package com.somecode.service;
 /**
  * Created by alexc_000 on 2016-07-30.
  */
-public enum RemoveComptsTestCase {
+enum RemoveComptsTestCase {
     POSITIVE, NEGATIVE
 }
 

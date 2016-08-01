@@ -5,6 +5,7 @@ import com.somecode.domain.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@Service
 @Repository
 @Transactional(readOnly = true)
 public class ComptDaoImpl implements  ComptDao {
@@ -49,7 +51,11 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     public Long getPacketStateId(long packetId) {
-        Optional<Long> longOptional = Optional.of(em.find(Packet.class, packetId))
+        Packet packet = em.find(Packet.class, packetId);
+        if (packet == null) {
+            return null;
+        }
+        Optional<Long> longOptional = Optional.of(packet)
                 .map(Packet::getState)
                 .map(State::getId);
         return longOptional.isPresent() ? longOptional.get() : null;

@@ -1,6 +1,8 @@
 package com.somecode.service;
 
 import com.google.common.collect.Lists;
+import com.somecode.dao.ComboDataRepository;
+import com.somecode.dao.ComptDao;
 import com.somecode.dao.ComptRepository;
 import com.somecode.domain.*;
 import org.apache.commons.lang3.ArrayUtils;
@@ -13,54 +15,66 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.TypedQuery;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {ServiceTestConfig.class})
-@TestExecutionListeners({ServiceTestExecutionListener.class})
+@ContextConfiguration(classes = {DaoTestConfig.class})
+@TestExecutionListeners({DaoTestExecutionListener.class})
 @ActiveProfiles("test")
-public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTests {
+public class ComptDaoTest extends AbstractTransactionalJUnit4SpringContextTests implements HasCaches {
     @Autowired
-    ComptService comptService;
+    ComptDao comptDao;
 
     @Autowired
     private ComptRepository comptRepository;
 
+    @Autowired
+    private ComboDataRepository comboDataRepository;
+
     @PersistenceContext
     private EntityManager em;
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_Compt.xls")
+    @Override
+    public void clearCaches() {
+        Optional.of(em)
+                .ifPresent(EntityManager::clear);
+        Optional.of(em)
+                .map(EntityManager::getEntityManagerFactory)
+                .map(EntityManagerFactory::getCache)
+                .ifPresent(Cache::evictAll);
+    }
+
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_Compt.xls")
     @Test
     public void testGetCompts_positive() throws Exception {
         final long packetId = 1L;
         final String expectedLabel = "compt_label_1";
         final int expectedResultLength = 1;
 
-        final List<ComptInfo> result = comptService.getCompts(packetId);
+        final List<ComptInfo> result = comptDao.getCompts(packetId);
 
         assertEquals(expectedResultLength, result.size());
         assertEquals(expectedLabel, result.get(0).getLabel());
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_Compt.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_Compt.xls")
     @Test
     public void testGetCompts_negative() throws Exception {
         final long packetId = 2L;
         final int expectedResultSize = 0;
-        final List<ComptInfo> result = comptService.getCompts(packetId);
+        final List<ComptInfo> result = comptDao.getCompts(packetId);
 
         assertEquals(expectedResultSize, result.size());
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_Compt_SupplInfo.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_Compt_SupplInfo.xls")
     @Test
     public void testGetComptsSupplInfo_positive() throws Exception {
         final long packetId = 1L;
@@ -75,20 +89,19 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
                 expectedNumOfCompts, expectedNumOfStates, expectedNumOfComboData);
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_Compt_SupplInfo.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_Compt_SupplInfo.xls")
     @Test
     public void testGetComptsSupplInfo_negative() throws Exception {
         final long packetId = 2L;
         final int expectedResultSize = 0;
-        final List<ComptSupplInfo> result = comptService.getComptsSupplInfo(packetId);
+        final List<ComptSupplInfo> result = comptDao.getComptsSupplInfo(packetId);
 
         assertEquals(expectedResultSize, result.size());
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_ComboData.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_ComboData.xls")
     @Test
     public void testGetComboData_positive() throws Exception {
-
         final int expectedNumOfComboData = 3;
 
         findComboData(ComboDataGetTestCase.COMBO_DATA_PROPERLY, null, expectedNumOfComboData, null, null, null);
@@ -110,9 +123,9 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         List<HasLabel> result = new ArrayList<>();
 
         if (testCase == ComboDataGetTestCase.COMPTS_SUPPL_INFO) {
-            comptService.getComptsSupplInfo(packetId).forEach(result::add);
+            comptDao.getComptsSupplInfo(packetId).forEach(result::add);
         } else if (testCase == ComboDataGetTestCase.COMBO_DATA_PROPERLY) {
-            comptService.getDefaultComboData().forEach(result::add);
+            comptDao.getDefaultComboData().forEach(result::add);
         }
 
         assertEquals((long) expectedResultLength, result.size());
@@ -158,19 +171,19 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         deleteFromTables("COMBO_DATA");
 
         final int expectedResultLength = 0;
-        final List<ComboData> result = comptService.getDefaultComboData();
+        final List<ComboData> result = comptDao.getDefaultComboData();
 
         assertEquals(expectedResultLength, result.size());
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_State.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_State.xls")
     @Test
     public void testGetStates_positive() throws Exception {
-        final String expectedLabelsPrefix = "state_";
+        final String expectedLabelsPrefix = "state_label_";
         final int expectedResultLength = 3;
         final List<String> expectedLabels = generateLabelsList(expectedLabelsPrefix, expectedResultLength);
 
-        final List<State> result = comptService.getStates();
+        final List<State> result = comptDao.getStates();
 
         assertEquals(expectedResultLength, result.size());
         IntStream.range(0, expectedResultLength)
@@ -178,38 +191,39 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
                 .forEach(i -> assertEquals(expectedLabels.get(i), result.get(i).getLabel()));
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_State.xls")
     @Test
     public void testGetStates_negative() throws Exception {
+        deleteFromTables("STATE");
+
         final int expectedResultLength = 0;
-        final List<State> result = comptService.getStates();
+        final List<State> result = comptDao.getStates();
 
         assertEquals(expectedResultLength, result.size());
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_PacketState.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_PacketState.xls")
     @Test
     public void testGetPacketState_positive() throws Exception {
         final long packetId = 1L;
 
         final long expectedResult = 1L;
 
-        final Long result = comptService.getPacketStateId(packetId);
+        final Long result = comptDao.getPacketStateId(packetId);
 
         assertEquals((Long) expectedResult, result);
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_PacketState.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_PacketState.xls")
     @Test
     public void testGetPacketState_negative() throws Exception {
         final long packetId = 2L;
 
-        final Long result = comptService.getPacketStateId(packetId);
+        final Long result = comptDao.getPacketStateId(packetId);
 
         assertNull(result);
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceImplTest_Update_Compts.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoImplTest_Update_Compts.xls")
     @Test
     public void testUpdateCompts_positive() throws Exception {
         final int numOfComptsToUpdate = 2;
@@ -237,7 +251,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
                 new int[numOfComptsToUpdate][expectedNumOfStates][expectedNumOfComboDataItemsPerState];
         final int numOfCheckedComboDataPerCompt = 1;
 
-        comptService.updateCompts(paramsListForUpdate);
+        comptDao.updateCompts(paramsListForUpdate);
         em.flush();
 
         checkComptWithDependencies(OperationType.ADD, expectedResultSize, expectedNumOfComboDataItemsPerCompt,
@@ -245,7 +259,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
                 expectedUpdatedIds, null);
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceImplTest_Update_Compts.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoImplTest_Update_Compts.xls")
     @Test
     public void testUpdateCompts_negative() throws Exception {
         final int numOfComptsToUpdate = 1;
@@ -265,7 +279,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
                 = generateParamsList(OperationType.UPDATE, checkedValsForUpdate,
                 idsForUpdate, numOfComptsToUpdate, null);
 
-        List<Long> result = comptService.updateCompts(paramsListForUpdate);
+        List<Long> result = comptDao.updateCompts(paramsListForUpdate);
         em.flush();
 
         Compt expectedUpdatedCompt = em.find(Compt.class, expectedUpdatedComptId);
@@ -325,7 +339,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         return checkedVals;
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_PacketState.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_PacketState.xls")
     @Test
     public void testUpdatePacketState_positive() throws Exception {
         long packetId = 1L;
@@ -334,7 +348,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         Long expectedModifiedPacketId = packetId;
         long expectedNewStateId = newStateId;
 
-        Long result = comptService.updatePacketState(packetId, newStateId);
+        Long result = comptDao.updatePacketState(packetId, newStateId);
         em.flush();
 
         TypedQuery<Packet> packetTypedQuery = em.createNamedQuery("Packet.getPacketWithStateId", Packet.class);
@@ -348,7 +362,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         assertEquals(expectedNewStateId, updatedPacket.getState().getId());
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_PacketState.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_PacketState.xls")
     @Test
     public void testUpdatePacketState_negative_nonExistingPacketId() throws Exception {
         long packetId = 2L;
@@ -356,7 +370,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 
         Long expectedUpdatedPacketId = packetId;
 
-        Long result = comptService.updatePacketState(packetId, newStateId);
+        Long result = comptDao.updatePacketState(packetId, newStateId);
         em.flush();
 
         Packet expectedUpdatedPacket = em.find(Packet.class, expectedUpdatedPacketId);
@@ -365,7 +379,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         assertNull(result);
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_PacketState.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_PacketState.xls")
     @Test
     public void testUpdatePacketState_negative_nonExistingStateId() throws Exception {
         long packetId = 1L;
@@ -374,7 +388,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         ascertainPacketNotChanged(packetId, newStateId, packetId);
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceTest_PacketState.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_PacketState.xls")
     @Test
     public void testUpdatePacketState_negative_notDifferentStateId() throws Exception {
         long packetId = 1L;
@@ -386,7 +400,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
     private void ascertainPacketNotChanged(long packetId, long newStateId, long expectedUpdatedPacketId) {
         Packet packetBeforeExpectedUpdate = em.find(Packet.class, expectedUpdatedPacketId);
 
-        Long result = comptService.updatePacketState(packetId, newStateId);
+        Long result = comptDao.updatePacketState(packetId, newStateId);
         em.flush();
 
         Packet packetAfterExpectedUpdate = em.find(Packet.class, expectedUpdatedPacketId);
@@ -395,7 +409,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         assertNull(result);
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceImplTest_Add_Compts.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoImplTest_Add_Compts.xls")
     @Test
     public void testAddCompts_positive() throws Exception {
         final int numOfComptsToAdd = 2;
@@ -420,7 +434,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
                 checkedValsForAdding, null,
                 numOfComptsToAdd, labelsForAdding);
 
-        comptService.addCompts(packetId, paramsListForAdding);
+        comptDao.addCompts(packetId, paramsListForAdding);
         em.flush();
 
         checkComptWithDependencies(OperationType.ADD, expectedResultSize, expectedNumOfComboDataItemsPerCompt,
@@ -428,7 +442,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
                 null, labelsForAdding);
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceImplTest_Add_Compts.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoImplTest_Add_Compts.xls")
     @Test
     public void testAddCompts_negative() throws Exception {
         final int numOfComptsToAdd = 2;
@@ -448,7 +462,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
 
         long expectedPacketId = packetId;
         long expectedResultSize = 0L;
-        List<Long> result = comptService.addCompts(packetId, paramsListForAdding);
+        List<Long> result = comptDao.addCompts(packetId, paramsListForAdding);
         em.flush();
 
         Packet expectedPacket = em.find(Packet.class, expectedPacketId);
@@ -470,7 +484,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         assertEquals(expectedResultSize, result.length);
         for (int i = 0; i < expectedResultSize; i++) {
             if (operationType == OperationType.ADD) {
-                assertEquals(labelsForAdding[i], result[i].getPacket().getId());
+                assertEquals(labelsForAdding[i], result[i].getLabel());
             } else if (operationType == OperationType.UPDATE) {
                 assertEquals(expectedUpdatedIds[i], result[i].getId());
             }
@@ -492,7 +506,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
         }
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceImplTest_Remove_Compts.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoImplTest_Remove_Compts.xls")
     @Test
     public void testRemoveCompts_positive() throws Exception {
         final int firstComptId = 1;
@@ -506,7 +520,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
                 expectedResult, null, expectedNumOfComptsAfterRemoval, null);
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptServiceImplTest_Remove_Compts.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoImplTest_Remove_Compts.xls")
     @Test
     public void testRemoveCompts_negative() throws Exception {
         List<Long> comptIdsToRemove = Arrays.asList(3L);
@@ -529,7 +543,7 @@ public class ComptServiceTest extends AbstractTransactionalJUnit4SpringContextTe
                                          int expectedNumOfComptsAfterRemoval,
                                          List<Long> expectedComptIdsAfterRemoval) {
 
-        List<Long> result = comptService.removeCompts(comptIdsToRemove);
+        List<Long> result = comptDao.removeCompts(comptIdsToRemove);
 
         List<Compt> comptsAfterRemoval = Lists.newArrayList(comptRepository.findAll());
 
