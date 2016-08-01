@@ -97,6 +97,7 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     private List<Integer> getIndices(List<String> vals) {
+        getDefaultComboData();
         return vals.stream().map(mapComboLabelsToIndices::get).collect(Collectors.toList());
     }
 

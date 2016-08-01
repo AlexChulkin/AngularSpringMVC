@@ -1,5 +1,6 @@
 package com.somecode.service;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.somecode.dao.ComboDataRepository;
 import com.somecode.dao.ComptDao;
@@ -223,7 +224,7 @@ public class ComptDaoTest extends AbstractTransactionalJUnit4SpringContextTests 
         assertNull(result);
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoImplTest_Update_Compts.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_Update_Compts.xls")
     @Test
     public void testUpdateCompts_positive() throws Exception {
         final int numOfComptsToUpdate = 2;
@@ -254,18 +255,18 @@ public class ComptDaoTest extends AbstractTransactionalJUnit4SpringContextTests 
         comptDao.updateCompts(paramsListForUpdate);
         em.flush();
 
-        checkComptWithDependencies(OperationType.ADD, expectedResultSize, expectedNumOfComboDataItemsPerCompt,
+        checkComptWithDependencies(OperationType.UPDATE, expectedResultSize, expectedNumOfComboDataItemsPerCompt,
                 expectedCheckedVals, checkedComboDataArray, numOfCheckedComboDataPerCompt, expectedNumOfStates,
                 expectedUpdatedIds, null);
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoImplTest_Update_Compts.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_Update_Compts.xls")
     @Test
     public void testUpdateCompts_negative() throws Exception {
         final int numOfComptsToUpdate = 1;
         final String comboDataLabelPrefix = "combo_label_";
         final int numOfStates = 3;
-        final int firstIdToUpdate = 3;
+        final int firstComptIdToUpdate = 3;
 
         final int expectedResultSize = 0;
         final long expectedUpdatedComptId = 3L;
@@ -273,7 +274,7 @@ public class ComptDaoTest extends AbstractTransactionalJUnit4SpringContextTests 
         final String[][] checkedValsForUpdate =
                 generateMultipleLabelsLists(comboDataLabelPrefix, numOfStates, numOfComptsToUpdate);
 
-        final long[] idsForUpdate = generateIds(firstIdToUpdate, numOfComptsToUpdate);
+        final long[] idsForUpdate = generateIds(firstComptIdToUpdate, numOfComptsToUpdate);
 
         List<ComptsParams> paramsListForUpdate
                 = generateParamsList(OperationType.UPDATE, checkedValsForUpdate,
@@ -310,9 +311,12 @@ public class ComptDaoTest extends AbstractTransactionalJUnit4SpringContextTests 
         return paramsList;
     }
 
-    private long[] generateIds(final int firstId, final int numOfIds) {
-        final long[] ids = {};
-        IntStream.rangeClosed(firstId, numOfIds).boxed().forEach(i -> ids[i] = (long) i);
+    private long[] generateIds(final int startingId, final int numOfIds) {
+        final long[] ids = new long[numOfIds];
+        IntStream
+                .range(startingId, startingId + numOfIds)
+                .boxed()
+                .forEach(i -> ids[i - startingId] = (long) i);
 
         return ids;
     }
@@ -326,17 +330,18 @@ public class ComptDaoTest extends AbstractTransactionalJUnit4SpringContextTests 
         String[] invertedValsArray = invertedVals.toArray(new String[0]);
         final String[][] checkedVals = new String[numOfCompts][numOfStates];
 
-        IntStream.range(0, numOfCompts)
-                .filter(i -> i % 2 == 0)
-                .boxed()
-                .forEach(i -> checkedVals[i] = valsArray);
-
-        IntStream.range(0, numOfCompts)
-                .filter(i -> i % 2 != 0)
-                .boxed()
-                .forEach(i -> checkedVals[i] = invertedValsArray);
+        fillInTheCheckedVals(checkedVals, ((Integer i) -> i % 2 == 0), valsArray);
+        fillInTheCheckedVals(checkedVals, ((Integer i) -> i % 2 != 0), invertedValsArray);
 
         return checkedVals;
+    }
+
+    private void fillInTheCheckedVals(final String[][] checkedVals, final Predicate<Integer> condition,
+                                      final String[] vals) {
+        IntStream.range(0, checkedVals.length)
+                .boxed()
+                .filter(condition::apply)
+                .forEach(i -> checkedVals[i] = vals);
     }
 
     @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_PacketState.xls")
@@ -409,7 +414,7 @@ public class ComptDaoTest extends AbstractTransactionalJUnit4SpringContextTests 
         assertNull(result);
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoImplTest_Add_Compts.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_Add_Compts.xls")
     @Test
     public void testAddCompts_positive() throws Exception {
         final int numOfComptsToAdd = 2;
@@ -442,7 +447,7 @@ public class ComptDaoTest extends AbstractTransactionalJUnit4SpringContextTests 
                 null, labelsForAdding);
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoImplTest_Add_Compts.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_Add_Compts.xls")
     @Test
     public void testAddCompts_negative() throws Exception {
         final int numOfComptsToAdd = 2;
@@ -489,12 +494,12 @@ public class ComptDaoTest extends AbstractTransactionalJUnit4SpringContextTests 
                 assertEquals(expectedUpdatedIds[i], result[i].getId());
             }
             for (int j = 0; j < expectedNumOfComboDataItemsPerCompt; j++) {
-                int stateIndex = (int) result[i].getDataCompts().get(j).getState().getId();
-                int comboDataIndex = (int) result[i].getDataCompts().get(j).getComboData().getId();
+                int stateIndex = (int) result[i].getDataCompts().get(j).getState().getId() - 1;
+                int comboDataIndex = (int) result[i].getDataCompts().get(j).getComboData().getId() - 1;
                 boolean checked = result[i].getDataCompts().get(j).getChecked();
                 String label = result[i].getDataCompts().get(j).getComboData().getLabel();
 
-                assert (checked ^ (label.equals(expectedCheckedVals[i][stateIndex])));
+                assertEquals(checked, (label.equals(expectedCheckedVals[i][stateIndex])));
                 checkedComboDataArray[i][stateIndex][comboDataIndex] = checked ? 1 : 0;
             }
         }
@@ -506,12 +511,13 @@ public class ComptDaoTest extends AbstractTransactionalJUnit4SpringContextTests 
         }
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoImplTest_Remove_Compts.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_Remove_Compts.xls")
     @Test
     public void testRemoveCompts_positive() throws Exception {
         final int firstComptId = 1;
         final int numOfComptIds = 2;
-        List<Long> comptIdsToRemove = Arrays.asList(ArrayUtils.toObject(generateIds(firstComptId, numOfComptIds)));
+        List<Long> comptIdsToRemove
+                = Arrays.asList(ArrayUtils.toObject(generateIds(firstComptId, numOfComptIds)));
 
         List<Long> expectedResult = comptIdsToRemove;
         int expectedNumOfComptsAfterRemoval = 0;
@@ -520,7 +526,7 @@ public class ComptDaoTest extends AbstractTransactionalJUnit4SpringContextTests 
                 expectedResult, null, expectedNumOfComptsAfterRemoval, null);
     }
 
-    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoImplTest_Remove_Compts.xls")
+    @DataSets(setUpDataSet = "/com/somecode/service/ComptDaoTest_Remove_Compts.xls")
     @Test
     public void testRemoveCompts_negative() throws Exception {
         List<Long> comptIdsToRemove = Arrays.asList(3L);
