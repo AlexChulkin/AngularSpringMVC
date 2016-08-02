@@ -6,23 +6,6 @@ import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
-@NamedQuery(name = "Packet.getPacketWithStateId",
-        query = "SELECT p FROM Packet p WHERE p.id = :id")
-
-@NamedEntityGraph(name = "Packet.getGraphWithStateId",
-        attributeNodes = {
-                @NamedAttributeNode("id"),
-                @NamedAttributeNode(value = "state", subgraph = "stateGraph"),
-        },
-        subgraphs = {
-                @NamedSubgraph(name = "stateGraph",
-                        attributeNodes = {
-                                @NamedAttributeNode("id")
-                        }
-                )
-        }
-)
-
 @Entity
 public class Packet {
 

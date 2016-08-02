@@ -3,7 +3,6 @@ package com.somecode.config;
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -25,23 +24,12 @@ import java.util.Properties;
 @EnableJpaRepositories("com.somecode")
 public class PersistenceJPAConfig {
 
-    private static final Logger LOGGER = Logger.getLogger(PersistenceJPAConfig.class);
-    private static Properties properties = new Properties();
+    protected static Logger LOGGER;
+    protected Properties properties = new Properties();
 
-    @Profile("dev")
     @PostConstruct
-    private static void setDevProperties() {
-        String propertiesPath = "db_dev.properties";
-        try {
-            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream(propertiesPath));
-        } catch (IOException e) {
-            LOGGER.error("Error in properties", e);
-        }
-    }
-
-    @Profile("test")
-    @PostConstruct
-    private static void setTestProperties() {
+    protected void setProperties() {
+        LOGGER = Logger.getLogger(PersistenceJPAConfig.class);
         String propertiesPath = "db_test.properties";
         try {
             properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream(propertiesPath));
@@ -50,11 +38,16 @@ public class PersistenceJPAConfig {
         }
     }
 
+    protected Properties getProperties() {
+        return properties;
+    }
+
     @Bean
-    public static DataSource dataSource() {
+    public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
                 .addScript("classpath:META-INF/config/schema.sql")
+                .addScript("classpath:META-INF/config/test-data.sql")
                 .build();
     }
 
@@ -69,7 +62,7 @@ public class PersistenceJPAConfig {
         vendorAdapter.setShowSql(Boolean.parseBoolean(properties.getProperty("hibernate.show_sql")));
 
         em.setJpaVendorAdapter(vendorAdapter);
-        em.setJpaProperties(properties);
+        em.setJpaProperties(getProperties());
 
         return em;
     }

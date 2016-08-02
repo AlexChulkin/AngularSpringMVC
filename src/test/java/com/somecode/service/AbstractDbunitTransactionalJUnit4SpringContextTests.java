@@ -95,7 +95,6 @@ public abstract class AbstractDbunitTransactionalJUnit4SpringContextTests
             }
         }
 
-
         private <T> T getImplementingBeanFromContext(TestContext testCtx, Class<T> tClass) throws Exception {
             Map<String, T> implementations = testCtx.getApplicationContext().getBeansOfType(tClass);
             for (T t : implementations.values()) {

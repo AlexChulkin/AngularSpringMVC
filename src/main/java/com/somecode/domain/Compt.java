@@ -16,41 +16,8 @@ import java.util.List;
         @NamedQuery(name = "Compt.getSupplInfo",
                 query = "SELECT NEW com.somecode.domain.ComptSupplInfo(c.id, dc.state.id, cd.label, dc.checked) " +
                         "FROM Packet p JOIN p.compts c JOIN c.dataCompts dc JOIN dc.comboData cd " +
-                        "WHERE p.id = :packetId ORDER BY dc.id ASC"),
-        @NamedQuery(name = "Compt.findAllWithDataCompts",
-                query = "SELECT DISTINCT c FROM Compt c ORDER BY c.id ASC")
+                        "WHERE p.id = :packetId ORDER BY dc.id ASC")
 })
-@NamedEntityGraph(name = "Compt.getGraphWithDataCompts",
-        attributeNodes = {
-                @NamedAttributeNode("id"),
-                @NamedAttributeNode(value = "packet", subgraph = "packetGraph"),
-                @NamedAttributeNode(value = "dataCompts", subgraph = "dataComptGraph")
-        },
-        subgraphs = {
-                @NamedSubgraph(name = "packetGraph",
-                        attributeNodes = {
-                                @NamedAttributeNode("id")
-                        }
-                ),
-                @NamedSubgraph(name = "dataComptGraph",
-                        attributeNodes = {
-                                @NamedAttributeNode("checked"),
-                                @NamedAttributeNode(value = "state", subgraph = "stateGraph"),
-                                @NamedAttributeNode(value = "comboData", subgraph = "comboDataGraph")
-                        }
-                ),
-                @NamedSubgraph(name = "comboDataGraph",
-                        attributeNodes = {
-                                @NamedAttributeNode("label")
-                        }
-                ),
-                @NamedSubgraph(name = "stateGraph",
-                        attributeNodes = {
-                                @NamedAttributeNode("id")
-                        }
-                )
-        }
-)
 public class Compt  {
 
     private long id;

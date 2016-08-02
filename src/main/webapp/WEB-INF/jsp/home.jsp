@@ -102,7 +102,7 @@
 
     <form name="form"
           ng-hide="errorStates || errorComboData || errorCompts || errorComptsSupplData || errorPacketState">
-        <label>
+        <label ng-class="label-primary">
             Enter new label:
             <input class="text"
                    name="newLabelName"

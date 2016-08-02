@@ -68,6 +68,7 @@ public class ComptDaoImpl implements  ComptDao {
     @Override
     public List<State> getStates(){
         states = Lists.newArrayList(stateRepository.findAll());
+        System.out.println("states " + states);
 
         return states;
     }
@@ -76,6 +77,7 @@ public class ComptDaoImpl implements  ComptDao {
     public List<ComboData> getDefaultComboData() {
         List<ComboData> oldDefaultComboData = defaultComboData;
         defaultComboData = Lists.newArrayList(comboDataRepository.findAllByOrderByIdAsc());
+        System.out.println("defaultComboData " + defaultComboData);
 
         if (defaultComboData.equals(oldDefaultComboData)) {
             return defaultComboData;
@@ -90,9 +92,11 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     public List<ComptInfo> getCompts(long packetId){
-        return em.createNamedQuery("Compt.getInfo",ComptInfo.class)
+        List<ComptInfo> getCompts = em.createNamedQuery("Compt.getInfo", ComptInfo.class)
                 .setParameter("packetId", packetId)
                 .getResultList();
+        System.out.println("getCompts " + getCompts);
+        return getCompts;
     }
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
