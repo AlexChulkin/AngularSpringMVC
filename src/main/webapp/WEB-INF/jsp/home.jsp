@@ -129,20 +129,20 @@
         </div>
         <div>
             <span class="input-group-btn">
-                  <button class="btn btn-default" id="addBtn"
+                  <button class="btn btn-primary" id="addBtn"
                           ng-click="addNewCompt()"
                           ng-disabled="form.$invalid"
                   >Add</button>
             </span>
                         <span class="input-group-btn">
-                  <button class="btn btn-default" id="reloadBtn"
+                  <button class="btn btn-warning" id="reloadBtn"
                           ng-click="reloadRoute()"
                   >Reload</button>
             </span>
         </div>
         <div>
             <span class="input-group-btn">
-                  <button class="btn btn-default" id="saveBtn"
+                  <button class="btn btn-success" id="saveBtn"
                           ng-click="saveAllToBase()">Update the database</button>
             </span>
         </div>

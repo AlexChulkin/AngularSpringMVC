@@ -104,5 +104,4 @@ public abstract class AbstractDbunitTransactionalJUnit4SpringContextTests
             return null;
         }
     }
-
 }
