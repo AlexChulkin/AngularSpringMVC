@@ -23,16 +23,23 @@ import java.util.Properties;
 @EnableTransactionManagement
 @EnableJpaRepositories("com.somecode")
 public class PersistenceJPAConfig {
-
     protected static Logger LOGGER;
+    private final String PROPERTIES_PATH = "db.properties";
     protected Properties properties = new Properties();
 
     @PostConstruct
-    protected void setProperties() {
+    protected void setLOGGERAndProperties() {
+        setLOGGER();
+        setProperties();
+    }
+
+    protected void setLOGGER() {
         LOGGER = Logger.getLogger(PersistenceJPAConfig.class);
-        String propertiesPath = "db_test.properties";
+    }
+
+    protected void setProperties() {
         try {
-            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream(propertiesPath));
+            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream(PROPERTIES_PATH));
         } catch (IOException e) {
             LOGGER.error("Error in properties", e);
         }

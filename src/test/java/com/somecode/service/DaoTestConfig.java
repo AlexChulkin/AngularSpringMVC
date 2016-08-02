@@ -15,13 +15,18 @@ import javax.sql.DataSource;
 @Configuration
 @ComponentScan(basePackages = {"com.somecode"})
 @Import(PersistenceJPAConfig.class)
-@PropertySource(value = "classpath:db_test.properties")
+@PropertySource(value = "classpath:db.properties")
 public class DaoTestConfig extends PersistenceJPAConfig {
 
     @Override
     @PostConstruct
     protected void setProperties() {
-        LOGGER = Logger.getLogger(PersistenceJPAConfig.class);
+        super.setProperties();
+    }
+
+    @Override
+    protected void setLOGGER() {
+        LOGGER = Logger.getLogger(DaoTestConfig.class);
     }
 
     @Override
