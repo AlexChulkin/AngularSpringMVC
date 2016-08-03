@@ -51,11 +51,13 @@ public class PersistenceJPAConfig {
 
     @Bean
     public DataSource dataSource() {
-        return new EmbeddedDatabaseBuilder()
+        DataSource d = new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
-                .addScript("classpath:META-INF/config/schema.sql")
+//                .addScript("classpath:META-INF/config/schema.sql")
                 .addScript("classpath:META-INF/config/test-data.sql")
                 .build();
+        LOGGER.info("datasource created");
+        return d;
     }
 
     @Bean
@@ -63,6 +65,7 @@ public class PersistenceJPAConfig {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 
         em.setDataSource(dataSource());
+        LOGGER.info("datasource set");
         em.setPackagesToScan("com.somecode");
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(true);

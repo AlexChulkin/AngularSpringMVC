@@ -30,6 +30,10 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
         $scope.newComptLabels = {};
 
         $http.get(contextPath + '/states', simpleConfig).success(function (data) {
+            if (!data) {
+                $scope.errorStates = true;
+                return;
+            }
             $scope.states = data;
 
             $scope.stateLabels = [];
@@ -39,6 +43,10 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
                 $scope.stateLabels.push(state.label);
             });
             $http.get(contextPath + '/defaultComboData', simpleConfig).success(function (data) {
+                if (!data) {
+                    $scope.errorComboData = true;
+                    return;
+                }
                 data.forEach(function (sd) {
                     $scope.defaultComboData.push(sd.label);
                 });
@@ -46,8 +54,16 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
                     $scope.newValues.push($scope.defaultComboData[0]);
                 });
                 $http.get(contextPath + '/packetStateId', complConfig).success(function (data) {
+                    if (!data) {
+                        $scope.errorPacketState = true;
+                        return;
+                    }
                     $scope.stateLabels.defaultIndex = data;
                     $http.get(contextPath + '/comptsSupplInfo', complConfig).success(function (data) {
+                        if (!data) {
+                            $scope.errorComptsSupplData = true;
+                            return;
+                        }
                         $scope.checkedVals = {};
                         $scope.comboData = {};
                         data.forEach(function (el) {
