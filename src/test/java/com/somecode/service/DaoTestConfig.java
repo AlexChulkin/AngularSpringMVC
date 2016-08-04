@@ -47,7 +47,7 @@ public class DaoTestConfig extends PersistenceJPAConfig {
     public DataSource dataSource() {
         return new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
-                .addScript("classpath:META-INF/config/schema.sql")
+                .addScript("classpath:META-INF/config/test/test-schema.sql")
                 .build();
     }
 

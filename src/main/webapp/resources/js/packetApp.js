@@ -161,9 +161,6 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
                 updatedCompts.push({id: comptId, vals: $scope.getCheckedValsForCompt(comptId)});
             }
         }
-        // $scope.updatedItemIds.forEach(function (id) {
-        //     updatedCompts.push({id: id, vals: $scope.getCheckedValsForCompt(id)});
-        // });
         $scope.updateComptsInBase(updatedCompts);
         $scope.updatedItemIds = [];
     };

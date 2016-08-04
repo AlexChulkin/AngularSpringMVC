@@ -8,12 +8,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
-
+@Profile("dev")
 @EnableWebMvc
 @ComponentScan(basePackages = {"com.somecode"})
 @Import(PersistenceJPAConfig.class)
 @Configuration
-@Profile("dev")
 public class Config extends WebMvcConfigurerAdapter {
 
     @Override
