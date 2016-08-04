@@ -1,31 +1,45 @@
 package com.somecode.service;
 
 import com.somecode.config.PersistenceJPAConfig;
+import org.apache.log4j.Logger;
 import org.dbunit.DataSourceDatabaseTester;
 import org.dbunit.util.fileloader.XlsDataFileLoader;
 import org.springframework.context.annotation.*;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.util.Properties;
 
 @Profile("test")
 @Configuration
 @ComponentScan(basePackages = {"com.somecode"})
 @Import(PersistenceJPAConfig.class)
-@PropertySource(value = "classpath:db.properties")
+//@PropertySource(value = "classpath:db_dev.properties")
 public class DaoTestConfig extends PersistenceJPAConfig {
 
-//    @Override
-//    @PostConstruct
-//    protected void setProperties() {
-//        super.setProperties();
-//    }
-//
-//    @Override
-//    protected void setLOGGER() {
-//        LOGGER = Logger.getLogger(DaoTestConfig.class);
-//    }
+    @Override
+    @PostConstruct
+    protected void setPropertiesAndLogger() {
+        super.setPropertiesAndLogger();
+    }
+
+    @Override
+    protected void setProperties() {
+        properties = new Properties();
+        try {
+            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream("db_test.properties"));
+        } catch (IOException e) {
+            LOGGER.error("Error in properties", e);
+        }
+    }
+
+    @Override
+    protected void setLogger() {
+        LOGGER = Logger.getLogger(DaoTestConfig.class);
+    }
 
     @Override
     @Bean

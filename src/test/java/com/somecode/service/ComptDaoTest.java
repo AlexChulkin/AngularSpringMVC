@@ -177,15 +177,14 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         assertEquals(expectedResultLength, result.size());
     }
 
-    //    @DataSets(before = "/com/somecode/service/ComptDaoTest_State.xls")
+    @DataSets(before = "/com/somecode/service/ComptDaoTest_State.xls")
     @Test
     @DirtiesContext
     public void testGetStates_positive() throws Exception {
         final String expectedLabelsPrefix = "state_label_";
         final int expectedResultLength = 3;
-//        final List<String> expectedLabels = generateLabelsList(expectedLabelsPrefix, expectedResultLength);
+        final List<String> expectedLabels = generateLabelsList(expectedLabelsPrefix, expectedResultLength);
 
-        final List<String> expectedLabels = Arrays.asList("PRE_COMMITEE", "IN_COMMITEE", "FINAL");
         final List<State> result = comptDao.getStates();
 
         assertEquals(expectedResultLength, result.size());

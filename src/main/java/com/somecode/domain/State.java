@@ -7,6 +7,7 @@ import javax.persistence.*;
  * Created by achulkin on 03.06.14.
  */
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"LABEL"}))
 public class State {
 
     private long id;
