@@ -21,16 +21,12 @@ import java.util.Properties;
 
 
 @Configuration
-//@PropertySource(value = "classpath:db_dev.properties")
 @EnableTransactionManagement
 @EnableJpaRepositories("com.somecode")
 public class PersistenceJPAConfig {
 
     protected static Logger LOGGER;
     protected Properties properties;
-
-//    @Autowired
-//    Environment environment;
 
     @PostConstruct
     protected void setPropertiesAndLogger() {

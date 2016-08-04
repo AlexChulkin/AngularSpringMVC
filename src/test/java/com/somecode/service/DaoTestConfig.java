@@ -4,7 +4,10 @@ import com.somecode.config.PersistenceJPAConfig;
 import org.apache.log4j.Logger;
 import org.dbunit.DataSourceDatabaseTester;
 import org.dbunit.util.fileloader.XlsDataFileLoader;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
@@ -16,8 +19,6 @@ import java.util.Properties;
 @Profile("test")
 @Configuration
 @ComponentScan(basePackages = {"com.somecode"})
-@Import(PersistenceJPAConfig.class)
-//@PropertySource(value = "classpath:db_dev.properties")
 public class DaoTestConfig extends PersistenceJPAConfig {
 
     @Override
