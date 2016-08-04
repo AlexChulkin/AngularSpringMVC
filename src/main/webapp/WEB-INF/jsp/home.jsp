@@ -49,7 +49,7 @@
                           <select class="standard"
                                   ng-options="el for el in comboData[compt.id][state.id]"
                                   ng-model="checkedVals[compt.id][state.id]"
-                                  ng-change="markComptAsUpdated(compt.id)">
+                                  ng-change="markComptAsUpdated(compt)">
                           </select>
                     </span>
                 </td>

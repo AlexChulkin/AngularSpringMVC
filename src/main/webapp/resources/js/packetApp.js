@@ -1,5 +1,5 @@
 /**
- * Created by achulkin on 04.06.14.
+ * Created by achulkin on 04.06.14.   
  */
 var app = angular.module("packetApp", [])
     .constant("packetId",1)
@@ -26,7 +26,7 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
 
         $scope.defaultComboData = [];
         $scope.persistedRecentlyRemovedItemIds = [];
-        $scope.updatedItemIds = [];
+        $scope.updatedItemIds = {};
         $scope.newComptLabels = {};
 
         $http.get(contextPath + '/states', simpleConfig).success(function (data) {
@@ -129,8 +129,12 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
         }
     };
 
-    $scope.markComptAsUpdated = function (comptId) {
-        $scope.updatedItemIds.push(comptId);
+    $scope.markComptAsUpdated = function (compt) {
+        if ($scope.compts[compt.label].new) {
+            return;
+        }
+        var comptId = compt.id;
+        $scope.updatedItemIds[comptId] = comptId;
     };
 
     $scope.saveAllToBase = function () {
@@ -151,9 +155,15 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
         $scope.newComptLabels = {};
 
         var updatedCompts = [];
-        $scope.updatedItemIds.forEach(function (id) {
-            updatedCompts.push({id: id, vals: $scope.getCheckedValsForCompt(id)});
-        });
+        for (var id in $scope.updatedItemIds) {
+            if ($scope.updatedItemIds.hasOwnProperty(id)) {
+                var comptId = $scope.updatedItemIds[id];
+                updatedCompts.push({id: comptId, vals: $scope.getCheckedValsForCompt(comptId)});
+            }
+        }
+        // $scope.updatedItemIds.forEach(function (id) {
+        //     updatedCompts.push({id: id, vals: $scope.getCheckedValsForCompt(id)});
+        // });
         $scope.updateComptsInBase(updatedCompts);
         $scope.updatedItemIds = [];
     };
@@ -213,9 +223,9 @@ app.directive('blacklist', function () {
     return {
         require: 'ngModel',
         link: function ($scope, elem, attr, ngModel) {
-            ngModel.$parsers.unshift(function (value) {
-                ngModel.$setValidity('blacklist', !$scope.compts[value]);
-                return value;
+            ngModel.$parsers.unshift(function (label) {
+                ngModel.$setValidity('blacklist', !$scope.compts[label]);
+                return label;
             });
         }
     };
