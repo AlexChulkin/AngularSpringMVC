@@ -43,18 +43,18 @@
                     <span ng-bind="compt.label" />
                 </td>
                 <td  ng-repeat="state in states">
-                    <span ng-bind="defaultValues[compt.id][state.id]"
+                    <span ng-bind="checkedVals[compt.id][state.id]"
                           ng-hide="stateLabels.defaultIndex===state.id"></span>
                     <span ng-show="stateLabels.defaultIndex===state.id">
                           <select class="standard"
                                   ng-options="el for el in comboData[compt.id][state.id]"
-                                  ng-model="defaultValues[compt.id][state.id]"
+                                  ng-model="checkedVals[compt.id][state.id]"
                                   ng-change="markComptAsUpdated(compt.id)">
                           </select>
                     </span>
                 </td>
                 <td>
-                    <button ng-click="deleteCompt(compt)" class="btn btn-xs btn-primary">
+                    <button ng-click="deleteCompt(compt.label)" class="btn btn-xs btn-primary">
                         Delete
                     </button>
                 </td>
@@ -136,8 +136,7 @@
             </span>
                         <span class="input-group-btn">
                   <button class="btn btn-warning" id="reloadBtn"
-                          ng-click="reloadRoute()"
-                  >Reload</button>
+                          ng-click="reloadRoute()">Reload</button>
             </span>
         </div>
         <div>

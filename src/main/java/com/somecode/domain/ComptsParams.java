@@ -10,37 +10,30 @@ public class ComptsParams {
     private String label;
     private long id;
 
-    public ComptsParams(List<String> vals, long id) {
-        this.vals = vals;
-        this.id = id;
-    }
-
-    public ComptsParams(List<String> vals, String label) {
-        this.vals = vals;
-        this.label = label;
-    }
-
     public long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public ComptsParams setId(long id) {
         this.id = id;
+        return this;
     }
 
     public List<String> getVals() {
         return vals;
     }
 
-    public void setVals(List<String> vals) {
+    public ComptsParams setVals(List<String> vals) {
         this.vals = vals;
+        return this;
     }
 
     public String getLabel() {
         return label;
     }
 
-    public void setLabel(String label) {
+    public ComptsParams setLabel(String label) {
         this.label = label;
+        return this;
     }
 }

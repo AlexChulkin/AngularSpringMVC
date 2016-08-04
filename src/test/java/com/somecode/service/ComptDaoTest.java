@@ -15,14 +15,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.persistence.Cache;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
@@ -42,13 +39,13 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
 
     @Override
     protected void clearCachedData() {
-        deleteFromTables("DATA_COMPT", "COMBO_DATA", "COMPT", "PACKET", "STATE");
-        Optional.of(em)
-                .ifPresent(EntityManager::clear);
-        Optional.of(em)
-                .map(EntityManager::getEntityManagerFactory)
-                .map(EntityManagerFactory::getCache)
-                .ifPresent(Cache::evictAll);
+//        deleteFromTables("DATA_COMPT", "COMBO_DATA", "COMPT", "PACKET", "STATE");
+//        Optional.of(em)
+//                .ifPresent(EntityManager::clear);
+//        Optional.of(em)
+//                .map(EntityManager::getEntityManagerFactory)
+//                .map(EntityManagerFactory::getCache)
+//                .ifPresent(Cache::evictAll);
     }
 
     @DataSets(before = "/com/somecode/service/ComptDaoTest_Compt.xls")
@@ -180,14 +177,15 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         assertEquals(expectedResultLength, result.size());
     }
 
-    @DataSets(before = "/com/somecode/service/ComptDaoTest_State.xls")
+    //    @DataSets(before = "/com/somecode/service/ComptDaoTest_State.xls")
     @Test
     @DirtiesContext
     public void testGetStates_positive() throws Exception {
         final String expectedLabelsPrefix = "state_label_";
         final int expectedResultLength = 3;
-        final List<String> expectedLabels = generateLabelsList(expectedLabelsPrefix, expectedResultLength);
+//        final List<String> expectedLabels = generateLabelsList(expectedLabelsPrefix, expectedResultLength);
 
+        final List<String> expectedLabels = Arrays.asList("PRE_COMMITEE", "IN_COMMITEE", "FINAL");
         final List<State> result = comptDao.getStates();
 
         assertEquals(expectedResultLength, result.size());
@@ -286,13 +284,18 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final List<ComptsParams> paramsList = new ArrayList<>();
         if (operationType == OperationType.UPDATE) {
             IntStream.range(0, numOfComptsToAddOrUpdate).boxed()
-                    .forEach(i -> paramsList.add(new ComptsParams(Arrays.asList(checkedValsForAddOrUpdate[i]),
-                            idsForAddOrUpdate[i])));
+                    .forEach(i ->
+                            paramsList.add(new ComptsParams()
+                                    .setVals(Arrays.asList(checkedValsForAddOrUpdate[i]))
+                                    .setId(idsForAddOrUpdate[i]))
+                    );
         } else if (operationType == OperationType.ADD) {
             IntStream.range(0, numOfComptsToAddOrUpdate).boxed()
                     .forEach(i ->
-                            paramsList.add(new ComptsParams(Arrays.asList(checkedValsForAddOrUpdate[i]),
-                                    labelsForAdding[i])));
+                            paramsList.add(new ComptsParams()
+                                    .setVals(Arrays.asList(checkedValsForAddOrUpdate[i]))
+                                    .setLabel(labelsForAdding[i]))
+                    );
         }
 
         return paramsList;
@@ -423,8 +426,10 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
 
         final List<ComptsParams> paramsListForAdding = new ArrayList<>();
         IntStream.range(0, numOfComptsToAdd).boxed()
-                .forEach(i -> paramsListForAdding.add(new ComptsParams(Arrays.asList(checkedValsForAdding[i]),
-                        labelsForAdding[i])));
+                .forEach(i -> paramsListForAdding.add(new ComptsParams()
+                        .setVals(Arrays.asList(checkedValsForAdding[i]))
+                        .setLabel(labelsForAdding[i]))
+                );
 
         comptDao.addCompts(packetId, paramsListForAdding);
         em.flush();

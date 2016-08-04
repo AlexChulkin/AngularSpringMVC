@@ -26,7 +26,7 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
 
         $scope.defaultComboData = [];
         $scope.persistedRecentlyRemovedItemIds = [];
-        $scope.updatedItemIds = {};
+        $scope.updatedItemIds = [];
         $scope.newComptLabels = {};
 
         $http.get(contextPath + '/states', simpleConfig).success(function (data) {
@@ -116,21 +116,21 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
     };
 
     $scope.deleteCompt = function (label) {
-        var id = compts[label].id;
-
+        var id = $scope.compts[label].id;
+        var isNew = $scope.compts[label].new;
+        
         delete $scope.compts[label];
         delete $scope.checkedVals[id];
         delete $scope.comboData[id];
         delete $scope.updatedItemIds[id];
 
-
-        if (!compt.new) {
+        if (!isNew) {
             $scope.persistedRecentlyRemovedItemIds.push(id);
         }
     };
 
     $scope.markComptAsUpdated = function (comptId) {
-        $scope.updatedItemIds[id] = true;
+        $scope.updatedItemIds.push(comptId);
     };
 
     $scope.saveAllToBase = function () {
@@ -151,13 +151,11 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
         $scope.newComptLabels = {};
 
         var updatedCompts = [];
-        for (var id in $scope.updatedItemIds) {
-            if ($scope.updatedItemIds.hasOwnProperty(id)) {
-                updatedCompts.push({id: id, vals: $scope.getCheckedValsForCompt(id)});
-            }
-        }
+        $scope.updatedItemIds.forEach(function (id) {
+            updatedCompts.push({id: id, vals: $scope.getCheckedValsForCompt(id)});
+        });
         $scope.updateComptsInBase(updatedCompts);
-        $scope.updatedItemIds = {};
+        $scope.updatedItemIds = [];
     };
 
     $scope.getCheckedValsForCompt = function (comptId) {

@@ -1,63 +1,48 @@
 package com.somecode.config;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Properties;
 
+
 @Configuration
+@PropertySource(value = "classpath:db.properties")
 @EnableTransactionManagement
 @EnableJpaRepositories("com.somecode")
 public class PersistenceJPAConfig {
-    protected static Logger LOGGER;
-    private final String PROPERTIES_PATH = "db.properties";
-    protected Properties properties = new Properties();
 
-    @PostConstruct
-    protected void setLOGGERAndProperties() {
-        setLOGGER();
-        setProperties();
-    }
+    private static final Logger LOGGER = Logger.getLogger(PersistenceJPAConfig.class);
+    private static final Properties properties = getProperties();
 
-    protected void setLOGGER() {
-        LOGGER = Logger.getLogger(PersistenceJPAConfig.class);
-    }
+    @Autowired
+    Environment environment;
 
-    protected void setProperties() {
+    @Bean
+    private static Properties getProperties() {
+        Properties properties = new Properties();
         try {
-            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream(PROPERTIES_PATH));
+            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream("db.properties"));
         } catch (IOException e) {
             LOGGER.error("Error in properties", e);
         }
-    }
 
-    protected Properties getProperties() {
         return properties;
-    }
-
-    @Bean
-    public DataSource dataSource() {
-        DataSource d = new EmbeddedDatabaseBuilder()
-                .setType(EmbeddedDatabaseType.H2)
-//                .addScript("classpath:META-INF/config/schema.sql")
-                .addScript("classpath:META-INF/config/test-data.sql")
-                .build();
-        LOGGER.info("datasource created");
-        return d;
     }
 
     @Bean
@@ -65,16 +50,29 @@ public class PersistenceJPAConfig {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 
         em.setDataSource(dataSource());
-        LOGGER.info("datasource set");
         em.setPackagesToScan("com.somecode");
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         vendorAdapter.setGenerateDdl(true);
         vendorAdapter.setShowSql(Boolean.parseBoolean(properties.getProperty("hibernate.show_sql")));
 
         em.setJpaVendorAdapter(vendorAdapter);
-        em.setJpaProperties(getProperties());
+        em.setJpaProperties(properties);
 
         return em;
+    }
+
+    @Bean
+    public DataSource dataSource() {
+        BasicDataSource dataSource = new BasicDataSource();
+        dataSource.setDriverClassName(properties.getProperty("className"));
+        dataSource.setUrl(properties.getProperty("url"));
+        dataSource.setUsername(properties.getProperty("username"));
+        dataSource.setPassword(properties.getProperty("password"));
+        dataSource.setMaxActive(10);
+        dataSource.setMaxWait(100);
+        dataSource.setInitialSize(3);
+
+        return dataSource;
     }
 
     @Bean

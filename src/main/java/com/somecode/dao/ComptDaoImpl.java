@@ -23,7 +23,7 @@ import java.util.stream.IntStream;
 public class ComptDaoImpl implements  ComptDao {
     private static final Logger LOGGER = Logger.getLogger(ComptDaoImpl.class);
 
-    private List<ComboData> defaultComboData;
+    private List<ComboData> defaultComboData = Collections.EMPTY_LIST;
 
     private Map<String, Integer> mapComboLabelsToIndices;
 
@@ -67,7 +67,8 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     public List<State> getStates(){
-        states = Lists.newArrayList(stateRepository.findAll());
+        Iterable<State> iterable = stateRepository.findAll();
+        states = Lists.newArrayList(iterable);
         System.out.println("states " + states);
 
         return states;
@@ -76,10 +77,10 @@ public class ComptDaoImpl implements  ComptDao {
     @Override
     public List<ComboData> getDefaultComboData() {
         List<ComboData> oldDefaultComboData = defaultComboData;
-        defaultComboData = Lists.newArrayList(comboDataRepository.findAllByOrderByIdAsc());
+        defaultComboData = Lists.newArrayList(comboDataRepository.findAll());
         System.out.println("defaultComboData " + defaultComboData);
 
-        if (defaultComboData.equals(oldDefaultComboData)) {
+        if (checkComboDataListsForEquality(defaultComboData, oldDefaultComboData)) {
             return defaultComboData;
         }
         mapComboLabelsToIndices = IntStream
@@ -90,12 +91,26 @@ public class ComptDaoImpl implements  ComptDao {
         return defaultComboData;
     }
 
+    private boolean checkComboDataListsForEquality(List<ComboData> defaultComboData,
+                                                   List<ComboData> oldDefaultComboData) {
+        int size = defaultComboData.size();
+        if (size != oldDefaultComboData.size()) {
+            return false;
+        }
+        return IntStream.range(0, size).boxed()
+                .allMatch(i ->
+                        getSortedLabels(defaultComboData).get(i).equals(getSortedLabels(oldDefaultComboData).get(i)));
+    }
+
+    private List<String> getSortedLabels(List<ComboData> comboDataList) {
+        return comboDataList.stream().map(ComboData::getLabel).sorted().collect(Collectors.toList());
+    }
+
     @Override
     public List<ComptInfo> getCompts(long packetId){
         List<ComptInfo> getCompts = em.createNamedQuery("Compt.getInfo", ComptInfo.class)
                 .setParameter("packetId", packetId)
                 .getResultList();
-        System.out.println("getCompts " + getCompts);
         return getCompts;
     }
 
@@ -113,19 +128,21 @@ public class ComptDaoImpl implements  ComptDao {
         for (ComptsParams comptsParams : comptsParamsList) {
             Compt compt = em.find(Compt.class, comptsParams.getId(), LockModeType.OPTIMISTIC_FORCE_INCREMENT);
             if (compt == null) {
-                LOGGER.info("Compt update. The compt with id " + comptsParams.getId() + "does not exist.");
                 continue;
             }
 
             List<Integer> newCheckedIndices = getIndices(comptsParams.getVals());
+            System.out.println("new Checked Indices " + newCheckedIndices);
+
             List<DataCompt> dataCompts = compt.getDataCompts();
 
             for (DataCompt dc : dataCompts) {
-                int defaultStateIndex = (int) dc.getState().getId() - 1;
+                int stateIndex = (int) dc.getState().getId() - 1;
                 int comboDataIndex = (int) dc.getComboData().getId() - 1;
                 boolean checked = dc.getChecked();
-                if (!checked && newCheckedIndices.get(defaultStateIndex) == comboDataIndex
-                        || checked && newCheckedIndices.get(defaultStateIndex) != comboDataIndex) {
+                if (!checked && newCheckedIndices.get(stateIndex) == comboDataIndex
+                        || checked && newCheckedIndices.get(stateIndex) != comboDataIndex) {
+                    System.out.println("dc indices " + stateIndex + " " + comboDataIndex);
                     dc.setChecked(!checked);
                 }
             }

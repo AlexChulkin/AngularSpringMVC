@@ -1,10 +1,7 @@
 package com.somecode.domain;
 
 
-import org.hibernate.validator.constraints.NotEmpty;
-
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 
 /**
  * Created by achulkin on 03.06.14.
@@ -20,7 +17,7 @@ public class State {
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "STATE_ID", length = 2)
+    @Column(name = "STATE_ID", length = 2, nullable = false)
     public long getId() {
         return id;
     }
@@ -30,7 +27,7 @@ public class State {
     }
 
     @Version
-    @Column(name = "VERSION")
+    @Column(name = "VERSION", nullable = false)
     public int getVersion() {
         return this.version;
     }
@@ -39,9 +36,7 @@ public class State {
         this.version = version;
     }
 
-    @NotEmpty(message = "State label can't be empty")
-    @Size(max = 20, message = "State label length can't exceed 20 symbols")
-    @Column(name = "LABEL")
+    @Column(name = "LABEL", nullable = false, length = 20)
     public String getLabel() {
         return label;
     }

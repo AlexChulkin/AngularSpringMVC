@@ -1,14 +1,12 @@
 package com.somecode.service;
 
 import com.somecode.config.PersistenceJPAConfig;
-import org.apache.log4j.Logger;
 import org.dbunit.DataSourceDatabaseTester;
 import org.dbunit.util.fileloader.XlsDataFileLoader;
 import org.springframework.context.annotation.*;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 @Profile("test")
@@ -18,16 +16,16 @@ import javax.sql.DataSource;
 @PropertySource(value = "classpath:db.properties")
 public class DaoTestConfig extends PersistenceJPAConfig {
 
-    @Override
-    @PostConstruct
-    protected void setProperties() {
-        super.setProperties();
-    }
-
-    @Override
-    protected void setLOGGER() {
-        LOGGER = Logger.getLogger(DaoTestConfig.class);
-    }
+//    @Override
+//    @PostConstruct
+//    protected void setProperties() {
+//        super.setProperties();
+//    }
+//
+//    @Override
+//    protected void setLOGGER() {
+//        LOGGER = Logger.getLogger(DaoTestConfig.class);
+//    }
 
     @Override
     @Bean
