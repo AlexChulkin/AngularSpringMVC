@@ -19,7 +19,8 @@
         select.standard {background-color: lightcyan; font-weight: bold; }
 
         select.special {
-            background-color: #5bc0de;
+            background-color: #b6fffd;
+            color: black;
             font-weight: bold;
         }
 
@@ -162,8 +163,7 @@
             </span>
         </div>
     </form>
-
-
+</div>
 </body>
 
 </html>
