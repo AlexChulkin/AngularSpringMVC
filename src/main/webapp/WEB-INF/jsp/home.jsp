@@ -16,11 +16,23 @@
     </script>
 
     <style>
-        select.standard {background-color: lightcyan; font-weight: bold; }
+        .inline-radio-state {
+            display: inline-block;
+            padding: 0 35px;
+            width: 30%;
+        }
+
+        .inline-state {
+            padding-left: 40%;
+        }
+
+        select.standard {
+            background-color: lightcyan;
+            font-weight: bold;
+        }
 
         select.special {
             background-color: #b6fffd;
-            color: black;
             font-weight: bold;
         }
 
@@ -106,8 +118,8 @@
 
 
     <div class="well" ng-hide="errorStates">
-            <div class="inline">
-                <div class="inline-radio" ng-repeat="state in states track by $index">
+        <div class="inline-state">
+            <div class="inline-radio-state" ng-repeat="state in states track by $index">
                     <input type="radio"
                            ng-model="stateLabels.defaultIndex"
                            ng-value="$index+1">
