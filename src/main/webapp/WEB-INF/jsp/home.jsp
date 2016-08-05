@@ -17,19 +17,34 @@
 
     <style>
         select.standard {background-color: lightcyan; font-weight: bold; }
+
+        select.special {
+            background-color: #5bc0de;
+            font-weight: bold;
+        }
+
+        #gridContainer {
+            padding: 20px;
+        }
+
+        .grid-row > div {
+            padding: 0 25px;
+        }
     </style>
 </head>
 
 <body>
-<h1>
-    The packet and the components
-</h1>
+
 
 
 
 <div id="packetDiv" ng-controller="packetCtrl">
+
     <div class="panel"
          ng-hide="errorCompts || errorComptsSupplData || errorStates || errorComboData || errorPacketState">
+        <h1 class="panel-header" align="center" background-color="red">
+            The packet and the components
+        </h1>
     
         <table class="table table-striped">
             <thead>
@@ -99,10 +114,9 @@
                 </div>
             </div>
     </div>
-    <table class="table table-striped">
-        <tbody>
-        <tr>
-            <td width="30%">
+    <div id="gridContainer">
+        <div class="row grid-row">
+            <div class="col-xs-5">
                 <form name="form"
                       ng-hide="errorStates || errorComboData || errorCompts || errorComptsSupplData || errorPacketState">
                     <div class="form-group">
@@ -123,23 +137,17 @@
                         </label>
                     </div>
                 </form>
-            </td>
-            <td width="15%" ng-repeat="state in states track by $index">
-                <div>
-                    <!--          <label>Input new {{sta  teLabels[$index+1]}} val:</label> -->
-                    <select class="standard"
-                            ng-options="el for el in defaultComboData"
-                            ng-model="newValues[$index]">
-                    </select>
-                </div>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-
+            </div>
+            <div class="col-xs-2" ng-repeat="state in states track by $index">
+                <select class="special"
+                        ng-options="el for el in defaultComboData"
+                        ng-model="newValues[$index]">
+                </select>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="inline">
-
                 <span class="input-group-btn">
                       <button class="btn btn-large btn-primary" id="addBtn"
                               ng-click="addNewCompt()"
@@ -154,7 +162,6 @@
                               ng-click="saveAllToBase()">Update the base</button>
                 </span>
             </div>
-
 </div>
 </div>
 
