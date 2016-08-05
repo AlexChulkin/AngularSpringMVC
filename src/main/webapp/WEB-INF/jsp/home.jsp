@@ -45,12 +45,7 @@
         }
     </style>
 </head>
-
 <body>
-
-
-
-
 <div id="packetDiv" ng-controller="packetCtrl">
 
     <div class="panel"
@@ -177,5 +172,4 @@
     </form>
 </div>
 </body>
-
 </html>

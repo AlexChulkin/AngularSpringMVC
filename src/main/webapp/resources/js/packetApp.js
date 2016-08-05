@@ -10,7 +10,6 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
     var complConfig = {withCredentials: true, params: {packetId: packetId}};
 
     $http.get(contextPath + '/compts', complConfig).success(function (data) {
-        $scope.newLabel = null;
         $scope.compts = {};
         $scope.labels = [];
         $scope.sortType = 'id';
@@ -102,11 +101,9 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
     });
 
     $scope.addNewCompt = function () {
-        console.log("add new");
         var comptId = ++$scope.maximalIndex;
         $scope.compts[$scope.newLabel] = {id: comptId, label: $scope.newLabel, new: true};
         $scope.newComptLabels[$scope.newLabel] = comptId;
-        $scope.newLabel = null;
 
         $scope.comboData[comptId] = {};
         $scope.checkedVals[comptId] = {};
