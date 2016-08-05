@@ -15,7 +15,7 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
         $scope.labels = [];
         $scope.sortType = 'id';
         $scope.maximalIndex = 0;
-        data.forEach(function (el) {
+        angular.forEach(data, function (el) {
             var id = el.id;
             var label = el.label;
             $scope.compts[label] = {id: id, label: label};
@@ -39,7 +39,7 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
             $scope.stateLabels = [];
             $scope.stateLabels.push(labelLabel);
             $scope.newValues = [];
-            $scope.states.forEach(function (state) {
+            angular.forEach($scope.states, function (state) {
                 $scope.stateLabels.push(state.label);
             });
             $http.get(contextPath + '/defaultComboData', simpleConfig).success(function (data) {
@@ -47,10 +47,10 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
                     $scope.errorComboData = true;
                     return;
                 }
-                data.forEach(function (sd) {
+                angular.forEach(data, function (sd) {
                     $scope.defaultComboData.push(sd.label);
                 });
-                $scope.states.forEach(function () {
+                angular.forEach($scope.states, function () {
                     $scope.newValues.push($scope.defaultComboData[0]);
                 });
                 $http.get(contextPath + '/packetStateId', complConfig).success(function (data) {
@@ -66,7 +66,7 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
                         }
                         $scope.checkedVals = {};
                         $scope.comboData = {};
-                        data.forEach(function (el) {
+                        angular.forEach(data, function (el) {
                             var comptId = el.comptId;
                             var stateId = el.stateId;
                             var label = el.label;
@@ -102,6 +102,7 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
     });
 
     $scope.addNewCompt = function () {
+        console.log("add new");
         var comptId = ++$scope.maximalIndex;
         $scope.compts[$scope.newLabel] = {id: comptId, label: $scope.newLabel, new: true};
         $scope.newComptLabels[$scope.newLabel] = comptId;
@@ -138,36 +139,32 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetId, labelLa
     };
 
     $scope.saveAllToBase = function () {
+        console.log("saveall");
         $scope.updatePacketStateInBase(packetId, $scope.stateLabels.defaultIndex);
 
         $scope.removeComptsFromBase();
         $scope.persistedRecentlyRemovedItemIds = [];
 
         var newCompts = [];
-        for (var lbl in $scope.newComptLabels) {
-            if ($scope.newComptLabels.hasOwnProperty(lbl)) {
-                var id = $scope.newComptLabels[lbl];
-                newCompts.push({label: lbl, vals: $scope.getCheckedValsForCompt(id)});
-                $scope.compts[lbl].new = false;
-            }
-        }
+        angular.forEach($scope.newComptLabels, function (id, lbl) {
+            newCompts.push({label: lbl, vals: $scope.getCheckedValsForCompt(id)});
+            $scope.compts[lbl].new = false;
+        });
         $scope.addComptsToBase(newCompts);
         $scope.newComptLabels = {};
 
         var updatedCompts = [];
-        for (var id in $scope.updatedItemIds) {
-            if ($scope.updatedItemIds.hasOwnProperty(id)) {
-                var comptId = $scope.updatedItemIds[id];
-                updatedCompts.push({id: comptId, vals: $scope.getCheckedValsForCompt(comptId)});
-            }
-        }
+        angular.forEach($scope.updatedItemIds, function (comptId, id) {
+            console.log(id);
+            updatedCompts.push({id: comptId, vals: $scope.getCheckedValsForCompt(comptId)});
+        });
         $scope.updateComptsInBase(updatedCompts);
         $scope.updatedItemIds = [];
     };
 
     $scope.getCheckedValsForCompt = function (comptId) {
         var checkedVals = [];
-        $scope.states.forEach(function (state, ind) {
+        angular.forEach($scope.states, function (state, ind) {
             checkedVals.push($scope.checkedVals[comptId][ind + 1]);
         });
         return checkedVals;

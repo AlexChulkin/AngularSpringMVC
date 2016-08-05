@@ -4,7 +4,7 @@
     <title>
         AngularSpring
     </title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="resources/css/bootstrap.css"  type="text/css" rel="stylesheet"/>
     <link href="resources/css/bootstrap-theme.css" type="text/css" rel="stylesheet" />
 
@@ -114,11 +114,11 @@
                 </div>
             </div>
     </div>
-    <div id="gridContainer">
-        <div class="row grid-row">
-            <div class="col-xs-5">
-                <form name="form"
-                      ng-hide="errorStates || errorComboData || errorCompts || errorComptsSupplData || errorPacketState">
+    <form id="form"
+          ng-hide="errorStates || errorComboData || errorCompts || errorComptsSupplData || errorPacketState">
+        <div id="gridContainer">
+            <div class="row grid-row" id="row">
+                <div class="col-sm-5" id="formDiv">
                     <div class="form-group">
                         <label ng-class="label-primary">
                             Enter new component:
@@ -136,34 +136,33 @@
                             </div>
                         </label>
                     </div>
-                </form>
-            </div>
-            <div class="col-xs-2" ng-repeat="state in states track by $index">
-                <select class="special"
-                        ng-options="el for el in defaultComboData"
-                        ng-model="newValues[$index]">
-                </select>
+                </div>
+                <div class="col-sm-2" ng-repeat="state in states track by $index">
+                    <select class="special"
+                            ng-options="el for el in defaultComboData"
+                            ng-model="newValues[$index]">
+                    </select>
+                </div>
             </div>
         </div>
-    </div>
-</div>
-<div class="inline">
-                <span class="input-group-btn">
-                      <button class="btn btn-large btn-primary" id="addBtn"
-                              ng-click="addNewCompt()"
-                              ng-disabled="form.$invalid">Add a component</button>
-                </span>
-                <span class="input-group-btn ">
-                      <button class="btn btn-large btn-warning" id="reloadBtn"
-                              ng-click="reloadRoute()">Reload from base</button>
-                </span>
-                <span class="input-group-btn">
-                      <button class="btn btn-large btn-success" id="saveBtn"
-                              ng-click="saveAllToBase()">Update the base</button>
-                </span>
-            </div>
-</div>
-</div>
+        <div class="inline">
+            <span class="input-group-btn">
+                  <button class="btn btn-large btn-primary" id="addBtn"
+                          ng-click="addNewCompt()"
+                          ng-disabled="form.$invalid">Add a component
+                  </button>
+            </span>
+            <span class="input-group-btn ">
+                  <button class="btn btn-large btn-warning" id="reloadBtn"
+                          ng-click="reloadRoute()">Reload from base</button>
+            </span>
+            <span class="input-group-btn">
+                  <button class="btn btn-large btn-success" id="saveBtn"
+                          ng-click="saveAllToBase()">Update the base</button>
+            </span>
+        </div>
+    </form>
+
 
 </body>
 
