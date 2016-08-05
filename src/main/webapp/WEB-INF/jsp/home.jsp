@@ -54,10 +54,10 @@
             </thead>
             <tbody>
             <tr ng-repeat="compt in compts">
-                <td>
+                <td width="42%">
                     <span ng-bind="compt.label" />
                 </td>
-                <td  ng-repeat="state in states">
+                <td width="17%" ng-repeat="state in states">
                     <span ng-bind="checkedVals[compt.id][state.id]"
                           ng-hide="stateLabels.defaultIndex===state.id"></span>
                     <span ng-show="stateLabels.defaultIndex===state.id">
@@ -114,11 +114,11 @@
                 </div>
             </div>
     </div>
-    <form id="form"
+    <form name="form"
           ng-hide="errorStates || errorComboData || errorCompts || errorComptsSupplData || errorPacketState">
         <div id="gridContainer">
-            <div class="row grid-row" id="row">
-                <div class="col-sm-5" id="formDiv">
+            <div class="row grid-row">
+                <div class="col-sm-5">
                     <div class="form-group">
                         <label ng-class="label-primary">
                             Enter new component:
