@@ -67,8 +67,8 @@
                 </td>
                 <td width="17%" ng-repeat="state in states">
                     <span ng-bind="checkedVals[compt.id][state.id]"
-                          ng-hide="stateLabels.defaultIndex===state.id"></span>
-                    <span ng-show="stateLabels.defaultIndex===state.id">
+                          ng-hide="stateLabels.defaultIndex==state.id"></span>
+                    <span ng-show="stateLabels.defaultIndex==state.id">
                           <select class="standard"
                                   ng-options="el for el in comboData[compt.id][state.id]"
                                   ng-model="checkedVals[compt.id][state.id]"

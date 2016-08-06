@@ -37,7 +37,7 @@ public class PersistenceJPAConfig {
     protected void setProperties() {
         properties = new Properties();
         try {
-            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream("db_dev.properties"));
+            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream("db-dev.properties"));
         } catch (IOException e) {
             LOGGER.error("Error in properties", e);
         }

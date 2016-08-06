@@ -31,7 +31,7 @@ public class DaoTestConfig extends PersistenceJPAConfig {
     protected void setProperties() {
         properties = new Properties();
         try {
-            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream("db_test.properties"));
+            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream("db-test.properties"));
         } catch (IOException e) {
             LOGGER.error("Error in properties", e);
         }
