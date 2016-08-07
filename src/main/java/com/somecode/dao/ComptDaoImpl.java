@@ -23,7 +23,7 @@ import java.util.stream.IntStream;
 public class ComptDaoImpl implements  ComptDao {
     private static final Logger LOGGER = Logger.getLogger(ComptDaoImpl.class);
 
-    private List<ComboData> defaultComboData = Collections.EMPTY_LIST;
+    private List<ComboData> allComboData = Collections.EMPTY_LIST;
 
     private Map<String, Integer> mapComboLabelsToIndices;
 
@@ -42,16 +42,31 @@ public class ComptDaoImpl implements  ComptDao {
     private ComptRepository comptRepository;
 
     @Override
-    public List<ComptSupplInfo> getComptsSupplInfo(long packetId) {
+    public List<ComptSupplInfo> getComptsSupplInfoByPacketId(long packetId) {
         return em
-                .createNamedQuery("Compt.getSupplInfo", ComptSupplInfo.class)
+                .createNamedQuery("Compt.getComptsSupplInfoByPacketId", ComptSupplInfo.class)
                 .setParameter("packetId", packetId)
                 .getResultList();
     }
 
     @Override
+    public List<PacketInfo> getAllPackets() {
+        List<PacketInfo> list = em
+                .createNamedQuery("Packet.getAllPackets", PacketInfo.class)
+                .getResultList();
+        return list;
+    }
+
+    @Override
+    public List<ComptSupplInfo> getAllComptsSupplInfo() {
+        return em
+                .createNamedQuery("Compt.getAllComptsSupplInfo", ComptSupplInfo.class)
+                .getResultList();
+    }
+
+    @Override
     public Long getPacketStateId(long packetId) {
-        Packet packet = em.find(Packet.class, packetId);
+        Packet packet = getPacket(packetId);
         if (packet == null) {
             return null;
         }
@@ -66,7 +81,7 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    public List<State> getStates(){
+    public List<State> getAllStates() {
         Iterable<State> iterable = stateRepository.findAll();
         states = Lists.newArrayList(iterable);
         System.out.println("states " + states);
@@ -75,31 +90,31 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    public List<ComboData> getDefaultComboData() {
-        List<ComboData> oldDefaultComboData = defaultComboData;
-        defaultComboData = Lists.newArrayList(comboDataRepository.findAll());
-        System.out.println("defaultComboData " + defaultComboData);
+    public List<ComboData> getAllComboData() {
+        List<ComboData> oldAllComboData = allComboData;
+        allComboData = Lists.newArrayList(comboDataRepository.findAll());
+        LOGGER.info("All Combo Data " + allComboData);
 
-        if (checkComboDataListsForEquality(defaultComboData, oldDefaultComboData)) {
-            return defaultComboData;
+        if (checkComboDataListsForEquality(allComboData, oldAllComboData)) {
+            return allComboData;
         }
         mapComboLabelsToIndices = IntStream
-                .range(0, defaultComboData.size())
+                .range(0, allComboData.size())
                 .boxed()
-                .collect(Collectors.toMap(i -> defaultComboData.get(i).getLabel(), Function.identity()));
+                .collect(Collectors.toMap(i -> allComboData.get(i).getLabel(), Function.identity()));
 
-        return defaultComboData;
+        return allComboData;
     }
 
-    private boolean checkComboDataListsForEquality(List<ComboData> defaultComboData,
-                                                   List<ComboData> oldDefaultComboData) {
-        int size = defaultComboData.size();
-        if (size != oldDefaultComboData.size()) {
+    private boolean checkComboDataListsForEquality(List<ComboData> allComboData,
+                                                   List<ComboData> oldAllComboData) {
+        int size = allComboData.size();
+        if (size != oldAllComboData.size()) {
             return false;
         }
         return IntStream.range(0, size).boxed()
                 .allMatch(i ->
-                        getSortedLabels(defaultComboData).get(i).equals(getSortedLabels(oldDefaultComboData).get(i)));
+                        getSortedLabels(allComboData).get(i).equals(getSortedLabels(oldAllComboData).get(i)));
     }
 
     private List<String> getSortedLabels(List<ComboData> comboDataList) {
@@ -107,16 +122,23 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    public List<ComptInfo> getCompts(long packetId){
-        List<ComptInfo> getCompts = em.createNamedQuery("Compt.getInfo", ComptInfo.class)
+    public List<ComptInfo> getComptsByPacketId(long packetId) {
+        List<ComptInfo> getCompts = em.createNamedQuery("Compt.getComptsByPacketId", ComptInfo.class)
                 .setParameter("packetId", packetId)
                 .getResultList();
         return getCompts;
     }
 
+    @Override
+    public List<ComptInfo> getAllCompts() {
+        List<ComptInfo> getCompts = em.createNamedQuery("Compt.getAllCompts", ComptInfo.class)
+                .getResultList();
+        return getCompts;
+    }
+
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    private List<Integer> getIndices(List<String> vals) {
-        getDefaultComboData();
+    private List<Integer> getIndicesFromVals(List<String> vals) {
+        getAllComboData();
         return vals.stream().map(mapComboLabelsToIndices::get).collect(Collectors.toList());
     }
 
@@ -131,8 +153,7 @@ public class ComptDaoImpl implements  ComptDao {
                 continue;
             }
 
-            List<Integer> newCheckedIndices = getIndices(comptsParams.getVals());
-            System.out.println("new Checked Indices " + newCheckedIndices);
+            List<Integer> newCheckedIndices = getIndicesFromVals(comptsParams.getVals());
 
             List<DataCompt> dataCompts = compt.getDataCompts();
 
@@ -159,19 +180,16 @@ public class ComptDaoImpl implements  ComptDao {
             LOGGER.info("Packet state update. The packet with id " + packetId + "does not exist.");
             return null;
         }
-        long oldStateId = packet.getState().getId();
-        if (oldStateId != newStateId) {
-            State newState = em.find(State.class, newStateId);
-            if (newState == null) {
-                LOGGER.info("Packet state update. The state with id " + newStateId + "does not exist.");
-                return null;
-            }
-            packet.setState(newState);
-            em.persist(packet);
-            LOGGER.info("The packet's " + packet.getId() + "state updated.");
-            return packet.getId();
+        State newState = em.find(State.class, newStateId);
+        if (newState == null) {
+            LOGGER.info("Packet state update. The state with id " + newStateId + "does not exist.");
+            return null;
         }
-        return null;
+
+        packet.setState(newState);
+        em.persist(packet);
+        LOGGER.info("The packet's " + packet.getId() + "state updated.");
+        return packet.getId();
     }
 
     @Override
@@ -198,25 +216,25 @@ public class ComptDaoImpl implements  ComptDao {
             return Collections.EMPTY_LIST;
         }
 
-        List<State> statesList = getStates();
+        List<State> statesList = getAllStates();
         List<Compt> comptList = new ArrayList<>(comptsParamsList.size());
         List<Long> comptIdsList = new ArrayList<>(comptsParamsList.size());
 
         for (ComptsParams comptsParams : comptsParamsList) {
-            List<Integer> defaultComboDataIndeces = getIndices(comptsParams.getVals());
+            List<Integer> allComboDataIndeces = getIndicesFromVals(comptsParams.getVals());
             Compt newCompt = new Compt();
             newCompt.setLabel(comptsParams.getLabel());
             packet.addCompt(newCompt);
 
             int numOfStates = states.size();
-            int numOfComboDataItems = defaultComboData.size();
+            int numOfComboDataItems = allComboData.size();
 
             for (int j = 0; j < numOfStates; j++) {
                 for (int i = 0; i < numOfComboDataItems; i++) {
                     DataCompt dc = new DataCompt();
                     dc.setState(statesList.get(j));
-                    dc.setComboData(defaultComboData.get(i));
-                    dc.setChecked(defaultComboDataIndeces.get(j) == i);
+                    dc.setComboData(allComboData.get(i));
+                    dc.setChecked(allComboDataIndeces.get(j) == i);
                     newCompt.addDataCompt(dc);
                 }
             }
@@ -224,7 +242,7 @@ public class ComptDaoImpl implements  ComptDao {
         }
 
         comptRepository.save(comptList).forEach(compt -> comptIdsList.add(compt.getId()));
-        LOGGER.info("Persisted compt ids: " + comptIdsList);
+        LOGGER.info("New persisted compt ids: " + comptIdsList);
         return comptIdsList;
     }
 }

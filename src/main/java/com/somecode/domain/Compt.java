@@ -11,12 +11,19 @@ import java.util.List;
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"PACKET_ID_FK", "LABEL"}))
 @NamedQueries( {
-        @NamedQuery(name = "Compt.getInfo", query = "SELECT NEW com.somecode.domain.ComptInfo(c.id, c.label) " +
-                "FROM Packet p JOIN p.compts c WHERE p.id = :packetId ORDER BY c.id ASC"),
-        @NamedQuery(name = "Compt.getSupplInfo",
+        @NamedQuery(name = "Compt.getComptsByPacketId",
+                query = "SELECT NEW com.somecode.domain.ComptInfo(c.id, c.label, :packetId) " +
+                        "FROM Packet p JOIN p.compts c WHERE p.id = :packetId ORDER BY c.id ASC"),
+        @NamedQuery(name = "Compt.getAllCompts",
+                query = "SELECT NEW com.somecode.domain.ComptInfo(c.id, c.label, c.packet.id) " +
+                        "FROM Compt c ORDER BY c.id ASC"),
+        @NamedQuery(name = "Compt.getComptsSupplInfoByPacketId",
                 query = "SELECT NEW com.somecode.domain.ComptSupplInfo(c.id, dc.state.id, cd.label, dc.checked) " +
                         "FROM Packet p JOIN p.compts c JOIN c.dataCompts dc JOIN dc.comboData cd " +
-                        "WHERE p.id = :packetId ORDER BY dc.id ASC")
+                        "WHERE p.id = :packetId ORDER BY dc.id ASC"),
+        @NamedQuery(name = "Compt.getAllComptsSupplInfo",
+                query = "SELECT NEW com.somecode.domain.ComptSupplInfo(c.id, dc.state.id, cd.label, dc.checked) " +
+                        "FROM Compt c JOIN c.dataCompts dc JOIN dc.comboData cd ORDER BY dc.id ASC")
 })
 public class Compt  {
 

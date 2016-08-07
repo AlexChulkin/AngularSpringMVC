@@ -8,10 +8,16 @@ package com.somecode.domain;
 public class ComptInfo {
     private long id;
     private String label;
+    private long packetId;
 
     public ComptInfo(long id, String label) {
         this.id = id;
         this.label = label;
+    }
+
+    public ComptInfo(long id, String label, long packetId) {
+        this(id, label);
+        this.packetId = packetId;
     }
 
     public long getId() {
@@ -20,5 +26,9 @@ public class ComptInfo {
 
     public String getLabel() {
         return label;
+    }
+
+    public long getPacketId() {
+        return packetId;
     }
 }

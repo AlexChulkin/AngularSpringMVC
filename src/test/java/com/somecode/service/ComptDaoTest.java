@@ -56,7 +56,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final String expectedLabel = "compt_label_1";
         final int expectedResultLength = 1;
 
-        final List<ComptInfo> result = comptDao.getCompts(packetId);
+        final List<ComptInfo> result = comptDao.getComptsByPacketId(packetId);
 
         assertEquals(expectedResultLength, result.size());
         assertEquals(expectedLabel, result.get(0).getLabel());
@@ -68,7 +68,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
     public void testGetCompts_negative() throws Exception {
         final long packetId = 2L;
         final int expectedResultSize = 0;
-        final List<ComptInfo> result = comptDao.getCompts(packetId);
+        final List<ComptInfo> result = comptDao.getComptsByPacketId(packetId);
 
         assertEquals(expectedResultSize, result.size());
     }
@@ -95,7 +95,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
     public void testGetComptsSupplInfo_negative() throws Exception {
         final long packetId = 2L;
         final int expectedResultSize = 0;
-        final List<ComptSupplInfo> result = comptDao.getComptsSupplInfo(packetId);
+        final List<ComptSupplInfo> result = comptDao.getComptsSupplInfoByPacketId(packetId);
 
         assertEquals(expectedResultSize, result.size());
     }
@@ -125,9 +125,9 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         List<HasLabel> result = new ArrayList<>();
 
         if (testCase == ComboDataGetTestCase.COMPTS_SUPPL_INFO) {
-            comptDao.getComptsSupplInfo(packetId).forEach(result::add);
+            comptDao.getComptsSupplInfoByPacketId(packetId).forEach(result::add);
         } else if (testCase == ComboDataGetTestCase.COMBO_DATA_PROPERLY) {
-            comptDao.getDefaultComboData().forEach(result::add);
+            comptDao.getAllComboData().forEach(result::add);
         }
 
         assertEquals((long) expectedResultLength, result.size());
@@ -172,7 +172,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
     @DirtiesContext
     public void testGetComboData_negative() throws Exception {
         final int expectedResultLength = 0;
-        final List<ComboData> result = comptDao.getDefaultComboData();
+        final List<ComboData> result = comptDao.getAllComboData();
 
         assertEquals(expectedResultLength, result.size());
     }
@@ -185,7 +185,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final int expectedResultLength = 3;
         final List<String> expectedLabels = generateLabelsList(expectedLabelsPrefix, expectedResultLength);
 
-        final List<State> result = comptDao.getStates();
+        final List<State> result = comptDao.getAllStates();
 
         assertEquals(expectedResultLength, result.size());
         IntStream.range(0, expectedResultLength)
@@ -195,9 +195,9 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
 
     @Test
     @DirtiesContext
-    public void testGetStates_negative() throws Exception {
+    public void testGetAllStates_negative() throws Exception {
         final int expectedResultLength = 0;
-        final List<State> result = comptDao.getStates();
+        final List<State> result = comptDao.getAllStates();
 
         assertEquals(expectedResultLength, result.size());
     }

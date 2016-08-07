@@ -29,20 +29,32 @@ public class ComptService {
         return comptDao.updatePacketState(packetId, newStateId);
     }
 
-    public List<ComboData> getDefaultComboData() {
-        return comptDao.getDefaultComboData();
+    public List<ComboData> getAllComboData() {
+        return comptDao.getAllComboData();
     }
 
-    public List<ComptInfo> getCompts(long packetId) {
-        return comptDao.getCompts(packetId);
+    public List<ComptInfo> getComptsByPacketId(long packetId) {
+        return comptDao.getComptsByPacketId(packetId);
     }
 
-    public  List<ComptSupplInfo> getComptsSupplInfo(long packetId) {
-        return comptDao.getComptsSupplInfo(packetId);
+    public List<ComptInfo> getAllCompts() {
+        return comptDao.getAllCompts();
     }
 
-    public  List<State> getStates() {
-        return comptDao.getStates();
+    public List<ComptSupplInfo> getComptsSupplInfoByPacketId(long packetId) {
+        return comptDao.getComptsSupplInfoByPacketId(packetId);
+    }
+
+    public List<ComptSupplInfo> getAllComptsSupplInfo() {
+        return comptDao.getAllComptsSupplInfo();
+    }
+
+    public List<State> getAllStates() {
+        return comptDao.getAllStates();
+    }
+
+    public List<PacketInfo> getAllPackets() {
+        return comptDao.getAllPackets();
     }
 
     public Long getPacketStateId(long packetId) {
