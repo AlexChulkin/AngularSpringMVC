@@ -42,14 +42,13 @@
 <body ng-controller="packetCtrl">
 <div class="navbar navbar-inverse">
     <a class="navbar-brand" href="#">THE PACKETS AND THEIR COMPONENTS</a>
-    </div>
+</div>
 <div id="packetDiv">
     <div class="panel"
-         ng-hide="data.errorCompts || data.errorComptsSupplData || data.errorStates
-             || data.errorComboData || data.errorPacketState || data.errorPackets">
+         ng-hide="data.loadError">
         <div class="col-xs-2">
             <a ng-repeat="pkt in data.packets"
-               ng-click="selectPacket(pkt)" class="btn btn-default"
+               ng-click="selectPacket(pkt)" class="btn btn-lg btn-default"
                ng-class="getPacketClass(pkt)">
                 Packet#<span ng-bind="pkt.id"/>
             </a>
@@ -64,14 +63,11 @@
                 </thead>
                 <tbody>
                 <tr ng-repeat="compt in data.selectedCompts">
-                    <td width="35%">
-                        <span ng-bind="compt.label"/>
-                    </td>
-                    <td width="4%">
+                    <td width="3%">
                         <span ng-bind="compt.id"/>
                     </td>
-                    <td width="4%">
-                        <span ng-bind="compt.packetId"/>
+                    <td width="40%">
+                        <span ng-bind="compt.label"/>
                     </td>
                     <td width="17%" ng-repeat="state in data.states">
                         <span ng-bind="data.checkedVals[compt.id][state.id]"
@@ -93,55 +89,58 @@
                 </tbody>
             </table>
 
-            <div class="well" ng-hide="data.errorStates">
+            <div class="well" ng-hide="data.loadError">
                 <div class="inline-state">
                     <div class="inline-radio-state" ng-repeat="state in data.states track by $index">
                         <input type="radio"
                                ng-model="data.selectedStateIndex"
                                ng-value="$index+1">
-                        <span ng-bind="data.stateLabels[$index+1]"></span>
+                        <span ng-bind="data.stateLabels[$index+2]"></span>
                     </div>
                 </div>
-                </div>
-            <form name="form"
-                  ng-hide="data.errorStates || data.errorComboData || data.errorCompts
-                      || data.errorComptsSupplData || data.errorPacketState || data.errorPackets">
-                <div id="gridContainer">
-                    <div class="row grid-row">
-                        <div class="col-sm-5">
-                            <div class="form-group">
-                                <label ng-class="label-primary">
-                                    Enter new component:
-                                    <input class="text"
-                                           name="newLabelName"
-                                           ng-model="data.newLabel"
-                                           ng-trim="true"
-                                           ng-maxlength="75"
-                                           blacklist="blacklist"
-                                           required/>
-                                    <div style="color:maroon" role="alert">
-                                        <div ng-show="form.newLabelName.$error.required">You did not enter a label</div>
-                                        <div ng-show="form.newLabelName.$error.maxlength">Your label is too long</div>
-                                        <div ng-show="form.newLabelName.$error.blacklist">Your label is not unique</div>
+            </div>
+            <form name="form" ng-hide="data.loadError">
+                <div class="row grid-row">
+                    <div class="col-sm-5">
+                        <div class="form-group">
+                            <label ng-class="label-primary">
+                                Enter new component:
+                                <input class="text"
+                                       name="newLabelName"
+                                       ng-model="data.newLabel"
+                                       ng-trim="true"
+                                       ng-maxlength="75"
+                                       blacklist="blacklist" ,
+                                       regex="regex"
+                                       required/>
+                                <div style="color:maroon" role="alert">
+                                    <div ng-show="form.newLabelName.$error.required">You did not enter a label</div>
+                                    <div ng-show="form.newLabelName.$error.maxlength">Your label is too long</div>
+                                    <div ng-show="form.newLabelName.$error.blacklist">Your label is not unique</div>
+                                    <div ng-show="form.newLabelName.$error.regex">
+                                        Your label should be contain letters, digits, underscore and spaces only.
                                     </div>
-                                </label>
-                            </div>
-                            </div>
-                        <div class="col-sm-2" ng-repeat="state in data.states track by $index">
-                            <select class="special"
-                                    ng-options="el for el in data.defaultComboData"
-                                    ng-model="newValues[$index]">
-                            </select>
+                                </div>
+                            </label>
+                            <span class="input-group-btn">
+                                <button class="btn btn-large btn-primary" name="addBtn"
+                                        ng-click="addNewCompt()"
+                                        ng-disabled="form.$invalid">Add a component
+                                </button>
+                            </span>
                         </div>
                     </div>
+                    <div class="col-sm-2" ng-repeat="state in data.states track by $index">
+                        <select class="special"
+                                ng-options="el for el in data.allComboData"
+                                ng-model="data.newValues[$index]">
+                        </select>
                     </div>
-                <div class="inline">
-                        <span class="input-group-btn">
-                              <button class="btn btn-large btn-primary" id="addBtn"
-                                      ng-click="addNewCompt()"
-                                      ng-disabled="form.$invalid || isAddingNotAllowed()">Add a component
-                              </button>
-                        </span>
+                </div>
+            </form>
+
+            <div class="inline">
+
                         <span class="input-group-btn ">
                               <button class="btn btn-large btn-warning" id="reloadBtn"
                                       ng-click="reloadRoute()">Reload from base</button>
@@ -150,44 +149,12 @@
                               <button class="btn btn-large btn-success" id="saveBtn"
                                       ng-click="saveAllToBase()">Update the base</button>
                         </span>
-                </div>
-            </form>
-            <div name="errorsDiv">
-                <div class="alert alert-danger" ng-show="data.errorPackets">
-                    Error (<span ng-bind="data.errorPackets.status"></span>). The packets were not loaded.
-                    <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
-                </div>
-                <div class="alert alert-danger" ng-show="data.errorCompts">
-                    Error (<span ng-bind="data.errorCompts.status"></span>). The packet compts data were not loaded.
-                    <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
-                </div>
-
-                <div class="alert alert-danger" ng-show="data.errorStates">
-                    Error (<span ng-bind="data.errorStates.status"></span>). The packet state stateLabels data were not
-                    loaded.
-                    <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
-                </div>
-
-                <div class="alert alert-danger" ng-show="data.errorPacketState">
-                    Error (<span ng-bind="data.errorPacketState.status"></span>). The packet state was not loaded.
-                    <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
-                </div>
-
-                <div class="alert alert-danger" ng-show="data.errorComboData">
-                    Error (<span ng-bind="data.errorComboData.status"></span>). The combo data for the comboboxes were
-                    not loaded.
-                    <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
-                </div>
-
-
-                <div class="alert alert-danger" ng-show="data.errorComptsSupplData">
-                    Error (<span ng-bind="data.errorComptsSupplData.status"></span>). The packet supplement data for
-                    components rendering were not loaded.
-                    <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
-                </div>
-
             </div>
+            <div class="alert alert-danger" ng-show="data.loadError">
+                Error (<span ng-bind="data.loadError.status"></span>). The data were not loaded.
+                <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
             </div>
+        </div>
     </div>
 </body>
 </html>

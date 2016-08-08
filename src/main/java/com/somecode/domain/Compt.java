@@ -12,7 +12,7 @@ import java.util.List;
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"PACKET_ID_FK", "LABEL"}))
 @NamedQueries( {
         @NamedQuery(name = "Compt.getComptsByPacketId",
-                query = "SELECT NEW com.somecode.domain.ComptInfo(c.id, c.label, :packetId) " +
+                query = "SELECT NEW com.somecode.domain.ComptInfo(c.id, c.label, p.id) " +
                         "FROM Packet p JOIN p.compts c WHERE p.id = :packetId ORDER BY c.id ASC"),
         @NamedQuery(name = "Compt.getAllCompts",
                 query = "SELECT NEW com.somecode.domain.ComptInfo(c.id, c.label, c.packet.id) " +

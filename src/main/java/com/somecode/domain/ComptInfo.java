@@ -10,13 +10,9 @@ public class ComptInfo {
     private String label;
     private long packetId;
 
-    public ComptInfo(long id, String label) {
+    public ComptInfo(long id, String label, long packetId) {
         this.id = id;
         this.label = label;
-    }
-
-    public ComptInfo(long id, String label, long packetId) {
-        this(id, label);
         this.packetId = packetId;
     }
 
