@@ -118,7 +118,7 @@
                                     <div ng-show="form.newLabelName.$error.maxlength">Your label is too long</div>
                                     <div ng-show="form.newLabelName.$error.blacklist">Your label is not unique</div>
                                     <div ng-show="form.newLabelName.$error.regex">
-                                        Your label should be contain letters, digits, underscore and spaces only.
+                                        Your label should contain letters, digits, underscore and spaces only.
                                     </div>
                                 </div>
                             </label>

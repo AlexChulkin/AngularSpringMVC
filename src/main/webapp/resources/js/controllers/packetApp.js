@@ -28,7 +28,7 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetListActiveC
             $scope.pageSize = packetListPageCount;
 
             $scope.data.compts = {};
-            $scope.data.selectedCompts = $scope.data.compts;
+            $scope.data.selectedCompts = {};
             $scope.data.selectedStateIndex = defaultSelectedStateIndex;
             $scope.data.maximalIndex = 0;
             angular.forEach(data, function (el) {
@@ -138,7 +138,7 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetListActiveC
         var id = compt.id;
         var isNew = compt.new;
 
-        delete $scope.data.selectedCompts[label];
+        delete $scope.data.selectedCompts[label.toUpperCase()];
         delete $scope.data.checkedVals[id];
         delete $scope.data.comboData[id];
         delete $scope.data.updatedItemIds[id];
@@ -149,11 +149,11 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetListActiveC
     };
 
     $scope.markComptAsUpdated = function (compt) {
-        if ($scope.data.selectedCompts[compt.label].new) {
+        if ($scope.data.selectedCompts[compt.label.toUpperCase()].new) {
             return;
         }
         var comptId = compt.id;
-        $scope.data.updatedItemIds[comptId] = comptId;
+        $scope.data.updatedItemIds[comptId] = true;
     };
 
     $scope.saveAllToBase = function () {
@@ -165,18 +165,19 @@ app.controller("packetCtrl", function ($scope, $http, $window, packetListActiveC
         var newCompts = [];
         angular.forEach($scope.data.newComptLabels, function (id, lbl) {
             newCompts.push({label: lbl, vals: $scope.getCheckedValsForCompt(id)});
-            $scope.data.selectedCompts[lbl].new = false;
+            $scope.data.selectedCompts[lbl.toUpperCase()].new = false;
         });
         $scope.addComptsToBase(newCompts);
         $scope.data.newComptLabels = {};
 
         var updatedCompts = [];
-        angular.forEach($scope.data.updatedItemIds, function (comptId, id) {
-            console.log(id);
+        angular.forEach($scope.data.updatedItemIds, function (unused, comptId) {
+            console.log(unused);
+            console.log(comptId);
             updatedCompts.push({id: comptId, vals: $scope.getCheckedValsForCompt(comptId)});
         });
         $scope.updateComptsInBase(updatedCompts);
-        $scope.data.updatedItemIds = [];
+        $scope.data.updatedItemIds = {};
     };
 
     $scope.getCheckedValsForCompt = function (comptId) {
