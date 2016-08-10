@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html ng-app="packetApp" >
 
 <head>
@@ -8,21 +9,31 @@
     <link href="resources/css/bootstrap.css"  type="text/css" rel="stylesheet"/>
     <link href="resources/css/bootstrap-theme.css" type="text/css" rel="stylesheet" />
 
-    <script type="application/javascript" src="resources/js/angular_v1.5_min.js"></script>
+    <script type="application/javascript" src="resources/js/angular_v1.5.8.js"></script>
+
+    <script>
+        angular.module("packetApp", ["customFilters"]);
+    </script>
     <script type="application/javascript" src="resources/js/controllers/packetApp.js"></script>
+    <script type="application/javascript" src="resources/js/filters/customFilters.js"></script>
+    <script type="application/javascript" src="resources/js/ngmodules/angular-route.js"></script>
+
 
     <script type="text/javascript" charset="utf-8">
         var contextPath = '${pageContext.request.contextPath}';
     </script>
 
     <style>
-        .inline-radio-state {
-            display: inline-block;
+        .state {
             width: 31%;
         }
 
-        .inline-state {
-            padding-left: 43%;
+        .inline-block {
+            display: inline-block;
+        }
+
+        .states {
+            padding: 2% 0 1% 43%;
         }
 
         select.standard {
@@ -62,11 +73,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="compt in data.selectedCompts">
-                    <td width="3%">
-                        <span ng-bind="compt.id"/>
-                    </td>
-                    <td width="40%">
+                <tr ng-repeat="compt in data.selectedCompts | range:selectedPage:pageSize">
+                    <td width="43%">
                         <span ng-bind="compt.label"/>
                     </td>
                     <td width="17%" ng-repeat="state in data.states">
@@ -88,14 +96,20 @@
                 </tr>
                 </tbody>
             </table>
-
+            <div class="pull-right btn-group">
+                <a ng-repeat="page in data.selectedCompts | pageCount:pageSize"
+                   ng-click="selectPage($index)" class="btn btn-default"
+                   ng-class="getPageClass($index)">
+                    {{$index}}
+                </a>
+            </div>
             <div class="well" ng-hide="data.loadError">
-                <div class="inline-state">
-                    <div class="inline-radio-state" ng-repeat="state in data.states track by $index">
+                <div class="states">
+                    <div class="state inline-block" ng-repeat="state in data.states track by $index">
                         <input type="radio"
                                ng-model="data.selectedStateIndex"
                                ng-value="$index+1">
-                        <span ng-bind="data.stateLabels[$index+2]"></span>
+                        <span ng-bind="data.stateLabels[$index+1]"></span>
                     </div>
                 </div>
             </div>
