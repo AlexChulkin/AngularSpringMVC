@@ -26,9 +26,6 @@
     <style>
         .state {
             width: 31%;
-        }
-
-        .inline-block {
             display: inline-block;
         }
 
@@ -73,7 +70,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="compt in data.selectedCompts | range:selectedPage:pageSize">
+                <tr ng-repeat="compt in data.selectedComptsArray | range:selectedPage:pageSize">
                     <td width="43%">
                         <span ng-bind="compt.label"/>
                     </td>
@@ -97,10 +94,10 @@
                 </tbody>
             </table>
             <div class="pull-right btn-group">
-                <a ng-repeat="page in data.selectedCompts | pageCount:pageSize"
-                   ng-click="selectPage($index)" class="btn btn-default"
-                   ng-class="getPageClass($index)">
-                    {{$index}}
+                <a ng-repeat="page in data.selectedComptsArray | pageCount:pageSize"
+                   ng-click="selectPage(page)" class="btn btn-default"
+                   ng-class="getPageClass(page)">
+                    <span ng-bind="page"></span>
                 </a>
             </div>
             <div class="well" ng-hide="data.loadError">
