@@ -149,10 +149,13 @@ app.constant("packetListActiveClass", "btn-primary")
             var isNew = compt.new;
 
             delete $scope.data.selectedCompts[label.toUpperCase()];
-            $scope.data.selectedComptsArray.splice(comptIdToInd[id], 1);
+            $scope.data.selectedComptsArray[comptIdToInd[id]] = null;
             delete $scope.data.checkedVals[id];
             delete $scope.data.comboData[id];
             delete $scope.data.updatedItemIds[id];
+            delete $scope.data.newComptLabels[label];
+            // delete comptIdToInd[id];
+
 
             if (!isNew) {
                 $scope.data.persistedRecentlyRemovedItemIds.push(id);
@@ -198,7 +201,7 @@ app.constant("packetListActiveClass", "btn-primary")
         };
 
         $scope.removeComptsFromBase = function () {
-            if (!$scope.data.persistedRecentlyRemovedItemIds) {
+            if ($scope.data.persistedRecentlyRemovedItemIds.length == 0) {
                 return;
             }
 
@@ -265,6 +268,10 @@ app.constant("packetListActiveClass", "btn-primary")
 
         $scope.isAddingNotAllowed = function () {
             return selectedPacket == null;
+        };
+
+        $scope.notNull = function (item) {
+            return !!item;
         };
 
         $scope.reloadRoute = function () {
