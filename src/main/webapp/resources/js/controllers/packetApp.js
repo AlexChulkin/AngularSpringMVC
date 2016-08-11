@@ -15,10 +15,10 @@ app.constant("packetListActiveClass", "btn-primary")
     
         $http.get(contextPath + '/getAllCompts', simpleConfig).success(function (data) {
             $scope.data = {};
-            $scope.data.compts = {};
-            $scope.data.selectedCompts = {};
-            $scope.data.comptsArray = [];
-            $scope.data.selectedComptsArray = [];
+            $scope.data.comptsLabels = {};
+            $scope.data.selectedComptsLabels = {};
+            $scope.data.compts = [];
+            $scope.data.selectedCompts = [];
 
             $scope.data.maximalIndex = 0;
             var ind = -1;
@@ -28,14 +28,15 @@ app.constant("packetListActiveClass", "btn-primary")
                 var id = el.id;
                 var label = el.label.toUpperCase();
                 var packetId = el.packetId;
-                if (!$scope.data.compts[packetId]) {
-                    $scope.data.compts[packetId] = {};
-                    $scope.data.comptsArray.push([]);
+                if (!$scope.data.comptsLabels[packetId]) {
+                    $scope.data.comptsLabels[packetId] = {};
+                    $scope.data.compts.push([]);
                     packetIdToInd[packetId] = ++ind;
                 }
-                $scope.data.compts[packetId][label] = el;
-                comptIdToInd[id] = $scope.data.comptsArray[ind].length;
-                $scope.data.comptsArray[ind].push(el);
+                $scope.data.comptsLabels[packetId][label] = 1;
+
+                comptIdToInd[id] = $scope.data.compts[ind].length;
+                $scope.data.compts[ind].push(el);
                 if (id > $scope.data.maximalIndex) {
                     $scope.data.maximalIndex = id;
                 }
@@ -129,9 +130,9 @@ app.constant("packetListActiveClass", "btn-primary")
             var usualLabel = $scope.data.newLabel;
             var upperCaseLabel = usualLabel.toUpperCase();
             var newCompt = {id: comptId, label: usualLabel, new: true};
-            $scope.data.selectedCompts[upperCaseLabel] = newCompt;
-            comptIdToInd[comptId] = $scope.data.selectedComptsArray.length;
-            $scope.data.selectedComptsArray.push(newCompt);
+            $scope.data.selectedComptsLabels[upperCaseLabel] = 1;
+            comptIdToInd[comptId] = $scope.data.selectedCompts.length;
+            $scope.data.selectedCompts.push(newCompt);
             $scope.data.newComptLabels[usualLabel] = comptId;
 
             $scope.data.comboData[comptId] = {};
@@ -148,14 +149,13 @@ app.constant("packetListActiveClass", "btn-primary")
             var id = compt.id;
             var isNew = compt.new;
 
-            delete $scope.data.selectedCompts[label.toUpperCase()];
-            $scope.data.selectedComptsArray[comptIdToInd[id]] = null;
+            delete $scope.data.selectedComptsLabels[label.toUpperCase()];
+            $scope.data.selectedCompts[comptIdToInd[id]] = null;
             delete $scope.data.checkedVals[id];
             delete $scope.data.comboData[id];
             delete $scope.data.updatedItemIds[id];
             delete $scope.data.newComptLabels[label];
-            // delete comptIdToInd[id];
-
+            delete comptIdToInd[id];
 
             if (!isNew) {
                 $scope.data.persistedRecentlyRemovedItemIds.push(id);
@@ -179,7 +179,7 @@ app.constant("packetListActiveClass", "btn-primary")
             angular.forEach($scope.data.newComptLabels, function (id, lbl) {
                 newCompts.push({label: lbl, vals: $scope.getCheckedValsForCompt(id)});
                 var indToUntag = comptIdToInd[$scope.data.newComptLabels[lbl]];
-                $scope.data.selectedComptsArray[indToUntag].new = false;
+                $scope.data.selectedCompts[indToUntag].new = false;
             });
             $scope.addComptsToBase(newCompts);
             $scope.data.newComptLabels = {};
@@ -247,8 +247,9 @@ app.constant("packetListActiveClass", "btn-primary")
         $scope.selectPacket = function (packet) {
             selectedPacket = packet;
             var packetId = selectedPacket.id;
-            $scope.data.selectedCompts = $scope.data.compts[packetId];
-            $scope.data.selectedComptsArray = $scope.data.comptsArray[packetIdToInd[packetId]];
+            var packetInd = packetIdToInd[packetId];
+            $scope.data.selectedCompts = $scope.data.compts[packetInd];
+            $scope.data.selectedComptsLabels = $scope.data.comptsLabels[packetId];
 
             $scope.data.selectedStateIndex = selectedPacket.stateId;
             $scope.selectPage(1);
@@ -286,7 +287,7 @@ app.directive('blacklist', function () {
             ngModel.$parsers.unshift(function (label) {
                 var label = label.replace(/\s{2,}/g, " ");
                 var upperCaseLabel = label.toUpperCase();
-                ngModel.$setValidity('blacklist', !$scope.data.selectedCompts[upperCaseLabel]);
+                ngModel.$setValidity('blacklist', !$scope.data.selectedComptsLabels[upperCaseLabel]);
                 return label;
             });
         }
