@@ -143,7 +143,7 @@
                     </div>
                     <div class="col-sm-2" ng-repeat="state in data.states track by $index">
                         <select class="special"
-                                ng-options="el for el in data.allComboData"
+                                ng-options="el for el in data.comboDataDefaultSet"
                                 ng-model="data.newValues[$index]">
                         </select>
                     </div>
@@ -162,7 +162,12 @@
                         </span>
             </div>
             <div class="alert alert-danger" ng-show="data.loadError">
-                Error (<span ng-bind="data.loadError.status"></span>). The data were not loaded.
+                Error (<span ng-bind="data.loadError.status"></span>). The error occurred during the data loading.
+                <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
+            </div>
+            <div class="alert alert-danger" ng-show="data.loadEmpty">
+                Error (<span ng-bind="data.loadEmpty.status"></span>). The loaded data is empty. Probably some
+                database error occurred.
                 <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
             </div>
         </div>
