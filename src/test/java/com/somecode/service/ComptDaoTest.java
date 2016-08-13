@@ -355,7 +355,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         long packetId = 2L;
         long newStateId = 1L;
 
-        comptDao.updatePacketState(packetId, newStateId);
+//        comptDao.updatePacketState(packetId, newStateId);
         em.flush();
     }
 

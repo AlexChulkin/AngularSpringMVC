@@ -27,7 +27,7 @@ public interface ComptDao {
 
     List<Long> deleteCompts(List<Long> idsToRemove);
 
-    Long deletePacket(long packetId);
+    List<Long> deletePackets(List<Long> packetIdsToDelete);
 
     List<Long> addCompts(long packetId, List<ComptParams> comptParamsList);
 

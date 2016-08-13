@@ -67,7 +67,7 @@ public class RestfulController {
     @RequestMapping(value = "/deletePackets", method = RequestMethod.POST)
     public void deletePackets(@RequestBody RequestObj requestObj) throws Exception {
         LOGGER.info("Delete Packets");
-        comptService.deletePacket(requestObj.getParams().getPacketId());
+        comptService.deletePackets(requestObj.getParams().getPacketIds());
     }
 
     @RequestMapping(value = "/updateCompts", method = RequestMethod.POST)

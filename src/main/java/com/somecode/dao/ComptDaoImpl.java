@@ -41,6 +41,9 @@ public class ComptDaoImpl implements  ComptDao {
     @Autowired
     private ComptRepository comptRepository;
 
+    @Autowired
+    private PacketRepository packetRepository;
+
     @Override
     public List<ComptSupplInfo> getComptsSupplInfoByPacketId(long packetId) {
         return em
@@ -206,7 +209,7 @@ public class ComptDaoImpl implements  ComptDao {
 
         comptRepository.delete(compts);
         List<Long> result = getIdsFromEntities(compts.toArray(new Compt[0]));
-        LOGGER.info("Ids of the removed components: " + result);
+        LOGGER.info("Deleted components with the following ids: " + result);
         return result;
     }
 
@@ -214,19 +217,18 @@ public class ComptDaoImpl implements  ComptDao {
         return Arrays.stream(entities).mapToLong(EntityType::getId).boxed().collect(Collectors.toList());
     }
 
-
-
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public Long deletePacket(long packetId) {
-        Packet packet = getPacket(packetId);
-        if (packet == null) {
-            LOGGER.info("No packet found for removal with id = " + packetId);
-            return null;
-        }
-        em.remove(packet);
-        LOGGER.info("Deleted packet with id = " + packetId);
-        return packetId;
+    public List<Long> deletePackets(List<Long> idsToDelete) {
+        List<Packet> packets = packetRepository
+                .findByIdIn(idsToDelete)
+                .stream()
+                .filter(p -> p != null)
+                .collect(Collectors.toList());
+        packetRepository.delete(packets);
+        List<Long> result = getIdsFromEntities(packets.toArray(new Packet[0]));
+        LOGGER.info("Deleted packets with the following ids: " + result);
+        return result;
     }
 
     @Override

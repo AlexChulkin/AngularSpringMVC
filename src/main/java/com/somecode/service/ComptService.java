@@ -21,8 +21,8 @@ public class ComptService {
         return comptDao.deleteCompts(idsToDelete);
     }
 
-    public Long deletePacket(long packetId) {
-        return comptDao.deletePacket(packetId);
+    public Long deletePackets(List<Long> packetIdsToDelete) {
+        return comptDao.deletePackets(packetIdsToDelete);
     }
 
     public List<Long> updateCompts(List<ComptParams> comptParamsList) {
