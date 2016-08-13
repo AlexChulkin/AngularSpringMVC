@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by alexc_000 on 2016-07-22.
  */
-public class ComptsParams {
+public class ComptParams {
     private List<String> vals;
     private String label;
     private long id;
@@ -14,7 +14,7 @@ public class ComptsParams {
         return id;
     }
 
-    public ComptsParams setId(long id) {
+    public ComptParams setId(long id) {
         this.id = id;
         return this;
     }
@@ -23,7 +23,7 @@ public class ComptsParams {
         return vals;
     }
 
-    public ComptsParams setVals(List<String> vals) {
+    public ComptParams setVals(List<String> vals) {
         this.vals = vals;
         return this;
     }
@@ -32,7 +32,7 @@ public class ComptsParams {
         return label;
     }
 
-    public ComptsParams setLabel(String label) {
+    public ComptParams setLabel(String label) {
         this.label = label;
         return this;
     }

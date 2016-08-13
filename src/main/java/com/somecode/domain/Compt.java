@@ -25,7 +25,7 @@ import java.util.List;
                 query = "SELECT NEW com.somecode.domain.ComptSupplInfo(c.id, dc.state.id, cd.label, dc.checked) " +
                         "FROM Compt c JOIN c.dataCompts dc JOIN dc.comboData cd ORDER BY dc.id ASC")
 })
-public class Compt  {
+public class Compt implements EntityType {
 
     private long id;
     private String label;
@@ -54,7 +54,7 @@ public class Compt  {
         this.version = version;
     }
 
-    @OneToMany(mappedBy = "compt", cascade = {CascadeType.ALL}, orphanRemoval = true)
+    @OneToMany(mappedBy = "compt", cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy
     public List<DataCompt> getDataCompts() {
         return dataCompts;

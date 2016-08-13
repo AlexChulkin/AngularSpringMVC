@@ -8,7 +8,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"LABEL"}))
-public class State {
+public class State implements EntityType {
 
     private long id;
 

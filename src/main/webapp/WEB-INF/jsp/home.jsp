@@ -29,10 +29,17 @@
             display: inline-block;
         }
 
+        .column-left .column-right {
+            padding-right: 10px;
+            padding-left: 10px;
+        }
+
+        .column-left {
+            display: inline-flex;
+        }
         .states {
             padding: 2% 0 1% 43%;
         }
-
         select.standard {
             background-color: lightcyan;
             font-weight: bold;
@@ -53,15 +60,18 @@
 </div>
 <div id="packetDiv">
     <div class="panel"
-         ng-hide="data.loadError">
-        <div class="col-xs-2">
-            <a ng-repeat="pkt in data.packets"
-               ng-click="selectPacket(pkt)" class="btn btn-lg btn-default"
+         ng-hide="data.loadError || data.loadEmpty || data.packetDeleted">
+        <div class="col-xs-1 column-left" ng-repeat="pkt in data.packets">
+            <a ng-click="selectPacket(pkt)"
                ng-class="getPacketClass(pkt)">
                 Packet#<span ng-bind="pkt.id"/>
             </a>
+            <a ng-click="deletePacket(pkt)"
+               class="btn btn-sm btn-danger">
+                Del
+            </a>
         </div>
-        <div class="col-xs-10">
+        <div class="col-xs-11 column-right">
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -100,9 +110,9 @@
                     <span ng-bind="page"></span>
                 </a>
             </div>
-            <div class="well" ng-hide="data.loadError">
+            <div class="well" ng-hide="data.loadError || data.loadEmpty || data.packetDeleted">
                 <div class="states">
-                    <div class="state inline-block" ng-repeat="state in data.states track by $index">
+                    <div class="state" ng-repeat="state in data.states track by $index">
                         <input type="radio"
                                ng-model="data.selectedStateIndex"
                                ng-value="$index+1">
@@ -110,7 +120,7 @@
                     </div>
                 </div>
             </div>
-            <form name="form" ng-hide="data.loadError">
+            <form name="form" ng-hide="data.loadError || data.loadEmpty || data.packetDeleted">
                 <div class="row grid-row">
                     <div class="col-sm-5">
                         <div class="form-group">
@@ -151,24 +161,26 @@
             </form>
 
             <div class="inline">
-
-                        <span class="input-group-btn ">
-                              <button class="btn btn-large btn-warning" id="reloadBtn"
-                                      ng-click="reloadRoute()">Reload from base</button>
-                        </span>
-                        <span class="input-group-btn">
-                              <button class="btn btn-large btn-success" id="saveBtn"
-                                      ng-click="saveAllToBase()">Update the base</button>
-                        </span>
+                <span class="input-group-btn ">
+                      <button class="btn btn-large btn-warning" id="reloadBtn"
+                              ng-click="reloadRoute()">Reload from base</button>
+                </span>
+                <span class="input-group-btn">
+                      <button class="btn btn-large btn-success" id="saveBtn"
+                              ng-click="saveAllToBase()">Update the base</button>
+                </span>
             </div>
             <div class="alert alert-danger" ng-show="data.loadError">
                 Error (<span ng-bind="data.loadError.status"></span>). The error occurred during the data loading.
                 <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
             </div>
-            <div class="alert alert-danger" ng-show="data.loadEmpty">
+            <div class="alert alert-danger" ng-show="data.loadEmpty ">
                 Error (<span ng-bind="data.loadEmpty.status"></span>). The loaded data is empty. Probably some
                 database error occurred.
                 <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
+            </div>
+            <div class="alert alert-danger" ng-show="data.packetDeleted">
+                Error. The selected packet is deleted. Please select the new one.
             </div>
         </div>
     </div>

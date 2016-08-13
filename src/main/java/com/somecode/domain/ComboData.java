@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "COMBO_DATA", uniqueConstraints = @UniqueConstraint(columnNames = {"LABEL"}))
-public class ComboData implements HasLabel {
+public class ComboData implements HasLabel, EntityType {
 
     private long id;
 

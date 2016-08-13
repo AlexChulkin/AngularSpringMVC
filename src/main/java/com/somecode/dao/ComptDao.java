@@ -20,10 +20,16 @@ public interface ComptDao {
     List<ComptInfo> getComptsByPacketId(long packetId);
 
     List<ComptInfo> getAllCompts();
-    List<Long> updateCompts(List<ComptsParams> comptsParamsList);
-    Long updatePacketState(long packetId, long newStateId);
-    List<Long> removeCompts(List<Long> idsToRemove);
-    List<Long> addCompts(long packetId, List<ComptsParams> comptsParamsList);
+
+    List<Long> updateCompts(List<ComptParams> comptParamsList);
+
+    List<Long> updatePackets(List<PacketParams> updatedPackets);
+
+    List<Long> deleteCompts(List<Long> idsToRemove);
+
+    Long deletePacket(long packetId);
+
+    List<Long> addCompts(long packetId, List<ComptParams> comptParamsList);
 
     List<ComboData> getAllComboData();
 }

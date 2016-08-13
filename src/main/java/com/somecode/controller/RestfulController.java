@@ -55,13 +55,19 @@ public class RestfulController {
     void addCompts(@RequestBody RequestObj requestObj) throws Exception {
         LOGGER.info("Add Compts");
         comptService.addCompts(requestObj.getParams().getPacketId(),
-                requestObj.getParams().getComptsParamsList());
+                requestObj.getParams().getComptParamsList());
     }
 
-    @RequestMapping(value = "/removeCompts", method = RequestMethod.POST)
-    public void removeCompts(@RequestBody RequestObj requestObj) throws Exception {
-        LOGGER.info("Remove Compts");
-        comptService.removeCompts(requestObj.getParams().getIdsToRemove());
+    @RequestMapping(value = "/deleteCompts", method = RequestMethod.POST)
+    public void deleteCompts(@RequestBody RequestObj requestObj) throws Exception {
+        LOGGER.info("Delete Compts");
+        comptService.deleteCompts(requestObj.getParams().getComptIds());
+    }
+
+    @RequestMapping(value = "/deletePackets", method = RequestMethod.POST)
+    public void deletePackets(@RequestBody RequestObj requestObj) throws Exception {
+        LOGGER.info("Delete Packets");
+        comptService.deletePacket(requestObj.getParams().getPacketId());
     }
 
     @RequestMapping(value = "/updateCompts", method = RequestMethod.POST)
@@ -69,16 +75,15 @@ public class RestfulController {
     @ResponseBody
     void updateCompts(@RequestBody RequestObj requestObj) throws Exception {
         LOGGER.info("Update Compts");
-        comptService.updateCompts(requestObj.getParams().getComptsParamsList());
+        comptService.updateCompts(requestObj.getParams().getComptParamsList());
     }
 
-    @RequestMapping(value = "/updatePacketState", method = RequestMethod.POST)
+    @RequestMapping(value = "/updatePackets", method = RequestMethod.POST)
     public
     @ResponseBody
-    void updatePacket(@RequestBody RequestObj requestObj) throws Exception {
-        LOGGER.info("Update Packet State");
-        comptService.updatePacketState(requestObj.getParams().getPacketId(),
-                requestObj.getParams().getNewStateId());
+    void updatePackets(@RequestBody RequestObj requestObj) throws Exception {
+        LOGGER.info("Update Packets");
+        comptService.updatePackets(requestObj.getParams().getUpdatedPackets());
     }
 
     @RequestMapping(value = "/getAllComptsSupplInfo", method = RequestMethod.GET)

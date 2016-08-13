@@ -7,12 +7,30 @@ import java.util.List;
  */
 public class Params {
 
-    private List<Long> idsToRemove;
+    private List<Long> comptIds;
+    private List<Long> packetIds;
     private long comptId;
     private long packetId;
     private long newStateId;
-    private List<ComptsParams> comptsParamsList;
+    private List<ComptParams> comptParamsList;
     private List<String> defaultVals;
+    private List<PacketParams> updatedPackets;
+
+    public List<Long> getPacketIds() {
+        return packetIds;
+    }
+
+    public void setPacketIds(List<Long> packetIds) {
+        this.packetIds = packetIds;
+    }
+
+    public List<PacketParams> getUpdatedPackets() {
+        return updatedPackets;
+    }
+
+    public void setUpdatedPackets(List<PacketParams> updatedPackets) {
+        this.updatedPackets = updatedPackets;
+    }
 
     public List<String> getDefaultVals() {
         return defaultVals;
@@ -22,12 +40,12 @@ public class Params {
         this.defaultVals = defaultVals;
     }
 
-    public List<ComptsParams> getComptsParamsList() {
-        return comptsParamsList;
+    public List<ComptParams> getComptParamsList() {
+        return comptParamsList;
     }
 
-    public void setComptsParamsList(List<ComptsParams> comptsParamsList) {
-        this.comptsParamsList = comptsParamsList;
+    public void setComptParamsList(List<ComptParams> comptParamsList) {
+        this.comptParamsList = comptParamsList;
     }
 
     public long getComptId() {
@@ -47,12 +65,12 @@ public class Params {
     }
 
 
-    public List<Long> getIdsToRemove() {
-        return idsToRemove;
+    public List<Long> getComptIds() {
+        return comptIds;
     }
 
-    public void setIdsToRemove(List<Long> idsToRemove) {
-        this.idsToRemove = idsToRemove;
+    public void setComptIds(List<Long> comptIds) {
+        this.comptIds = comptIds;
     }
 
     public long getNewStateId() {

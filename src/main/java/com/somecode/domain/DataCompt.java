@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "DATA_COMPT",
         uniqueConstraints = @UniqueConstraint(columnNames = {"COMPT_ID_FK", "STATE_ID_FK", "COMBO_DATA_ID_FK"}))
-public class DataCompt {
+public class DataCompt implements EntityType {
 
     private long id;
     private Compt compt;

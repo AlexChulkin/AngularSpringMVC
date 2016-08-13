@@ -13,20 +13,24 @@ public class ComptService {
     @Autowired
     private ComptDao comptDao;
 
-    public List<Long> addCompts(long packetId, List<ComptsParams> comptsParamsList) {
-        return comptDao.addCompts(packetId, comptsParamsList);
+    public List<Long> addCompts(long packetId, List<ComptParams> comptParamsList) {
+        return comptDao.addCompts(packetId, comptParamsList);
     }
 
-    public List<Long> removeCompts(List<Long> idsToRemove) {
-        return comptDao.removeCompts(idsToRemove);
+    public List<Long> deleteCompts(List<Long> idsToDelete) {
+        return comptDao.deleteCompts(idsToDelete);
     }
 
-    public List<Long> updateCompts(List<ComptsParams> comptsParamsList) {
-        return comptDao.updateCompts(comptsParamsList);
+    public Long deletePacket(long packetId) {
+        return comptDao.deletePacket(packetId);
     }
 
-    public Long updatePacketState(long packetId, long newStateId) {
-        return comptDao.updatePacketState(packetId, newStateId);
+    public List<Long> updateCompts(List<ComptParams> comptParamsList) {
+        return comptDao.updateCompts(comptParamsList);
+    }
+
+    public List<Long> updatePackets(List<PacketParams> updatedPackets) {
+        return comptDao.updatePackets(updatedPackets);
     }
 
     public List<ComboData> getAllComboData() {

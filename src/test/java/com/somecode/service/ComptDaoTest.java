@@ -242,7 +242,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
 
         final long[] idsForUpdate = generateIds(firstIdToUpdate, numOfComptsToUpdate);
 
-        final List<ComptsParams> paramsListForUpdate
+        final List<ComptParams> paramsListForUpdate
                 = generateParamsList(OperationType.UPDATE, checkedValsForUpdate,
                 idsForUpdate, numOfComptsToUpdate, null);
 
@@ -266,7 +266,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
 
         final long[] idsForUpdate = generateIds(firstComptIdToUpdate, numOfComptsToUpdate);
 
-        List<ComptsParams> paramsListForUpdate
+        List<ComptParams> paramsListForUpdate
                 = generateParamsList(OperationType.UPDATE, checkedValsForUpdate,
                 idsForUpdate, numOfComptsToUpdate, null);
 
@@ -274,24 +274,24 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         em.flush();
     }
 
-    private List<ComptsParams> generateParamsList(final OperationType operationType,
-                                                  final String[][] checkedValsForAddOrUpdate,
-                                                  final long[] idsForAddOrUpdate,
-                                                  final int numOfComptsToAddOrUpdate,
-                                                  final String[] labelsForAdding) {
+    private List<ComptParams> generateParamsList(final OperationType operationType,
+                                                 final String[][] checkedValsForAddOrUpdate,
+                                                 final long[] idsForAddOrUpdate,
+                                                 final int numOfComptsToAddOrUpdate,
+                                                 final String[] labelsForAdding) {
 
-        final List<ComptsParams> paramsList = new ArrayList<>();
+        final List<ComptParams> paramsList = new ArrayList<>();
         if (operationType == OperationType.UPDATE) {
             IntStream.range(0, numOfComptsToAddOrUpdate).boxed()
                     .forEach(i ->
-                            paramsList.add(new ComptsParams()
+                            paramsList.add(new ComptParams()
                                     .setVals(Arrays.asList(checkedValsForAddOrUpdate[i]))
                                     .setId(idsForAddOrUpdate[i]))
                     );
         } else if (operationType == OperationType.ADD) {
             IntStream.range(0, numOfComptsToAddOrUpdate).boxed()
                     .forEach(i ->
-                            paramsList.add(new ComptsParams()
+                            paramsList.add(new ComptParams()
                                     .setVals(Arrays.asList(checkedValsForAddOrUpdate[i]))
                                     .setLabel(labelsForAdding[i]))
                     );
@@ -342,7 +342,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         long packetId = 1L;
         long newStateId = 2L;
 
-        comptDao.updatePacketState(packetId, newStateId);
+//        comptDao.updatePacketState(packetId, newStateId);
         em.flush();
     }
 
@@ -368,7 +368,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         long packetId = 1L;
         long newStateId = 4L;
 
-        comptDao.updatePacketState(packetId, newStateId);
+//        comptDao.updatePacketState(packetId, newStateId);
         em.flush();
     }
 
@@ -379,7 +379,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         long packetId = 1L;
         long newStateId = 1L;
 
-        comptDao.updatePacketState(packetId, newStateId);
+//        comptDao.updatePacketStates(packetId, newStateId);
         em.flush();
     }
 
@@ -399,7 +399,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final String[] labelsForAdding
                 = generateLabelsList(comptLabelPrefix, numOfComptsToAdd).toArray(new String[0]);
 
-        final List<ComptsParams> paramsListForAdding = generateParamsList(OperationType.ADD,
+        final List<ComptParams> paramsListForAdding = generateParamsList(OperationType.ADD,
                 checkedValsForAdding, null,
                 numOfComptsToAdd, labelsForAdding);
 
@@ -423,9 +423,9 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final String[] labelsForAdding
                 = generateLabelsList(comptLabelPrefix, numOfComptsToAdd).toArray(new String[0]);
 
-        final List<ComptsParams> paramsListForAdding = new ArrayList<>();
+        final List<ComptParams> paramsListForAdding = new ArrayList<>();
         IntStream.range(0, numOfComptsToAdd).boxed()
-                .forEach(i -> paramsListForAdding.add(new ComptsParams()
+                .forEach(i -> paramsListForAdding.add(new ComptParams()
                         .setVals(Arrays.asList(checkedValsForAdding[i]))
                         .setLabel(labelsForAdding[i]))
                 );
@@ -445,7 +445,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final List<Long> comptIdsToRemove
                 = Arrays.asList(ArrayUtils.toObject(generateIds(firstComptId, numOfComptIds)));
 
-        comptDao.removeCompts(comptIdsToRemove);
+        comptDao.deleteCompts(comptIdsToRemove);
     }
 
     @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Remove_Compts.xls",
@@ -459,6 +459,6 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final List<Long> comptIdsToRemove
                 = Arrays.asList(ArrayUtils.toObject(generateIds(firstIdToRemove, numOfComptsToRemove)));
 
-        comptDao.removeCompts(comptIdsToRemove);
+        comptDao.deleteCompts(comptIdsToRemove);
     }
 }

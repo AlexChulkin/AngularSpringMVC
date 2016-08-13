@@ -10,7 +10,7 @@ import java.util.Set;
 @NamedQuery(name = "Packet.getAllPackets",
         query = "SELECT NEW com.somecode.domain.PacketInfo(p.id, p.state.id) " +
                 "FROM Packet p ORDER BY p.id ASC")
-public class Packet {
+public class Packet implements EntityType {
 
     private long id;
 
@@ -59,8 +59,7 @@ public class Packet {
         this.state = state;
     }
 
-    @OneToMany(mappedBy = "packet", cascade = {CascadeType.PERSIST, CascadeType.MERGE,
-            CascadeType.DETACH, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "packet", cascade = CascadeType.ALL, orphanRemoval = true)
     public Set<Compt> getCompts() {
         return compts;
     }
