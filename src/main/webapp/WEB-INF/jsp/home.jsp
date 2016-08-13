@@ -66,9 +66,17 @@
                ng-class="getPacketClass(pkt)">
                 Packet#<span ng-bind="pkt.id"/>
             </a>
-            <a ng-click="deletePacket(pkt)"
+            <a ng-click="deletePacketLocally(pkt)"
                class="btn btn-sm btn-danger">
                 Del
+            </a>
+            <a ng-click="reloadRoute()"
+               class="btn btn-sm btn-block btn-warning">
+                Reload from base
+            </a>
+            <a ng-click="saveAllToBase()"
+               class="btn btn-sm btn-block btn-success">
+                Update the base
             </a>
         </div>
         <div class="col-xs-11 column-right">
@@ -161,14 +169,7 @@
             </form>
 
             <div class="inline">
-                <span class="input-group-btn ">
-                      <button class="btn btn-large btn-warning" id="reloadBtn"
-                              ng-click="reloadRoute()">Reload from base</button>
-                </span>
-                <span class="input-group-btn">
-                      <button class="btn btn-large btn-success" id="saveBtn"
-                              ng-click="saveAllToBase()">Update the base</button>
-                </span>
+
             </div>
             <div class="alert alert-danger" ng-show="data.loadError">
                 Error (<span ng-bind="data.loadError.status"></span>). The error occurred during the data loading.

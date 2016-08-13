@@ -11,6 +11,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         var simpleConfig = {withCredentials: true};
 
         var selectedPacket = null;
+        var selectedPacketId = null;
 
         var comptIdToInd = {};
         var packetIdToInd = {};
@@ -22,9 +23,9 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         var maximalIndex = 0;
 
         var deletedComptIds = [];
-        var updatedComptIds = {};
+        var updatedComptIds = [];
 
-        var newComptLabels = {};
+        var newComptLabels = [];
 
         var updatedPackets = {};
         var deletedPacketIds = [];
@@ -146,7 +147,10 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             $scope.data.selectedComptLabels[upperCaseLabel] = true;
             comptIdToInd[comptId] = $scope.data.selectedCompts.length;
             $scope.data.selectedCompts.push(newCompt);
-            newComptLabels[usualLabel] = comptId;
+            if (!newComptLabels[selectedPacketId]) {
+                newComptLabels[selectedPacketId] = {};
+            }
+            newComptLabels[selectedPacketId][usualLabel] = comptId;
 
             $scope.data.comboData[comptId] = {};
             $scope.data.checkedVals[comptId] = {};
@@ -166,8 +170,8 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             $scope.data.selectedCompts[comptIdToInd[id]] = null;
             delete $scope.data.checkedVals[id];
             delete $scope.data.comboData[id];
-            delete updatedComptIds[id];
-            delete newComptLabels[label];
+            delete updatedComptIds[selectedPacketId][id];
+            delete newComptLabels[selectedPacketId][label];
             delete comptIdToInd[id];
 
             if (!isNew) {
@@ -183,11 +187,13 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             $scope.data.packetDeleted = true;
         };
 
-        $scope.deletePacketsInBase = function () {
+        deletePacketsInBase = function () {
             var deleteConfig = {withCredentials: true, params: {packetIds: deletedPacketIds}};
-            $http.post(contextPath + '/deletePackets', deleteConfig).success(function (data) {
-            }).error(function (error) {
-            });
+            $http.post(contextPath + '/deletePackets', deleteConfig)
+                .success(function (data) {
+                })
+                .error(function (error) {
+                });
         };
 
         $scope.markComptAsUpdated = function (compt) {
@@ -195,30 +201,19 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                 return;
             }
             var comptId = compt.id;
-            updatedComptIds[comptId] = true;
+            if (!updatedComptIds[selectedPacketId]) {
+                updatedComptIds[selectedPacketId] = {};
+            }
+            updatedComptIds[selectedPacketId][comptId] = true;
         };
 
         $scope.saveAllToBase = function () {
+            deletePacketsInBase();
             updatePacketsLocally();
             updatePacketsInBase();
             deleteComptsInBase();
-            deletedComptIds = [];
-
-            var newCompts = [];
-            angular.forEach(newComptLabels, function (id, lbl) {
-                newCompts.push({label: lbl, vals: getCheckedValsForCompt(id)});
-                var indToUntag = comptIdToInd[newComptLabels[lbl]];
-                $scope.data.selectedCompts[indToUntag].new = false;
-            });
-            addComptsToBase(newCompts);
-            newComptLabels = {};
-
-            var updatedCompts = [];
-            angular.forEach(updatedComptIds, function (unused, comptId) {
-                updatedCompts.push({id: comptId, vals: getCheckedValsForCompt(comptId)});
-            });
-            updateComptsInBase(updatedCompts);
-            updatedComptIds = {};
+            addComptsToBase();
+            updateComptsInBase();
         };
 
         isDataEmpty = function (data) {
@@ -241,31 +236,55 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             if (deletedComptIds.length == 0) {
                 return;
             }
-
             var deleteConfig = {withCredentials: true, params: {comptIds: deletedComptIds}};
-            $http.post(contextPath + '/deleteCompts', deleteConfig).success(function (data) {
-            }).error(function (error) {
-            });
+            $http.post(contextPath + '/deleteCompts', deleteConfig)
+                .success(function (data) {
+                })
+                .error(function (error) {
+                });
+            deletedComptIds = [];
         };
 
-        updateComptsInBase = function (updatedCompts) {
+        updateComptsInBase = function () {
+            var updatedCompts = [];
+            angular.forEach(packets, function (pkt) {
+                var packetId = pkt.id;
+                angular.forEach(updatedComptIds[packetId], function (unused, comptId) {
+                    updatedCompts.push({id: comptId, vals: getCheckedValsForCompt(comptId)});
+                });
+            });
             if (isDataEmpty(updatedCompts)) {
                 return;
             }
             var updateConfig = {withCredentials: true, params: {comptParamsList: updatedCompts}};
-            $http.post(contextPath + '/updateCompts', updateConfig).success(function (data) {
-            }).error(function (error) {
-            });
+            $http.post(contextPath + '/updateCompts', updateConfig)
+                .success(function (data) {
+                })
+                .error(function (error) {
+                });
+            updatedComptIds = [];
         };
 
-        addComptsToBase = function (newCompts) {
+        addComptsToBase = function () {
+            var newCompts = [];
+            angular.forEach($scope.data.packets, function (pkt) {
+                var packetId = pkt.id;
+                angular.forEach(newComptLabels[packetId], function (comptId, lbl) {
+                    newCompts.push({label: lbl, vals: getCheckedValsForCompt(comptId)});
+                    var indToUntag = comptIdToInd[newComptLabels[packetId][lbl]];
+                    $scope.data.selectedCompts[indToUntag].new = false;
+                });
+            });
             if (isDataEmpty(newCompts)) {
                 return;
             }
-            var addConfig = {withCredentials: true, params: {packetId: selectedPacket.id, comptParamsList: newCompts}};
-            $http.post(contextPath + '/addCompts', addConfig).success(function (data) {
-            }).error(function (error) {
-            });
+            var addConfig = {withCredentials: true, params: {packetId: selectedPacketId, comptParamsList: newCompts}};
+            $http.post(contextPath + '/addCompts', updateConfig)
+                .success(function (data) {
+                })
+                .error(function (error) {
+                });
+            newComptLabels = [];
         };
 
         updatePacketsInBase = function () {
@@ -274,18 +293,21 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                 updatedPacketsForConfig.push(packet);
             });
             var updateConfig = {withCredentials: true, params: updatedPacketsForConfig};
-            $http.post(contextPath + '/updatePackets', updateConfig).success(function (data) {
-            }).error(function (error) {
-            });
+            $http.post(contextPath + '/updatePackets', updateConfig)
+                .success(function (data) {
+                })
+                .error(function (error) {
+                });
+            updatedPackets = {};
         };
 
         $scope.selectPacket = function (packet) {
             updatePacketsLocally();
             selectedPacket = packet;
-            var packetId = selectedPacket.id;
-            var packetInd = packetIdToInd[packetId];
-            $scope.data.selectedCompts = compts[packetInd];
-            $scope.data.selectedComptLabels = comptLabels[packetId];
+            selectedPacketId = selectedPacket.id;
+            var selectedPacketInd = packetIdToInd[selectedPacketId];
+            $scope.data.selectedCompts = compts[selectedPacketInd];
+            $scope.data.selectedComptLabels = comptLabels[selectedPacketId];
 
             $scope.data.selectedStateIndex = selectedPacket.stateId;
             $scope.selectPage(1);
