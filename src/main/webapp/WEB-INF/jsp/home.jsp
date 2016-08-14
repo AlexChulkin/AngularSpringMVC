@@ -29,13 +29,17 @@
             display: inline-block;
         }
 
-        .column-left .column-right {
+        .column {
             padding-right: 10px;
             padding-left: 10px;
         }
 
-        .column-left {
+        .flex {
             display: inline-flex;
+        }
+
+        .aggregate-btns {
+            padding: 10px 0;
         }
         .states {
             padding: 2% 0 1% 43%;
@@ -58,28 +62,31 @@
 <div class="navbar navbar-inverse">
     <a class="navbar-brand" href="#">THE PACKETS AND THEIR COMPONENTS</a>
 </div>
-<div id="packetDiv">
-    <div class="panel"
-         ng-hide="data.loadError || data.loadEmpty || data.packetDeleted">
-        <div class="col-xs-1 column-left" ng-repeat="pkt in data.packets">
+<div class="panel">
+    <div class="col-xs-1 column">
+        <div class="flex" ng-repeat="pkt in data.packets">
             <a ng-click="selectPacket(pkt)"
                ng-class="getPacketClass(pkt)">
                 Packet#<span ng-bind="pkt.id"/>
-            </a>
+                </a>
             <a ng-click="deletePacketLocally(pkt)"
                class="btn btn-sm btn-danger">
                 Del
             </a>
+            </div>
+        <div class="btn-group aggregate-btns">
             <a ng-click="reloadRoute()"
-               class="btn btn-sm btn-block btn-warning">
+               class="btn btn-md btn-block btn-warning">
                 Reload from base
             </a>
             <a ng-click="saveAllToBase()"
-               class="btn btn-sm btn-block btn-success">
+               class="btn btn-md btn-block btn-success">
                 Update the base
             </a>
-        </div>
-        <div class="col-xs-11 column-right">
+            </div>
+    </div>
+    <div class="col-xs-11 column">
+        <div ng-hide="data.loadError || data.loadEmpty || data.packetDeleted">
             <table class="table table-striped">
                 <thead>
                 <tr>
@@ -93,15 +100,15 @@
                         <span ng-bind="compt.label"/>
                     </td>
                     <td width="17%" ng-repeat="state in data.states">
-                        <span ng-bind="data.checkedVals[compt.id][state.id]"
-                              ng-hide="data.selectedStateIndex==state.id"></span>
-                        <span ng-show="data.selectedStateIndex==state.id">
-                              <select class="standard"
-                                      ng-options="el for el in data.comboData[compt.id][state.id]"
-                                      ng-model="data.checkedVals[compt.id][state.id]"
-                                      ng-change="markComptAsUpdated(compt)">
-                              </select>
-                        </span>
+                            <span ng-bind="data.checkedVals[compt.id][state.id]"
+                                  ng-hide="data.selectedStateIndex==state.id"></span>
+                            <span ng-show="data.selectedStateIndex==state.id">
+                                  <select class="standard"
+                                          ng-options="el for el in data.comboData[compt.id][state.id]"
+                                          ng-model="data.checkedVals[compt.id][state.id]"
+                                          ng-change="markComptAsUpdated(compt)">
+                                  </select>
+                            </span>
                     </td>
                     <td>
                         <button ng-click="deleteCompt(compt)" class="btn btn-xs btn-primary">
@@ -125,9 +132,9 @@
                                ng-model="data.selectedStateIndex"
                                ng-value="$index+1">
                         <span ng-bind="data.stateLabels[$index+1]"></span>
+                        </div>
                     </div>
                 </div>
-            </div>
             <form name="form" ng-hide="data.loadError || data.loadEmpty || data.packetDeleted">
                 <div class="row grid-row">
                     <div class="col-sm-5">
@@ -151,12 +158,12 @@
                                     </div>
                                 </div>
                             </label>
-                            <span class="input-group-btn">
-                                <button class="btn btn-large btn-primary" name="addBtn"
-                                        ng-click="addNewCompt()"
-                                        ng-disabled="form.$invalid">Add a component
-                                </button>
-                            </span>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-large btn-primary" name="addBtn"
+                                            ng-click="addNewCompt()"
+                                            ng-disabled="form.$invalid">Add a component
+                                    </button>
+                                </span>
                         </div>
                     </div>
                     <div class="col-sm-2" ng-repeat="state in data.states track by $index">
@@ -167,9 +174,8 @@
                     </div>
                 </div>
             </form>
-
+        </div>
             <div class="inline">
-
             </div>
             <div class="alert alert-danger" ng-show="data.loadError">
                 Error (<span ng-bind="data.loadError.status"></span>). The error occurred during the data loading.
@@ -185,5 +191,7 @@
             </div>
         </div>
     </div>
+
+
 </body>
 </html>
