@@ -111,7 +111,7 @@
                             </span>
                     </td>
                     <td>
-                        <button ng-click="deleteCompt(compt)" class="btn btn-xs btn-primary">
+                        <button ng-click="deleteComptLocally(compt)" class="btn btn-xs btn-primary">
                             Delete
                         </button>
                     </td>
@@ -160,7 +160,7 @@
                             </label>
                                 <span class="input-group-btn">
                                     <button class="btn btn-large btn-primary" name="addBtn"
-                                            ng-click="addNewCompt()"
+                                            ng-click="addComptLocally()"
                                             ng-disabled="form.$invalid">Add a component
                                     </button>
                                 </span>

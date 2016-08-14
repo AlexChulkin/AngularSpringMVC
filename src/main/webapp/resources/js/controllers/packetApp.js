@@ -139,7 +139,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             $scope.data.loadError = error;
         });
 
-        $scope.addNewCompt = function () {
+        $scope.addComptLocally = function () {
             var comptId = ++maximalIndex;
             var usualLabel = $scope.data.newLabel;
             var upperCaseLabel = usualLabel.toUpperCase();
@@ -161,7 +161,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             $scope.data.newLabel = null;
         };
 
-        $scope.deleteCompt = function (compt) {
+        $scope.deleteComptLocally = function (compt) {
             var label = compt.label;
             var id = compt.id;
             var isNew = compt.new;
@@ -170,8 +170,12 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             $scope.data.selectedCompts[comptIdToInd[id]] = null;
             delete $scope.data.checkedVals[id];
             delete $scope.data.comboData[id];
-            delete updatedComptIds[selectedPacketId][id];
-            delete newComptLabels[selectedPacketId][label];
+            if (!!updatedComptIds[selectedPacketId]) {
+                delete updatedComptIds[selectedPacketId][id];
+            }
+            if (!!newComptLabels[selectedPacketId]) {
+                delete newComptLabels[selectedPacketId][label];
+            }
             delete comptIdToInd[id];
 
             if (!isNew) {
@@ -247,7 +251,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
 
         updateComptsInBase = function () {
             var updatedCompts = [];
-            angular.forEach(packets, function (pkt) {
+            angular.forEach($scope.data.packets, function (pkt) {
                 var packetId = pkt.id;
                 angular.forEach(updatedComptIds[packetId], function (unused, comptId) {
                     updatedCompts.push({id: comptId, vals: getCheckedValsForCompt(comptId)});
@@ -267,19 +271,18 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
 
         addComptsToBase = function () {
             var newCompts = [];
-            angular.forEach($scope.data.packets, function (pkt) {
-                var packetId = pkt.id;
-                angular.forEach(newComptLabels[packetId], function (comptId, lbl) {
+            for (var pkt in $scope.data.packets) {
+                angular.forEach(newComptLabels[pkt], function (comptId, lbl) {
                     newCompts.push({label: lbl, vals: getCheckedValsForCompt(comptId)});
-                    var indToUntag = comptIdToInd[newComptLabels[packetId][lbl]];
+                    var indToUntag = comptIdToInd[newComptLabels[pkt][lbl]];
                     $scope.data.selectedCompts[indToUntag].new = false;
                 });
-            });
+            }
             if (isDataEmpty(newCompts)) {
                 return;
             }
             var addConfig = {withCredentials: true, params: {packetId: selectedPacketId, comptParamsList: newCompts}};
-            $http.post(contextPath + '/addCompts', updateConfig)
+            $http.post(contextPath + '/addCompts', addConfig)
                 .success(function (data) {
                 })
                 .error(function (error) {
