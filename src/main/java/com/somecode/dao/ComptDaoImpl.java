@@ -240,9 +240,33 @@ public class ComptDaoImpl implements  ComptDao {
             return Collections.EMPTY_LIST;
         }
 
-        List<State> statesList = getAllStates();
-        List<Compt> comptList = new ArrayList<>(comptParamsList.size());
         List<Long> comptIdsList = new ArrayList<>(comptParamsList.size());
+        List<Compt> comptList = preparePacketAndComptsForSaving(packet, comptParamsList);
+        comptRepository.save(comptList).forEach(compt -> comptIdsList.add(compt.getId()));
+        LOGGER.info("Persisted new compt with ids: " + comptIdsList + " for packet#" + packetId);
+        return comptIdsList;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public List<Long> addPackets(List<PacketParams> packetParamsList) {
+        List<Long> result = new ArrayList<>();
+        List<Packet> packets = new ArrayList<>(packetParamsList.size());
+        for (PacketParams packetParams : packetParamsList) {
+            State state = em.find(State.class, packetParams.getStateId());
+            Packet packet = new Packet(packetParams.getId(), state);
+            preparePacketAndComptsForSaving(packet, packetParams.getComptParamsList());
+            packets.add(packet);
+        }
+        packetRepository.save(packets).forEach(pkt -> {
+            LOGGER.info("Persisted new packet with id: " + pkt.getId() + " and compts with ids: " + pkt.getComptIds());
+        });
+        return result;
+    }
+
+    private List<Compt> preparePacketAndComptsForSaving(Packet packet, List<ComptParams> comptParamsList) {
+        List<Compt> result = new ArrayList<>(comptParamsList.size());
+        List<State> statesList = getAllStates();
 
         for (ComptParams comptParams : comptParamsList) {
             List<Integer> allComboDataIndeces = getIndicesFromVals(comptParams.getVals());
@@ -262,11 +286,9 @@ public class ComptDaoImpl implements  ComptDao {
                     newCompt.addDataCompt(dc);
                 }
             }
-            comptList.add(newCompt);
+            result.add(newCompt);
         }
-
-        comptRepository.save(comptList).forEach(compt -> comptIdsList.add(compt.getId()));
-        LOGGER.info("New persisted compt ids: " + comptIdsList);
-        return comptIdsList;
+        return result;
     }
+
 }

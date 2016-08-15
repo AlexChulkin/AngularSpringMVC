@@ -14,7 +14,7 @@ public class Params {
     private long newStateId;
     private List<ComptParams> comptParamsList;
     private List<String> defaultVals;
-    private List<PacketParams> updatedPackets;
+    private List<PacketParams> packetParamsList;
 
     public List<Long> getPacketIds() {
         return packetIds;
@@ -24,12 +24,12 @@ public class Params {
         this.packetIds = packetIds;
     }
 
-    public List<PacketParams> getUpdatedPackets() {
-        return updatedPackets;
+    public List<PacketParams> getPacketParamsList() {
+        return packetParamsList;
     }
 
-    public void setUpdatedPackets(List<PacketParams> updatedPackets) {
-        this.updatedPackets = updatedPackets;
+    public void setPacketParamsList(List<PacketParams> packetParamsList) {
+        this.packetParamsList = packetParamsList;
     }
 
     public List<String> getDefaultVals() {

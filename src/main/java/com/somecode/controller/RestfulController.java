@@ -58,6 +58,14 @@ public class RestfulController {
                 requestObj.getParams().getComptParamsList());
     }
 
+    @RequestMapping(value = "/addPackets", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    void addPackets(@RequestBody RequestObj requestObj) throws Exception {
+        LOGGER.info("Add Packets");
+        comptService.addPackets(requestObj.getParams().getPacketParamsList());
+    }
+
     @RequestMapping(value = "/deleteCompts", method = RequestMethod.POST)
     public void deleteCompts(@RequestBody RequestObj requestObj) throws Exception {
         LOGGER.info("Delete Compts");
@@ -83,7 +91,7 @@ public class RestfulController {
     @ResponseBody
     void updatePackets(@RequestBody RequestObj requestObj) throws Exception {
         LOGGER.info("Update Packets");
-        comptService.updatePackets(requestObj.getParams().getUpdatedPackets());
+        comptService.updatePackets(requestObj.getParams().getPacketParamsList());
     }
 
     @RequestMapping(value = "/getAllComptsSupplInfo", method = RequestMethod.GET)

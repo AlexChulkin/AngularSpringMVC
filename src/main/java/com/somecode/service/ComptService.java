@@ -17,6 +17,10 @@ public class ComptService {
         return comptDao.addCompts(packetId, comptParamsList);
     }
 
+    public List<Long> addPackets(List<PacketParams> packetParamsList) {
+        return comptDao.addPackets(packetParamsList);
+    }
+
     public List<Long> deleteCompts(List<Long> idsToDelete) {
         return comptDao.deleteCompts(idsToDelete);
     }

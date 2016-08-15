@@ -42,7 +42,7 @@
             padding: 10px 0;
         }
         .states {
-            padding: 2% 0 1% 43%;
+            padding: 1% 0 1% 43%;
         }
         select.standard {
             background-color: lightcyan;
@@ -75,6 +75,10 @@
             </a>
             </div>
         <div class="btn-group aggregate-btns">
+            <a ng-click="addPacketLocally()"
+               class="btn btn-md btn-block btn-default">
+                Add packet
+            </a>
             <a ng-click="reloadRoute()"
                class="btn btn-md btn-block btn-warning">
                 Reload from base

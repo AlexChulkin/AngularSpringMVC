@@ -15,6 +15,7 @@ public interface ComptDao {
     List<PacketInfo> getAllPackets();
     Long getPacketStateId(long packetId);
 
+    List<Long> addPackets(List<PacketParams> packetParamsList);
     List<State> getAllStates();
 
     List<ComptInfo> getComptsByPacketId(long packetId);

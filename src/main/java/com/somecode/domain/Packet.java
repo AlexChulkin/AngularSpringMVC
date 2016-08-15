@@ -4,7 +4,9 @@ package com.somecode.domain;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @NamedQuery(name = "Packet.getAllPackets",
@@ -76,6 +78,11 @@ public class Packet implements EntityType {
     public void removeCompt(Compt compt){
         compt.setPacket(null);
         getCompts().remove(compt);
+    }
+
+    @Transient
+    public List<Long> getComptIds() {
+        return getCompts().stream().map(Compt::getId).collect(Collectors.toList());
     }
 
     @Override
