@@ -125,7 +125,7 @@
                     <span ng-bind="page"></span>
                 </a>
             </div>
-            <div class="well" ng-hide="data.loadError || data.loadEmpty || data.packetDeleted">
+            <div class="well">
                 <div class="states">
                     <div class="state" ng-repeat="state in data.states track by $index">
                         <input type="radio"
@@ -135,7 +135,7 @@
                         </div>
                     </div>
                 </div>
-            <form name="form" ng-hide="data.loadError || data.loadEmpty || data.packetDeleted">
+            <form name="form">
                 <div class="row grid-row">
                     <div class="col-sm-5">
                         <div class="form-group">
@@ -183,11 +183,11 @@
             </div>
             <div class="alert alert-danger" ng-show="data.loadEmpty ">
                 Error (<span ng-bind="data.loadEmpty.status"></span>). The loaded data is empty. Probably some
-                database error occurred.
+                database error occurred or the database is void.
                 <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
             </div>
             <div class="alert alert-danger" ng-show="data.packetDeleted">
-                Error. The selected packet is deleted. Please select the new one.
+                The selected packet is deleted. Please select or add another one.
             </div>
         </div>
     </div>
