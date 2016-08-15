@@ -20,7 +20,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
 
         var compts = [];
 
-        var maximalIndex = 0;
+        var maximalComptIndex = 0;
 
         var deletedComptIds = {};
         var updatedComptIds = {};
@@ -64,8 +64,8 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                 comptLabels[packetId][label] = true;
                 comptIdToInd[id] = compts[packetInd].length;
                 compts[packetInd].push(el);
-                if (id > maximalIndex) {
-                    maximalIndex = id;
+                if (id > maximalComptIndex) {
+                    maximalComptIndex = id;
                 }
             });
 
@@ -141,14 +141,13 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         });
 
         $scope.addComptLocally = function () {
-            var comptId = ++maximalIndex;
+            var comptId = ++maximalComptIndex;
             var usualLabel = $scope.data.newLabel;
             var upperCaseLabel = usualLabel.toUpperCase();
             var newCompt = {id: comptId, label: usualLabel, new: true};
             $scope.data.selectedComptLabels[upperCaseLabel] = true;
             comptIdToInd[comptId] = $scope.data.selectedCompts.length;
             $scope.data.selectedCompts.push(newCompt);
-            var selectedPacketInd = packetIdToInd[selectedPacketId];
             if (!newComptLabels[selectedPacketId]) {
                 newComptLabels[selectedPacketId] = {};
             }
@@ -179,8 +178,6 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             if (!!newComptLabels[selectedPacketId]) {
                 delete newComptLabels[selectedPacketId][label];
             }
-            // delete comptIdToInd[id];
-
             if (!isNew) {
                 if (!deletedComptIds[selectedPacketId]) {
                     deletedComptIds[selectedPacketId] = [];
@@ -209,7 +206,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                 });
         };
 
-        $scope.markComptAsUpdated = function (compt) {
+        $scope.updateComptLocally = function (compt) {
             if (compt.new) {
                 return;
             }

@@ -106,7 +106,7 @@
                                   <select class="standard"
                                           ng-options="el for el in data.comboData[compt.id][state.id]"
                                           ng-model="data.checkedVals[compt.id][state.id]"
-                                          ng-change="markComptAsUpdated(compt)">
+                                          ng-change="updateComptLocally(compt)">
                                   </select>
                             </span>
                     </td>
