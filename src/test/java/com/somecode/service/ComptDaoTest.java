@@ -8,6 +8,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
@@ -15,11 +16,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.persistence.Cache;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
@@ -39,13 +40,13 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
 
     @Override
     protected void clearCachedData() {
-//        deleteFromTables("DATA_COMPT", "COMBO_DATA", "COMPT", "PACKET", "STATE");
-//        Optional.of(em)
-//                .ifPresent(EntityManager::clear);
-//        Optional.of(em)
-//                .map(EntityManager::getEntityManagerFactory)
-//                .map(EntityManagerFactory::getCache)
-//                .ifPresent(Cache::evictAll);
+        deleteFromTables("DATA_COMPT", "COMBO_DATA", "COMPT", "PACKET", "STATE");
+        Optional.of(em)
+                .ifPresent(EntityManager::clear);
+        Optional.of(em)
+                .map(EntityManager::getEntityManagerFactory)
+                .map(EntityManagerFactory::getCache)
+                .ifPresent(Cache::evictAll);
     }
 
     @DataSets(before = "/com/somecode/service/ComptDaoTest_Compt.xls")
@@ -116,7 +117,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final String comboDataLabelPrefix = "combo_label_";
 
         final List<String> expectedComboDataLabels = (testCase == ComboDataGetTestCase.COMBO_DATA_PROPERLY)
-                ? generateLabelsList(comboDataLabelPrefix, expectedResultLength)
+                ? generateDiverseLabelsList(comboDataLabelPrefix, expectedResultLength)
                 : (testCase == ComboDataGetTestCase.COMPTS_SUPPL_INFO)
                 ? generateIteratedLabelsList(comboDataLabelPrefix, expectedNumOfCompts,
                 expectedNumOfStates, expectedNumOfComboData)
@@ -138,11 +139,18 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
                 );
     }
 
-    private List<String> generateLabelsList(String labelPrefix, int numOfLabels) {
+    private List<String> generateDiverseLabelsList(String labelPrefix, int numOfLabels) {
         final List<String> comboDataLabels = new ArrayList<>();
         IntStream.rangeClosed(1, numOfLabels)
                 .boxed()
                 .forEach(i -> comboDataLabels.add(labelPrefix + i.toString()));
+        return comboDataLabels;
+    }
+
+    private List<String> generateEqualLabelsList(String labelPrefix, int numOfLabels) {
+        final List<String> comboDataLabels = new ArrayList<>();
+        IntStream.rangeClosed(1, numOfLabels)
+                .forEach(i -> comboDataLabels.add(labelPrefix + "1"));
         return comboDataLabels;
     }
 
@@ -153,7 +161,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
 
         final List<String> comboDataLabels = new ArrayList<>();
         final int numOfIterations = numOfCompts * numOfStates;
-        List<String> elementaryComboDataList = generateLabelsList(labelPrefix, numOfComboData);
+        List<String> elementaryComboDataList = generateDiverseLabelsList(labelPrefix, numOfComboData);
         IntStream.rangeClosed(1, numOfIterations)
                 .boxed()
                 .forEach(i -> comboDataLabels.addAll(elementaryComboDataList));
@@ -183,7 +191,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
     public void testGetStates_positive() throws Exception {
         final String expectedLabelsPrefix = "state_label_";
         final int expectedResultLength = 3;
-        final List<String> expectedLabels = generateLabelsList(expectedLabelsPrefix, expectedResultLength);
+        final List<String> expectedLabels = generateDiverseLabelsList(expectedLabelsPrefix, expectedResultLength);
 
         final List<State> result = comptDao.getAllStates();
 
@@ -243,7 +251,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final long[] idsForUpdate = generateIds(firstIdToUpdate, numOfComptsToUpdate);
 
         final List<ComptParams> paramsListForUpdate
-                = generateParamsList(OperationType.UPDATE, checkedValsForUpdate,
+                = generateComptParamsList(OperationType.UPDATE, checkedValsForUpdate,
                 idsForUpdate, numOfComptsToUpdate, null);
 
         comptDao.updateCompts(paramsListForUpdate);
@@ -267,18 +275,33 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final long[] idsForUpdate = generateIds(firstComptIdToUpdate, numOfComptsToUpdate);
 
         List<ComptParams> paramsListForUpdate
-                = generateParamsList(OperationType.UPDATE, checkedValsForUpdate,
+                = generateComptParamsList(OperationType.UPDATE, checkedValsForUpdate,
                 idsForUpdate, numOfComptsToUpdate, null);
 
         comptDao.updateCompts(paramsListForUpdate);
         em.flush();
     }
 
-    private List<ComptParams> generateParamsList(final OperationType operationType,
-                                                 final String[][] checkedValsForAddOrUpdate,
-                                                 final long[] idsForAddOrUpdate,
-                                                 final int numOfComptsToAddOrUpdate,
-                                                 final String[] labelsForAdding) {
+    private List<PacketParams> generatePacketParamsList(final long packetId,
+                                                        final long stateId,
+                                                        final List<ComptParams> comptParamsList) {
+
+        final List<PacketParams> paramsList = new ArrayList<>();
+        PacketParams packetParams = new PacketParams()
+                .setId(packetId)
+                .setStateId(stateId)
+                .setComptParamsList(comptParamsList);
+
+        paramsList.add(packetParams);
+
+        return paramsList;
+    }
+
+    private List<ComptParams> generateComptParamsList(final OperationType operationType,
+                                                      final String[][] checkedValsForAddOrUpdate,
+                                                      final long[] idsForAddOrUpdate,
+                                                      final int numOfComptsToAddOrUpdate,
+                                                      final String[] labelsForAdding) {
 
         final List<ComptParams> paramsList = new ArrayList<>();
         if (operationType == OperationType.UPDATE) {
@@ -313,7 +336,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
     private String[][] generateMultipleLabelsLists(final String labelPrefix, final int numOfStates,
                                                    final int numOfCompts) {
 
-        List<String> vals = generateLabelsList(labelPrefix, numOfStates);
+        List<String> vals = generateDiverseLabelsList(labelPrefix, numOfStates);
         String[] valsArray = vals.toArray(new String[0]);
         List<String> invertedVals = Lists.reverse(vals);
         String[] invertedValsArray = invertedVals.toArray(new String[0]);
@@ -333,58 +356,146 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
                 .forEach(i -> checkedVals[i] = vals);
     }
 
-    @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Update_PacketState.xls",
-            after = "/com/somecode/service/ComptDaoTest_After_Update_PacketState_State_Changed.xls")
-    @Rollback(false)
+    @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Add_Packets.xls",
+            after = "/com/somecode/service/ComptDaoTest_After_Add_Packets_Positive.xls")
     @Test
+    @Rollback(false)
     @DirtiesContext
-    public void testUpdatePacketState_positive() throws Exception {
-        long packetId = 1L;
-        long newStateId = 2L;
+    public void testAddPackets_positive() throws Exception {
+        final int numOfComptsToAddInsideAddedPacket = 1;
+        final long unusedAddedPacketId = 0L;
+        final long packetStateId = 2L;
+        final String comboDataLabelPrefix = "combo_label_";
+        final String comptLabelPrefix = "compt_label_";
+        final int numOfStates = 3;
+        final String[][] checkedValsForAdding
+                = generateMultipleLabelsLists(comboDataLabelPrefix, numOfStates, numOfComptsToAddInsideAddedPacket);
+        final String[] labelsForAdding
+                = generateDiverseLabelsList(comptLabelPrefix, numOfComptsToAddInsideAddedPacket).toArray(new String[0]);
+        final List<ComptParams> comptParamsList = generateComptParamsList(OperationType.ADD,
+                checkedValsForAdding, null,
+                numOfComptsToAddInsideAddedPacket, labelsForAdding);
+        final List<PacketParams> packetParamsList
+                = generatePacketParamsList(unusedAddedPacketId, packetStateId, comptParamsList);
 
-//        comptDao.updatePacketState(packetId, newStateId);
+        comptDao.addPackets(packetParamsList);
         em.flush();
     }
 
-    @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Update_PacketState.xls",
-            after = "/com/somecode/service/ComptDaoTest_Before_Update_PacketState.xls")
+    @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Add_Packets.xls",
+            after = "/com/somecode/service/ComptDaoTest_After_Add_Packets_Negative.xls")
+    @Test(expected = DataIntegrityViolationException.class)
     @Rollback(false)
-    @Test
     @DirtiesContext
-    public void testUpdatePacketState_negative_nonExistingPacketId() throws Exception {
-        long packetId = 2L;
-        long newStateId = 1L;
+    public void testAddPackets_negative_equalLabels() throws Exception {
+        final int numOfComptsToAddInsideAddedPacket = 2;
+        final long unusedAddedPacketId = 2L;
+        final long packetStateId = 2L;
+        final String comboDataLabelPrefix = "combo_label_";
+        final String comptLabelPrefix = "compt_label_";
+        final int numOfStates = 3;
+        final String[][] checkedValsForAdding
+                = generateMultipleLabelsLists(comboDataLabelPrefix, numOfStates, numOfComptsToAddInsideAddedPacket);
+        final String[] labelsForAdding
+                = generateEqualLabelsList(comptLabelPrefix, numOfComptsToAddInsideAddedPacket).toArray(new String[0]);
+        final List<ComptParams> comptParamsList = generateComptParamsList(OperationType.ADD,
+                checkedValsForAdding, null,
+                numOfComptsToAddInsideAddedPacket, labelsForAdding);
+        final List<PacketParams> packetParamsList
+                = generatePacketParamsList(unusedAddedPacketId, packetStateId, comptParamsList);
 
-//        comptDao.updatePacketState(packetId, newStateId);
+        comptDao.addPackets(packetParamsList);
         em.flush();
     }
 
-    @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Update_PacketState.xls",
-            after = "/com/somecode/service/ComptDaoTest_After_Update_PacketState_State_Not_Changed.xls")
-    @Rollback(false)
+    @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Delete_Packets.xls",
+            after = "/com/somecode/service/ComptDaoTest_After_Delete_Packets_Positive.xls")
     @Test
+    @Rollback(false)
     @DirtiesContext
-    public void testUpdatePacketState_negative_nonExistingStateId() throws Exception {
-        long packetId = 1L;
-        long newStateId = 4L;
+    public void testDeletePackets_positive() throws Exception {
+        final long packetId = 2L;
+        final List<Long> idsToDelete = Arrays.asList(packetId);
 
-//        comptDao.updatePacketState(packetId, newStateId);
+        comptDao.deletePackets(idsToDelete);
         em.flush();
     }
 
-    @DataSets(before = "/com/somecode/service/ComptDaoTest_PacketState.xls")
+    @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Delete_Packets.xls",
+            after = "/com/somecode/service/ComptDaoTest_After_Delete_Packets_Negative.xls")
+    @Test
+    @Rollback(false)
+    @DirtiesContext
+    public void testDeletePackets_negative() throws Exception {
+        final long packetId = 3L;
+        final List<Long> idsToDelete = Arrays.asList(packetId);
+
+        comptDao.deletePackets(idsToDelete);
+        em.flush();
+    }
+
+    @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Update_Packets.xls",
+            after = "/com/somecode/service/ComptDaoTest_After_Update_Packets_Positive.xls")
+    @Test
+    @Rollback(false)
+    @DirtiesContext
+    public void testUpdatePackets_positive() throws Exception {
+        final long packetId = 1L;
+        final long newStateId = 2L;
+        final List<ComptParams> comptParamsList = Collections.emptyList();
+        final List<PacketParams> packetParamsList = generatePacketParamsList(packetId, newStateId, comptParamsList);
+
+        comptDao.updatePackets(packetParamsList);
+        em.flush();
+    }
+
+    @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Update_Packets.xls",
+            after = "/com/somecode/service/ComptDaoTest_After_Update_Packets_Negative_NonExistingPacketId.xls")
+    @Rollback(false)
     @Test
     @DirtiesContext
-    public void testUpdatePacketState_negative_notDifferentStateId() throws Exception {
-        long packetId = 1L;
-        long newStateId = 1L;
+    public void testUpdatePackets_negative_nonExistingPacketId() throws Exception {
+        final long packetId = 2L;
+        final long newStateId = 1L;
+        final List<ComptParams> comptParamsList = Collections.emptyList();
+        final List<PacketParams> packetParamsList = generatePacketParamsList(packetId, newStateId, comptParamsList);
 
-//        comptDao.updatePacketStates(packetId, newStateId);
+        comptDao.updatePackets(packetParamsList);
+        em.flush();
+    }
+
+    @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Update_Packets.xls",
+            after = "/com/somecode/service/ComptDaoTest_After_Update_Packets_Negative_NotDifferentNewStateId.xls")
+    @Rollback(false)
+    @Test
+    @DirtiesContext
+    public void testUpdatePackets_negative_notDifferentNewStateId() throws Exception {
+        final long packetId = 1L;
+        final long newStateId = 1L;
+        final List<ComptParams> comptParamsList = Collections.emptyList();
+        final List<PacketParams> packetParamsList = generatePacketParamsList(packetId, newStateId, comptParamsList);
+
+        comptDao.updatePackets(packetParamsList);
+        em.flush();
+    }
+
+    @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Update_Packets.xls",
+            after = "/com/somecode/service/ComptDaoTest_After_Update_Packets_Negative_NonExistingStateId.xls")
+    @Rollback(false)
+    @Test
+    @DirtiesContext
+    public void testUpdatePackets_negative_nonExistingStateId() throws Exception {
+        final long packetId = 1L;
+        final long newStateId = 4L;
+        final List<ComptParams> comptParamsList = Collections.emptyList();
+        final List<PacketParams> packetParamsList = generatePacketParamsList(packetId, newStateId, comptParamsList);
+
+        comptDao.updatePackets(packetParamsList);
         em.flush();
     }
 
     @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Add_Compts.xls",
-            after = "/com/somecode/service/ComptDaoTest_After_Add_Compts.xls")
+            after = "/com/somecode/service/ComptDaoTest_After_Add_Compts_Positive.xls")
     @Test
     @Rollback(false)
     @DirtiesContext
@@ -397,9 +508,9 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final String[][] checkedValsForAdding
                 = generateMultipleLabelsLists(comboDataLabelPrefix, numOfStates, numOfComptsToAdd);
         final String[] labelsForAdding
-                = generateLabelsList(comptLabelPrefix, numOfComptsToAdd).toArray(new String[0]);
+                = generateDiverseLabelsList(comptLabelPrefix, numOfComptsToAdd).toArray(new String[0]);
 
-        final List<ComptParams> paramsListForAdding = generateParamsList(OperationType.ADD,
+        final List<ComptParams> paramsListForAdding = generateComptParamsList(OperationType.ADD,
                 checkedValsForAdding, null,
                 numOfComptsToAdd, labelsForAdding);
 
@@ -408,11 +519,11 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
     }
 
     @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Add_Compts.xls",
-            after = "/com/somecode/service/ComptDaoTest_Before_Add_Compts.xls")
+            after = "/com/somecode/service/ComptDaoTest_After_Add_Compts_Negative_NonExistent_PacketId.xls")
     @Test
     @Rollback(false)
     @DirtiesContext
-    public void testAddCompts_negative() throws Exception {
+    public void testAddCompts_negative_nonExistentPacketId() throws Exception {
         final int numOfComptsToAdd = 2;
         final long packetId = 2L;
         final String comboDataLabelPrefix = "combo_label_";
@@ -421,7 +532,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final String[][] checkedValsForAdding
                 = generateMultipleLabelsLists(comboDataLabelPrefix, numOfStates, numOfComptsToAdd);
         final String[] labelsForAdding
-                = generateLabelsList(comptLabelPrefix, numOfComptsToAdd).toArray(new String[0]);
+                = generateDiverseLabelsList(comptLabelPrefix, numOfComptsToAdd).toArray(new String[0]);
 
         final List<ComptParams> paramsListForAdding = new ArrayList<>();
         IntStream.range(0, numOfComptsToAdd).boxed()
@@ -433,6 +544,34 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         comptDao.addCompts(packetId, paramsListForAdding);
         em.flush();
     }
+
+    @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Add_Compts.xls",
+            after = "/com/somecode/service/ComptDaoTest_After_Add_Compts_Negative_EqualLabels.xls")
+    @Test(expected = DataIntegrityViolationException.class)
+    @Rollback(false)
+    @DirtiesContext
+    public void testAddCompts_negative_equalLabels() throws Exception {
+        final int numOfComptsToAdd = 2;
+        final long packetId = 1L;
+        final String comboDataLabelPrefix = "combo_label_";
+        final String comptLabelPrefix = "compt_label_";
+        final int numOfStates = 3;
+        final String[][] checkedValsForAdding
+                = generateMultipleLabelsLists(comboDataLabelPrefix, numOfStates, numOfComptsToAdd);
+        final String[] labelsForAdding
+                = generateEqualLabelsList(comptLabelPrefix, numOfComptsToAdd).toArray(new String[0]);
+
+        final List<ComptParams> paramsListForAdding = new ArrayList<>();
+        IntStream.range(0, numOfComptsToAdd).boxed()
+                .forEach(i -> paramsListForAdding.add(new ComptParams()
+                        .setVals(Arrays.asList(checkedValsForAdding[i]))
+                        .setLabel(labelsForAdding[i]))
+                );
+
+        comptDao.addCompts(packetId, paramsListForAdding);
+        em.flush();
+    }
+
 
     @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Remove_Compts.xls",
             after = "/com/somecode/service/ComptDaoTest_After_Remove_Compts.xls")

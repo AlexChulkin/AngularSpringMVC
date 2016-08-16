@@ -14,16 +14,18 @@ public class PacketParams {
         return comptParamsList;
     }
 
-    public void setComptParamsList(List<ComptParams> comptParamsList) {
+    public PacketParams setComptParamsList(List<ComptParams> comptParamsList) {
         this.comptParamsList = comptParamsList;
+        return this;
     }
 
     public long getStateId() {
         return stateId;
     }
 
-    public void setStateId(long stateId) {
+    public PacketParams setStateId(long stateId) {
         this.stateId = stateId;
+        return this;
     }
 
     public long getId() {
@@ -31,7 +33,8 @@ public class PacketParams {
         return id;
     }
 
-    public void setId(long id) {
+    public PacketParams setId(long id) {
         this.id = id;
+        return this;
     }
 }

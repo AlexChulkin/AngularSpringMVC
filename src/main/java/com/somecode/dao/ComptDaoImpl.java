@@ -186,9 +186,10 @@ public class ComptDaoImpl implements  ComptDao {
                 LOGGER.error("Packet state update. The packet with id " + packetId + "does not exist.");
                 continue;
             }
-            State newState = em.find(State.class, p.getStateId());
+            long newStateId = p.getStateId();
+            State newState = em.find(State.class, newStateId);
             if (newState == null) {
-                LOGGER.error("Packet state update. The state with id " + newState.getId() + "does not exist.");
+                LOGGER.error("Packet state update. The state with id " + newStateId + "does not exist.");
                 continue;
             }
             packet.setState(newState);
@@ -225,6 +226,11 @@ public class ComptDaoImpl implements  ComptDao {
                 .stream()
                 .filter(p -> p != null)
                 .collect(Collectors.toList());
+        if (packets.size() == 0) {
+            LOGGER.error("Can't delete any of the packets with the following ids cause " +
+                    "they don't exist: " + idsToDelete);
+            return Collections.EMPTY_LIST;
+        }
         packetRepository.delete(packets);
         List<Long> result = getIdsFromEntities(packets.toArray(new Packet[0]));
         LOGGER.info("Deleted packets with the following ids: " + result);
