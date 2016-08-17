@@ -12,25 +12,16 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
 
         var selectedPacket = null;
         var selectedPacketId = null;
-
         var comptIdToInd = {};
         var packetIdToInd = {};
-
         var comptLabels = {};
-
         var compts = [];
-
         var maximalComptIndex = 0;
         var maximalPacketIndex = 0;
-
-
         var deletedComptIds = {};
         var updatedComptIds = {};
-
         var newComptLabels = {};
         var newPackets = {};
-
-        var updatedPackets = {};
         var deletedPacketIds = [];
 
         var packetInitialStateIds = {};
@@ -40,12 +31,12 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         $scope.data = {};
         $scope.data.comboDataDefaultSet = [];
         $scope.data.selectedCompts = [];
-        $scope.data.stateLabels = [labelLabel];
-        $scope.data.newValues = [];
-        $scope.data.packets = {};
-        $scope.data.states = [];
-        $scope.data.comboData = {};
-        $scope.data.checkedVals = {};
+        $scope.data.allStateLabels = [labelLabel];
+        $scope.data.newComptCheckedVals = [];
+        $scope.data.allPackets = {};
+        $scope.data.allStates = [];
+        $scope.data.allComboData = {};
+        $scope.data.allCheckedVals = {};
         $scope.data.selectedComptLabels = {};
 
         $scope.data.loadError = false;
@@ -82,7 +73,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                 $scope.selectPacket(data[0]);
                 angular.forEach(data, function (pkt) {
                     var pktId = pkt.id;
-                    $scope.data.packets[pktId] = pkt;
+                    $scope.data.allPackets[pktId] = pkt;
                     if (pktId > maximalPacketIndex) {
                         maximalPacketIndex = pktId;
                     }
@@ -93,9 +84,9 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                         $scope.data.loadEmpty = true;
                         return;
                     }
-                    $scope.data.states = data;
-                    angular.forEach($scope.data.states, function (state) {
-                        $scope.data.stateLabels.push(state.label);
+                    $scope.data.allStates = data;
+                    angular.forEach($scope.data.allStates, function (state) {
+                        $scope.data.allStateLabels.push(state.label);
                 });
 
                     $http.get(contextPath + '/getAllComboData', simpleConfig).success(function (data) {
@@ -106,8 +97,8 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                         angular.forEach(data, function (cd) {
                             $scope.data.comboDataDefaultSet.push(cd.label);
                         });
-                        angular.forEach($scope.data.states, function () {
-                            $scope.data.newValues.push($scope.data.comboDataDefaultSet[0]);
+                        angular.forEach($scope.data.allStates, function () {
+                            $scope.data.newComptCheckedVals.push($scope.data.comboDataDefaultSet[0]);
                         });
 
                         $http.get(contextPath + '/getAllComptsSupplInfo', simpleConfig).success(function (data) {
@@ -119,13 +110,13 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                                 var comptId = el.comptId;
                                 var stateId = el.stateId;
                                 var label = el.label;
-                                $scope.data.comboData[comptId] = $scope.data.comboData[comptId] || {};
-                                $scope.data.comboData[comptId][stateId] = $scope.data.comboData[comptId][stateId] || [];
-                                $scope.data.comboData[comptId][stateId].push(label);
+                                $scope.data.allComboData[comptId] = $scope.data.allComboData[comptId] || {};
+                                $scope.data.allComboData[comptId][stateId] = $scope.data.allComboData[comptId][stateId] || [];
+                                $scope.data.allComboData[comptId][stateId].push(label);
                                 var checked = el.checked;
                                 if (checked) {
-                                    $scope.data.checkedVals[comptId] = $scope.data.checkedVals[comptId] || {};
-                                    $scope.data.checkedVals[comptId][stateId] = label;
+                                    $scope.data.allCheckedVals[comptId] = $scope.data.allCheckedVals[comptId] || {};
+                                    $scope.data.allCheckedVals[comptId][stateId] = label;
                                 }
                             });
                         }).error(function (error) {
@@ -153,13 +144,13 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             comptIdToInd[comptId] = $scope.data.selectedCompts.length;
             $scope.data.selectedCompts.push(newCompt);
             newComptLabels[selectedPacketId] = newComptLabels[selectedPacketId] || {};
-            newComptLabels[selectedPacketId][usualLabel] = comptId;
+            newComptLabels[selectedPacketId][comptId] = usualLabel;
 
-            $scope.data.comboData[comptId] = {};
-            $scope.data.checkedVals[comptId] = {};
-            for (var i = 1; i <= $scope.data.states.length; i++) {
-                $scope.data.comboData[comptId][i] = $scope.data.comboDataDefaultSet;
-                $scope.data.checkedVals[comptId][i] = $scope.data.newValues[i - 1];
+            $scope.data.allComboData[comptId] = {};
+            $scope.data.allCheckedVals[comptId] = {};
+            for (var i = 1; i <= $scope.data.allStates.length; i++) {
+                $scope.data.allComboData[comptId][i] = $scope.data.comboDataDefaultSet;
+                $scope.data.allCheckedVals[comptId][i] = $scope.data.newComptCheckedVals[i - 1];
             }
             $scope.data.newLabel = null;
         };
@@ -167,28 +158,25 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         $scope.addPacketLocally = function () {
             var newPacket = {id: ++maximalPacketIndex, stateId: 1};
             newPackets[maximalPacketIndex] = newPacket;
-            $scope.data.packets[maximalPacketIndex] = newPacket;
+            $scope.data.allPackets[maximalPacketIndex] = newPacket;
 
         };
 
         $scope.deleteComptLocally = function (compt) {
-            var label = compt.label;
-            var id = compt.id;
-            var isNew = compt.new;
+            var comptLabel = compt.label;
+            var comptId = compt.id;
 
-            delete $scope.data.selectedComptLabels[label.toUpperCase()];
-            $scope.data.selectedCompts[comptIdToInd[id]] = null;
-            delete $scope.data.checkedVals[id];
-            delete $scope.data.comboData[id];
-            if (updatedComptIds[selectedPacketId]) {
-                delete updatedComptIds[selectedPacketId][id];
-            }
-            if (newComptLabels[selectedPacketId]) {
-                delete newComptLabels[selectedPacketId][label];
-            }
-            if (!isNew) {
+            delete $scope.data.selectedComptLabels[comptLabel.toUpperCase()];
+            $scope.data.selectedCompts[comptIdToInd[comptId]] = null;
+            delete $scope.data.allCheckedVals[comptId];
+            delete $scope.data.allComboData[comptId];
+            delete updatedComptIds[selectedPacketId][comptId];
+            var isComptNew = newComptLabels[selectedPacketId][comptId];
+            if (isComptNew) {
+                delete isComptNew;
+            } else {
                 deletedComptIds[selectedPacketId] = deletedComptIds[selectedPacketId] || [];
-                deletedComptIds[selectedPacketId].push(id);
+                deletedComptIds[selectedPacketId].push(comptId);
             }
         };
 
@@ -197,8 +185,9 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             if (!newPackets[packetId]) {
                 deletedPacketIds.push(packetId);
             }
-            delete $scope.data.packets[packetId];
-            delete updatedPackets[packetId];
+            delete $scope.data.allPackets[packetId];
+            delete newComptLabels[packetId];
+            delete deletedComptIds[packetId];
             $scope.data.packetDeleted = true;
         };
 
@@ -207,7 +196,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                 return;
             }
             var deleteConfig = {withCredentials: true, params: {packetIds: deletedPacketIds}};
-            $http.post(contextPath + '/deletePackets', deleteConfig)
+            $http.delete(contextPath + '/deletePackets', deleteConfig)
                 .success(function (data) {
                 })
                 .error(function (error) {
@@ -215,17 +204,17 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         };
 
         $scope.updateComptLocally = function (compt) {
-            if (compt.new) {
+            var comptId = compt.id;
+            if (newComptLabels[selectedPacketId][comptId]) {
                 return;
             }
             updatedComptIds[selectedPacketId] = updatedComptIds[selectedPacketId] || {};
-            updatedComptIds[selectedPacketId][compt.id] = true;
+            updatedComptIds[selectedPacketId][comptId] = true;
         };
 
         $scope.saveAllToBase = function () {
-            deletePacketsInBase();
             deleteComptsInBase();
-            updateComptsInBase();
+            deletePacketsInBase();
             saveOrUpdatePacketsInBase();
         };
 
@@ -239,8 +228,8 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
 
         getCheckedValsForCompt = function (comptId) {
             var checkedVals = [];
-            angular.forEach($scope.data.states, function (state, ind) {
-                checkedVals.push($scope.data.checkedVals[comptId][ind + 1]);
+            angular.forEach($scope.data.allStates, function (state, ind) {
+                checkedVals.push($scope.data.allCheckedVals[comptId][ind + 1]);
             });
             return checkedVals;
         };
@@ -250,14 +239,14 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                 return;
             }
             var deletedComptIdsForConfig = [];
-            angular.forEach($scope.data.packets, function (unused, pktId) {
+            angular.forEach($scope.data.allPackets, function (unused, pktId) {
                 deletedComptIdsForConfig = deletedComptIdsForConfig.concat(deletedComptIds[pktId]);
             });
             if (deletedComptIdsForConfig.length == 0) {
                 return;
             }
             var deleteConfig = {withCredentials: true, params: {comptIds: deletedComptIdsForConfig}};
-            $http.post(contextPath + '/deleteCompts', deleteConfig)
+            $http.delete(contextPath + '/deleteCompts', deleteConfig)
                 .success(function (data) {
                 })
                 .error(function (error) {
@@ -265,58 +254,68 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             deletedComptIds = {};
         };
 
-        updateComptsInBase = function () {
-            var updatedCompts = [];
-            for (var pktId in $scope.data.packets) {
-                angular.forEach(updatedComptIds[pktId], function (unused, comptId) {
-                    updatedCompts.push({id: comptId, vals: getCheckedValsForCompt(comptId)});
-                });
-            }
-            if (updatedCompts.length == 0) {
-                return;
-            }
-            var updateConfig = {withCredentials: true, params: {comptParamsList: updatedCompts}};
-            $http.post(contextPath + '/updateCompts', updateConfig)
-                .success(function (data) {
-                })
-                .error(function (error) {
-                });
-            updatedComptIds = {};
-        };
-
         saveOrUpdatePacketsInBase = function () {
-            var packetParamsList = [];
-            angular.forEach($scope.data.packets, function (pkt, pktId) {
-                var config = {stateId: pkt.stateId, comptParamsList: generateComptParamsList(pktId)};
+            var updatePacketParamsList = [];
+            var createPacketParamsList = [];
+            angular.forEach($scope.data.allPackets, function (pkt, pktId) {
+                var config = {};
                 if (!newPackets[pktId]) {
                     config.id = pktId;
-                    if (config.stateId == packetInitialStateIds[pktId]) {
-                        config.stateId = null;
+                    if (config.stateId != packetInitialStateIds[pktId]) {
+                        config.stateId = pkt.stateId;
                     }
+                    config.updatedComptParamsList = generatePacketUpdateUpdatedComptParamsList(pktId);
+                    config.addedComptParamsList = generatePacketUpdateAddedComptParamsList(pktId);
+                    if (config.stateId || config.updatedComptParamsList.length > 0
+                        || config.addedComptParamsList.length > 0) {
+                        updatePacketParamsList.push(config);
+                    }
+                } else {
+                    config.stateId = pkt.stateId;
+                    config.addedComptParamsList = generatePacketCreateComptParamsList(pktId);
+                    createPacketParamsList.push(config);
                 }
-                packetParamsList.push(config);
             });
-            if (packetParamsList.length == 0) {
+            if (updatePacketParamsList.length == 0 && createPacketParamsList.length == 0) {
                 return;
             }
-            var addConfig = {withCredentials: true, params: {packetParamsList: packetParamsList}};
-            $http.post(contextPath + '/addCompts', addConfig)
+            var addConfig = {
+                withCredentials: true,
+                params: {createPacketParamsList: createPacketParamsList, updatePacketParamsList: updatePacketParamsList}
+            };
+            $http.post(contextPath + '/saveOrUpdatePackets', addConfig)
                 .success(function (data) {
                 })
                 .error(function (error) {
                 });
             newComptLabels = {};
+            updatedComptIds = {};
         };
 
-        generateComptParamsList = function (pktId) {
-            var comptParamsList = [];
-            angular.forEach(newComptLabels[pktId], function (comptId, lbl) {
-                comptParamsList.push({label: lbl, vals: getCheckedValsForCompt(comptId)});
-                var comptIndToUntag = comptIdToInd[comptId];
-                $scope.data.selectedCompts[comptIndToUntag].new = null;
+        generatePacketCreateComptParamsList = function (pktId) {
+            var result = [];
+            angular.forEach(newComptLabels[pktId], function (lbl, comptId) {
+                result.push({label: lbl, vals: getCheckedValsForCompt(comptId)});
             });
-            return comptParamsList;
+            return result;
         };
+
+        generatePacketUpdateAddedComptParamsList = function (pktId) {
+            var result = [];
+            angular.forEach(newComptLabels[pktId], function (lbl, comptId) {
+                result.push({label: lbl, vals: getCheckedValsForCompt(comptId)});
+            });
+            return result;
+        };
+
+        generatePacketUpdateUpdatedComptParamsList = function (pktId) {
+            var result = [];
+            angular.forEach(updatedComptIds[pktId], function (unused, comptId) {
+                result.push({id: comptId, vals: getCheckedValsForCompt(comptId)});
+            });
+            return result;
+        };
+
 
         $scope.selectPacket = function (packet) {
             $scope.data.packetDeleted = null;

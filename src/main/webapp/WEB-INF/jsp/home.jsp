@@ -64,7 +64,7 @@
 </div>
 <div class="panel">
     <div class="col-xs-1 column">
-        <div class="flex" ng-repeat="pkt in data.packets">
+        <div class="flex" ng-repeat="pkt in data.allPackets">
             <a ng-click="selectPacket(pkt)"
                ng-class="getPacketClass(pkt)">
                 Packet#<span ng-bind="pkt.id"/>
@@ -94,8 +94,8 @@
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th ng-show="data.stateLabels"
-                        ng-repeat="label in data.stateLabels"><span ng-bind="label"/></th>
+                    <th ng-show="data.allStateLabels"
+                        ng-repeat="label in data.allStateLabels"><span ng-bind="label"/></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -103,13 +103,13 @@
                     <td width="43%">
                         <span ng-bind="compt.label"/>
                     </td>
-                    <td width="17%" ng-repeat="state in data.states">
-                            <span ng-bind="data.checkedVals[compt.id][state.id]"
+                    <td width="17%" ng-repeat="state in data.allStates">
+                            <span ng-bind="data.allCheckedVals[compt.id][state.id]"
                                   ng-hide="selectedPacket.stateId==state.id"></span>
                             <span ng-show="selectedPacket.stateId==state.id">
                                   <select class="standard"
-                                          ng-options="el for el in data.comboData[compt.id][state.id]"
-                                          ng-model="data.checkedVals[compt.id][state.id]"
+                                          ng-options="el for el in data.allComboData[compt.id][state.id]"
+                                          ng-model="data.allCheckedVals[compt.id][state.id]"
                                           ng-change="updateComptLocally(compt)">
                                   </select>
                             </span>
@@ -131,11 +131,11 @@
             </div>
             <div class="well">
                 <div class="states">
-                    <div class="state" ng-repeat="state in data.states track by $index">
+                    <div class="state" ng-repeat="state in data.allStates track by $index">
                         <input type="radio"
                                ng-model="selectedPacket.stateId"
                                ng-value="$index+1">
-                        <span ng-bind="data.stateLabels[$index+1]"></span>
+                        <span ng-bind="data.allStateLabels[$index+1]"></span>
                         </div>
                     </div>
                 </div>
@@ -170,10 +170,10 @@
                                 </span>
                         </div>
                     </div>
-                    <div class="col-sm-2" ng-repeat="state in data.states track by $index">
+                    <div class="col-sm-2" ng-repeat="state in data.allStates track by $index">
                         <select class="special"
                                 ng-options="el for el in data.comboDataDefaultSet"
-                                ng-model="data.newValues[$index]">
+                                ng-model="data.newComptCheckedVals[$index]">
                         </select>
                     </div>
                 </div>

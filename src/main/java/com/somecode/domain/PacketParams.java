@@ -6,34 +6,44 @@ import java.util.List;
  * Created by alexc_000 on 2016-08-13.
  */
 public class PacketParams {
-    private long id;
-    private long stateId;
-    private List<ComptParams> comptParamsList;
+    private Long id;
+    private Long stateId;
+    private List<ComptParams> updatedComptParamsList;
+    private List<ComptParams> addedComptParamsList;
 
-    public List<ComptParams> getComptParamsList() {
-        return comptParamsList;
+    public List<ComptParams> getUpdatedComptParamsList() {
+        return updatedComptParamsList;
     }
 
-    public PacketParams setComptParamsList(List<ComptParams> comptParamsList) {
-        this.comptParamsList = comptParamsList;
+    public PacketParams setUpdatedComptParamsList(List<ComptParams> updatedComptParamsList) {
+        this.updatedComptParamsList = updatedComptParamsList;
         return this;
     }
 
-    public long getStateId() {
+    public List<ComptParams> getAddedComptParamsList() {
+        return addedComptParamsList;
+    }
+
+    public PacketParams setAddedComptParamsList(List<ComptParams> addedComptParamsList) {
+        this.addedComptParamsList = addedComptParamsList;
+        return this;
+    }
+
+    public Long getStateId() {
         return stateId;
     }
 
-    public PacketParams setStateId(long stateId) {
+    public PacketParams setStateId(Long stateId) {
         this.stateId = stateId;
         return this;
     }
 
-    public long getId() {
+    public Long getId() {
 
         return id;
     }
 
-    public PacketParams setId(long id) {
+    public PacketParams setId(Long id) {
         this.id = id;
         return this;
     }

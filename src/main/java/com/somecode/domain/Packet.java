@@ -10,8 +10,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @NamedQuery(name = "Packet.getAllPackets",
-        query = "SELECT NEW com.somecode.domain.PacketInfo(p.id, p.state.id) " +
-                "FROM Packet p ORDER BY p.id ASC")
+        query = "SELECT NEW com.somecode.domain.PacketInfo(p.id, p.state.id) FROM Packet p ORDER BY p.id ASC")
 public class Packet implements EntityType {
 
     private long id;
