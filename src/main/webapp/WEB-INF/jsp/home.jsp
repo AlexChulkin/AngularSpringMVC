@@ -105,8 +105,8 @@
                     </td>
                     <td width="17%" ng-repeat="state in data.states">
                             <span ng-bind="data.checkedVals[compt.id][state.id]"
-                                  ng-hide="data.selectedStateIndex==state.id"></span>
-                            <span ng-show="data.selectedStateIndex==state.id">
+                                  ng-hide="selectedPacket.stateId==state.id"></span>
+                            <span ng-show="selectedPacket.stateId==state.id">
                                   <select class="standard"
                                           ng-options="el for el in data.comboData[compt.id][state.id]"
                                           ng-model="data.checkedVals[compt.id][state.id]"
@@ -133,7 +133,7 @@
                 <div class="states">
                     <div class="state" ng-repeat="state in data.states track by $index">
                         <input type="radio"
-                               ng-model="data.selectedStateIndex"
+                               ng-model="selectedPacket.stateId"
                                ng-value="$index+1">
                         <span ng-bind="data.stateLabels[$index+1]"></span>
                         </div>
