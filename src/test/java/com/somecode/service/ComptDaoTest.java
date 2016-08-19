@@ -24,7 +24,6 @@ import java.util.*;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DaoTestConfig.class})
@@ -125,11 +124,11 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
 
         List<HasLabel> result = new ArrayList<>();
 
-        if (testCase == ComboDataGetTestCase.COMPTS_SUPPL_INFO) {
-            comptDao.getComptsSupplInfoByPacketId(packetId).forEach(result::add);
-        } else if (testCase == ComboDataGetTestCase.COMBO_DATA_PROPERLY) {
-            comptDao.getAllComboData().forEach(result::add);
-        }
+//        if (testCase == ComboDataGetTestCase.COMPTS_SUPPL_INFO) {
+//            comptDao.getComptsSupplInfoByPacketId(packetId).forEach(result::add);
+//        } else if (testCase == ComboDataGetTestCase.COMBO_DATA_PROPERLY) {
+//            comptDao.getAllComboData().forEach(result::add);
+//        }
 
         assertEquals((long) expectedResultLength, result.size());
         IntStream.range(0, expectedResultLength)
@@ -180,9 +179,9 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
     @DirtiesContext
     public void testGetComboData_negative() throws Exception {
         final int expectedResultLength = 0;
-        final List<ComboData> result = comptDao.getAllComboData();
+//        final List<ComboData> result = comptDao.getAllComboData();
 
-        assertEquals(expectedResultLength, result.size());
+//        assertEquals(expectedResultLength, result.size());
     }
 
     @DataSets(before = "/com/somecode/service/ComptDaoTest_State.xls")
@@ -193,45 +192,21 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final int expectedResultLength = 3;
         final List<String> expectedLabels = generateDiverseLabelsList(expectedLabelsPrefix, expectedResultLength);
 
-        final List<State> result = comptDao.getAllStates();
+//        final List<State> result = comptDao.getAllStates();
 
-        assertEquals(expectedResultLength, result.size());
-        IntStream.range(0, expectedResultLength)
-                .boxed()
-                .forEach(i -> assertEquals(expectedLabels.get(i), result.get(i).getLabel()));
+//        assertEquals(expectedResultLength, result.size());
+//        IntStream.range(0, expectedResultLength)
+//                .boxed()
+//                .forEach(i -> assertEquals(expectedLabels.get(i), result.get(i).getLabel()));
     }
 
     @Test
     @DirtiesContext
     public void testGetAllStates_negative() throws Exception {
         final int expectedResultLength = 0;
-        final List<State> result = comptDao.getAllStates();
+//        final List<State> result = comptDao.getAllStates();
 
-        assertEquals(expectedResultLength, result.size());
-    }
-
-    @DataSets(before = "/com/somecode/service/ComptDaoTest_Get_PacketState.xls")
-    @Test
-    @DirtiesContext
-    public void testGetPacketState_positive() throws Exception {
-        final long packetId = 1L;
-
-        final long expectedResult = 1L;
-
-        final Long result = comptDao.getPacketStateId(packetId);
-
-        assertEquals((Long) expectedResult, result);
-    }
-
-    @DataSets(before = "/com/somecode/service/ComptDaoTest_Get_PacketState.xls")
-    @Test
-    @DirtiesContext
-    public void testGetPacketState_negative() throws Exception {
-        final long packetId = 2L;
-
-        final Long result = comptDao.getPacketStateId(packetId);
-
-        assertNull(result);
+//        assertEquals(expectedResultLength, result.size());
     }
 
     @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Update_Compts.xls",
@@ -254,8 +229,8 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
                 = generateComptParamsList(OperationType.UPDATE, checkedValsForUpdate,
                 idsForUpdate, numOfComptsToUpdate, null);
 
-        comptDao.updateCompts(paramsListForUpdate);
-        em.flush();
+//        comptDao.updateCompts(paramsListForUpdate);
+//        em.flush();
     }
 
     @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Update_Compts.xls",
@@ -278,8 +253,8 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
                 = generateComptParamsList(OperationType.UPDATE, checkedValsForUpdate,
                 idsForUpdate, numOfComptsToUpdate, null);
 
-        comptDao.updateCompts(paramsListForUpdate);
-        em.flush();
+//        comptDao.updateCompts(paramsListForUpdate);
+//        em.flush();
     }
 
     private List<PacketParams> generatePacketParamsList(final long packetId,
@@ -287,12 +262,12 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
                                                         final List<ComptParams> comptParamsList) {
 
         final List<PacketParams> paramsList = new ArrayList<>();
-        PacketParams packetParams = new PacketParams()
-                .setId(packetId)
-                .setStateId(stateId)
-                .setComptParamsList(comptParamsList);
+//        PacketParams packetParams = new PacketParams()
+//                .setId(packetId)
+//                .setStateId(stateId)
+//                .setComptParamsList(comptParamsList);
 
-        paramsList.add(packetParams);
+//        paramsList.add(packetParams);
 
         return paramsList;
     }
@@ -378,7 +353,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final List<PacketParams> packetParamsList
                 = generatePacketParamsList(unusedAddedPacketId, packetStateId, comptParamsList);
 
-        comptDao.addPackets(packetParamsList);
+//        comptDao.addPackets(packetParamsList);
         em.flush();
     }
 
@@ -404,7 +379,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final List<PacketParams> packetParamsList
                 = generatePacketParamsList(unusedAddedPacketId, packetStateId, comptParamsList);
 
-        comptDao.addPackets(packetParamsList);
+//        comptDao.addPackets(packetParamsList);
         em.flush();
     }
 
@@ -445,7 +420,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final List<ComptParams> comptParamsList = Collections.emptyList();
         final List<PacketParams> packetParamsList = generatePacketParamsList(packetId, newStateId, comptParamsList);
 
-        comptDao.updatePackets(packetParamsList);
+//        comptDao.updatePackets(packetParamsList);
         em.flush();
     }
 
@@ -460,7 +435,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final List<ComptParams> comptParamsList = Collections.emptyList();
         final List<PacketParams> packetParamsList = generatePacketParamsList(packetId, newStateId, comptParamsList);
 
-        comptDao.updatePackets(packetParamsList);
+//        comptDao.updatePackets(packetParamsList);
         em.flush();
     }
 
@@ -475,7 +450,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final List<ComptParams> comptParamsList = Collections.emptyList();
         final List<PacketParams> packetParamsList = generatePacketParamsList(packetId, newStateId, comptParamsList);
 
-        comptDao.updatePackets(packetParamsList);
+//        comptDao.updatePackets(packetParamsList);
         em.flush();
     }
 
@@ -490,7 +465,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final List<ComptParams> comptParamsList = Collections.emptyList();
         final List<PacketParams> packetParamsList = generatePacketParamsList(packetId, newStateId, comptParamsList);
 
-        comptDao.updatePackets(packetParamsList);
+//        comptDao.updatePackets(packetParamsList);
         em.flush();
     }
 
@@ -514,7 +489,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
                 checkedValsForAdding, null,
                 numOfComptsToAdd, labelsForAdding);
 
-        comptDao.addCompts(packetId, paramsListForAdding);
+//        comptDao.addCompts(packetId, paramsListForAdding);
         em.flush();
     }
 
@@ -541,7 +516,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
                         .setLabel(labelsForAdding[i]))
                 );
 
-        comptDao.addCompts(packetId, paramsListForAdding);
+//        comptDao.addCompts(packetId, paramsListForAdding);
         em.flush();
     }
 
@@ -568,7 +543,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
                         .setLabel(labelsForAdding[i]))
                 );
 
-        comptDao.addCompts(packetId, paramsListForAdding);
+//        comptDao.addCompts(packetId, paramsListForAdding);
         em.flush();
     }
 

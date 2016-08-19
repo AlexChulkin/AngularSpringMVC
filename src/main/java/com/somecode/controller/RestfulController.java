@@ -1,6 +1,9 @@
 package com.somecode.controller;
 
-import com.somecode.domain.*;
+import com.somecode.domain.ComptInfo;
+import com.somecode.domain.ComptSupplInfo;
+import com.somecode.domain.Data;
+import com.somecode.domain.RequestObj;
 import com.somecode.service.ComptService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,20 +36,12 @@ public class RestfulController {
         return comptService.getComptsByPacketId(packetId);
     }
 
-    @RequestMapping(value = "/getAllCompts", method = RequestMethod.GET)
+    @RequestMapping(value = "/getAllData", method = RequestMethod.GET)
     public
     @ResponseBody
-    List<ComptInfo> getAllCompts() throws Exception {
+    Data getAllData() throws Exception {
         LOGGER.info("Get All Compts");
-        return comptService.getAllCompts();
-    }
-
-    @RequestMapping(value = "/getAllComboData", method = RequestMethod.GET)
-    public
-    @ResponseBody
-    List<ComboData> getDefaultComboData() throws Exception {
-        LOGGER.info("Get All Combo Data");
-        return comptService.getAllComboData();
+        return comptService.getAllData();
     }
 
     @RequestMapping(value = "/deleteCompts", method = RequestMethod.POST)
@@ -61,45 +56,13 @@ public class RestfulController {
         comptService.deletePackets(requestObj.getParams().getPacketIds());
     }
 
-    @RequestMapping(value = "/getAllComptsSupplInfo", method = RequestMethod.GET)
-    public
-    @ResponseBody
-    List<ComptSupplInfo> getAllComptsSupplInfo() throws Exception {
-        LOGGER.info("Get All Compts SupplInfo");
-        return comptService.getAllComptsSupplInfo();
-    }
-
     @RequestMapping(value = "/getComptsSupplInfoByPacketId", method = RequestMethod.GET)
     public
     @ResponseBody
     List<ComptSupplInfo> getComptsSupplInfoByPacketId(@RequestParam long packetId)
             throws Exception {
-        LOGGER.info("get Compts SupplInfo by Packet id");
+        LOGGER.info("Get Compts SupplInfo by Packet id");
         return comptService.getComptsSupplInfoByPacketId(packetId);
-    }
-
-    @RequestMapping(value = "/getAllStates", method = RequestMethod.GET)
-    public
-    @ResponseBody
-    List<State> getStates() throws Exception {
-        LOGGER.info("Get All States");
-        return comptService.getAllStates();
-    }
-
-    @RequestMapping(value = "/getAllPackets", method = RequestMethod.GET)
-    public
-    @ResponseBody
-    List<PacketInfo> getPackets() throws Exception {
-        LOGGER.info("Get All Packets");
-        return comptService.getAllPackets();
-    }
-
-    @RequestMapping(value = "/getPacketStateId", method = RequestMethod.GET)
-    public
-    @ResponseBody
-    Long getPacketStateId(@RequestParam long packetId) throws Exception {
-        LOGGER.info("Get Packet State Id");
-        return comptService.getPacketStateId(packetId);
     }
 
     @RequestMapping(value = "/saveOrUpdatePackets", method = RequestMethod.POST)

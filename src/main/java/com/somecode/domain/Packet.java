@@ -23,11 +23,6 @@ public class Packet implements EntityType {
 
     public Packet() {  }
 
-    public Packet(long id, State state) {
-        this.id = id;
-        this.state = state;
-    }
-
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "PACKET_ID", length = 11)

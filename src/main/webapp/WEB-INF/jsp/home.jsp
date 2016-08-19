@@ -73,7 +73,7 @@
                class="btn btn-sm btn-danger">
                 Del
             </a>
-            </div>
+        </div>
         <div class="btn-group aggregate-btns">
             <a ng-click="addPacketLocally()"
                class="btn btn-md btn-block btn-default">
@@ -87,58 +87,60 @@
                class="btn btn-md btn-block btn-success">
                 Update the base
             </a>
-            </div>
+        </div>
     </div>
     <div class="col-xs-11 column">
-        <div ng-hide="data.loadError || data.loadEmpty || data.packetDeleted">
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th ng-show="data.allStateLabels"
-                        ng-repeat="label in data.allStateLabels"><span ng-bind="label"/></th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr ng-repeat="compt in data.selectedCompts | filter:notNull | range:selectedPage:pageSize">
-                    <td width="43%">
-                        <span ng-bind="compt.label"/>
-                    </td>
-                    <td width="17%" ng-repeat="state in data.allStates">
-                            <span ng-bind="data.allCheckedVals[compt.id][state.id]"
-                                  ng-hide="selectedPacket.stateId==state.id"></span>
-                            <span ng-show="selectedPacket.stateId==state.id">
-                                  <select class="standard"
-                                          ng-options="el for el in data.allComboData[compt.id][state.id]"
-                                          ng-model="data.allCheckedVals[compt.id][state.id]"
-                                          ng-change="updateComptLocally(compt)">
-                                  </select>
-                            </span>
-                    </td>
-                    <td>
-                        <button ng-click="deleteComptLocally(compt)" class="btn btn-xs btn-primary">
-                            Delete
-                        </button>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-            <div class="pull-right btn-group">
-                <a ng-repeat="page in data.selectedCompts | filter:notNull | pageCount:pageSize"
-                   ng-click="selectPage(page)" class="btn btn-default"
-                   ng-class="getPageClass(page)">
-                    <span ng-bind="page"></span>
-                </a>
+        <div ng-hide="data.loadError || !data.isPacketSelected || data.loadedNoComboData || data.loadedNoStates">
+            <div ng-hide="data.noComptsSelected">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th ng-show="data.allStateLabels"
+                            ng-repeat="label in data.allStateLabels"><span ng-bind="label"/></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr ng-repeat="compt in data.selectedCompts | filter:notNull | range:selectedPage:pageSize">
+                        <td width="43%">
+                            <span ng-bind="compt.label"/>
+                        </td>
+                        <td width="17%" ng-repeat="state in data.allStates">
+                                    <span ng-bind="data.allCheckedVals[compt.id][state.id]"
+                                          ng-hide="data.selectedPacket.stateId == state.id"></span>
+                                    <span ng-show="data.selectedPacket.stateId == state.id">
+                                          <select class="standard"
+                                                  ng-options="el for el in data.allComboData[compt.id][state.id]"
+                                                  ng-model="data.allCheckedVals[compt.id][state.id]"
+                                                  ng-change="updateComptLocally(compt)">
+                                          </select>
+                                    </span>
+                        </td>
+                        <td>
+                            <button ng-click="deleteComptLocally(compt)" class="btn btn-xs btn-primary">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="pull-right btn-group">
+                    <a ng-repeat="page in data.selectedCompts | filter:notNull | pageCount:pageSize"
+                       ng-click="selectPage(page)" class="btn btn-default"
+                       ng-class="getPageClass(page)">
+                        <span ng-bind="page"></span>
+                    </a>
+                </div>
             </div>
-            <div class="well">
-                <div class="states">
+            <div class="well states">
+                <%--<div class="states">--%>
                     <div class="state" ng-repeat="state in data.allStates track by $index">
                         <input type="radio"
-                               ng-model="selectedPacket.stateId"
+                               ng-model="data.selectedPacket.stateId"
                                ng-value="$index+1">
                         <span ng-bind="data.allStateLabels[$index+1]"></span>
-                        </div>
                     </div>
-                </div>
+                <%--</div>--%>
+            </div>
             <form name="form">
                 <div class="row grid-row">
                     <div class="col-sm-5">
@@ -150,7 +152,7 @@
                                        ng-model="data.newLabel"
                                        ng-trim="true"
                                        ng-maxlength="75"
-                                       blacklist="blacklist" ,
+                                       blacklist="blacklist"
                                        regex="regex"
                                        required/>
                                 <div style="color:maroon" role="alert">
@@ -178,24 +180,30 @@
                     </div>
                 </div>
             </form>
-        </div>
             <div class="inline">
             </div>
-            <div class="alert alert-danger" ng-show="data.loadError">
-                Error (<span ng-bind="data.loadError.status"></span>). The error occurred during the data loading.
-                <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
-            </div>
-            <div class="alert alert-danger" ng-show="data.loadEmpty ">
-                Error (<span ng-bind="data.loadEmpty.status"></span>). The loaded data is empty. Probably some
-                database error occurred or the database is void.
-                <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
-            </div>
-            <div class="alert alert-danger" ng-show="data.packetDeleted">
-                The selected packet is deleted. Please select or add another one.
-            </div>
+        </div>
+
+        <div class="alert alert-danger" ng-show="data.loadError">
+            Error (<span ng-bind="data.loadError.status"></span>). The error occurred during the data loading.
+            <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
+        </div>
+        <div class="alert alert-danger" ng-show="data.loadedNoStates || data.loadedNoComboData">
+            The loaded states data and/or comboData is empty. Probably the database is void.
+            <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
+        </div>
+        <div class="alert alert-warning" ng-show="data.noComptsSelected && !data.loadedNoCompts">
+            The selected packet is empty. Please add new compts or select another one.
+            <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
+        </div>
+        <div class="alert alert-warning" ng-show="data.loadedNoPackets">
+            There are no loaded packets. Please add one.
+            <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
+        </div>
+        <div class="alert alert-warning" ng-hide="data.isPacketSelected">
+            No packet is selected. Please select (or add and select) one.
         </div>
     </div>
-
-
+</div>
 </body>
 </html>

@@ -3,6 +3,7 @@ package com.somecode.dao;
 import com.somecode.domain.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by alexc_000 on 2016-06-24.
@@ -25,8 +26,10 @@ public interface ComptDao {
 
     List<Long> deletePackets(List<Long> packetIdsToDelete);
 
-
     List<ComboData> getAllComboData();
 
-    void saveOrUpdatePackets(List<PacketParams> createPacketParamsList, List<PacketParams> updatePacketParamsList);
+    Map<Long, List<Long>> updateCompts(List<ComptParams> comptParamsList) throws DatabaseException;
+
+    void saveOrUpdatePackets(List<PacketParams> createPacketParamsList, List<PacketParams> updatePacketParamsList)
+            throws DatabaseException;
 }

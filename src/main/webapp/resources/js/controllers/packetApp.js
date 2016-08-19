@@ -6,12 +6,10 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
     .constant("packetListNonActiveClass", "btn-sm")
     .constant("packetListPageCount", 9)
     .constant("labelLabel", "Label")
-    .controller("packetCtrl", function ($scope, $http, $window, packetListActiveClass,
+    .controller("packetCtrl", function ($scope, $http, $window, $watch, packetListActiveClass,
                                         packetListNonActiveClass, packetListPageCount, labelLabel) {
         var simpleConfig = {withCredentials: true};
 
-        var selectedPacket = null;
-        var selectedPacketId = null;
         var comptIdToInd = {};
         var packetIdToInd = {};
         var comptLabels = {};
@@ -39,16 +37,25 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         $scope.data.allCheckedVals = {};
         $scope.data.selectedComptLabels = {};
 
-        $scope.data.loadError = false;
-        $scope.data.loadEmpty = false;
+        $scope.data.noComptsSelected = true;
+        $scope.data.loadedNoPackets = true;
+        $scope.data.loadedNoCompts = true;
+        $scope.data.loadedNoStates = true;
+        $scope.data.loadedNoComboData = true;
+        $scope.data.loadedNoComptSupplInfo = true;
+        $scope.data.stateIdOfSelectedPacket = null;
+        $scope.data.isPacketSelected = false;
 
-        $http.get(contextPath + '/getAllCompts', simpleConfig).success(function (data) {
-            if (isDataEmpty(data)) {
-                $scope.data.loadEmpty = true;
-                return;
+        $scope.data.selectedPacket = null;
+        $scope.data.selectedPacketId = null;
+
+
+        $http.get(contextPath + '/getAllData', simpleConfig).success(function (data) {
+            if (!isDataEmpty(data.compts)) {
+                $scope.data.loadedNoCompts = false;
             }
             var packetInd = -1;
-            angular.forEach(data, function (el) {
+            angular.forEach(data.compts, function (el) {
                 var id = el.id;
                 var label = el.label.toUpperCase();
                 var packetId = el.packetId;
@@ -64,75 +71,69 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                     maximalComptIndex = id;
                 }
             });
-
-            $http.get(contextPath + '/getAllPackets', simpleConfig).success(function (data) {
-                if (isDataEmpty(data)) {
-                    $scope.data.loadEmpty = true;
-                    return;
+            if (!isDataEmpty(data.packets)) {
+                $scope.selectPacket(data.packets[0]);
+            }
+            angular.forEach(data.packets, function (pkt) {
+                var pktId = pkt.id;
+                $scope.data.allPackets[pktId] = pkt;
+                if (pktId > maximalPacketIndex) {
+                    maximalPacketIndex = pktId;
                 }
-                $scope.selectPacket(data[0]);
-                angular.forEach(data, function (pkt) {
-                    var pktId = pkt.id;
-                    $scope.data.allPackets[pktId] = pkt;
-                    if (pktId > maximalPacketIndex) {
-                        maximalPacketIndex = pktId;
-                    }
-                    packetInitialStateIds[pkt.id] = pkt.stateId;
-                });
-                $http.get(contextPath + '/getAllStates', simpleConfig).success(function (data) {
-                    if (isDataEmpty(data)) {
-                        $scope.data.loadEmpty = true;
-                        return;
-                    }
-                    $scope.data.allStates = data;
-                    angular.forEach($scope.data.allStates, function (state) {
-                        $scope.data.allStateLabels.push(state.label);
-                });
+                packetInitialStateIds[pkt.id] = pkt.stateId;
+            });
+            if (!isDataEmpty(data.states)) {
+                $scope.data.loadedNoStates = false;
+            }
+            $scope.data.allStates = data.states;
+            angular.forEach($scope.data.allStates, function (state) {
+                $scope.data.allStateLabels.push(state.label);
+            });
 
-                    $http.get(contextPath + '/getAllComboData', simpleConfig).success(function (data) {
-                        if (isDataEmpty(data)) {
-                            $scope.data.loadEmpty = true;
-                            return;
-                        }
-                        angular.forEach(data, function (cd) {
-                            $scope.data.comboDataDefaultSet.push(cd.label);
-                        });
-                        angular.forEach($scope.data.allStates, function () {
-                            $scope.data.newComptCheckedVals.push($scope.data.comboDataDefaultSet[0]);
-                        });
+            if (!isDataEmpty(data.comboData)) {
+                $scope.data.loadedNoComboData = false;
+            }
+            angular.forEach(data.comboData, function (cd) {
+                $scope.data.comboDataDefaultSet.push(cd.label);
+            });
+            angular.forEach($scope.data.allStates, function () {
+                $scope.data.newComptCheckedVals.push($scope.data.comboDataDefaultSet[0]);
+            });
 
-                        $http.get(contextPath + '/getAllComptsSupplInfo', simpleConfig).success(function (data) {
-                            if (isDataEmpty(data)) {
-                                $scope.data.loadEmpty = true;
-                                return;
-                            }
-                            angular.forEach(data, function (el) {
-                                var comptId = el.comptId;
-                                var stateId = el.stateId;
-                                var label = el.label;
-                                $scope.data.allComboData[comptId] = $scope.data.allComboData[comptId] || {};
-                                $scope.data.allComboData[comptId][stateId] = $scope.data.allComboData[comptId][stateId] || [];
-                                $scope.data.allComboData[comptId][stateId].push(label);
-                                var checked = el.checked;
-                                if (checked) {
-                                    $scope.data.allCheckedVals[comptId] = $scope.data.allCheckedVals[comptId] || {};
-                                    $scope.data.allCheckedVals[comptId][stateId] = label;
-                                }
-                            });
-                        }).error(function (error) {
-                            $scope.data.loadError = error;
-                        });
-                    }).error(function (error) {
-                        $scope.data.loadError = error;
-                    });
-                }).error(function (error) {
-                    $scope.data.loadError = error;
-                });
-            }).error(function (error) {
-                $scope.data.loadError = error;
+            if ($scope.data.loadedNoCompts || $scope.data.loadedNoComboData || $scope.data.loadedNoStates) {
+                return;
+            }
+            if (!isDataEmpty(data.comptSupplInfo)) {
+                $scope.data.loadedNoComptSupplInfo = false;
+            }
+            angular.forEach(data.comptSupplInfo, function (el) {
+                var comptId = el.comptId;
+                var stateId = el.stateId;
+                var label = el.label;
+                $scope.data.allComboData[comptId] = $scope.data.allComboData[comptId] || {};
+                $scope.data.allComboData[comptId][stateId] = $scope.data.allComboData[comptId][stateId] || [];
+                $scope.data.allComboData[comptId][stateId].push(label);
+                var checked = el.checked;
+                if (checked) {
+                    $scope.data.allCheckedVals[comptId] = $scope.data.allCheckedVals[comptId] || {};
+                    $scope.data.allCheckedVals[comptId][stateId] = label;
+                }
             });
         }).error(function (error) {
             $scope.data.loadError = error;
+        });
+
+        $scope.$watch('data.selectedComptLabels', function (value) {
+            $scope.data.noComptsSelected = angular.equals({}, value);
+        });
+
+        $scope.$watch('data.allPackets', function (value) {
+            $scope.data.loadedNoPackets = angular.equals({}, value);
+        });
+
+        $scope.$watch('data.selectedPacket', function (value) {
+            value != null ? $scope.data.selectedPacketId = value.id
+                : $scope.data.selectedPacketId = null;
         });
 
         $scope.addComptLocally = function () {
@@ -143,8 +144,8 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             $scope.data.selectedComptLabels[upperCaseLabel] = true;
             comptIdToInd[comptId] = $scope.data.selectedCompts.length;
             $scope.data.selectedCompts.push(newCompt);
-            newComptLabels[selectedPacketId] = newComptLabels[selectedPacketId] || {};
-            newComptLabels[selectedPacketId][comptId] = usualLabel;
+            newComptLabels[$scope.data.selectedPacketId] = newComptLabels[$scope.data.selectedPacketId] || {};
+            newComptLabels[$scope.data.selectedPacketId][comptId] = usualLabel;
 
             $scope.data.allComboData[comptId] = {};
             $scope.data.allCheckedVals[comptId] = {};
@@ -159,7 +160,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             var newPacket = {id: ++maximalPacketIndex, stateId: 1};
             newPackets[maximalPacketIndex] = newPacket;
             $scope.data.allPackets[maximalPacketIndex] = newPacket;
-
+            $scope.data.loadEmpty = null;
         };
 
         $scope.deleteComptLocally = function (compt) {
@@ -170,13 +171,14 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             $scope.data.selectedCompts[comptIdToInd[comptId]] = null;
             delete $scope.data.allCheckedVals[comptId];
             delete $scope.data.allComboData[comptId];
-            delete updatedComptIds[selectedPacketId][comptId];
-            var isComptNew = newComptLabels[selectedPacketId][comptId];
-            if (isComptNew) {
-                delete isComptNew;
+            if (updatedComptIds[$scope.data.selectedPacketId]) {
+                delete updatedComptIds[$scope.data.selectedPacketId][comptId];
+            }
+            if (newComptLabels[$scope.data.selectedPacketId] && newComptLabels[$scope.data.selectedPacketId][comptId]) {
+                delete newComptLabels[$scope.data.selectedPacketId][comptId];
             } else {
-                deletedComptIds[selectedPacketId] = deletedComptIds[selectedPacketId] || [];
-                deletedComptIds[selectedPacketId].push(comptId);
+                deletedComptIds[$scope.data.selectedPacketId] = deletedComptIds[$scope.data.selectedPacketId] || [];
+                deletedComptIds[$scope.data.selectedPacketId].push(comptId);
             }
         };
 
@@ -188,7 +190,8 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             delete $scope.data.allPackets[packetId];
             delete newComptLabels[packetId];
             delete deletedComptIds[packetId];
-            $scope.data.packetDeleted = true;
+            $scope.data.selectedPacket = null;
+            $scope.data.isPacketSelected = false;
         };
 
         deletePacketsInBase = function () {
@@ -196,7 +199,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                 return;
             }
             var deleteConfig = {withCredentials: true, params: {packetIds: deletedPacketIds}};
-            $http.delete(contextPath + '/deletePackets', deleteConfig)
+            $http.post(contextPath + '/deletePackets', deleteConfig)
                 .success(function (data) {
                 })
                 .error(function (error) {
@@ -205,11 +208,11 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
 
         $scope.updateComptLocally = function (compt) {
             var comptId = compt.id;
-            if (newComptLabels[selectedPacketId][comptId]) {
+            if (newComptLabels[$scope.data.selectedPacketId][comptId]) {
                 return;
             }
-            updatedComptIds[selectedPacketId] = updatedComptIds[selectedPacketId] || {};
-            updatedComptIds[selectedPacketId][comptId] = true;
+            updatedComptIds[$scope.data.selectedPacketId] = updatedComptIds[$scope.data.selectedPacketId] || {};
+            updatedComptIds[$scope.data.selectedPacketId][comptId] = true;
         };
 
         $scope.saveAllToBase = function () {
@@ -246,7 +249,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                 return;
             }
             var deleteConfig = {withCredentials: true, params: {comptIds: deletedComptIdsForConfig}};
-            $http.delete(contextPath + '/deleteCompts', deleteConfig)
+            $http.post(contextPath + '/deleteCompts', deleteConfig)
                 .success(function (data) {
                 })
                 .error(function (error) {
@@ -316,14 +319,12 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             return result;
         };
 
-
         $scope.selectPacket = function (packet) {
-            $scope.data.packetDeleted = null;
-            selectedPacket = packet;
-            selectedPacketId = selectedPacket.id;
-            $scope.data.selectedCompts = compts[packetIdToInd[selectedPacketId]] || [];
+            $scope.data.selectedPacket = packet;
+            $scope.data.isPacketSelected = true;
+            $scope.data.selectedCompts = compts[packetIdToInd[$scope.data.selectedPacketId]] || [];
 
-            $scope.data.selectedComptLabels = comptLabels[selectedPacketId] || {};
+            $scope.data.selectedComptLabels = comptLabels[$scope.data.selectedPacketId] || {};
 
             $scope.selectPage(1);
         };
@@ -333,7 +334,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         };
 
         $scope.getPacketClass = function (packet) {
-            return selectedPacket != null ? selectedPacket.id == packet.id ? packetListActiveClass
+            return $scope.data.selectedPacket != null ? $scope.data.selectedPacketId == packet.id ? packetListActiveClass
                 : packetListNonActiveClass : packetListNonActiveClass;
         };
 
