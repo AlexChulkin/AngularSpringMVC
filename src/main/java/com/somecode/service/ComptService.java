@@ -7,9 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
 
 
 @Service("comptService")
@@ -20,23 +19,26 @@ public class ComptService {
     private ComptDao comptDao;
 
     public List<Long> deleteCompts(List<Long> idsToDelete) {
-        return comptDao.deleteCompts(idsToDelete);
+        return
     }
 
-    public List<Long> deletePackets(List<Long> packetIdsToDelete) {
-        return comptDao.deletePackets(packetIdsToDelete);
-    }
-
-    public List<ComptInfo> getComptsByPacketId(long packetId) {
-        return comptDao.getComptsByPacketId(packetId);
-    }
 
     public Data getAllData() {
         Data result = new Data();
+        try {
+            result.setStates(comptDao.getAllStates());
+        } catch (DatabaseException e) {
+            result.setStates(Collections.EMPTY_LIST);
+        }
+        try {
+            result.setComboData(comptDao.getAllComboData());
+        } catch (DatabaseException e) {
+            result.setComboData(Collections.EMPTY_LIST);
+        }
+
         result.setPackets(comptDao.getAllPackets())
-                .setCompts(comptDao.getAllCompts())
-                .setStates(comptDao.getAllStates())
-                .setComboData(comptDao.getAllComboData());
+                .setCompts(comptDao.getAllCompts());
+
         if (!result.getCompts().isEmpty()
                 && !result.getStates().isEmpty()
                 && !result.getComboData().isEmpty()) {
@@ -50,16 +52,38 @@ public class ComptService {
         return comptDao.getComptsSupplInfoByPacketId(packetId);
     }
 
-    public Set<String> saveOrUpdatePackets(List<ComptParams> updateComptsParamsList,
-                                           List<PacketParams> createPacketParamsList,
-                                           List<PacketParams> updatePacketParamsList) {
-        Set<String> result = new HashSet<>();
+    public EnumSet<PersistError> persistToBase(List<Long> comptIdsToDelete,
+                                               List<Long> packetIdsToDelete,
+                                               List<ComptParams> updateComptsParamsList,
+                                               List<PacketParams> createPacketParamsList,
+                                               List<PacketParams> updatePacketParamsList) {
+
+        EnumSet<PersistError> persistErrors = EnumSet.noneOf(PersistError.class);
+
+        comptDao.deleteCompts(comptIdsToDelete);
+        comptDao.deletePackets(packetIdsToDelete);
+
         try {
             comptDao.updateCompts(updateComptsParamsList);
         } catch (DatabaseException e) {
             LOGGER.error("Exception: " + e.getMessage() + "\nStacktrace: " + e.getStackTrace());
-            result.add("UpdateCompts");
+            persistErrors.add(PersistError.UPDATE_COMPTS);
         }
-        comptDao.saveOrUpdatePackets(createPacketParamsList, updatePacketParamsList);
+
+        try {
+            comptDao.saveOrUpdatePackets(createPacketParamsList, OperationType.ADD);
+        } catch (DatabaseException e) {
+            LOGGER.error("Exception: " + e.getMessage() + "\nStacktrace: " + e.getStackTrace());
+            persistErrors.add(PersistError.ADD_PACKETS);
+        }
+
+        try {
+            comptDao.saveOrUpdatePackets(updatePacketParamsList, OperationType.UPDATE);
+        } catch (DatabaseException e) {
+            LOGGER.error("Exception: " + e.getMessage() + "\nStacktrace: " + e.getStackTrace());
+            persistErrors.add(PersistError.UPDATE_PACKETS);
+        }
+
+        return persistErrors;
     }
 }

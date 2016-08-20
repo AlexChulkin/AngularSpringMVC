@@ -11,30 +11,30 @@ import javax.validation.constraints.Size;
 @Table(name = "COMBO_DATA", uniqueConstraints = @UniqueConstraint(columnNames = {"LABEL"}))
 public class ComboData implements HasLabel, EntityType {
 
-    private long id;
+    private Long id;
 
     private String label;
 
-    private int version;
+    private Integer version;
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "COMBO_DATA_ID", length = 11)
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
     @Version
     @Column(name = "VERSION")
-    public int getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-    public void setVersion(int version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 

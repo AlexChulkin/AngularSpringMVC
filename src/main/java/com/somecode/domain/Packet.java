@@ -13,9 +13,9 @@ import java.util.stream.Collectors;
         query = "SELECT NEW com.somecode.domain.PacketInfo(p.id, p.state.id) FROM Packet p ORDER BY p.id ASC")
 public class Packet implements EntityType {
 
-    private long id;
+    private Long id;
 
-    private int version;
+    private Integer version;
 
     private State state;
 
@@ -26,21 +26,21 @@ public class Packet implements EntityType {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "PACKET_ID", length = 11)
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
     @Version
     @Column(name = "VERSION")
-    public int getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-    public void setVersion(int version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 

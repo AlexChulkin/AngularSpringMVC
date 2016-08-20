@@ -10,30 +10,30 @@ import javax.persistence.*;
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"LABEL"}))
 public class State implements EntityType {
 
-    private long id;
+    private Long id;
 
     private String label;
 
-    private int version;
+    private Integer version;
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     @Column(name = "STATE_ID", length = 2, nullable = false)
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
     @Version
     @Column(name = "VERSION", nullable = false)
-    public int getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-    public void setVersion(int version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 

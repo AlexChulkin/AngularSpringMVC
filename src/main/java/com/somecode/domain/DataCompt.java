@@ -11,12 +11,12 @@ import javax.validation.constraints.NotNull;
         uniqueConstraints = @UniqueConstraint(columnNames = {"COMPT_ID_FK", "STATE_ID_FK", "COMBO_DATA_ID_FK"}))
 public class DataCompt implements EntityType {
 
-    private long id;
+    private Long id;
     private Compt compt;
     private ComboData comboData;
     private State state;
     private boolean checked;
-    private int version;
+    private Integer version;
 
     public DataCompt() {  }
 
@@ -29,21 +29,21 @@ public class DataCompt implements EntityType {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "DATA_COMPT_ID", length = 21)
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
     @Version
     @Column(name = "VERSION")
-    public int getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-    public void setVersion(int version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 

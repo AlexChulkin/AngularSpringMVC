@@ -22,15 +22,14 @@ import java.util.stream.IntStream;
 @Transactional(readOnly = true)
 public class ComptDaoImpl implements  ComptDao {
     private static final Logger LOGGER = Logger.getLogger(ComptDaoImpl.class);
-    private static final Integer DEFAULT_COMBO_DATA_INDEX = 0;
-    private static final Long DEFAULT_STATE_INDEX = 0L;
+    private static final int DEFAULT_COMBO_DATA_INDEX = 0;
+    private static final int DEFAULT_STATE_INDEX = 0;
 
 
     private List<ComboData> allComboData = Collections.EMPTY_LIST;
+    private List<State> allStates = Collections.EMPTY_LIST;
 
     private Map<String, Integer> mapComboLabelsToIndices;
-
-    private List<State> states;
 
     @PersistenceContext
     private EntityManager em;
@@ -74,18 +73,46 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    public List<State> getAllStates() {
+    public List<State> getAllStates() throws DatabaseException {
+        try {
+            return getAllStatesLocally();
+        } catch (EmptyDBTableException cause) {
+            LOGGER.error(cause.getStackTrace());
+            DatabaseException exc = new DatabaseException();
+            exc.initCause(cause);
+            throw exc;
+        }
+    }
+
+    private List<State> getAllStatesLocally() throws EmptyStateTableException {
         Iterable<State> iterable = stateRepository.findAll();
-        states = Lists.newArrayList(iterable);
-        LOGGER.info(" All states " + states);
-        return states;
+        allStates = Lists.newArrayList(iterable);
+        if (allStates.isEmpty()) {
+            throw new EmptyStateTableException();
+        }
+        LOGGER.info(" All states " + allStates);
+        return allStates;
     }
 
     @Override
-    public List<ComboData> getAllComboData() {
+    public List<ComboData> getAllComboData() throws DatabaseException {
+        try {
+            return getAllComboDataLocally();
+        } catch (EmptyDBTableException cause) {
+            LOGGER.error(cause.getStackTrace());
+            DatabaseException exc = new DatabaseException();
+            exc.initCause(cause);
+            throw exc;
+        }
+    }
+
+    private List<ComboData> getAllComboDataLocally() throws EmptyComboDataTableException {
         List<ComboData> oldAllComboData = allComboData;
         allComboData = Lists.newArrayList(comboDataRepository.findAll());
-        LOGGER.info("All Combo Data " + allComboData);
+        if (allComboData.isEmpty()) {
+            throw new EmptyComboDataTableException();
+        }
+        LOGGER.info("Get All Combo Data: " + allComboData);
 
         if (checkComboDataListsForEquality(allComboData, oldAllComboData)) {
             return allComboData;
@@ -102,12 +129,8 @@ public class ComptDaoImpl implements  ComptDao {
     private boolean checkComboDataListsForEquality(List<ComboData> allComboData,
                                                    List<ComboData> oldAllComboData) {
         int size = allComboData.size();
-        if (size != oldAllComboData.size()) {
-            return false;
-        }
-        return IntStream.range(0, size).boxed()
-                .allMatch(i ->
-                        getSortedLabels(allComboData).get(i).equals(getSortedLabels(oldAllComboData).get(i)));
+        return (size != oldAllComboData.size()) && IntStream.range(0, size).boxed()
+                .allMatch(i -> getSortedLabels(allComboData).get(i).equals(getSortedLabels(oldAllComboData).get(i)));
     }
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
@@ -131,12 +154,7 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Transactional
-    private List<Integer> getIndicesFromVals(List<String> vals, Long comptId, Long packetId)
-            throws EmptyComboDataTableException {
-        getAllComboData();
-        if (allComboData.isEmpty()) {
-            throw new EmptyComboDataTableException();
-        }
+    private List<Integer> getIndicesFromVals(List<String> vals, Long comptId, Long packetId) {
         return vals.stream().map(v -> mapLabelToIndex(v, comptId, packetId)).collect(Collectors.toList());
     }
 
@@ -158,8 +176,11 @@ public class ComptDaoImpl implements  ComptDao {
         if (comptId != null) {
             errorReport = sb.append("Compt#" + comptId + " update. ")
                     .append(errorReport).toString();
-        } else {
+        } else if (packetId != null) {
             errorReport = sb.append("Adding new compts to the packet#" + packetId + ". ")
+                    .append(errorReport).toString();
+        } else {
+            errorReport = sb.append("Adding new compts to the non-persisted packet. ")
                     .append(errorReport).toString();
         }
         return errorReport;
@@ -168,6 +189,7 @@ public class ComptDaoImpl implements  ComptDao {
     @Override
     @Transactional
     public Map<Long, List<Long>> updateCompts(List<ComptParams> comptParamsList) throws DatabaseException {
+        getAllComboData();
         Map<Long, List<Long>> result = new HashMap<>();
 
         for (ComptParams comptParams : comptParamsList) {
@@ -178,18 +200,11 @@ public class ComptDaoImpl implements  ComptDao {
                 continue;
             }
             List<Integer> newCheckedIndices;
-            try {
-                newCheckedIndices = getIndicesFromVals(comptParams.getVals(), comptId, null);
-            } catch (EmptyDBTableException cause) {
-                LOGGER.error("Exception: " + cause.getMessage() + "\nStacktrace: " + cause.getStackTrace());
-                DatabaseException exc = new DatabaseException();
-                exc.initCause(cause);
-                throw exc;
-            }
+            newCheckedIndices = getIndicesFromVals(comptParams.getVals(), comptId, null);
             List<DataCompt> dataCompts = compt.getDataCompts();
             for (DataCompt dc : dataCompts) {
-                int stateIndex = (int) dc.getState().getId() - 1;
-                int comboDataIndex = (int) dc.getComboData().getId() - 1;
+                int stateIndex = (int) (dc.getState().getId() - 1);
+                int comboDataIndex = (int) (dc.getComboData().getId() - 1);
                 boolean checked = dc.getChecked();
                 if (!checked && newCheckedIndices.get(stateIndex) == comboDataIndex
                         || checked && newCheckedIndices.get(stateIndex) != comboDataIndex) {
@@ -276,77 +291,81 @@ public class ComptDaoImpl implements  ComptDao {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveOrUpdatePackets(List<PacketParams> packetParamsList, OperationType operationType)
             throws DatabaseException {
+        getAllStates();
 
         List<Packet> packets = new LinkedList<>();
+
         for (PacketParams packetParams : packetParamsList) {
-            long stateId = packetParams.getStateId();
-            State state = em.find(State.class, stateId);
-            if (state == null) {
-                LOGGER.info("Packets updating or saving. Adding new packets." +
-                        " The state with id " + stateId + "does not exist.");
-                continue;
-            }
             Packet packet = new Packet();
-            packet.setState(state);
-            try {
-                preparePacketAndComptsForSaving(packet, packetParams.getAddedComptParamsList());
-            } catch (EmptyDBTableException cause) {
-                LOGGER.error("Exception: " + cause.getMessage() + "\nStacktrace: " + cause.getStackTrace());
-                DatabaseException exc = new DatabaseException();
-                exc.initCause(cause);
-                throw exc;
-            }
-            packets.add(packet);
-        }
 
-        Set<Long> updatedPacketIds = new HashSet<>();
-        for (PacketParams packetParams : packetParamsList) {
-            long packetId = packetParams.getId();
-            updatedPacketIds.add(packetId);
-            Packet packet = getPacket(packetId);
-            if (packet == null) {
-                LOGGER.info("Packets updating or saving. Updating the packet. " +
-                        "The packet with id " + packetId + " does not exist.");
-                continue;
+            if (operationType == OperationType.UPDATE) {
+                long packetId = packetParams.getId();
+                packet = getPacket(packetId);
+                if (packet == null) {
+                    LOGGER.info("Packet update. The packet with id " + packetId + " does not exist.");
+                    continue;
+                }
             }
-            List<ComptParams> addedComptParamsList = packetParams.getAddedComptParamsList();
-            if (!addedComptParamsList.isEmpty()) {
-                LOGGER.info("Packets updating or saving. The following compts for the packet#" + packetId +
-                        " were added: " + preparePacketAndComptsForSaving(packet, addedComptParamsList));
+            updateState(packet, packetParams.getStateId(), operationType);
+
+            List<ComptParams> comptParamsList = packetParams.getComptParamsList();
+            if (!comptParamsList.isEmpty()) {
+                List<Compt> addedCompts = preparePacketAndComptsForSaving(packet, comptParamsList);
+                if (operationType == OperationType.ADD) {
+                    LOGGER.info("Adding the packets. The following compts for the new packet were added: " + addedCompts);
+                } else if (operationType == OperationType.UPDATE) {
+                    LOGGER.info("Packet update. The following compts for the packet#" + packet.getId() +
+                            " were added: " + addedCompts);
+                }
             }
 
-            updateState(packet, packetParams.getStateId());
-
-
-            updateCompts(packetParams.getUpdatedComptParamsList(), packetId);
             packets.add(packet);
         }
         packetRepository.save(packets).forEach(pkt -> {
-            LOGGER.info("Packets updating or saving. Persisted new packet#" + pkt.getId() +
-                    " with the following state id: " + pkt.getState().getId() + " and compts: " + pkt.getCompts());
+            String report = "";
+            if (operationType == OperationType.ADD) {
+                report = "Adding the packet. Persisted new packet#" + pkt.getId() + " with the following state id: "
+                        + pkt.getState().getId() + " and compts: " + pkt.getCompts();
+            } else if (operationType == OperationType.UPDATE) {
+                report = "Packet update. Persisted new packet#" + pkt.getId() + " with the following state id: " +
+                        pkt.getState().getId() + " and compts: " + pkt.getCompts();
+            }
+            LOGGER.info(report);
         });
     }
 
     @Transactional
-    private void updateState(Packet packet, Long stateId) {
+    private void updateState(Packet packet, Long stateId, OperationType operationType) {
         if (stateId != null) {
             State state = em.find(State.class, stateId);
+            String report = "";
             if (state != null) {
                 packet.setState(state);
-                LOGGER.info("Packets updating or saving. The state for the packet#" + packet.getId() +
-                        " was updated to the new one with id: " + stateId);
+                if (operationType == OperationType.UPDATE) {
+                    report = "Packet update. The state for the packet#" + packet.getId() +
+                            " was updated. The new state has the following id: " + stateId;
+                } else if (operationType == OperationType.ADD) {
+                    report = "Adding the packet. The state for the new packet was set. It has the following id: " + stateId;
+                }
             } else {
-                LOGGER.info("Packets updating or saving. Packet state update. " +
-                        "The state with id " + stateId + "does not exist.");
+                State defaultState = allStates.get(DEFAULT_STATE_INDEX);
+                if (operationType == OperationType.UPDATE) {
+                    report = "Packet update. Packet#" + packet.getId() + "state update. " +
+                            "The state with id = " + stateId + "does not exist.";
+                } else if (operationType == OperationType.ADD) {
+                    packet.setState(defaultState);
+                    report = "Adding the packet. The state with id = " + stateId + "does not exist.So it's " +
+                            "automatically replaced with the state with id = " + DEFAULT_STATE_INDEX +
+                            " and label: '" + defaultState.getLabel() + "'";
+                }
             }
+            LOGGER.info(report);
         }
     }
 
     @Transactional
-    private List<Compt> preparePacketAndComptsForSaving(Packet packet, List<ComptParams> comptParamsList)
-            throws EmptyDBTableException {
+    private List<Compt> preparePacketAndComptsForSaving(Packet packet, List<ComptParams> comptParamsList) {
         List<Compt> result = new ArrayList<>(comptParamsList.size());
-        List<State> statesList = getAllStates();
 
         for (ComptParams comptParams : comptParamsList) {
             List<Integer> allComboDataIndeces;
@@ -356,13 +375,13 @@ public class ComptDaoImpl implements  ComptDao {
             newCompt.setLabel(comptParams.getLabel());
             packet.addCompt(newCompt);
 
-            int numOfStates = states.size();
+            int numOfStates = allStates.size();
             int numOfComboDataItems = allComboData.size();
 
             for (int j = 0; j < numOfStates; j++) {
                 for (int i = 0; i < numOfComboDataItems; i++) {
                     DataCompt dc = new DataCompt();
-                    dc.setState(statesList.get(j));
+                    dc.setState(allStates.get(j));
                     dc.setComboData(allComboData.get(i));
                     dc.setChecked(allComboDataIndeces.get(j) == i);
                     newCompt.addDataCompt(dc);

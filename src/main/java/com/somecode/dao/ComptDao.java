@@ -14,9 +14,8 @@ public interface ComptDao {
     List<ComptSupplInfo> getAllComptsSupplInfo();
 
     List<PacketInfo> getAllPackets();
-    Long getPacketStateId(long packetId);
 
-    List<State> getAllStates();
+    List<State> getAllStates() throws DatabaseException;
 
     List<ComptInfo> getComptsByPacketId(long packetId);
 
@@ -26,10 +25,10 @@ public interface ComptDao {
 
     List<Long> deletePackets(List<Long> packetIdsToDelete);
 
-    List<ComboData> getAllComboData();
+    List<ComboData> getAllComboData() throws DatabaseException;
 
     Map<Long, List<Long>> updateCompts(List<ComptParams> comptParamsList) throws DatabaseException;
 
-    void saveOrUpdatePackets(List<PacketParams> createPacketParamsList, List<PacketParams> updatePacketParamsList)
+    void saveOrUpdatePackets(List<PacketParams> packetParamsList, OperationType operationType)
             throws DatabaseException;
 }

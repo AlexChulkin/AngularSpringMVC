@@ -27,30 +27,30 @@ import java.util.List;
 })
 public class Compt implements EntityType {
 
-    private long id;
+    private Long id;
     private String label;
 	private Packet packet;
     private List<DataCompt> dataCompts = new ArrayList<>();
-    private int version;
+    private Integer version;
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     @Column(name = "COMPT_ID", length = 11)
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
     @Version
     @Column(name = "VERSION")
-    public int getVersion() {
+    public Integer getVersion() {
         return this.version;
     }
 
-    public void setVersion(int version) {
+    public void setVersion(Integer version) {
         this.version = version;
     }
 

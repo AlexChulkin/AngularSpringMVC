@@ -8,24 +8,14 @@ import java.util.List;
 public class PacketParams {
     private Long id;
     private Long stateId;
-    private List<ComptParams> updatedComptParamsList;
-    private List<ComptParams> addedComptParamsList;
+    private List<ComptParams> comptParamsList;
 
-    public List<ComptParams> getUpdatedComptParamsList() {
-        return updatedComptParamsList;
+    public List<ComptParams> getComptParamsList() {
+        return comptParamsList;
     }
 
-    public PacketParams setUpdatedComptParamsList(List<ComptParams> updatedComptParamsList) {
-        this.updatedComptParamsList = updatedComptParamsList;
-        return this;
-    }
-
-    public List<ComptParams> getAddedComptParamsList() {
-        return addedComptParamsList;
-    }
-
-    public PacketParams setAddedComptParamsList(List<ComptParams> addedComptParamsList) {
-        this.addedComptParamsList = addedComptParamsList;
+    public PacketParams setComptParamsList(List<ComptParams> comptParamsList) {
+        this.comptParamsList = comptParamsList;
         return this;
     }
 
