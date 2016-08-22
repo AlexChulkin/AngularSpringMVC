@@ -1,16 +1,16 @@
 package com.somecode.controller;
 
-import com.somecode.domain.ComptInfo;
-import com.somecode.domain.ComptSupplInfo;
 import com.somecode.domain.Data;
+import com.somecode.domain.Params;
 import com.somecode.domain.RequestObj;
 import com.somecode.service.ComptService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 
 @Controller
@@ -27,49 +27,24 @@ public class RestfulController {
         return "home";
     }
 
-
-    @RequestMapping(value = "/getComptsByPacketId", method = RequestMethod.GET)
+    @RequestMapping(value = "/loadData", method = RequestMethod.GET)
     public
     @ResponseBody
-    List<ComptInfo> getComptsByPacketId(@RequestParam long packetId) throws Exception {
-        LOGGER.info("Get Compts By Packet Id");
-        return comptService.getComptsByPacketId(packetId);
+    Data loadData(@RequestBody RequestObj requestObj) throws Exception {
+        Long packetId = requestObj.getParams().getPacketId();
+        LOGGER.info(packetId == null ? "Load All Data" : "Load Data for packetId: " + packetId);
+        return comptService.loadData(packetId);
     }
 
-    @RequestMapping(value = "/getAllData", method = RequestMethod.GET)
-    public
-    @ResponseBody
-    Data getAllData() throws Exception {
-        LOGGER.info("Get All Compts");
-        return comptService.getAllData();
-    }
-
-    @RequestMapping(value = "/deleteCompts", method = RequestMethod.POST)
-    public void deleteCompts(@RequestBody RequestObj requestObj) throws Exception {
-        LOGGER.info("Delete Compts");
-        comptService.deleteCompts(requestObj.getParams().getComptIds());
-    }
-
-    @RequestMapping(value = "/deletePackets", method = RequestMethod.POST)
-    public void deletePackets(@RequestBody RequestObj requestObj) throws Exception {
-        LOGGER.info("Delete Packets");
-        comptService.deletePackets(requestObj.getParams().getPacketIds());
-    }
-
-    @RequestMapping(value = "/getComptsSupplInfoByPacketId", method = RequestMethod.GET)
-    public
-    @ResponseBody
-    List<ComptSupplInfo> getComptsSupplInfoByPacketId(@RequestParam long packetId)
-            throws Exception {
-        LOGGER.info("Get Compts SupplInfo by Packet id");
-        return comptService.getComptsSupplInfoByPacketId(packetId);
-    }
-
-    @RequestMapping(value = "/saveOrUpdatePackets", method = RequestMethod.POST)
-    public void saveOrUpdatePackets(@RequestBody RequestObj requestObj) throws Exception {
-        LOGGER.info("Save or update packets");
-        comptService.saveOrUpdatePackets(requestObj.getParams().getCreatePacketParamsList(),
-                requestObj.getParams().getUpdatePacketParamsList());
+    @RequestMapping(value = "/saveAllChangesToBase", method = RequestMethod.POST)
+    public void saveAllChangesToBase(@RequestBody RequestObj requestObj) throws Exception {
+        LOGGER.info("Save All Changes to Base");
+        Params params = requestObj.getParams();
+        comptService.saveAllChangesToBase(params.getComptIdsToDelete(),
+                params.getPacketIdsToDelete(),
+                params.getComptsToUpdateParamsList(),
+                params.getPacketsToAddParamsList(),
+                params.getPacketsToUpdateParamsList());
     }
 }
 

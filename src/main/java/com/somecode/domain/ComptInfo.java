@@ -10,10 +10,10 @@ public class ComptInfo {
     private String label;
     private long packetId;
 
-    public ComptInfo(long id, String label, long packetId) {
-        this.id = id;
-        this.label = label;
-        this.packetId = packetId;
+    public ComptInfo(Compt compt) {
+        this.id = compt.getId();
+        this.label = compt.getLabel();
+        this.packetId = compt.getPacket().getId();
     }
 
     public long getId() {
@@ -26,5 +26,10 @@ public class ComptInfo {
 
     public long getPacketId() {
         return packetId;
+    }
+
+    @Override
+    public String toString() {
+        return "Compt Info with id: " + id + ", label: " + label + " and packet Id " + packetId;
     }
 }

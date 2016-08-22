@@ -47,35 +47,42 @@ public class ComptDaoImpl implements  ComptDao {
     private PacketRepository packetRepository;
 
     @Override
-    public List<ComptSupplInfo> getComptsSupplInfoByPacketId(long packetId) {
-        return em
-                .createNamedQuery("Compt.getComptsSupplInfoByPacketId", ComptSupplInfo.class)
-                .setParameter("packetId", packetId)
-                .getResultList();
+    public List<PacketInfo> loadPackets(Long packetId) {
+        List<PacketInfo> result = new LinkedList<>();
+        if (packetId != null) {
+            result.add(new PacketInfo(packetRepository.findOne(packetId)));
+        } else {
+            packetRepository.findAll().forEach(p -> result.add(new PacketInfo(p)));
+        }
+        LOGGER.info("All Packets Loaded, here are their ids: "
+                + result.stream().map(PacketInfo::getId).collect(Collectors.toList()));
+        return result;
     }
 
     @Override
-    public List<PacketInfo> getAllPackets() {
-        List<PacketInfo> list = em
-                .createNamedQuery("Packet.getAllPackets", PacketInfo.class)
-                .getResultList();
-        return list;
+    public List<ComptSupplInfo> loadComptsSupplInfo(Long packetId) {
+        List<ComptSupplInfo> result;
+        if (packetId == null) {
+            result = em.createNamedQuery("Compt.loadAllComptsSupplInfo", ComptSupplInfo.class)
+                    .getResultList();
+        } else {
+            result = em.createNamedQuery("Compt.loadComptsSupplInfoByPacketId", ComptSupplInfo.class)
+                    .setParameter("packetId", packetId)
+                    .getResultList();
+        }
+
+        LOGGER.info("The ComptsSupplInfo Loaded: " + result);
+        return result;
     }
 
-    @Override
-    public List<ComptSupplInfo> getAllComptsSupplInfo() {
-        return em.createNamedQuery("Compt.getAllComptsSupplInfo", ComptSupplInfo.class)
-                .getResultList();
-    }
-
-    private Packet getPacket(long packetId) {
+    private Packet loadPacket(long packetId) {
         return em.find(Packet.class, packetId);
     }
 
     @Override
-    public List<State> getAllStates() throws DatabaseException {
+    public List<State> loadAllStates() throws DatabaseException {
         try {
-            return getAllStatesLocally();
+            return loadAllStatesLocally();
         } catch (EmptyDBTableException cause) {
             LOGGER.error(cause.getStackTrace());
             DatabaseException exc = new DatabaseException();
@@ -84,20 +91,20 @@ public class ComptDaoImpl implements  ComptDao {
         }
     }
 
-    private List<State> getAllStatesLocally() throws EmptyStateTableException {
+    private List<State> loadAllStatesLocally() throws EmptyStateTableException {
         Iterable<State> iterable = stateRepository.findAll();
         allStates = Lists.newArrayList(iterable);
         if (allStates.isEmpty()) {
             throw new EmptyStateTableException();
         }
-        LOGGER.info(" All states " + allStates);
+        LOGGER.info("All states loaded: " + allStates);
         return allStates;
     }
 
     @Override
-    public List<ComboData> getAllComboData() throws DatabaseException {
+    public List<ComboData> loadAllComboData() throws DatabaseException {
         try {
-            return getAllComboDataLocally();
+            return loadAllComboDataLocally();
         } catch (EmptyDBTableException cause) {
             LOGGER.error(cause.getStackTrace());
             DatabaseException exc = new DatabaseException();
@@ -106,13 +113,13 @@ public class ComptDaoImpl implements  ComptDao {
         }
     }
 
-    private List<ComboData> getAllComboDataLocally() throws EmptyComboDataTableException {
+    private List<ComboData> loadAllComboDataLocally() throws EmptyComboDataTableException {
         List<ComboData> oldAllComboData = allComboData;
         allComboData = Lists.newArrayList(comboDataRepository.findAll());
         if (allComboData.isEmpty()) {
             throw new EmptyComboDataTableException();
         }
-        LOGGER.info("Get All Combo Data: " + allComboData);
+        LOGGER.info("All Combo Data loaded: " + allComboData);
 
         if (checkComboDataListsForEquality(allComboData, oldAllComboData)) {
             return allComboData;
@@ -139,18 +146,19 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     @Override
-    public List<ComptInfo> getComptsByPacketId(long packetId) {
-        List<ComptInfo> getCompts = em.createNamedQuery("Compt.getComptsByPacketId", ComptInfo.class)
-                .setParameter("packetId", packetId)
-                .getResultList();
-        return getCompts;
-    }
-
-    @Override
-    public List<ComptInfo> getAllCompts() {
-        List<ComptInfo> getCompts = em.createNamedQuery("Compt.getAllCompts", ComptInfo.class)
-                .getResultList();
-        return getCompts;
+    public List<ComptInfo> loadCompts(Long packetId) {
+        List<ComptInfo> result;
+        if (packetId != null) {
+            result = comptRepository.findByPacket_Id(packetId).stream().map(ComptInfo::new).collect(Collectors.toList());
+        } else {
+            List<ComptInfo> listOfCompts = new LinkedList<>();
+            comptRepository.findAll().forEach(c -> listOfCompts.add(new ComptInfo(c)));
+            result = listOfCompts;
+        }
+        LOGGER.info(packetId == null
+                ? "ComptService. Loaded All Compts: " + result
+                : "ComptService. Loaded compts for packet#" + packetId + ": " + result);
+        return result;
     }
 
     @Transactional
@@ -189,7 +197,7 @@ public class ComptDaoImpl implements  ComptDao {
     @Override
     @Transactional
     public Map<Long, List<Long>> updateCompts(List<ComptParams> comptParamsList) throws DatabaseException {
-        getAllComboData();
+        loadAllComboData();
         Map<Long, List<Long>> result = new HashMap<>();
 
         for (ComptParams comptParams : comptParamsList) {
@@ -289,9 +297,9 @@ public class ComptDaoImpl implements  ComptDao {
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void saveOrUpdatePackets(List<PacketParams> packetParamsList, OperationType operationType)
+    public void addOrUpdatePackets(List<PacketParams> packetParamsList, OperationType operationType)
             throws DatabaseException {
-        getAllStates();
+        loadAllStates();
 
         List<Packet> packets = new LinkedList<>();
 
@@ -300,7 +308,7 @@ public class ComptDaoImpl implements  ComptDao {
 
             if (operationType == OperationType.UPDATE) {
                 long packetId = packetParams.getId();
-                packet = getPacket(packetId);
+                packet = loadPacket(packetId);
                 if (packet == null) {
                     LOGGER.info("Packet update. The packet with id " + packetId + " does not exist.");
                     continue;

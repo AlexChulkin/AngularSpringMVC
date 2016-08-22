@@ -10,4 +10,6 @@ import java.util.List;
  */
 public interface ComptRepository extends CrudRepository<Compt,Long> {
     List<Compt> findByIdIn(List<Long> idsList);
+
+    List<Compt> findByPacket_Id(Long packetId);
 }

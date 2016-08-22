@@ -83,7 +83,7 @@
                class="btn btn-md btn-block btn-warning">
                 Reload from base
             </a>
-            <a ng-click="saveAllToBase()"
+            <a ng-click="saveAllChangesToBase()"
                class="btn btn-md btn-block btn-success">
                 Update the base
             </a>
@@ -188,8 +188,12 @@
             Error (<span ng-bind="data.loadError.status"></span>). The error occurred during the data loading.
             <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
         </div>
-        <div class="alert alert-danger" ng-show="data.loadedNoStates || data.loadedNoComboData">
-            The loaded states data and/or comboData is empty. Probably the database is void.
+        <div class="alert alert-danger" ng-show="data.loadedNoStates">
+            The loaded states data is empty. Probably the database is void.
+            <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
+        </div>
+        <div class="alert alert-danger" ng-show="data.loadedNoComboData">
+            The loaded states comboData is empty. Probably the database is void.
             <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
         </div>
         <div class="alert alert-warning" ng-show="data.noComptsSelected && !data.loadedNoCompts">

@@ -9,9 +9,9 @@ public class PacketInfo {
     private long id;
     private long stateId;
 
-    public PacketInfo(long id, long stateId) {
-        this.id = id;
-        this.stateId = stateId;
+    public PacketInfo(Packet packet) {
+        this.id = packet.getId();
+        this.stateId = packet.getState().getId();
     }
 
     public long getId() {
@@ -21,4 +21,10 @@ public class PacketInfo {
     public long getStateId() {
         return stateId;
     }
+
+    @Override
+    public String toString() {
+        return "Packet Info with id: " + id + " and state Id: " + stateId;
+    }
+
 }

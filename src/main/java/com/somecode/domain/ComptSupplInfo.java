@@ -39,5 +39,11 @@ public class ComptSupplInfo implements HasLabel {
         return checked;
     }
 
+    @Override
+    public String toString() {
+        return "ComptSupplInfo with compt Id: " + comptId + ", label: " + label + ", state Id: " + stateId + " and "
+                + (checked ? "checked" : "not checked");
+    }
+
 }
 

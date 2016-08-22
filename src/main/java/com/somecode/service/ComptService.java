@@ -18,70 +18,70 @@ public class ComptService {
     @Autowired
     private ComptDao comptDao;
 
-    public List<Long> deleteCompts(List<Long> idsToDelete) {
-        return
-    }
-
-
-    public Data getAllData() {
+    public Data loadData(Long packetId) {
+        LOGGER.info(packetId == null
+                ? "ComptService. Load All Data."
+                : "ComptService. Load data for packet#" + packetId);
         Data result = new Data();
         try {
-            result.setStates(comptDao.getAllStates());
+            result.setStates(comptDao.loadAllStates());
         } catch (DatabaseException e) {
             result.setStates(Collections.EMPTY_LIST);
         }
         try {
-            result.setComboData(comptDao.getAllComboData());
+            result.setComboData(comptDao.loadAllComboData());
         } catch (DatabaseException e) {
             result.setComboData(Collections.EMPTY_LIST);
         }
 
-        result.setPackets(comptDao.getAllPackets())
-                .setCompts(comptDao.getAllCompts());
+        result.setPackets(comptDao.loadPackets(packetId))
+                .setCompts(comptDao.loadCompts(packetId));
 
         if (!result.getCompts().isEmpty()
                 && !result.getStates().isEmpty()
                 && !result.getComboData().isEmpty()) {
-            return result.setComptSupplInfo(comptDao.getAllComptsSupplInfo());
+            return result.setComptSupplInfo(comptDao.loadComptsSupplInfo(packetId));
         }
 
         return result.setComptSupplInfo(Collections.EMPTY_LIST);
     }
 
-    public List<ComptSupplInfo> getComptsSupplInfoByPacketId(long packetId) {
-        return comptDao.getComptsSupplInfoByPacketId(packetId);
-    }
 
-    public EnumSet<PersistError> persistToBase(List<Long> comptIdsToDelete,
-                                               List<Long> packetIdsToDelete,
-                                               List<ComptParams> updateComptsParamsList,
-                                               List<PacketParams> createPacketParamsList,
-                                               List<PacketParams> updatePacketParamsList) {
+    public EnumSet<PersistError> saveAllChangesToBase(List<Long> comptIdsToDelete,
+                                                      List<Long> packetIdsToDelete,
+                                                      List<ComptParams> comptsToUpdateParamsList,
+                                                      List<PacketParams> packetsToAddParamsList,
+                                                      List<PacketParams> packetsToUpdateParamsList) {
 
-        EnumSet<PersistError> persistErrors = EnumSet.noneOf(PersistError.class);
+        LOGGER.info("ComptService. Persist All Data.");
+
+        EnumSet<PersistError> persistErrors = EnumSet.allOf(PersistError.class);
 
         comptDao.deleteCompts(comptIdsToDelete);
+        persistErrors.remove(PersistError.DELETE_COMPTS);
+
         comptDao.deletePackets(packetIdsToDelete);
+        persistErrors.remove(PersistError.DELETE_PACKETS);
 
         try {
-            comptDao.updateCompts(updateComptsParamsList);
+            comptDao.updateCompts(comptsToUpdateParamsList);
+            persistErrors.remove(PersistError.UPDATE_COMPTS);
         } catch (DatabaseException e) {
             LOGGER.error("Exception: " + e.getMessage() + "\nStacktrace: " + e.getStackTrace());
-            persistErrors.add(PersistError.UPDATE_COMPTS);
         }
 
         try {
-            comptDao.saveOrUpdatePackets(createPacketParamsList, OperationType.ADD);
+            comptDao.addOrUpdatePackets(packetsToAddParamsList, OperationType.ADD);
+            persistErrors.remove(PersistError.ADD_PACKETS);
         } catch (DatabaseException e) {
             LOGGER.error("Exception: " + e.getMessage() + "\nStacktrace: " + e.getStackTrace());
-            persistErrors.add(PersistError.ADD_PACKETS);
         }
 
         try {
-            comptDao.saveOrUpdatePackets(updatePacketParamsList, OperationType.UPDATE);
+            comptDao.addOrUpdatePackets(packetsToUpdateParamsList, OperationType.UPDATE);
+            persistErrors.remove(PersistError.UPDATE_PACKETS);
         } catch (DatabaseException e) {
             LOGGER.error("Exception: " + e.getMessage() + "\nStacktrace: " + e.getStackTrace());
-            persistErrors.add(PersistError.UPDATE_PACKETS);
         }
 
         return persistErrors;
