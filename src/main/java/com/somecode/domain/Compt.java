@@ -11,12 +11,6 @@ import java.util.List;
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"PACKET_ID_FK", "LABEL"}))
 @NamedQueries( {
-        @NamedQuery(name = "Compt.loadComptsByPacketId",
-                query = "SELECT NEW com.somecode.domain.ComptInfo(c.id, c.label, p.id) " +
-                        "FROM Packet p JOIN p.compts c WHERE p.id = :packetId ORDER BY c.id ASC"),
-        @NamedQuery(name = "Compt.loadAllCompts",
-                query = "SELECT NEW com.somecode.domain.ComptInfo(c.id, c.label, c.packet.id) " +
-                        "FROM Compt c ORDER BY c.id ASC"),
         @NamedQuery(name = "Compt.loadComptsSupplInfoByPacketId",
                 query = "SELECT NEW com.somecode.domain.ComptSupplInfo(c.id, dc.state.id, cd.label, dc.checked) " +
                         "FROM Packet p JOIN p.compts c JOIN c.dataCompts dc JOIN dc.comboData cd " +

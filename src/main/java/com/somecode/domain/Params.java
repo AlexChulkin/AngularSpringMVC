@@ -13,7 +13,7 @@ public class Params {
     private List<PacketParams> packetsToAddParamsList;
     private List<PacketParams> packetsToUpdateParamsList;
 
-    private long packetId;
+    private Long packetId;
 
 
     public List<PacketParams> getPacketsToAddParamsList() {
@@ -48,11 +48,11 @@ public class Params {
         this.comptsToUpdateParamsList = comptsToUpdateParamsList;
     }
 
-    public long getPacketId() {
+    public Long getPacketId() {
         return packetId;
     }
 
-    public void setPacketId(long packetId) {
+    public void setPacketId(Long packetId) {
         this.packetId = packetId;
     }
 

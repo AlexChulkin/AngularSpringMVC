@@ -44,7 +44,8 @@ public class RestfulController {
                 params.getPacketIdsToDelete(),
                 params.getComptsToUpdateParamsList(),
                 params.getPacketsToAddParamsList(),
-                params.getPacketsToUpdateParamsList());
+                params.getPacketsToUpdateParamsList(),
+                params.getPacketId());
     }
 }
 

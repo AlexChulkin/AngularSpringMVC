@@ -81,11 +81,11 @@
             </a>
             <a ng-click="reloadRoute()"
                class="btn btn-md btn-block btn-warning">
-                Reload from base
+                Reload all from DB
             </a>
-            <a ng-click="saveAllChangesToBase()"
+            <a ng-click="saveAllChangesToBase(null)"
                class="btn btn-md btn-block btn-success">
-                Update the base
+                Update all in DB
             </a>
         </div>
     </div>
@@ -181,6 +181,14 @@
                 </div>
             </form>
             <div class="inline">
+                <a ng-click="reloadRoute()"
+                   class="btn btn-lg btn-warning">
+                    Reload this packet from DB
+                </a>
+                <a ng-click="saveAllChangesToBase(null)"
+                   class="btn btn-lg btn-success">
+                    Update this packet in DB
+                </a>
             </div>
         </div>
 

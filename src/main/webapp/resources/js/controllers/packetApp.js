@@ -67,12 +67,9 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             .get(contextPath + loadDataPath, {withCredentials: true})
             .success(function (data) {
                 prepareCompts(data, initialPacketIndex);
-
                 preparePackets(data);
                 prepareStates(data);
                 prepareComboData(data);
-                $scope.data.allComboData[comptId] =;
-                $scope.data.allCheckedComboData[comptId] =;
                 if (!$scope.data.loadedNoCompts
                     && !$scope.data.loadedNoComboData
                     && !$scope.data.loadedNoStates) {
@@ -293,12 +290,20 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                 .error(function (error) {
                 });
         };
-        $scope.saveAllChangesToBase = function () {
+
+        $scope.saveAllChangesToBase = function (savedPacketId) {
             var packetsToUpdateParamsList = [];
             var packetsToAddParamsList = [];
             var comptsToUpdateParamsList = [];
 
-            angular.forEach($scope.data.allPackets, function (pkt, pktId) {
+            var packetsToSave = {};
+            if (!savedPacketId) {
+                packetsToSave = $scope.data.allPackets;
+            } else {
+                packetsToSave[savedPacketId] = $scope.data.allPackets[savedPacketId];
+            }
+
+            angular.forEach(packetsToSave, function (pkt, pktId) {
                 var packetConfig = {};
                 var comptConfig = {};
                 if (!newPackets[pktId]) {
@@ -323,25 +328,30 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             });
 
             var comptIdsToDelete = [];
-            angular.forEach($scope.data.allPackets, function (unused, pktId) {
+            angular.forEach(packetsToSave, function (unused, pktId) {
                 comptIdsToDelete = comptIdsToDelete.concat(comptIdsTaggedToDelete[pktId]);
             });
 
             if (packetsToUpdateParamsList.length == 0 && packetsToAddParamsList.length == 0
-                && comptIdsToDelete.length == 0 && packetIdsToDelete.length == 0
-                && comptIdsToUpdate.length == 0) {
+                && comptIdsToDelete.length == 0 && comptIdsToUpdate.length == 0) {
+                if (savedPacketId || packetIdsToDelete.length == 0)
                 return;
             }
 
+            var params = {
+                packetsToAddParamsList: packetsToAddParamsList,
+                packetsToUpdateParamsList: packetsToUpdateParamsList,
+                comptsToUpdateParamsList: comptsToUpdateParamsList,
+                comptIdsToDelete: comptIdsToDelete
+            };
+            if (!savedPacketId) {
+                params['packetIdsToDelete'] = packetIdsToDelete;
+            } else {
+                params['packetId'] = savedPacketId;
+            }
             var saveAllChangesConfig = {
                 withCredentials: true,
-                params: {
-                    packetsToAddParamsList: packetsToAddParamsList,
-                    packetsToUpdateParamsList: packetsToUpdateParamsList,
-                    comptsToUpdateParamsList: comptsToUpdateParamsList,
-                    packetIdsToDelete: packetIdsToDelete,
-                    comptIdsToDelete: comptIdsToDelete
-                }
+                params: params
             };
             var errorMap = {};
 
@@ -351,7 +361,6 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             errorMap[addPackets] = comptLabelsToAddToNewPackets;
             errorMap[deletePackets] = packetIdsToDelete;
 
-
             $http
                 .post(contextPath + saveAllChangesToBasePath, saveAllChangesConfig)
                 .success(function (data) {
@@ -359,6 +368,19 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                         var key = String(el);
                         if (errorMap[key]) {
                             delete errorMap[key];
+                            if (key == addPackets || key == updatePackets) {
+                                alert("Error occurred while trying to save data in DB. The STATES table is empty." +
+                                    "The updated compts were not persisted to the DB. Try to solve the problem and " +
+                                    "then re-push the saving button. DON'T RESTORE THE DATA FROM THE BASE! Otherwise" +
+                                    " you may loose your changes.");
+                            }
+                            else if (key == updateCompts) {
+                                alert("Error occurred while trying to save data in DB. The COMBO_DATA table is empty." +
+                                    "At least one of the following: 1.The compts adding and/or state change for the existing packets; " +
+                                    "2.Added new pakets together with new compts inside; were not persisted. Try to solve the problem and " +
+                                    "then re-push the saving button. DON'T RESTORE THE DATA FROM THE BASE! Otherwise" +
+                                    " you may loose your changes.");
+                            } 
                         }
                     });
                     angular.forEach(errorMap, function (v, k) {
@@ -371,11 +393,6 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                 })
                 .error(function (error) {
                 });
-            comptLabelsToAddToNewPackets = {};
-            comptLabelsToAddToExistingPackets = {};
-            comptIdsToUpdate = {};
-            comptIdsTaggedToDelete = {};
-            packetIdsToDelete = [];
         };
 
         generateComptParamsListForPacketsToAdd = function (pktId) {
