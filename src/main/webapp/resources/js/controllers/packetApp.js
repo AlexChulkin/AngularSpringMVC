@@ -16,7 +16,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
     .constant("loadPacketByIdPath", "/loadPacketById")
     .constant("savePacketByIdPath", "/savePacketById")
     .constant("initialPacketIndex", -1)
-    .controller("packetCtrl", function ($scope, $http, $window, $watch, packetListActiveClass,
+    .controller("packetCtrl", function ($scope, $http, $window, packetListActiveClass,
                                         packetListNonActiveClass, packetListPageCount, labelLabel,
                                         updateCompts, deleteCompts, updatePackets, deletePackets,
                                         addPackets, loadDataPath, saveAllChangesToBasePath,
@@ -81,11 +81,11 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                 $scope.data.loadError = error;
             });
 
-        $scope.$watch('data.selectedComptLabels', function (value) {
+        $scope.$watchCollection('data.selectedComptLabels', function (value) {
             $scope.data.noComptsSelected = angular.equals({}, value);
         });
 
-        $scope.$watch('data.allPackets', function (value) {
+        $scope.$watchCollection('data.allPackets', function (value) {
             $scope.data.loadedNoPackets = angular.equals({}, value);
         });
 
@@ -434,8 +434,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         };
 
         $scope.getPacketClass = function (packet) {
-            return $scope.data.selectedPacket != null ? $scope.data.selectedPacketId == packet.id ? packetListActiveClass
-                : packetListNonActiveClass : packetListNonActiveClass;
+            return $scope.data.selectedPacketId == packet.id ? packetListActiveClass : packetListNonActiveClass; 
         };
 
         $scope.getPageClass = function (page) {
