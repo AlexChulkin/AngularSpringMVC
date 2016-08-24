@@ -40,7 +40,8 @@ public class ComptService {
         if (!result.getCompts().isEmpty()
                 && !result.getStates().isEmpty()
                 && !result.getComboData().isEmpty()) {
-            return result.setComptSupplInfo(comptDao.loadComptsSupplInfo(packetId));
+            result.setComptSupplInfo(comptDao.loadComptsSupplInfo(packetId));
+            return result;
         }
 
         return result.setComptSupplInfo(Collections.EMPTY_LIST);
@@ -54,7 +55,7 @@ public class ComptService {
                                                       List<PacketParams> packetsToUpdateParamsList,
                                                       Long packetId) {
 
-        LOGGER.info(packetId != null ? "ComptService. Persist All Data." : "ComptService. Persist the packet#"
+        LOGGER.info(packetId != 0L ? "ComptService. Persist All Data." : "ComptService. Persist the packet#"
                 + packetId);
 
         EnumSet<PersistError> persistErrors = EnumSet.allOf(PersistError.class);

@@ -75,7 +75,7 @@ public class ComptDaoImpl implements  ComptDao {
         return result;
     }
 
-    private Packet loadPacket(long packetId) {
+    private Packet loadPacket(Long packetId) {
         return em.find(Packet.class, packetId);
     }
 

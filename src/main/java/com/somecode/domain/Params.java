@@ -12,7 +12,6 @@ public class Params {
     private List<ComptParams> comptsToUpdateParamsList;
     private List<PacketParams> packetsToAddParamsList;
     private List<PacketParams> packetsToUpdateParamsList;
-
     private Long packetId;
 
 

@@ -81,11 +81,11 @@
             </a>
             <a ng-click="reloadRoute()"
                class="btn btn-md btn-block btn-warning">
-                Reload all from DB
+                Reload all
             </a>
             <a ng-click="saveAllChangesToBase(null)"
                class="btn btn-md btn-block btn-success">
-                Update all in DB
+                Save changes
             </a>
         </div>
     </div>
@@ -105,12 +105,12 @@
                             <span ng-bind="compt.label"/>
                         </td>
                         <td width="17%" ng-repeat="state in data.allStates">
-                                    <span ng-bind="data.allCheckedVals[compt.id][state.id]"
+                                    <span ng-bind="data.allCheckedComboData[compt.id][state.id]"
                                           ng-hide="data.selectedPacket.stateId == state.id"></span>
                                     <span ng-show="data.selectedPacket.stateId == state.id">
                                           <select class="standard"
                                                   ng-options="el for el in data.allComboData[compt.id][state.id]"
-                                                  ng-model="data.allCheckedVals[compt.id][state.id]"
+                                                  ng-model="data.allCheckedComboData[compt.id][state.id]"
                                                   ng-change="updateComptLocally(compt)">
                                           </select>
                                     </span>
@@ -131,15 +131,15 @@
                     </a>
                 </div>
             </div>
-            <div class="well states">
-                <%--<div class="states">--%>
+            <div class="well">
+                <div class="states">
                     <div class="state" ng-repeat="state in data.allStates track by $index">
                         <input type="radio"
                                ng-model="data.selectedPacket.stateId"
                                ng-value="$index+1">
                         <span ng-bind="data.allStateLabels[$index+1]"></span>
                     </div>
-                <%--</div>--%>
+                </div>
             </div>
             <form name="form">
                 <div class="row grid-row">

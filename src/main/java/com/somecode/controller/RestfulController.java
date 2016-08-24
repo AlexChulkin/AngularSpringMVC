@@ -27,7 +27,13 @@ public class RestfulController {
         return "home";
     }
 
-    @RequestMapping(value = "/loadData", method = RequestMethod.GET)
+//    @RequestMapping(value = "/loadAllData", method = RequestMethod.GET)
+//    public @ResponseBody Data loadAllData() throws Exception {
+//        LOGGER.info( "Load All Data");
+//        return comptService.loadData(null);
+//    }
+
+    @RequestMapping(value = "/loadData", method = RequestMethod.POST)
     public
     @ResponseBody
     Data loadData(@RequestBody RequestObj requestObj) throws Exception {
