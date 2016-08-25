@@ -61,24 +61,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         $scope.data.selectedPacket = null;
         $scope.data.selectedPacketId = null;
 
-        $http.post(contextPath + loadDataPath, {params: {}})
-            .then(function success(response) {
-                    var data = response.data;
-                    prepareCompts(data.compts, initialPacketIndex);
-                    preparePackets(data.packets);
-                    prepareStates(data.states);
-                    prepareComboData(data.comboData);
-                    if (!$scope.data.loadedNoCompts
-                        && !$scope.data.loadedNoComboData
-                        && !$scope.data.loadedNoStates) {
-
-                        prepareComptsSupplInfo(data.comptSupplInfo);
-                    }
-                },
-                function error(error) {
-                    $scope.data.loadError = error;
-                }
-            );
+        $scope.loadPacketById(null);
 
         $scope.$watchCollection('data.selectedComptLabels', function (value) {
             $scope.data.noComptsSelected = angular.equals({}, value);
@@ -274,12 +257,13 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         };
 
         $scope.loadPacketById = function (packetId) {
-            var packetIndex = packetIdToInd[packetId];
+            var packetIndex = packetId == null ? initialPacketIndex : packetIdToInd[packetId] - 1;
+            var params = packetId == null ? {} : {packetId: packetId};
             $http
-                .post(contextPath + loadDataPath, {params: {packetId: packetId}})
+                .post(contextPath + loadDataPath, {params: params})
                 .then(
                     function success(data) {
-                        prepareCompts(data, packetIndex - 1);
+                        prepareCompts(data, packetIndex);
                         preparePackets(data);
                         prepareStates(data);
                         prepareComboData(data);
