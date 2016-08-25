@@ -56,6 +56,10 @@
         .grid-row > div {
             padding-left: 24px;
         }
+
+        .addBtn {
+            padding: 0 13px 1px;
+        }
     </style>
 </head>
 <body ng-controller="packetCtrl">
@@ -63,7 +67,7 @@
     <a class="navbar-brand" href="#">THE PACKETS AND THEIR COMPONENTS</a>
 </div>
 <div class="panel">
-    <div class="col-xs-1 column">
+    <div class="col-xs-2 column">
         <div class="flex" ng-repeat="pkt in data.allPackets">
             <a ng-click="selectPacket(pkt)"
                ng-class="getPacketClass(pkt)">
@@ -72,6 +76,14 @@
             <a ng-click="deletePacketLocally(pkt)"
                class="btn btn-sm btn-danger">
                 Del
+            </a>
+            <a ng-click="loadPacketById(pkt.id)"
+               class="btn btn-sm btn-warning">
+                Reload
+            </a>
+            <a ng-click="saveAllChangesToBase(pkt.id)"
+               class="btn btn-sm btn-success">
+                Save
             </a>
         </div>
         <div class="btn-group aggregate-btns">
@@ -89,7 +101,7 @@
             </a>
         </div>
     </div>
-    <div class="col-xs-11 column">
+    <div class="col-xs-10 column">
         <div ng-hide="data.loadError || !data.isPacketSelected || data.loadedNoComboData || data.loadedNoStates">
             <div ng-hide="data.noComptsSelected">
                 <table class="table table-striped">
@@ -146,7 +158,7 @@
                     <div class="col-sm-5">
                         <div class="form-group">
                             <label ng-class="label-primary">
-                                Enter new component:
+                                Enter new compt label:
                                 <input class="text"
                                        name="newLabelName"
                                        ng-model="data.newLabel"
@@ -164,12 +176,7 @@
                                     </div>
                                 </div>
                             </label>
-                                <span class="input-group-btn">
-                                    <button class="btn btn-large btn-primary" name="addBtn"
-                                            ng-click="addComptLocally()"
-                                            ng-disabled="form.$invalid">Add a component
-                                    </button>
-                                </span>
+
                         </div>
                     </div>
                     <div class="col-sm-2" ng-repeat="state in data.allStates track by $index">
@@ -178,18 +185,17 @@
                                 ng-model="data.newComptCheckedVals[$index]">
                         </select>
                     </div>
+                    <div class="col-sm-1">
+                        <span class="input-group-btn">
+                            <button class="btn btn-xs btn-success addBtn" id="addBtn"
+                                    ng-click="addComptLocally()"
+                                    ng-disabled="form.$invalid">Add
+                            </button>
+                        </span>
+                    </div>
                 </div>
             </form>
-            <div class="inline">
-                <a ng-click="reloadRoute()"
-                   class="btn btn-lg btn-warning">
-                    Reload this packet from DB
-                </a>
-                <a ng-click="saveAllChangesToBase(null)"
-                   class="btn btn-lg btn-success">
-                    Update this packet in DB
-                </a>
-            </div>
+
         </div>
 
         <div class="alert alert-danger" ng-show="data.loadError">

@@ -4,7 +4,7 @@
 var app = angular.module("packetApp");
 app.constant("packetListActiveClass", "btn-primary btn-sm")
     .constant("packetListNonActiveClass", "btn-sm")
-    .constant("packetListPageCount", 9)
+    .constant("packetListPageCount", 10)
     .constant("labelLabel", "Label")
     .constant("updateCompts", "UPDATE_COMPTS")
     .constant("deleteCompts", "DELETE_COMPTS")
@@ -14,13 +14,12 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
     .constant("loadDataPath", "/loadData")
     .constant("saveAllChangesToBasePath", "/saveAllChangesToBase")
     .constant("loadPacketByIdPath", "/loadPacketById")
-    .constant("savePacketByIdPath", "/savePacketById")
     .constant("initialPacketIndex", -1)
     .controller("packetCtrl", function ($scope, $http, $window, packetListActiveClass,
                                         packetListNonActiveClass, packetListPageCount, labelLabel,
                                         updateCompts, deleteCompts, updatePackets, deletePackets,
                                         addPackets, loadDataPath, saveAllChangesToBasePath,
-                                        loadPacketByIdPath, savePacketByIdPath, initialPacketIndex) {
+                                        loadPacketByIdPath, initialPacketIndex) {
 
         var comptIdToInd = {};
         var packetIdToInd = {};
