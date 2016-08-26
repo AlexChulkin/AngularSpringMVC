@@ -37,6 +37,14 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
 
         var packetInitialStateIds = {};
 
+        var loadError = false;
+        var loadedNoCompts = false;
+        var loadedNoStates = false;
+        var loadedNoComboData = false;
+        var loadedNoComptSupplInfo = false;
+        var ifComptsIsSelected = true;
+        var ifPacketsIsNotLoaded = false;
+
         $scope.pageSize = packetListPageCount;
 
         $scope.data = {};
@@ -49,44 +57,57 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         $scope.data.allCheckedComboData = {};
         $scope.data.selectedComptLabels = {};
 
-        $scope.data.noComptsSelected = true;
-        $scope.data.loadedNoPackets = true;
-        $scope.data.loadedNoCompts = true;
-        $scope.data.loadedNoStates = true;
-        $scope.data.loadedNoComboData = true;
-        $scope.data.loadedNoComptSupplInfo = true;
         $scope.data.stateIdOfSelectedPacket = null;
-        $scope.data.isPacketSelected = false;
 
         $scope.data.selectedPacket = null;
         $scope.data.selectedPacketId = null;
-
-        $scope.loadPacketById(null);
-
-        $scope.$watchCollection('data.selectedComptLabels', function (value) {
-            $scope.data.noComptsSelected = angular.equals({}, value);
-        });
-
-        $scope.$watchCollection('data.allPackets', function (value) {
-            $scope.data.loadedNoPackets = angular.equals({}, value);
-        });
 
         $scope.$watch('data.selectedPacket', function (value) {
             if (value != null) {
                 $scope.data.selectedPacketId = value.id;
                 $scope.data.selectedCompts = compts[packetIdToInd[$scope.data.selectedPacketId]] || [];
                 $scope.data.selectedComptLabels = comptLabels[$scope.data.selectedPacketId] || {};
+                ifComptsIsSelected = !angular.equals({}, $scope.data.selectedComptLabels);
                 newComptLabelsForSelectedPacketType = newComptLabels[$scope.data.selectedPacketId in newPackets];
             } else {
                 $scope.data.selectedPacketId = null;
                 $scope.data.selectedCompts = [];
                 $scope.data.selectedComptLabels = {};
+                ifComptsIsSelected = false;
                 newComptLabelsForSelectedPacketType = {};
             }
         });
 
+        $scope.isComptsSelected = function () {
+            return ifComptsIsSelected;
+        };
+
+        $scope.isPacketSelected = function () {
+            return $scope.data.selectedPacket;
+        };
+
+        $scope.isDataLoadedProperly = function () {
+            return !($scope.isDataLoadError() || $scope.isComboDataNotLoaded() || $scope.isStatesNotLoaded());
+        };
+
+        $scope.isDataLoadError = function () {
+            return loadError && loadError == true;
+        };
+
+        $scope.isComboDataNotLoaded = function () {
+            return loadedNoComboData && loadedNoComboData == true;
+        };
+
+        $scope.isStatesNotLoaded = function () {
+            return loadedNoStates && loadedNoStates == true;
+        };
+
+        $scope.isPacketsNotLoaded = function () {
+            return ifPacketsIsNotLoaded;
+        };
+
         prepareCompts = function (uploadedCompts, initialPacketInd) {
-            $scope.data.loadedNoCompts = isDataEmpty(uploadedCompts);
+            loadedNoCompts = isDataEmpty(uploadedCompts);
             var packetInd = initialPacketInd;
             var visitedPacket = {};
             angular.forEach(uploadedCompts, function (el) {
@@ -112,6 +133,8 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         preparePackets = function (packets) {
             if (!isDataEmpty(packets)) {
                 $scope.selectPacket(packets[0]);
+            } else {
+                ifPacketsIsNotLoaded = true;
             }
             angular.forEach(packets, function (pkt) {
                 var pktId = pkt.id;
@@ -226,7 +249,6 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             delete $scope.data.allPackets[packetId];
             delete comptIdsTaggedToDelete[packetId];
             $scope.data.selectedPacket = null;
-            $scope.data.isPacketSelected = false;
         };
 
         $scope.updateComptLocally = function (compt) {
@@ -242,7 +264,6 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
 
         isDataEmpty = function (data) {
             if (!data || !angular.isArray(data) || data.length == 0) {
-                $scope.data.dataEmpty = true;
                 return true;
             }
             return false;
@@ -256,25 +277,38 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             return checkedVals;
         };
 
+        setDefaultLoadDataErrors = function () {
+            loadError = false;
+            loadedNoCompts = false;
+            loadedNoStates = false;
+            loadedNoComboData = false;
+            loadedNoComptSupplInfo = false;
+            ifComptsIsSelected = true;
+            ifPacketsIsNotLoaded = false;
+        };
+
         $scope.loadPacketById = function (packetId) {
+            setDefaultLoadDataErrors();
             var packetIndex = packetId == null ? initialPacketIndex : packetIdToInd[packetId] - 1;
             var params = packetId == null ? {} : {packetId: packetId};
             $http
                 .post(contextPath + loadDataPath, {params: params})
                 .then(
-                    function success(data) {
-                        prepareCompts(data, packetIndex);
-                        preparePackets(data);
-                        prepareStates(data);
-                        prepareComboData(data);
+                    function success(result) {
+                        var data = result.data;
+                        prepareCompts(data.compts, packetIndex);
+                        preparePackets(data.packets);
+                        prepareStates(data.states);
+                        prepareComboData(data.comboData);
                         if (!$scope.data.loadedNoCompts
                             && !$scope.data.loadedNoComboData
                             && !$scope.data.loadedNoStates) {
 
-                            prepareComptsSupplInfo(data);
+                            prepareComptsSupplInfo(data.comptSupplInfo);
                         }
                     },
                     function error(error) {
+                        $scope.data.loadError = true;
                     }
                 );
         };
@@ -317,7 +351,9 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
 
             var comptIdsToDelete = [];
             angular.forEach(packetsToSave, function (unused, pktId) {
-                comptIdsToDelete = comptIdsToDelete.concat(comptIdsTaggedToDelete[pktId]);
+                if (!isDataEmpty(comptIdsTaggedToDelete[pktId])) {
+                    comptIdsToDelete = comptIdsToDelete.concat(comptIdsTaggedToDelete[pktId]);
+                }
             });
 
             if (packetsToUpdateParamsList.length == 0 && packetsToAddParamsList.length == 0
@@ -411,7 +447,6 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
 
         $scope.selectPacket = function (packet) {
             $scope.data.selectedPacket = packet;
-            $scope.data.isPacketSelected = true;
 
 
             $scope.selectPage(1);
@@ -436,6 +471,12 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         $scope.reloadRoute = function () {
             $window.location.reload();
         };
+
+        init = function () {
+            $scope.loadPacketById(null);
+        };
+
+        init();
     });
 
 app.directive('blacklist', function () {

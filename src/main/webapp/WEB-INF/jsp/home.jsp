@@ -38,10 +38,11 @@
             display: inline-flex;
         }
 
-        .aggregate-btns {
+        #aggregate-btns {
             padding: 10px 0;
         }
-        .states {
+
+        #states {
             padding: 1% 0 1% 43%;
         }
         select.standard {
@@ -57,7 +58,7 @@
             padding-left: 24px;
         }
 
-        .addBtn {
+        #addBtn {
             padding: 0 13px 1px;
         }
     </style>
@@ -66,13 +67,13 @@
 <div class="navbar navbar-inverse">
     <a class="navbar-brand" href="#">THE PACKETS AND THEIR COMPONENTS</a>
 </div>
-<div class="panel">
-    <div class="col-xs-2 column">
+<div class="panel" ng-if="isDataLoadedProperly()">
+    <div class="col-xs-2 column" id="leftColumn">
         <div class="flex" ng-repeat="pkt in data.allPackets">
             <a ng-click="selectPacket(pkt)"
                ng-class="getPacketClass(pkt)">
                 Packet#<span ng-bind="pkt.id"/>
-                </a>
+            </a>
             <a ng-click="deletePacketLocally(pkt)"
                class="btn btn-sm btn-danger">
                 Del
@@ -86,7 +87,7 @@
                 Save
             </a>
         </div>
-        <div class="btn-group aggregate-btns">
+        <div class="btn-group" id="aggregate-btns">
             <a ng-click="addPacketLocally()"
                class="btn btn-md btn-block btn-default">
                 Add packet
@@ -102,8 +103,19 @@
         </div>
     </div>
     <div class="col-xs-10 column">
-        <div ng-hide="data.loadError || !data.isPacketSelected || data.loadedNoComboData || data.loadedNoStates">
-            <div ng-hide="data.noComptsSelected">
+        <div class="alert alert-warning" ng-if="isDataLoadedProperly()
+            && !isPacketsNotLoaded() && !isPacketNotSelected() && isComptsNotSelected()">
+            The selected packet is empty. Please add new compts or select another one.
+        </div>
+        <div class="alert alert-warning" ng-if="isDataLoadedProperly()
+            && !isPacketsNotLoaded() && isPacketNotSelected()">
+            No packet is selected. Please select (or add and select) one.
+        </div>
+        <div class="alert alert-warning" ng-if="isDataLoadedProperly() && isPacketsNotLoaded()">
+            There are no loaded packets. Please add one.
+        </div>
+        <div id="rightColumn" ng-show="isPacketSelected()">
+            <div ng-show="isComptsSelected()">
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -144,7 +156,7 @@
                 </div>
             </div>
             <div class="well">
-                <div class="states">
+                <div id="states">
                     <div class="state" ng-repeat="state in data.allStates track by $index">
                         <input type="radio"
                                ng-model="data.selectedPacket.stateId"
@@ -153,7 +165,7 @@
                     </div>
                 </div>
             </div>
-            <form name="form">
+            <form name="form" ng-if="isPacketSelected()">
                 <div class="row grid-row">
                     <div class="col-sm-5">
                         <div class="form-group">
@@ -176,7 +188,6 @@
                                     </div>
                                 </div>
                             </label>
-
                         </div>
                     </div>
                     <div class="col-sm-2" ng-repeat="state in data.allStates track by $index">
@@ -187,7 +198,7 @@
                     </div>
                     <div class="col-sm-1">
                         <span class="input-group-btn">
-                            <button class="btn btn-xs btn-success addBtn" id="addBtn"
+                            <button class="btn btn-xs btn-success" id="addBtn"
                                     ng-click="addComptLocally()"
                                     ng-disabled="form.$invalid">Add
                             </button>
@@ -195,33 +206,22 @@
                     </div>
                 </div>
             </form>
-
-        </div>
-
-        <div class="alert alert-danger" ng-show="data.loadError">
-            Error (<span ng-bind="data.loadError.status"></span>). The error occurred during the data loading.
-            <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
-        </div>
-        <div class="alert alert-danger" ng-show="data.loadedNoStates">
-            The loaded states data is empty. Probably the database is void.
-            <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
-        </div>
-        <div class="alert alert-danger" ng-show="data.loadedNoComboData">
-            The loaded states comboData is empty. Probably the database is void.
-            <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
-        </div>
-        <div class="alert alert-warning" ng-show="data.noComptsSelected && !data.loadedNoCompts">
-            The selected packet is empty. Please add new compts or select another one.
-            <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
-        </div>
-        <div class="alert alert-warning" ng-show="data.loadedNoPackets">
-            There are no loaded packets. Please add one.
-            <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
-        </div>
-        <div class="alert alert-warning" ng-hide="data.isPacketSelected">
-            No packet is selected. Please select (or add and select) one.
         </div>
     </div>
 </div>
+
+<div class="alert alert-danger" ng-if="isDataLoadError()">
+    The error occurred during the data loading.
+    <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
+</div>
+<div class="alert alert-danger" ng-if="isStatesNotLoaded()">
+    The loaded states data is empty. Probably the database table is void.
+    <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
+</div>
+<div class="alert alert-danger" ng-if="isComboDataNotLoaded()">
+    The loaded comboData is empty. Probably the database table is void.
+    <button class="btn btn-danger" ng-click="reloadRoute()">Click here to try again</button>
+</div>
+
 </body>
 </html>

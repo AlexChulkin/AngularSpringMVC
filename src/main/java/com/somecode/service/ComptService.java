@@ -55,15 +55,15 @@ public class ComptService {
                                                       List<PacketParams> packetsToUpdateParamsList,
                                                       Long packetId) {
 
-        LOGGER.info(packetId != 0L ? "ComptService. Persist All Data." : "ComptService. Persist the packet#"
-                + packetId);
+        LOGGER.info(packetId != null ? "ComptService. Persist All Data." : "ComptService. Persist the packet# " +
+                packetId);
 
         EnumSet<PersistError> persistErrors = EnumSet.allOf(PersistError.class);
 
         comptDao.deleteCompts(comptIdsToDelete);
         persistErrors.remove(PersistError.DELETE_COMPTS);
 
-        if (packetId != null) {
+        if (packetId == null) {
             comptDao.deletePackets(packetIdsToDelete);
         }
         persistErrors.remove(PersistError.DELETE_PACKETS);
