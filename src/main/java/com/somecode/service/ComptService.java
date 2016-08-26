@@ -60,33 +60,47 @@ public class ComptService {
 
         EnumSet<PersistError> persistErrors = EnumSet.allOf(PersistError.class);
 
-        comptDao.deleteCompts(comptIdsToDelete);
+        if (comptIdsToDelete.size() > 0) {
+            comptDao.deleteCompts(comptIdsToDelete);
+        }
         persistErrors.remove(PersistError.DELETE_COMPTS);
 
-        if (packetId == null) {
+        if (packetId == null && packetIdsToDelete.size() > 0) {
             comptDao.deletePackets(packetIdsToDelete);
         }
         persistErrors.remove(PersistError.DELETE_PACKETS);
 
-        try {
-            comptDao.updateCompts(comptsToUpdateParamsList);
+        if (comptsToUpdateParamsList.size() > 0) {
+            try {
+                comptDao.updateCompts(comptsToUpdateParamsList);
+                persistErrors.remove(PersistError.UPDATE_COMPTS);
+            } catch (DatabaseException e) {
+                LOGGER.error("Exception: " + e.getMessage() + "\nStacktrace: " + e.getStackTrace());
+            }
+        } else {
             persistErrors.remove(PersistError.UPDATE_COMPTS);
-        } catch (DatabaseException e) {
-            LOGGER.error("Exception: " + e.getMessage() + "\nStacktrace: " + e.getStackTrace());
         }
 
-        try {
-            comptDao.addOrUpdatePackets(packetsToAddParamsList, OperationType.ADD);
+        if (packetsToAddParamsList.size() > 0) {
+            try {
+                comptDao.addOrUpdatePackets(packetsToAddParamsList, OperationType.ADD);
+                persistErrors.remove(PersistError.ADD_PACKETS);
+            } catch (DatabaseException e) {
+                LOGGER.error("Exception: " + e.getMessage() + "\nStacktrace: " + e.getStackTrace());
+            }
+        } else {
             persistErrors.remove(PersistError.ADD_PACKETS);
-        } catch (DatabaseException e) {
-            LOGGER.error("Exception: " + e.getMessage() + "\nStacktrace: " + e.getStackTrace());
         }
 
-        try {
-            comptDao.addOrUpdatePackets(packetsToUpdateParamsList, OperationType.UPDATE);
+        if (packetsToUpdateParamsList.size() > 0) {
+            try {
+                comptDao.addOrUpdatePackets(packetsToUpdateParamsList, OperationType.UPDATE);
+                persistErrors.remove(PersistError.UPDATE_PACKETS);
+            } catch (DatabaseException e) {
+                LOGGER.error("Exception: " + e.getMessage() + "\nStacktrace: " + e.getStackTrace());
+            }
+        } else {
             persistErrors.remove(PersistError.UPDATE_PACKETS);
-        } catch (DatabaseException e) {
-            LOGGER.error("Exception: " + e.getMessage() + "\nStacktrace: " + e.getStackTrace());
         }
 
         return persistErrors;

@@ -136,7 +136,7 @@ public class ComptDaoImpl implements  ComptDao {
     private boolean checkComboDataListsForEquality(List<ComboData> allComboData,
                                                    List<ComboData> oldAllComboData) {
         int size = allComboData.size();
-        return (size != oldAllComboData.size()) && IntStream.range(0, size).boxed()
+        return (size == oldAllComboData.size()) && IntStream.range(0, size).boxed()
                 .allMatch(i -> getSortedLabels(allComboData).get(i).equals(getSortedLabels(oldAllComboData).get(i)));
     }
 
