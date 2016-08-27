@@ -62,12 +62,16 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         $scope.data.selectedPacket = null;
         $scope.data.selectedPacketId = null;
 
-        $scope.$watch('data.selectedPacket', function (value) {
-            if (value != null) {
-                $scope.data.selectedPacketId = value.id;
+        $scope.$watch('data.selectedPacket', function (newValue, oldValue) {
+            if (newValue) {
+                if (oldValue) {
+                    var oldSelectedPacketId = oldValue.id;
+                    compts[packetIdToInd[oldSelectedPacketId]] = $scope.data.selectedCompts;
+                    comptLabels[oldSelectedPacketId] = $scope.data.selectedComptLabels;
+                }
+                $scope.data.selectedPacketId = newValue.id;
                 $scope.data.selectedCompts = compts[packetIdToInd[$scope.data.selectedPacketId]] || [];
                 $scope.data.selectedComptLabels = comptLabels[$scope.data.selectedPacketId] || {};
-                ifComptsIsSelected = !angular.equals({}, $scope.data.selectedComptLabels);
                 newComptLabelsForSelectedPacketType = newComptLabels[$scope.data.selectedPacketId in newPackets];
             } else {
                 $scope.data.selectedPacketId = null;
@@ -76,6 +80,10 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                 ifComptsIsSelected = false;
                 newComptLabelsForSelectedPacketType = {};
             }
+        });
+
+        $scope.$watchCollection('data.selectedComptLabels', function (newValue, oldValue) {
+            ifComptsIsSelected = !angular.equals({}, $scope.data.selectedComptLabels);
         });
 
         $scope.isComptsSelected = function () {
@@ -327,11 +335,10 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
 
             angular.forEach(packetsToSave, function (pkt, pktId) {
                 var packetConfig = {};
-                var comptConfig = {};
                 if (!newPackets[pktId]) {
-                    comptConfig.updatedComptParamsList = generateToUpdateComptParamsListForPacketsToUpdate(pktId);
-                    if (comptConfig.updatedComptParamsList.length > 0) {
-                        comptsToUpdateParamsList.push(comptConfig);
+                    var updatedComptParamsList = generateToUpdateComptParamsListForPacketsToUpdate(pktId);
+                    if (updatedComptParamsList.length > 0) {
+                        comptsToUpdateParamsList = comptsToUpdateParamsList.concat(updatedComptParamsList);
                     }
 
                     packetConfig.id = pktId;
@@ -357,9 +364,9 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             });
 
             if (packetsToUpdateParamsList.length == 0 && packetsToAddParamsList.length == 0
-                && comptIdsToDelete.length == 0 && comptIdsToUpdate.length == 0) {
-                if (savedPacketId || packetIdsToDelete.length == 0)
-                    return;
+                && comptIdsToDelete.length == 0 && comptsToUpdateParamsList.length == 0
+                && (savedPacketId || packetIdsToDelete.length == 0)) {
+                return;
             }
 
             var params = {
@@ -447,8 +454,6 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
 
         $scope.selectPacket = function (packet) {
             $scope.data.selectedPacket = packet;
-
-
             $scope.selectPage(1);
         };
 
