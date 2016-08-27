@@ -345,13 +345,13 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                     if (pkt.stateId != packetInitialStateIds[pktId]) {
                         packetConfig.stateId = pkt.stateId;
                     }
-                    packetConfig.addedComptParamsList = generateNewComptParamsListForPacketsToUpdate(pktId);
-                    if (packetConfig.stateId || packetConfig.addedComptParamsList.length > 0) {
+                    packetConfig.newComptParamsList = generateNewComptParamsListForPacketsToUpdate(pktId);
+                    if (packetConfig.stateId || packetConfig.newComptParamsList.length > 0) {
                         packetsToUpdateParamsList.push(packetConfig);
                     }
                 } else {
                     packetConfig.stateId = pkt.stateId;
-                    packetConfig.addedComptParamsList = generateComptParamsListForPacketsToAdd(pktId);
+                    packetConfig.newComptParamsList = generateComptParamsListForPacketsToAdd(pktId);
                     packetsToAddParamsList.push(packetConfig);
                 }
             });
