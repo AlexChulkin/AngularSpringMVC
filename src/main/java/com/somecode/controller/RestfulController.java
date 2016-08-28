@@ -2,6 +2,7 @@ package com.somecode.controller;
 
 import com.somecode.domain.Data;
 import com.somecode.domain.Params;
+import com.somecode.domain.PersistError;
 import com.somecode.domain.RequestObj;
 import com.somecode.service.ComptService;
 import org.apache.log4j.Logger;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.EnumSet;
 
 
 @Controller
@@ -37,10 +40,10 @@ public class RestfulController {
     }
 
     @RequestMapping(value = "/saveAllChangesToBase", method = RequestMethod.POST)
-    public void saveAllChangesToBase(@RequestBody RequestObj requestObj) throws Exception {
+    public EnumSet<PersistError> saveAllChangesToBase(@RequestBody RequestObj requestObj) throws Exception {
         LOGGER.info("Save All Changes to Base");
         Params params = requestObj.getParams();
-        comptService.saveAllChangesToBase(params.getComptIdsToDelete(),
+        return comptService.saveAllChangesToBase(params.getComptIdsToDelete(),
                 params.getPacketIdsToDelete(),
                 params.getComptsToUpdateParamsList(),
                 params.getPacketsToAddParamsList(),

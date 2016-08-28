@@ -3,10 +3,8 @@ package com.somecode.domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 public class Packet implements EntityType {
@@ -17,7 +15,7 @@ public class Packet implements EntityType {
 
     private State state;
 
-    private Set<Compt> compts = new HashSet<>();
+    private List<Compt> compts = new LinkedList<>();
 
     public Packet() {  }
 
@@ -54,27 +52,17 @@ public class Packet implements EntityType {
     }
 
     @OneToMany(mappedBy = "packet", cascade = CascadeType.ALL, orphanRemoval = true)
-    public Set<Compt> getCompts() {
+    public List<Compt> getCompts() {
         return compts;
     }
 
-    public void setCompts(Set<Compt> compts){
+    public void setCompts(List<Compt> compts) {
         this.compts = compts;
     }
 
     public void addCompt(Compt compt) {
         compt.setPacket(this);
         getCompts().add(compt);
-    }
-
-    public void removeCompt(Compt compt){
-        compt.setPacket(null);
-        getCompts().remove(compt);
-    }
-
-    @Transient
-    public List<Long> getComptIds() {
-        return getCompts().stream().map(Compt::getId).collect(Collectors.toList());
     }
 
     @Override

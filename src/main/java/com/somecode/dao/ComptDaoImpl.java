@@ -330,16 +330,20 @@ public class ComptDaoImpl implements  ComptDao {
             packets.add(packet);
         }
         packetRepository.save(packets).forEach(pkt -> {
-            String report = "";
-            if (operationType == OperationType.ADD) {
-                report = "Adding the packet. Persisted new packet#" + pkt.getId() + " with the following state id: "
-                        + pkt.getState().getId() + " and compts: " + pkt.getCompts();
-            } else if (operationType == OperationType.UPDATE) {
-                report = "Packet update. Persisted new packet#" + pkt.getId() + " with the following state id: " +
-                        pkt.getState().getId() + " and compts: " + pkt.getCompts();
-            }
-            LOGGER.info(report);
+            LOGGER.info(generateSavePacketReport(pkt, operationType));
         });
+    }
+
+    private String generateSavePacketReport(Packet pkt, OperationType operationType) {
+        String report = "";
+        if (operationType == OperationType.ADD) {
+            report = "Adding the packet. Persisted new packet#" + pkt.getId() + " with the following state id: "
+                    + pkt.getState().getId() + " and compts: " + pkt.getCompts();
+        } else if (operationType == OperationType.UPDATE) {
+            report = "Packet update. Persisted new packet#" + pkt.getId() + " with the following state id: " +
+                    pkt.getState().getId() + " and compts: " + pkt.getCompts();
+        }
+        return report;
     }
 
     @Transactional

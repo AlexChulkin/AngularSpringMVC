@@ -25,12 +25,13 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         var packetIdToInd = {};
         var comptLabels = {};
         var compts = [];
-        var maximalComptIndex = 0;
+        var maximalComptId = 0;
+        var maximalPacketId = 0;
         var maximalPacketIndex = 0;
         var comptIdsTaggedToDelete = {};
         var comptIdsToUpdate = {};
         var newComptLabels = {true: {}, false: {}};
-        var newComptLabelsForSelectedPacketType = {};
+
 
         var newPackets = {};
         var packetIdsToDelete = [];
@@ -44,6 +45,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         var loadedNoComptSupplInfo = false;
         var ifComptsIsSelected = true;
         var ifPacketsIsNotLoaded = false;
+        var isSelectedPacketNew = null;
 
         $scope.pageSize = packetListPageCount;
 
@@ -70,15 +72,15 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                     comptLabels[oldSelectedPacketId] = $scope.data.selectedComptLabels;
                 }
                 $scope.data.selectedPacketId = newValue.id;
+                isSelectedPacketNew = $scope.data.selectedPacketId in newPackets;
                 $scope.data.selectedCompts = compts[packetIdToInd[$scope.data.selectedPacketId]] || [];
                 $scope.data.selectedComptLabels = comptLabels[$scope.data.selectedPacketId] || {};
-                newComptLabelsForSelectedPacketType = newComptLabels[$scope.data.selectedPacketId in newPackets];
             } else {
                 $scope.data.selectedPacketId = null;
                 $scope.data.selectedCompts = [];
                 $scope.data.selectedComptLabels = {};
                 ifComptsIsSelected = false;
-                newComptLabelsForSelectedPacketType = {};
+                isSelectedPacketNew = null;
             }
         });
 
@@ -132,10 +134,13 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                 comptLabels[packetId][label] = true;
                 comptIdToInd[id] = compts[packetInd].length;
                 compts[packetInd].push(el);
-                if (id > maximalComptIndex) {
-                    maximalComptIndex = id;
+                if (id > maximalComptId) {
+                    maximalComptId = id;
                 }
             });
+            if (packetInd > maximalPacketIndex) {
+                maximalPacketIndex = packetInd;
+            }
         };
 
         preparePackets = function (packets) {
@@ -147,8 +152,8 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             angular.forEach(packets, function (pkt) {
                 var pktId = pkt.id;
                 $scope.data.allPackets[pktId] = pkt;
-                if (pktId > maximalPacketIndex) {
-                    maximalPacketIndex = pktId;
+                if (pktId > maximalPacketId) {
+                    maximalPacketId = pktId;
                 }
                 packetInitialStateIds[pkt.id] = pkt.stateId;
             });
@@ -200,7 +205,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         };
 
         $scope.addComptLocally = function () {
-            var comptId = ++maximalComptIndex;
+            var comptId = ++maximalComptId;
             var usualLabel = $scope.data.newLabel;
             var upperCaseLabel = usualLabel.toUpperCase();
             var newCompt = {id: comptId, label: usualLabel};
@@ -208,9 +213,9 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             comptIdToInd[comptId] = $scope.data.selectedCompts.length;
             $scope.data.selectedCompts.push(newCompt);
             var pktId = $scope.data.selectedPacketId;
-            newComptLabelsForSelectedPacketType[pktId]
-                = newComptLabelsForSelectedPacketType[pktId] || {};
-            newComptLabelsForSelectedPacketType[pktId][comptId] = usualLabel;
+            newComptLabels[isSelectedPacketNew][pktId]
+                = newComptLabels[isSelectedPacketNew][pktId] || {};
+            newComptLabels[isSelectedPacketNew][pktId][comptId] = usualLabel;
             $scope.data.allComboData[comptId] = {};
             $scope.data.allCheckedComboData[comptId] = {};
             for (var i = 1; i <= $scope.data.allStates.length; i++) {
@@ -221,9 +226,10 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         };
 
         $scope.addPacketLocally = function () {
-            var newPacket = {id: ++maximalPacketIndex, stateId: 1};
-            newPackets[maximalPacketIndex] = newPacket;
-            $scope.data.allPackets[maximalPacketIndex] = newPacket;
+            var newPacket = {id: ++maximalPacketId, stateId: 1};
+            packetIdToInd[maximalPacketId] = ++maximalPacketIndex;
+            newPackets[maximalPacketId] = newPacket;
+            $scope.data.allPackets[maximalPacketId] = newPacket;
             $scope.data.loadEmpty = null;
         };
 
@@ -231,7 +237,6 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             var comptLabel = compt.label;
             var comptId = compt.id;
             var pktId = $scope.data.selectedPacketId;
-            var isNewPacket = newPackets[$scope.data.selectedPacketId];
 
             delete $scope.data.selectedComptLabels[comptLabel.toUpperCase()];
             $scope.data.selectedCompts[comptIdToInd[comptId]] = null;
@@ -240,8 +245,8 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             if (comptIdsToUpdate[pktId]) {
                 delete comptIdsToUpdate[pktId][comptId];
             }
-            if (newComptLabelsForSelectedPacketType[pktId]) {
-                delete newComptLabelsForSelectedPacketType[pktId][comptId];
+            if (newComptLabels[isSelectedPacketNew][pktId]) {
+                delete newComptLabels[isSelectedPacketNew][pktId][comptId];
             } else {
                 comptIdsTaggedToDelete[pktId] = comptIdsTaggedToDelete[pktId] || [];
                 comptIdsTaggedToDelete[pktId].push(comptId);
@@ -253,7 +258,8 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             if (!newPackets[packetId]) {
                 packetIdsToDelete.push(packetId);
             }
-            delete newComptLabelsForSelectedPacketType[packetId];
+            var isPktNew = packetId in newPackets;
+            delete newComptLabels[isPktNew][packetId];
             delete $scope.data.allPackets[packetId];
             delete comptIdsTaggedToDelete[packetId];
             $scope.data.selectedPacket = null;
@@ -262,8 +268,8 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         $scope.updateComptLocally = function (compt) {
             var pktId = $scope.data.selectedPacketId;
             var comptId = compt.id;
-            if (newComptLabelsForSelectedPacketType[pktId] &&
-                newComptLabelsForSelectedPacketType[pktId][comptId]) {
+            if (newComptLabels[isSelectedPacketNew][pktId] &&
+                newComptLabels[isSelectedPacketNew][pktId][comptId]) {
                 return;
             }
             comptIdsToUpdate[pktId] = comptIdsToUpdate[pktId] || {};
@@ -345,13 +351,13 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                     if (pkt.stateId != packetInitialStateIds[pktId]) {
                         packetConfig.stateId = pkt.stateId;
                     }
-                    packetConfig.newComptParamsList = generateNewComptParamsListForPacketsToUpdate(pktId);
+                    packetConfig.newComptParamsList = generateComptParamsListForPackets(pktId, "update");
                     if (packetConfig.stateId || packetConfig.newComptParamsList.length > 0) {
                         packetsToUpdateParamsList.push(packetConfig);
                     }
                 } else {
                     packetConfig.stateId = pkt.stateId;
-                    packetConfig.newComptParamsList = generateComptParamsListForPacketsToAdd(pktId);
+                    packetConfig.newComptParamsList = generateComptParamsListForPackets(pktId, "add");
                     packetsToAddParamsList.push(packetConfig);
                 }
             });
@@ -388,7 +394,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             errorMap[updateCompts] = comptIdsToUpdate;
             errorMap[deleteCompts] = comptIdsTaggedToDelete;
             errorMap[updatePackets] = newComptLabels[false];
-            errorMap[addPackets] = newComptLabels[true];
+            errorMap[addPackets] = newPackets;
             errorMap[deletePackets] = packetIdsToDelete;
 
             $http
@@ -401,44 +407,44 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                                 delete errorMap[key];
                                 if (key == addPackets || key == updatePackets) {
                                     alert("Error occurred while trying to save data in DB. The STATES table is empty." +
-                                        "The updated compts were not persisted to the DB. Try to solve the problem" +
-                                        " and then re-push the saving button. DON'T RESTORE THE DATA FROM THE BASE! " +
-                                        "Otherwise you may loose your changes.");
+                                    "The " + key == addPackets ? "new" : "updated" + " packets were not persisted " +
+                                    "to the DB. Try to solve the problem and then re-push the saving button. " +
+                                    "DON'T RESTORE THE DATA FROM THE BASE! Otherwise you may loose your changes.");
                                 }
                                 else if (key == updateCompts) {
                                     alert("Error occurred while trying to save data in DB. The COMBO_DATA table" +
-                                        " is empty. At least one of the following: 1.The compts adding and/or " +
-                                        "state change for the existing packets; 2.Added new pakets together with" +
-                                        " new compts inside; were not persisted. Try to solve the problem and then " +
-                                        "re-push the saving button. DON'T RESTORE THE DATA FROM THE BASE! Otherwise" +
-                                        " you may loose your changes.");
+                                        " is empty. At least one of the following took place: " +
+                                        "1.The compts adding and/or " +
+                                        "state change for the existing packets were not persisted; " +
+                                        "2.Added new pakets together with the new compts inside were not persisted. " +
+                                        "Try to solve the problem and then re-push the saving button. " +
+                                        "DON'T RESTORE THE DATA FROM THE BASE! Otherwise you may loose your changes.");
                                 }
                             }
                         });
-                        angular.forEach(errorMap, function (v, k) {
-                            if (k != deletePackets) {
-                                v = {};
-                            } else {
-                                v = [];
-                            }
-                        });
+                        clearCollectionsForSaving(errorMap);
                     },
                     function error(error) {
+                        if (error.status == 404) {
+                            clearCollectionsForSaving(errorMap);
+                        }
                     }
                 );
         };
 
-        generateComptParamsListForPacketsToAdd = function (pktId) {
-            var result = [];
-            angular.forEach(newComptLabels[true][pktId], function (lbl, comptId) {
-                result.push({label: lbl, vals: findCheckedValsForCompt(comptId)});
+        clearCollectionsForSaving = function (errorMap) {
+            angular.forEach(errorMap, function (v, k) {
+                if (k != deletePackets) {
+                    v = {};
+                } else {
+                    v = [];
+                }
             });
-            return result;
         };
 
-        generateNewComptParamsListForPacketsToUpdate = function (pktId) {
+        var generateComptParamsListForPackets = function (pktId, operation) {
             var result = [];
-            angular.forEach(newComptLabels[false][pktId], function (lbl, comptId) {
+            angular.forEach(newComptLabels[operation == "add"][pktId], function (lbl, comptId) {
                 result.push({label: lbl, vals: findCheckedValsForCompt(comptId)});
             });
             return result;

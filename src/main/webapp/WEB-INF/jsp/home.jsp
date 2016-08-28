@@ -74,17 +74,17 @@
                ng-class="getPacketClass(pkt)">
                 Packet#<span ng-bind="pkt.id"/>
             </a>
-            <a ng-click="deletePacketLocally(pkt)"
-               class="btn btn-sm btn-danger">
-                Del
+            <a ng-click="saveAllChangesToBase(pkt.id)"
+               class="btn btn-xs btn-success">
+                Save
             </a>
             <a ng-click="loadPacketById(pkt.id)"
-               class="btn btn-sm btn-warning">
+               class="btn btn-xs btn-warning">
                 Reload
             </a>
-            <a ng-click="saveAllChangesToBase(pkt.id)"
-               class="btn btn-sm btn-success">
-                Save
+            <a ng-click="deletePacketLocally(pkt)"
+               class="btn btn-xs btn-danger">
+                Del
             </a>
         </div>
         <div class="btn-group" id="aggregate-btns">
