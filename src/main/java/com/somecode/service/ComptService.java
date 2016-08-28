@@ -60,17 +60,17 @@ public class ComptService {
 
         EnumSet<PersistError> persistErrors = EnumSet.allOf(PersistError.class);
 
-        if (comptIdsToDelete.size() > 0) {
+        if (!comptIdsToDelete.isEmpty()) {
             comptDao.deleteCompts(comptIdsToDelete);
         }
         persistErrors.remove(PersistError.DELETE_COMPTS);
 
-        if (packetId == null && packetIdsToDelete.size() > 0) {
+        if (packetId == null && !packetIdsToDelete.isEmpty()) {
             comptDao.deletePackets(packetIdsToDelete);
         }
         persistErrors.remove(PersistError.DELETE_PACKETS);
 
-        if (comptsToUpdateParamsList.size() > 0) {
+        if (!comptsToUpdateParamsList.isEmpty()) {
             try {
                 comptDao.updateCompts(comptsToUpdateParamsList);
                 persistErrors.remove(PersistError.UPDATE_COMPTS);
@@ -81,7 +81,7 @@ public class ComptService {
             persistErrors.remove(PersistError.UPDATE_COMPTS);
         }
 
-        if (packetsToAddParamsList.size() > 0) {
+        if (!packetsToAddParamsList.isEmpty()) {
             try {
                 comptDao.addOrUpdatePackets(packetsToAddParamsList, OperationType.ADD);
                 persistErrors.remove(PersistError.ADD_PACKETS);
@@ -92,7 +92,7 @@ public class ComptService {
             persistErrors.remove(PersistError.ADD_PACKETS);
         }
 
-        if (packetsToUpdateParamsList.size() > 0) {
+        if (!packetsToUpdateParamsList.isEmpty()) {
             try {
                 comptDao.addOrUpdatePackets(packetsToUpdateParamsList, OperationType.UPDATE);
                 persistErrors.remove(PersistError.UPDATE_PACKETS);
