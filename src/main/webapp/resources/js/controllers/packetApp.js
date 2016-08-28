@@ -15,11 +15,12 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
     .constant("saveAllChangesToBasePath", "/saveAllChangesToBase")
     .constant("loadPacketByIdPath", "/loadPacketById")
     .constant("initialPacketIndex", -1)
+    .constant("errorStatus404", 404)
     .controller("packetCtrl", function ($scope, $http, $window, packetListActiveClass,
                                         packetListNonActiveClass, packetListPageCount, labelLabel,
                                         updateCompts, deleteCompts, updatePackets, deletePackets,
                                         addPackets, loadDataPath, saveAllChangesToBasePath,
-                                        loadPacketByIdPath, initialPacketIndex) {
+                                        loadPacketByIdPath, initialPacketIndex, errorStatus404) {
 
         var comptIdToInd = {};
         var packetIdToInd = {};
@@ -116,7 +117,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             return ifPacketsIsNotLoaded;
         };
 
-        prepareCompts = function (uploadedCompts, initialPacketInd) {
+        var prepareCompts = function (uploadedCompts, initialPacketInd) {
             loadedNoCompts = isDataEmpty(uploadedCompts);
             var packetInd = initialPacketInd;
             var visitedPacket = {};
@@ -127,8 +128,12 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                 if (!visitedPacket[packetId]) {
                     visitedPacket[packetId] = true;
                     comptLabels[packetId] = {};
-                    compts.push([]);
-                    packetIdToInd[packetId] = ++packetInd;                
+                    if (initialPacketIndex == initialPacketInd) {
+                        compts.push([]);
+                        packetIdToInd[packetId] = ++packetInd;
+                    } else {
+                        compts[packetInd] = [];
+                    }
                 }
 
                 comptLabels[packetId][label] = true;
@@ -143,7 +148,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             }
         };
 
-        preparePackets = function (packets) {
+        var preparePackets = function (packets) {
             if (!isDataEmpty(packets)) {
                 $scope.selectPacket(packets[0]);
             } else {
@@ -159,7 +164,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             });
         };
 
-        prepareStates = function (states) {
+        var prepareStates = function (states) {
             $scope.data.loadedNoStates = isDataEmpty(states);
             $scope.data.allStates = states;
             $scope.data.allStateLabels = [labelLabel];
@@ -168,7 +173,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             });
         };
 
-        prepareComboData = function (comboData) {
+        var prepareComboData = function (comboData) {
             $scope.data.loadedNoComboData = isDataEmpty(comboData);
             angular.forEach(comboData, function (cd) {
                 $scope.data.comboDataDefaultSet.push(cd.label);
@@ -178,7 +183,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             });
         };
 
-        prepareComptsSupplInfo = function (comptSupplInfo) {
+        var prepareComptsSupplInfo = function (comptSupplInfo) {
             $scope.data.loadedNoComptSupplInfo = isDataEmpty(comptSupplInfo);
             var comboDataVisitedCompts = {};
             var checkedComboDataVisitedCompts = {};
@@ -276,14 +281,14 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             comptIdsToUpdate[pktId][comptId] = true;
         };
 
-        isDataEmpty = function (data) {
+        var isDataEmpty = function (data) {
             if (!data || !angular.isArray(data) || data.length == 0) {
                 return true;
             }
             return false;
         };
 
-        findCheckedValsForCompt = function (comptId) {
+        var findCheckedValsForCompt = function (comptId) {
             var checkedVals = [];
             angular.forEach($scope.data.allStates, function (state, ind) {
                 checkedVals.push($scope.data.allCheckedComboData[comptId][ind + 1]);
@@ -291,7 +296,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             return checkedVals;
         };
 
-        setDefaultLoadDataErrors = function () {
+        var setDefaultLoadDataErrors = function () {
             loadError = false;
             loadedNoCompts = false;
             loadedNoStates = false;
@@ -303,7 +308,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
 
         $scope.loadPacketById = function (packetId) {
             setDefaultLoadDataErrors();
-            var packetIndex = packetId == null ? initialPacketIndex : packetIdToInd[packetId] - 1;
+            var packetIndex = packetId == null ? initialPacketIndex : packetIdToInd[packetId];
             var params = packetId == null ? {} : {packetId: packetId};
             $http
                 .post(contextPath + loadDataPath, {params: params})
@@ -425,14 +430,14 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                         clearCollectionsForSaving(errorMap);
                     },
                     function error(error) {
-                        if (error.status == 404) {
+                        if (error.status == errorStatus404) {
                             clearCollectionsForSaving(errorMap);
                         }
                     }
                 );
         };
 
-        clearCollectionsForSaving = function (errorMap) {
+        var clearCollectionsForSaving = function (errorMap) {
             angular.forEach(errorMap, function (v, k) {
                 if (k != deletePackets) {
                     v = {};
@@ -450,7 +455,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             return result;
         };
 
-        generateToUpdateComptParamsListForPacketsToUpdate = function (pktId) {
+        var generateToUpdateComptParamsListForPacketsToUpdate = function (pktId) {
             var result = [];
             angular.forEach(comptIdsToUpdate[pktId], function (unused, comptId) {
                 result.push({id: comptId, vals: findCheckedValsForCompt(comptId)});
@@ -483,7 +488,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             $window.location.reload();
         };
 
-        init = function () {
+        var init = function () {
             $scope.loadPacketById(null);
         };
 
