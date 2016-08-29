@@ -1,0 +1,56 @@
+.state {
+    width: 31%;
+    display: inline-block;
+}
+
+.column {
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.flex {
+    display: inline-flex;
+}
+
+#aggregate-btns {
+    padding: 10px 0;
+}
+
+#states {
+    padding: 1% 0 1% 43%;
+}
+
+select.standard {
+    background-color: lightcyan;
+    font-weight: bold;
+}
+
+select.special {
+    background-color: #b6fffd;
+    font-weight: bold;
+    width: 80%;
+}
+
+.grid-row > div {
+    padding-left: 24px;
+}
+
+.expanded-margin-bottom {
+    margin-bottom: 3px;
+}
+
+.swallow-packet-caption {
+    padding-left: 6px;
+    padding-right: 11px;
+    margin-bottom: 3px;
+}
+
+.wide-packet-caption {
+    padding-left: 6px;
+    padding-right: 5px;
+    margin-bottom: 3px;
+}
+
+#addBtn {
+    padding: 0 13px 1px;
+}

@@ -340,7 +340,7 @@ public class ComptDaoImpl implements  ComptDao {
             report = "Adding the packet. Persisted new packet#" + pkt.getId() + " with the following state id: "
                     + pkt.getState().getId() + " and compts: " + pkt.getCompts();
         } else if (operationType == OperationType.UPDATE) {
-            report = "Packet update. Persisted new packet#" + pkt.getId() + " with the following state id: " +
+            report = "Packet update. Merged packet#" + pkt.getId() + " with the following state id: " +
                     pkt.getState().getId() + " and compts: " + pkt.getCompts();
         }
         return report;

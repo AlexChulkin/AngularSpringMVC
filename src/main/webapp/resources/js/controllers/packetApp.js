@@ -451,7 +451,6 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             });
         };
 
-
         var isDataEmpty = function (data) {
             if (!data || !angular.isArray(data) || data.length == 0) {
                 return true;

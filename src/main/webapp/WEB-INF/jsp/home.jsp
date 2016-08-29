@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="resources/css/bootstrap.css"  type="text/css" rel="stylesheet"/>
     <link href="resources/css/bootstrap-theme.css" type="text/css" rel="stylesheet" />
+    <link href="resources/css/home-styles.css" type="text/css" rel="stylesheet"/>
 
     <script type="application/javascript" src="resources/js/angular_v1.5.8.js"></script>
 
@@ -22,60 +23,6 @@
     <script type="text/javascript" charset="utf-8">
         var contextPath = '${pageContext.request.contextPath}';
     </script>
-
-    <style>
-        .state {
-            width: 31%;
-            display: inline-block;
-        }
-
-        .column {
-            padding-right: 10px;
-            padding-left: 10px;
-        }
-
-        .flex {
-            display: inline-flex;
-        }
-
-        #aggregate-btns {
-            padding: 10px 0;
-        }
-
-        #states {
-            padding: 1% 0 1% 43%;
-        }
-        select.standard {
-            background-color: lightcyan;
-            font-weight: bold;
-        }
-        select.special {
-            background-color: #b6fffd;
-            font-weight: bold;
-            width: 80%;
-        }
-        .grid-row > div {
-            padding-left: 24px;
-        }
-
-        .expanded-margin-bottom {
-            margin-bottom: 3px;
-        }
-        .swallow-packet-caption {
-            padding-left: 6px;
-            padding-right: 11px;
-            margin-bottom: 3px;
-        }
-
-        .wide-packet-caption {
-            padding-left: 6px;
-            padding-right: 5px;
-            margin-bottom: 3px;
-        }
-        #addBtn {
-            padding: 0 13px 1px;
-        }
-    </style>
 </head>
 <body ng-controller="packetCtrl">
 <div class="navbar navbar-inverse">
@@ -118,11 +65,11 @@
     </div>
     <div class="col-xs-10 column">
         <div class="alert alert-warning" ng-if="isDataLoadedProperly()
-            && !isPacketsNotLoaded() && !isPacketNotSelected() && isComptsNotSelected()">
+            && !isPacketsNotLoaded() && isPacketSelected() && !isComptsSelected()">
             The selected packet is empty. Please add new compts or select another one.
         </div>
         <div class="alert alert-warning" ng-if="isDataLoadedProperly()
-            && !isPacketsNotLoaded() && isPacketNotSelected()">
+            && !isPacketsNotLoaded() && !isPacketSelected()">
             No packet is selected. Please select (or add and select) one.
         </div>
         <div class="alert alert-warning" ng-if="isDataLoadedProperly() && isPacketsNotLoaded()">
