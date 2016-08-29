@@ -50,6 +50,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         var ifComptsIsSelected = true;
         var ifPacketsIsNotLoaded = false;
         var isSelectedPacketNew = null;
+        var ifPacketIsNotSelectedSoFar = true;
 
         $scope.pageSize = packetListPageCount;
 
@@ -63,8 +64,6 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         $scope.data.allCheckedComboData = {};
         $scope.data.selectedComptLabels = {};
 
-        $scope.data.stateIdOfSelectedPacket = null;
-
         $scope.data.selectedPacket = null;
         $scope.data.selectedPacketId = null;
 
@@ -75,6 +74,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                     compts[packetIdToInd[oldSelectedPacketId]] = $scope.data.selectedCompts;
                     comptLabels[oldSelectedPacketId] = $scope.data.selectedComptLabels;
                 }
+                ifPacketIsNotSelectedSoFar = false;
                 $scope.data.selectedPacketId = newValue.id;
                 isSelectedPacketNew = $scope.data.selectedPacketId in newPackets;
                 $scope.data.selectedCompts = compts[packetIdToInd[$scope.data.selectedPacketId]] || [];
@@ -98,6 +98,10 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
 
         $scope.isPacketSelected = function () {
             return $scope.data.selectedPacket;
+        };
+
+        $scope.isPacketNeverSelectedSoFar = function () {
+            return ifPacketIsNotSelectedSoFar;
         };
 
         $scope.isDataLoadedProperly = function () {

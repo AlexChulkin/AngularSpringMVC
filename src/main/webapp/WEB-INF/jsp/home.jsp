@@ -27,7 +27,7 @@
 <body ng-controller="packetCtrl">
 <div class="navbar navbar-inverse">
     <a class="navbar-brand" href="#">THE PACKETS AND THEIR COMPONENTS</a>
-</div>
+    </div>
 <div class="panel" ng-if="isDataLoadedProperly()">
     <div class="col-xs-2 column" id="leftColumn">
         <div class="flex" ng-repeat="pkt in data.allPackets">
@@ -62,70 +62,74 @@
                 Reload all
             </a>
         </div>
-    </div>
+        </div>
     <div class="col-xs-10 column">
         <div class="alert alert-warning" ng-if="isDataLoadedProperly()
-            && !isPacketsNotLoaded() && isPacketSelected() && !isComptsSelected()">
+                && !isPacketsNotLoaded() && isPacketSelected() && !isComptsSelected()">
             The selected packet is empty. Please add new compts or select another one.
-        </div>
+            </div>
         <div class="alert alert-warning" ng-if="isDataLoadedProperly()
-            && !isPacketsNotLoaded() && !isPacketSelected()">
+                && !isPacketsNotLoaded() && !isPacketSelected() && !isPacketNeverSelectedSoFar()">
             No packet is selected. Please select (or add and select) one.
-        </div>
+            </div>
         <div class="alert alert-warning" ng-if="isDataLoadedProperly() && isPacketsNotLoaded()">
             There are no loaded packets. Please add one.
         </div>
         <div id="rightColumn" ng-show="isPacketSelected()">
-            <div ng-show="isComptsSelected()">
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th ng-show="data.allStateLabels"
-                            ng-repeat="label in data.allStateLabels"><span ng-bind="label"/></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr ng-repeat="compt in data.selectedCompts | filter:notNull | range:selectedPage:pageSize">
-                        <td width="43%">
-                            <span ng-bind="compt.label"/>
-                        </td>
-                        <td width="17%" ng-repeat="state in data.allStates">
-                                    <span ng-bind="data.allCheckedComboData[compt.id][state.id]"
-                                          ng-hide="data.selectedPacket.stateId == state.id"></span>
-                                    <span ng-show="data.selectedPacket.stateId == state.id">
-                                          <select class="standard"
-                                                  ng-options="el for el in data.allComboData[compt.id][state.id]"
-                                                  ng-model="data.allCheckedComboData[compt.id][state.id]"
-                                                  ng-change="updateComptLocally(compt)">
-                                          </select>
-                                    </span>
-                        </td>
-                        <td>
-                            <button ng-click="deleteComptLocally(compt)" class="btn btn-xs btn-primary">
-                                Delete
-                            </button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-                <div class="pull-right btn-group">
-                    <a ng-repeat="page in data.selectedCompts | filter:notNull | pageCount:pageSize"
-                       ng-click="selectPage(page)" class="btn btn-default"
-                       ng-class="getPageClass(page)">
-                        <span ng-bind="page"></span>
-                    </a>
-                </div>
-            </div>
-            <div class="well">
-                <div id="states">
-                    <div class="state" ng-repeat="state in data.allStates track by $index">
-                        <input type="radio"
-                               ng-model="data.selectedPacket.stateId"
-                               ng-value="$index+1">
-                        <span ng-bind="data.allStateLabels[$index+1]"></span>
+            <div id="table-pagination-radio">
+                <div ng-show="isComptsSelected()">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th ng-show="data.allStateLabels"
+                                ng-repeat="label in data.allStateLabels"><span ng-bind="label"/></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr ng-repeat="compt in data.selectedCompts
+                                                    | filter:notNull | range:selectedPage:pageSize">
+                            <td width="43%">
+                                <span ng-bind="compt.label"/>
+                            </td>
+                            <td width="17%" ng-repeat="state in data.allStates">
+                                                <span ng-bind="data.allCheckedComboData[compt.id][state.id]"
+                                                      ng-hide="data.selectedPacket.stateId == state.id"></span>
+                                                <span ng-show="data.selectedPacket.stateId == state.id">
+                                                      <select class="standard"
+                                                              ng-options=
+                                                                      "el for el in data.allComboData[compt.id][state.id]"
+                                                              ng-model="data.allCheckedComboData[compt.id][state.id]"
+                                                              ng-change="updateComptLocally(compt)">
+                                                      </select>
+                                                </span>
+                            </td>
+                            <td>
+                                <button ng-click="deleteComptLocally(compt)" class="btn btn-xs btn-primary">
+                                    Delete
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                    <div class="pull-right btn-group">
+                        <a ng-repeat="page in data.selectedCompts | filter:notNull | pageCount:pageSize"
+                           ng-click="selectPage(page)" class="btn btn-default"
+                           ng-class="getPageClass(page)">
+                            <span ng-bind="page"></span>
+                        </a>
+                        </div>
+                    </div>
+                <div class="well">
+                    <div id="states">
+                        <div class="state" ng-repeat="state in data.allStates track by $index">
+                            <input type="radio"
+                                   ng-model="data.selectedPacket.stateId"
+                                   ng-value="$index+1">
+                            <span ng-bind="data.allStateLabels[$index+1]"></span>
+                        </div>
+                    </div>
                     </div>
                 </div>
-            </div>
             <form name="form" ng-if="isPacketSelected()">
                 <div class="row grid-row">
                     <div class="col-sm-5">
@@ -158,18 +162,18 @@
                         </select>
                     </div>
                     <div class="col-sm-1">
-                        <span class="input-group-btn">
-                            <button class="btn btn-xs btn-success" id="addBtn"
-                                    ng-click="addComptLocally()"
-                                    ng-disabled="form.$invalid">Add
-                            </button>
-                        </span>
+                            <span class="input-group-btn">
+                                <button class="btn btn-xs btn-success" id="addBtn"
+                                        ng-click="addComptLocally()"
+                                        ng-disabled="form.$invalid">Add
+                                </button>
+                            </span>
                     </div>
                 </div>
             </form>
         </div>
+        </div>
     </div>
-</div>
 
 <div class="alert alert-danger" ng-if="isDataLoadError()">
     The error occurred during the data loading.
