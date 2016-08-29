@@ -16,13 +16,14 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
     .constant("loadPacketByIdPath", "/loadPacketById")
     .constant("initialPacketIndex", -1)
     .constant("errorStatus404", 404)
-    .constant("expandedRightPadding", "expanded-right-padding")
+    .constant("swallowPacketCaption", "swallow-packet-caption")
+    .constant("widePacketCaption", "wide-packet-caption")
     .controller("packetCtrl", function ($scope, $http, $window, packetListActiveClass,
                                         packetListNonActiveClass, packetListPageCount, labelLabel,
                                         updateCompts, deleteCompts, updatePackets, deletePackets,
                                         addPackets, loadDataPath, saveAllChangesToBasePath,
                                         loadPacketByIdPath, initialPacketIndex, errorStatus404,
-                                        expandedRightPadding) {
+                                        swallowPacketCaption, widePacketCaption) {
 
         var comptIdToInd = {};
         var packetIdToInd = {};
@@ -336,9 +337,12 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             var result = $scope.data.selectedPacketId == packet.id
                 ? packetListActiveClass
                 : packetListNonActiveClass;
+            result += " ";
 
             if (pktId < 10) {
-                result += " " + expandedRightPadding;
+                result += swallowPacketCaption;
+            } else {
+                result += widePacketCaption;
             }
             return result;
         };
