@@ -58,14 +58,19 @@
             padding-left: 24px;
         }
 
+        .expanded-margin-bottom {
+            margin-bottom: 3px;
+        }
         .swallow-packet-caption {
             padding-left: 6px;
             padding-right: 11px;
+            margin-bottom: 3px;
         }
 
         .wide-packet-caption {
             padding-left: 6px;
             padding-right: 5px;
+            margin-bottom: 3px;
         }
         #addBtn {
             padding: 0 13px 1px;
@@ -84,15 +89,15 @@
                 Packet#<span ng-bind="pkt.id"/>
             </a>
             <a ng-click="saveAllChangesToBase(pkt.id)"
-               class="btn btn-sm btn-success">
+               class="btn btn-sm btn-success expanded-margin-bottom">
                 Save
             </a>
             <a ng-click="loadPacketById(pkt.id)"
-               class="btn btn-sm btn-warning">
+               class="btn btn-sm btn-warning expanded-margin-bottom">
                 Reload
             </a>
             <a ng-click="deletePacketLocally(pkt)"
-               class="btn btn-sm btn-danger">
+               class="btn btn-sm btn-danger expanded-margin-bottom">
                 Del
             </a>
         </div>
