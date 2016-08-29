@@ -58,6 +58,9 @@
             padding-left: 24px;
         }
 
+        .expanded-right-padding {
+            padding-right: 16px;
+        }
         #addBtn {
             padding: 0 13px 1px;
         }
@@ -92,13 +95,13 @@
                class="btn btn-md btn-block btn-default">
                 Add packet
             </a>
-            <a ng-click="reloadRoute()"
-               class="btn btn-md btn-block btn-warning">
-                Reload all
-            </a>
             <a ng-click="saveAllChangesToBase(null)"
                class="btn btn-md btn-block btn-success">
                 Save changes
+            </a>
+            <a ng-click="reloadRoute()"
+               class="btn btn-md btn-block btn-warning">
+                Reload all
             </a>
         </div>
     </div>

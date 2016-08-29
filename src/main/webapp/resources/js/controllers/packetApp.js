@@ -16,11 +16,13 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
     .constant("loadPacketByIdPath", "/loadPacketById")
     .constant("initialPacketIndex", -1)
     .constant("errorStatus404", 404)
+    .constant("expandedRightPadding", "expanded-right-padding")
     .controller("packetCtrl", function ($scope, $http, $window, packetListActiveClass,
                                         packetListNonActiveClass, packetListPageCount, labelLabel,
                                         updateCompts, deleteCompts, updatePackets, deletePackets,
                                         addPackets, loadDataPath, saveAllChangesToBasePath,
-                                        loadPacketByIdPath, initialPacketIndex, errorStatus404) {
+                                        loadPacketByIdPath, initialPacketIndex, errorStatus404,
+                                        expandedRightPadding) {
 
         var comptIdToInd = {};
         var packetIdToInd = {};
@@ -85,8 +87,8 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             }
         });
 
-        $scope.$watchCollection('data.selectedComptLabels', function (newValue, oldValue) {
-            ifComptsIsSelected = !angular.equals({}, $scope.data.selectedComptLabels);
+        $scope.$watchCollection('data.selectedComptLabels', function (value) {
+            ifComptsIsSelected = !angular.equals({}, value);
         });
 
         $scope.isComptsSelected = function () {
@@ -330,7 +332,15 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         };
 
         $scope.getPacketClass = function (packet) {
-            return $scope.data.selectedPacketId == packet.id ? packetListActiveClass : packetListNonActiveClass;
+            var pktId = packet.id;
+            var result = $scope.data.selectedPacketId == packet.id
+                ? packetListActiveClass
+                : packetListNonActiveClass;
+
+            if (pktId < 10) {
+                result += " " + expandedRightPadding;
+            }
+            return result;
         };
 
         $scope.getPageClass = function (page) {
