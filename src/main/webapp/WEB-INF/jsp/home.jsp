@@ -16,7 +16,7 @@
         angular.module("packetApp", ["customFilters"]);
     </script>
     <script type="application/javascript" src="resources/js/controllers/packetApp.js"></script>
-    <script type="application/javascript" src="resources/js/filters/customFilters.js"></script>
+    <script type="application/javascript" src="resources/js/filters/customfilters.js"></script>
     <script type="application/javascript" src="resources/js/ngmodules/angular-route.js"></script>
 
 
