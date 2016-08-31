@@ -42,13 +42,13 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
 
         var packetInitialStateIds = {};
 
-        var loadError = false;
-        var loadedNoCompts = false;
-        var loadedNoStates = false;
-        var loadedNoComboData = false;
-        var loadedNoComptSupplInfo = false;
-        var ifComptsIsSelected = true;
-        var ifPacketsIsNotLoaded = false;
+        var loadError = null;
+        var loadedNoCompts = null;
+        var loadedNoStates = null;
+        var loadedNoComboData = null;
+        var loadedNoComptSupplInfo = null;
+        var ifComptsIsSelected = null;
+        var loadedNoPackets = null;
         var isSelectedPacketNew = null;
         var ifPacketIsNotSelectedSoFar = true;
 
@@ -83,7 +83,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                 $scope.data.selectedPacketId = null;
                 $scope.data.selectedCompts = [];
                 $scope.data.selectedComptLabels = {};
-                ifComptsIsSelected = false;
+                // ifComptsIsSelected = false;
                 isSelectedPacketNew = null;
             }
         });
@@ -108,20 +108,28 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             return !($scope.isDataLoadError() || $scope.isComboDataNotLoaded() || $scope.isStatesNotLoaded());
         };
 
-        $scope.isDataLoadError = function () {
-            return loadError && loadError == true;
+        $scope.showAggregateButtons = function () {
+            return !loadError && loadedNoCompts === false && loadedNoComboData === false;
         };
 
+        $scope.isDataLoadError = function () {
+            return loadError;
+        };
+
+        $scope.isComptsNotLoaded = function () {
+            return loadedNoCompts;
+        };
+        
         $scope.isComboDataNotLoaded = function () {
-            return loadedNoComboData && loadedNoComboData == true;
+            return loadedNoComboData;
         };
 
         $scope.isStatesNotLoaded = function () {
-            return loadedNoStates && loadedNoStates == true;
+            return loadedNoStates;
         };
 
         $scope.isPacketsNotLoaded = function () {
-            return ifPacketsIsNotLoaded;
+            return loadedNoPackets;
         };
 
         $scope.addComptLocally = function () {
@@ -197,7 +205,6 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         };
 
         $scope.loadPacketById = function (packetId) {
-            setDefaultLoadDataErrors();
             var packetIndex = packetId == null ? initialPacketIndex : packetIdToInd[packetId];
             var params = packetId == null ? {} : {packetId: packetId};
             $http
@@ -209,9 +216,9 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                         preparePackets(data.packets);
                         prepareStates(data.states);
                         prepareComboData(data.comboData);
-                        if (!$scope.data.loadedNoCompts
-                            && !$scope.data.loadedNoComboData
-                            && !$scope.data.loadedNoStates) {
+                        if (!$scope.isComptsNotLoaded()
+                            && !$scope.isComboDataNotLoaded()
+                            && !$scope.isStatesNotLoaded()) {
 
                             prepareComptsSupplInfo(data.comptSupplInfo);
                         }
@@ -395,11 +402,10 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         };
 
         var preparePackets = function (packets) {
-            if (!isDataEmpty(packets)) {
+            loadedNoPackets = isDataEmpty(packets);
+            if (!loadedNoPackets) {
                 $scope.selectPacket(packets[0]);
-            } else {
-                ifPacketsIsNotLoaded = true;
-            }
+            } 
             angular.forEach(packets, function (pkt) {
                 var pktId = pkt.id;
                 $scope.data.allPackets[pktId] = pkt;
@@ -411,7 +417,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         };
 
         var prepareStates = function (states) {
-            $scope.data.loadedNoStates = isDataEmpty(states);
+            loadedNoStates = isDataEmpty(states);
             $scope.data.allStates = states;
             $scope.data.allStateLabels = [labelLabel];
             angular.forEach($scope.data.allStates, function (state) {
@@ -420,7 +426,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         };
 
         var prepareComboData = function (comboData) {
-            $scope.data.loadedNoComboData = isDataEmpty(comboData);
+            loadedNoComboData = isDataEmpty(comboData);
             angular.forEach(comboData, function (cd) {
                 $scope.data.comboDataDefaultSet.push(cd.label);
             });
@@ -430,7 +436,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         };
 
         var prepareComptsSupplInfo = function (comptSupplInfo) {
-            $scope.data.loadedNoComptSupplInfo = isDataEmpty(comptSupplInfo);
+            loadedNoComptSupplInfo = isDataEmpty(comptSupplInfo);
             var comboDataVisitedCompts = {};
             var checkedComboDataVisitedCompts = {};
 
@@ -469,17 +475,6 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             });
             return checkedVals;
         };
-
-        var setDefaultLoadDataErrors = function () {
-            loadError = false;
-            loadedNoCompts = false;
-            loadedNoStates = false;
-            loadedNoComboData = false;
-            loadedNoComptSupplInfo = false;
-            ifComptsIsSelected = true;
-            ifPacketsIsNotLoaded = false;
-        };
-
 
         var clearCollectionsForSaving = function (errorMap) {
             angular.forEach(errorMap, function (v, k) {

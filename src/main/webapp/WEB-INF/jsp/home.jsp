@@ -16,7 +16,7 @@
         angular.module("packetApp", ["customFilters"]);
     </script>
     <script type="application/javascript" src="resources/js/controllers/packetApp.js"></script>
-    <script type="application/javascript" src="resources/js/filters/customfilters.js"></script>
+    <script type="application/javascript" src="resources/js/filters/customFilters.js"></script>
     <script type="application/javascript" src="resources/js/ngmodules/angular-route.js"></script>
 
 
@@ -48,7 +48,7 @@
                 Del
             </a>
         </div>
-        <div class="btn-group" id="aggregate-btns">
+        <div class="btn-group" id="aggregate-btns" ng-if="showAggregateButtons()">
             <a ng-click="addPacketLocally()"
                class="btn btn-md btn-block btn-default">
                 Add packet
@@ -117,8 +117,8 @@
                            ng-class="getPageClass(page)">
                             <span ng-bind="page"></span>
                         </a>
-                        </div>
                     </div>
+                </div>
                 <div class="well">
                     <div id="states">
                         <div class="state" ng-repeat="state in data.allStates track by $index">
@@ -128,8 +128,8 @@
                             <span ng-bind="data.allStateLabels[$index+1]"></span>
                         </div>
                     </div>
-                    </div>
                 </div>
+            </div>
             <form name="form" ng-if="isPacketSelected()">
                 <div class="row grid-row">
                     <div class="col-sm-5">
