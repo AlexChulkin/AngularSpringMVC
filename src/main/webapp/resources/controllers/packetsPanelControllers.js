@@ -3,8 +3,8 @@
  */
 
 angular.module("packetApp")
-    .constant("packetListActiveClass", "btn-primary btn-sm")
-    .constant("packetListNonActiveClass", "btn-sm")
+    .constant("packetListActiveClass", "btn-primary btn-xs")
+    .constant("packetListNonActiveClass", "btn-xs")
     .constant("packetListPageCount", 10)
     .constant("labelLabel", "Label")
     .constant("updateCompts", "UPDATE_COMPTS")
@@ -33,19 +33,20 @@ angular.module("packetApp")
         };
 
         $scope.addPacketLocally = function () {
-            $scope.$parent.data.packetIdToInd[++data.packetIdsToDelete]
+            var newPacket = {id: ++$scope.$parent.data.maximalPacketId, stateId: 1};
+            $scope.$parent.data.packetIdToInd[$scope.$parent.data.maximalPacketId] 
                 = ++$scope.$parent.data.maximalPacketIndex;
-            var newPacket = {id: data.packetIdsToDelete, stateId: 1};
-            data.newPackets[data.packetIdsToDelete] = newPacket;
-            $scope.$parent.data.allPackets[data.packetIdsToDelete] = newPacket;
+            $scope.$parent.data.newPackets[$scope.$parent.data.maximalPacketId] = newPacket;
+            $scope.$parent.data.allPackets[$scope.$parent.data.maximalPacketId] = newPacket;
+            $scope.$parent.data.loadEmpty = null;
         };
 
         $scope.deletePacketLocally = function (packet) {
             var packetId = packet.id;
-            if (!data.newPackets[packetId]) {
+            if (!$scope.$parent.data.newPackets[packetId]) {
                 data.packetIdsToDelete.push(packetId);
             }
-            var isPktNew = packetId in data.newPackets;
+            var isPktNew = packetId in $scope.$parent.data.newPackets;
             delete $scope.$parent.data.newComptLabels[isPktNew][packetId];
             delete $scope.$parent.data.allPackets[packetId];
             delete $scope.$parent.data.comptIdsTaggedToDelete[packetId];
@@ -57,7 +58,8 @@ angular.module("packetApp")
         };
 
         $scope.getPacketClass = function (packet) {
-            var result = $scope.$parent.data.selectedPacket.id == packet.id
+            var pktId = packet.id;
+            var result = $scope.$parent.data.selectedPacket.id == pktId
                 ? packetListActiveClass
                 : packetListNonActiveClass;
             result += " ";
@@ -147,7 +149,7 @@ angular.module("packetApp")
 
             angular.forEach(packetsToSave, function (pkt, pktId) {
                 var packetConfig = {};
-                if (!data.newPackets[pktId]) {
+                if (!$scope.$parent.data.newPackets[pktId]) {
                     var updatedComptParamsList = generateComptParamsListToUpdateForPackets(pktId);
                     if (updatedComptParamsList.length > 0) {
                         comptsToUpdateParamsList = comptsToUpdateParamsList.concat(updatedComptParamsList);
@@ -201,7 +203,7 @@ angular.module("packetApp")
             errorMap[updateCompts] = $scope.$parent.data.comptIdsToUpdate;
             errorMap[deleteCompts] = $scope.$parent.data.comptIdsTaggedToDelete;
             errorMap[updatePackets] = $scope.$parent.data.newComptLabels[false];
-            errorMap[addPackets] = data.newPackets;
+            errorMap[addPackets] = $scope.$parent.data.newPackets;
             errorMap[deletePackets] = data.packetIdsToDelete;
 
             return errorMap;
@@ -220,7 +222,6 @@ angular.module("packetApp")
         var init = function () {
             data = {};
             data.packetIdsToDelete = [];
-            data.newPackets = {};
         };
 
         init();

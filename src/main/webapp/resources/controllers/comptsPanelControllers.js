@@ -12,7 +12,8 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             if (newValue) {
                 if (oldValue) {
                     var oldSelectedPacketId = oldValue.id;
-                    $scope.$parent.data.compts[data.packetIdToInd[oldSelectedPacketId]] = $scope.data.selectedCompts;
+                    $scope.$parent.data.compts[$scope.$parent.data.packetIdToInd[oldSelectedPacketId]]
+                        = $scope.data.selectedCompts;
                     $scope.$parent.data.comptLabels[oldSelectedPacketId] = $scope.data.selectedComptLabels;
                 }
                 data.selectedPacketId = newValue.id;
@@ -38,11 +39,11 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         };
 
         $scope.isPacketSelected = function () {
-            return $scope.parent.data.selectedPacket;
+            return $scope.$parent.data.selectedPacket;
         };
 
         $scope.isPacketsNotLoaded = function () {
-            return $scope.parent.data.loadedNoPackets;
+            return $scope.$parent.data.loadedNoPackets;
         };
 
         $scope.isPacketNeverSelectedSoFar = function () {
@@ -58,6 +59,8 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             $scope.$parent.data.comptIdToInd[comptId] = $scope.data.selectedCompts.length;
             $scope.data.selectedCompts.push(newCompt);
             var pktId = data.selectedPacketId;
+            data.newComptLabels[$scope.$parent.data.isSelectedPacketNew]
+                = data.newComptLabels[$scope.$parent.data.isSelectedPacketNew] || {};
             data.newComptLabels[$scope.$parent.data.isSelectedPacketNew][pktId]
                 = data.newComptLabels[$scope.$parent.data.isSelectedPacketNew][pktId] || {};
             data.newComptLabels[$scope.$parent.data.isSelectedPacketNew][pktId][comptId] = usualLabel;
@@ -82,7 +85,8 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             if (data.comptIdsToUpdate[pktId]) {
                 delete data.comptIdsToUpdate[pktId][comptId];
             }
-            if (data.newComptLabels[$scope.$parent.data.isSelectedPacketNew][pktId]) {
+            if (data.newComptLabels[$scope.$parent.data.isSelectedPacketNew] &&
+                data.newComptLabels[$scope.$parent.data.isSelectedPacketNew][pktId]) {
                 delete data.newComptLabels[$scope.$parent.data.isSelectedPacketNew][pktId][comptId];
             } else {
                 data.comptIdsTaggedToDelete[pktId]
@@ -117,6 +121,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             data.comptIdsToUpdate = {};
             data.newComptLabels = {true: {}, false: {}};
             data.comptsIsSelected = null;
+            $scope.$parent.data.newPackets = {};
         };
 
         init();

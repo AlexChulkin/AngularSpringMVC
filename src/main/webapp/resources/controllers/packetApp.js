@@ -2,8 +2,7 @@
  * Created by achulkin on 04.06.14.
  */
 angular.module("packetApp")
-    .constant("packetListActiveClass", "btn-primary btn-sm")
-    .constant("packetListNonActiveClass", "btn-sm")
+
     .constant("packetListPageCount", 10)
     .constant("labelLabel", "Label")
     .constant("updateCompts", "UPDATE_COMPTS")
@@ -15,8 +14,7 @@ angular.module("packetApp")
     .constant("saveAllChangesToBasePath", "/saveAllChangesToBase")
     .constant("loadPacketByIdPath", "/loadPacketById")
     .constant("initialPacketIndex", -1)
-    .controller("packetCtrl", function ($scope, $http, $window, packetListActiveClass,
-                                        packetListNonActiveClass, packetListPageCount, labelLabel,
+    .controller("packetCtrl", function ($scope, $http, $window, packetListPageCount, labelLabel,
                                         updateCompts, deleteCompts, updatePackets, deletePackets,
                                         addPackets, loadDataPath, saveAllChangesToBasePath,
                                         loadPacketByIdPath, initialPacketIndex) {
@@ -190,6 +188,7 @@ angular.module("packetApp")
             $scope.data.comboDataDefaultSet = [];
             $scope.data.newComptCheckedVals = [];
             $scope.data.allPackets = {};
+            $scope.data.newPackets = {};
             $scope.data.allStates = [];
             $scope.data.allComboData = {};
             $scope.data.allCheckedComboData = {};
