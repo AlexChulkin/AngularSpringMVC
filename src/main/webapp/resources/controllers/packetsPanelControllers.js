@@ -147,7 +147,8 @@ angular.module("packetApp")
                 packetsToSave[savedPacketId] = $scope.$parent.data.allPackets[savedPacketId];
             }
 
-            angular.forEach(packetsToSave, function (pkt, pktId) {
+            for (var pktId in packetsToSave) {
+                var pkt = packetsToSave[pktId];
                 var packetConfig = {};
                 if (!$scope.$parent.data.newPackets[pktId]) {
                     var updatedComptParamsList = generateComptParamsListToUpdateForPackets(pktId);
@@ -168,11 +169,10 @@ angular.module("packetApp")
                     packetConfig.newComptParamsList = generateComptParamsListForPackets(pktId, "add");
                     packetsToAddParamsList.push(packetConfig);
                 }
-            });
-
+            }
             var comptIdsToDelete = [];
             angular.forEach(packetsToSave, function (unused, pktId) {
-                if (isDataEmpty($scope.$parent.data.comptIdsTaggedToDelete[pktId])) {
+                if (!$scope.$parent.isDataEmpty($scope.$parent.data.comptIdsTaggedToDelete[pktId])) {
                     comptIdsToDelete = comptIdsToDelete.concat($scope.$parent.data.comptIdsTaggedToDelete[pktId]);
                 }
             });
@@ -190,7 +190,7 @@ angular.module("packetApp")
                 comptIdsToDelete: comptIdsToDelete
             };
             if (!savedPacketId) {
-                params['data.packetIdsToDelete'] = data.packetIdsToDelete;
+                params['packetIdsToDelete'] = data.packetIdsToDelete;
             } else {
                 params['packetId'] = savedPacketId;
             }

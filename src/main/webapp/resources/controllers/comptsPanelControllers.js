@@ -17,7 +17,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
                     $scope.$parent.data.comptLabels[oldSelectedPacketId] = $scope.data.selectedComptLabels;
                 }
                 data.selectedPacketId = newValue.id;
-                data.packetIsNotSelectedSoFar = false;
+                $scope.$parent.data.packetIsAlreadySelectedAtLeastOnce = true;
                 data.isSelectedPacketNew = data.selectedPacketId in $scope.$parent.data.newPackets;
                 $scope.data.selectedCompts
                     = $scope.$parent.data.compts[$scope.$parent.data.packetIdToInd[data.selectedPacketId]] || [];
@@ -46,10 +46,6 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             return $scope.$parent.data.loadedNoPackets;
         };
 
-        $scope.isPacketNeverSelectedSoFar = function () {
-            return data.packetIsNotSelectedSoFar;
-        };
-
         $scope.addComptLocally = function () {
             var comptId = ++$scope.$parent.data.maximalComptId;
             var usualLabel = $scope.data.newLabel;
@@ -59,11 +55,11 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             $scope.$parent.data.comptIdToInd[comptId] = $scope.data.selectedCompts.length;
             $scope.data.selectedCompts.push(newCompt);
             var pktId = data.selectedPacketId;
-            data.newComptLabels[$scope.$parent.data.isSelectedPacketNew]
-                = data.newComptLabels[$scope.$parent.data.isSelectedPacketNew] || {};
-            data.newComptLabels[$scope.$parent.data.isSelectedPacketNew][pktId]
-                = data.newComptLabels[$scope.$parent.data.isSelectedPacketNew][pktId] || {};
-            data.newComptLabels[$scope.$parent.data.isSelectedPacketNew][pktId][comptId] = usualLabel;
+            $scope.$parent.data.newComptLabels[data.isSelectedPacketNew]
+                = $scope.$parent.data.newComptLabels[data.isSelectedPacketNew] || {};
+            $scope.$parent.data.newComptLabels[data.isSelectedPacketNew][pktId]
+                = $scope.$parent.data.newComptLabels[data.isSelectedPacketNew][pktId] || {};
+            $scope.$parent.data.newComptLabels[data.isSelectedPacketNew][pktId][comptId] = usualLabel;
             $scope.$parent.data.allComboData[comptId] = {};
             $scope.$parent.data.allCheckedComboData[comptId] = {};
             for (var i = 1; i <= $scope.data.allStates.length; i++) {
@@ -82,28 +78,30 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             $scope.data.selectedCompts[$scope.$parent.data.comptIdToInd[comptId]] = null;
             delete $scope.$parent.data.allCheckedComboData[comptId];
             delete $scope.$parent.data.allComboData[comptId];
-            if (data.comptIdsToUpdate[pktId]) {
-                delete data.comptIdsToUpdate[pktId][comptId];
+            if ($scope.$parent.data.comptIdsToUpdate[pktId]) {
+                delete $scope.$parent.data.comptIdsToUpdate[pktId][comptId];
             }
-            if (data.newComptLabels[$scope.$parent.data.isSelectedPacketNew] &&
-                data.newComptLabels[$scope.$parent.data.isSelectedPacketNew][pktId]) {
-                delete data.newComptLabels[$scope.$parent.data.isSelectedPacketNew][pktId][comptId];
+            if ($scope.$parent.data.newComptLabels[data.isSelectedPacketNew][pktId]
+                && $scope.$parent.data.newComptLabels[data.isSelectedPacketNew][pktId][comptId]) {
+
+                delete $scope.$parent.data.newComptLabels[data.isSelectedPacketNew][pktId][comptId];
+                
             } else {
-                data.comptIdsTaggedToDelete[pktId]
-                    = data.comptIdsTaggedToDelete[pktId] || [];
-                data.comptIdsTaggedToDelete[pktId].push(comptId);
+                $scope.$parent.data.comptIdsTaggedToDelete[pktId]
+                    = $scope.$parent.data.comptIdsTaggedToDelete[pktId] || [];
+                $scope.$parent.data.comptIdsTaggedToDelete[pktId].push(comptId);
             }
         };
 
         $scope.updateComptLocally = function (compt) {
             var pktId = data.selectedPacketId;
             var comptId = compt.id;
-            if (data.newComptLabels[$scope.$parent.data.isSelectedPacketNew][pktId] &&
-                data.newComptLabels[$scope.$parent.data.isSelectedPacketNew][pktId][comptId]) {
+            if ($scope.$parent.data.newComptLabels[data.isSelectedPacketNew][pktId] &&
+                $scope.$parent.data.newComptLabels[data.isSelectedPacketNew][pktId][comptId]) {
                 return;
             }
-            data.comptIdsToUpdate[pktId] = data.comptIdsToUpdate[pktId] || {};
-            data.comptIdsToUpdate[pktId][comptId] = true;
+            $scope.$parent.data.comptIdsToUpdate[pktId] = $scope.$parent.data.comptIdsToUpdate[pktId] || {};
+            $scope.$parent.data.comptIdsToUpdate[pktId][comptId] = true;
         };
 
         $scope.getPageClass = function (page) {
@@ -116,12 +114,8 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
 
         var init = function () {
             data = {};
-            data.packetIsNotSelectedSoFar = true;
-            data.comptIdsTaggedToDelete = {};
-            data.comptIdsToUpdate = {};
-            data.newComptLabels = {true: {}, false: {}};
             data.comptsIsSelected = null;
-            $scope.$parent.data.newPackets = {};
+            data.isSelectedPacketNew = null;
         };
 
         init();

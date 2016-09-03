@@ -24,8 +24,6 @@ public class Config extends WebMvcConfigurerAdapter {
     public ViewResolver viewResolver(){
         UrlBasedViewResolver urlBasedViewResolver = new UrlBasedViewResolver();
         urlBasedViewResolver.setViewClass(JstlView.class);
-//        urlBasedViewResolver.setPrefix("/WEB-INF/jsp/");
-//        urlBasedViewResolver.setSuffix(".jsp");
         return urlBasedViewResolver;
     }
 

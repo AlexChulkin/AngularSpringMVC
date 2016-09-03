@@ -14,10 +14,10 @@ angular.module("packetApp")
     .constant("saveAllChangesToBasePath", "/saveAllChangesToBase")
     .constant("loadPacketByIdPath", "/loadPacketById")
     .constant("initialPacketIndex", -1)
-    .controller("packetCtrl", function ($scope, $http, $window, packetListPageCount, labelLabel,
-                                        updateCompts, deleteCompts, updatePackets, deletePackets,
-                                        addPackets, loadDataPath, saveAllChangesToBasePath,
-                                        loadPacketByIdPath, initialPacketIndex) {
+    .controller("mainCtrl", function ($scope, $http, $window, packetListPageCount, labelLabel,
+                                      updateCompts, deleteCompts, updatePackets, deletePackets,
+                                      addPackets, loadDataPath, saveAllChangesToBasePath,
+                                      loadPacketByIdPath, initialPacketIndex) {
 
         var data;
 
@@ -65,6 +65,10 @@ angular.module("packetApp")
 
         $scope.isStatesNotLoaded = function () {
             return $scope.data.loadedNoStates;
+        };
+
+        $scope.isPacketAlreadySelectedAtLeastOnce = function () {
+            return $scope.data.packetIsAlreadySelectedAtLeastOnce;
         };
 
         $scope.selectPacket = function (packet) {
@@ -177,6 +181,7 @@ angular.module("packetApp")
             $scope.data.loadedNoPackets = null;
             $scope.data.loadedNoStates = null;
             $scope.data.loadedNoComboData = null;
+            $scope.data.packetIsAlreadySelectedAtLeastOnce = false;
             $scope.data.comptIdToInd = {};
             $scope.data.packetIdToInd = {};
             $scope.data.comptLabels = {};
@@ -192,7 +197,11 @@ angular.module("packetApp")
             $scope.data.allStates = [];
             $scope.data.allComboData = {};
             $scope.data.allCheckedComboData = {};
+            $scope.data.comptIdsToUpdate = {};
+            $scope.data.newComptLabels = {true: {}, false: {}};
+            $scope.data.comptIdsTaggedToDelete = {};
             $scope.data.selectedPacket = null;
+
         };
 
         var init = function () {

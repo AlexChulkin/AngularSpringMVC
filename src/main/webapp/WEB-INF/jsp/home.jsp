@@ -38,14 +38,14 @@
         var contextPath = '${pageContext.request.contextPath}';
     </script>
 </head>
-<body ng-controller="packetCtrl">
+<body ng-controller="mainCtrl as MC">
 <div class="navbar navbar-inverse">
     <a class="navbar-brand" href="#">THE PACKETS AND THEIR COMPONENTS</a>
 </div>
 <div class="panel" ng-if="isDataLoadedProperly()">
     <div class="col-xs-2 column">
         <%--<ng-include src="WEB-INF/jsp/packetsPanel.jsp"></ng-include>--%>
-        <div ng-controller="packetsPanelCtrl">
+        <div ng-controller="packetsPanelCtrl as PC">
             <div class="flex" ng-repeat="pkt in $parent.data.allPackets">
                 <a ng-click="$parent.selectPacket(pkt)"
                    ng-class="getPacketClass(pkt)">
@@ -82,13 +82,13 @@
     </div>
     <div class="col-xs-10 column">
         <%--<ng-include src="WEB-INF/jsp/comptsPanel.jsp"></ng-include>--%>
-        <div ng-controller="comptsPanelCtrl">
+        <div ng-controller="comptsPanelCtrl as CC">
             <div class="alert alert-warning" ng-if="$parent.isDataLoadedProperly()
                     && !isPacketsNotLoaded() && isPacketSelected() && !isComptsSelected()">
                 The selected packet is empty. Please add new compts or select another one.
             </div>
             <div class="alert alert-warning" ng-if="$parent.isDataLoadedProperly() && !isPacketsNotLoaded()
-                                && !isPacketSelected() && isPacketNeverSelectedSoFar()">
+                                && !isPacketSelected() && isPacketAlreadySelectedAtLeastOnce()">
                 No packet is selected. Please select (or add and select) one.
             </div>
             <div class="alert alert-warning" ng-if="$parent.isDataLoadedProperly() && isPacketsNotLoaded()">
