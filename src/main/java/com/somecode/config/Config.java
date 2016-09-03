@@ -20,13 +20,12 @@ public class Config extends WebMvcConfigurerAdapter {
         registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
     }
 
-
     @Bean
     public ViewResolver viewResolver(){
         UrlBasedViewResolver urlBasedViewResolver = new UrlBasedViewResolver();
         urlBasedViewResolver.setViewClass(JstlView.class);
-        urlBasedViewResolver.setPrefix("/WEB-INF/jsp/");
-        urlBasedViewResolver.setSuffix(".jsp");
+//        urlBasedViewResolver.setPrefix("/WEB-INF/jsp/");
+//        urlBasedViewResolver.setSuffix(".jsp");
         return urlBasedViewResolver;
     }
 

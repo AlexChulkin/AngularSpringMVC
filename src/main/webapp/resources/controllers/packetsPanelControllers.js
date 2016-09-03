@@ -25,7 +25,6 @@ angular.module("packetApp")
                                               addPackets, loadDataPath, saveAllChangesToBasePath,
                                               loadPacketByIdPath, initialPacketIndex, errorStatus404,
                                               narrowPacketCaption, widePacketCaption) {
-
         var data;
 
         $scope.showAggregateButtons = function () {

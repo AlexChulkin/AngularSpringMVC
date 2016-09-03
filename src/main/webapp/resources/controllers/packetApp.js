@@ -32,7 +32,7 @@ angular.module("packetApp")
                 .then(
                     function success(result) {
                         var data = result.data;
-                        prepareCompts($scope.data.compts, packetIndex);
+                        prepareCompts(data.compts, packetIndex);
                         preparePackets(data.packets, isPacketIdNull);
                         prepareStates(data.states);
                         prepareComboData(data.comboData);
@@ -40,7 +40,7 @@ angular.module("packetApp")
                             && !$scope.isComboDataNotLoaded()
                             && !$scope.isStatesNotLoaded()) {
 
-                            prepareComptsSupplInfo($scope.data.comptsupplInfo);
+                            prepareComptsSupplInfo(data.comptSupplInfo);
                         }
                     },
                     function error(error) {
@@ -153,25 +153,17 @@ angular.module("packetApp")
 
         var prepareComptsSupplInfo = function (comptSupplInfo) {
             $scope.data.loadedNoComptsSupplInfo = $scope.isDataEmpty(comptSupplInfo);
-            var comboDataVisitedCompts = {};
-            var checkedComboDataVisitedCompts = {};
 
             angular.forEach(comptSupplInfo, function (item) {
                 var comptId = item.comptId;
                 var stateId = item.stateId;
                 var label = item.label;
-                if (!comboDataVisitedCompts[comptId]) {
-                    comboDataVisitedCompts[comptId] = true;
-                    $scope.data.allComboData[comptId] = {};
-                }
+                $scope.data.allComboData[comptId] = $scope.data.allComboData[comptId] || {};
                 $scope.data.allComboData[comptId][stateId] = $scope.data.allComboData[comptId][stateId] || [];
                 $scope.data.allComboData[comptId][stateId].push(label);
                 var checked = item.checked;
                 if (checked) {
-                    if (!checkedComboDataVisitedCompts[comptId]) {
-                        checkedComboDataVisitedCompts[comptId] = true;
-                        $scope.data.allCheckedComboData[comptId] = {};
-                    }
+                    $scope.data.allCheckedComboData[comptId] = $scope.data.allCheckedComboData[comptId] || {};
                     $scope.data.allCheckedComboData[comptId][stateId] = label;
                 }
             });

@@ -27,7 +27,7 @@ public class RestfulController {
 
     @RequestMapping({"/home", ""})
     public String home(){
-        return "/resources/js/Old/home.jsp";
+        return "/WEB-INF/jsp/home.jsp";
     }
 
     @RequestMapping(value = "/loadData", method = RequestMethod.POST)
