@@ -56,11 +56,11 @@
             </div>
             <div class="well">
                 <div id="states">
-                    <div class="state" ng-repeat="state in $parent.data.allStates track by $index">
+                    <div class="state" ng-repeat="state in $parent.data.allStates">
                         <input type="radio"
                                ng-model="$parent.data.selectedPacket.stateId"
-                               ng-value="$index+1">
-                        <span ng-bind="$parent.data.allStateLabels[$index+1]"></span>
+                               ng-value="state.id">
+                        <span ng-bind="$parent.data.allStateLabels[state.id]"></span>
                     </div>
                 </div>
             </div>
