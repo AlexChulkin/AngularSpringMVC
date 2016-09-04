@@ -3,10 +3,7 @@ package com.somecode.service;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.somecode.dao.ComptDao;
-import com.somecode.domain.ComptParams;
-import com.somecode.domain.HasLabel;
-import com.somecode.domain.OperationType;
-import com.somecode.domain.PacketParams;
+import com.somecode.domain.*;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,32 +51,32 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
     @DataSets(before = "/com/somecode/service/ComptDaoTest_Compt.xls")
     @Test
     @DirtiesContext
-    public void testGetCompts_positive() throws Exception {
-        final long packetId = 1L;
+    public void testLoadCompts_positive() throws Exception {
+        final Long packetId = 1L;
         final String expectedLabel = "compt_label_1";
         final int expectedResultLength = 1;
 
-//        final List<ComptInfo> result = comptDao.findComptsByPacketId(packetId);
+        final List<ComptInfo> result = comptDao.loadCompts(packetId);
 
-//        assertEquals(expectedResultLength, result.size());
-//        assertEquals(expectedLabel, result.get(0).getLabel());
+        assertEquals(expectedResultLength, result.size());
+        assertEquals(expectedLabel, result.get(0).getLabel());
     }
 
     @DataSets(before = "/com/somecode/service/ComptDaoTest_Compt.xls")
     @Test
     @DirtiesContext
-    public void testGetCompts_negative() throws Exception {
-        final long packetId = 2L;
+    public void testLoadCompts_negative() throws Exception {
+        final Long packetId = 2L;
         final int expectedResultSize = 0;
-//        final List<ComptInfo> result = comptDao.findComptsByPacketId(packetId);
+        final List<ComptInfo> result = comptDao.loadCompts(packetId);
 
-//        assertEquals(expectedResultSize, result.size());
+        assertEquals(expectedResultSize, result.size());
     }
 
     @DataSets(before = "/com/somecode/service/ComptDaoTest_Compt_SupplInfo.xls")
     @Test
     @DirtiesContext
-    public void testGetComptsSupplInfo_positive() throws Exception {
+    public void testLoadComptsSupplInfo_positive() throws Exception {
         final long packetId = 1L;
 
         final Integer expectedNumOfStates = 3;
@@ -95,7 +92,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
     @DataSets(before = "/com/somecode/service/ComptDaoTest_Compt_SupplInfo.xls")
     @Test
     @DirtiesContext
-    public void testGetComptsSupplInfo_negative() throws Exception {
+    public void testLoadComptsSupplInfo_negative() throws Exception {
         final long packetId = 2L;
         final int expectedResultSize = 0;
 //        final List<ComptSupplInfo> result = comptDao.findComptsSupplInfoByPacketId(packetId);
