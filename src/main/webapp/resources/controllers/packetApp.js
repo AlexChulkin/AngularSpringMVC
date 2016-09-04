@@ -2,22 +2,12 @@
  * Created by achulkin on 04.06.14.
  */
 angular.module("packetApp")
-
     .constant("packetListPageCount", 10)
     .constant("labelLabel", "Label")
-    .constant("updateCompts", "UPDATE_COMPTS")
-    .constant("deleteCompts", "DELETE_COMPTS")
-    .constant("updatePackets", "UPDATE_PACKETS")
-    .constant("deletePackets", "DELETE_PACKETS")
-    .constant("addPackets", "ADD_PACKETS")
     .constant("loadDataPath", "/loadData")
-    .constant("saveAllChangesToBasePath", "/saveAllChangesToBase")
-    .constant("loadPacketByIdPath", "/loadPacketById")
     .constant("initialPacketIndex", -1)
-    .controller("mainCtrl", function ($scope, $http, $window, packetListPageCount, labelLabel,
-                                      updateCompts, deleteCompts, updatePackets, deletePackets,
-                                      addPackets, loadDataPath, saveAllChangesToBasePath,
-                                      loadPacketByIdPath, initialPacketIndex) {
+    .controller("mainCtrl", function ($scope, $http, packetListPageCount, labelLabel, loadDataPath,
+                                      initialPacketIndex) {
 
         var data;
 

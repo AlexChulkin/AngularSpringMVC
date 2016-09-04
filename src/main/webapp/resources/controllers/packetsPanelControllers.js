@@ -3,28 +3,22 @@
  */
 
 angular.module("packetApp")
-    .constant("packetListActiveClass", "btn-primary btn-xs")
-    .constant("packetListNonActiveClass", "btn-xs")
-    .constant("packetListPageCount", 10)
-    .constant("labelLabel", "Label")
+    .constant("packetListActiveClass", "btn-primary btn-sm")
+    .constant("packetListNonActiveClass", "btn-sm")
     .constant("updateCompts", "UPDATE_COMPTS")
     .constant("deleteCompts", "DELETE_COMPTS")
     .constant("updatePackets", "UPDATE_PACKETS")
     .constant("deletePackets", "DELETE_PACKETS")
     .constant("addPackets", "ADD_PACKETS")
-    .constant("loadDataPath", "/loadData")
     .constant("saveAllChangesToBasePath", "/saveAllChangesToBase")
-    .constant("loadPacketByIdPath", "/loadPacketById")
     .constant("initialPacketIndex", -1)
     .constant("errorStatus404", 404)
     .constant("narrowPacketCaption", "narrow-packet-caption")
     .constant("widePacketCaption", "wide-packet-caption")
-    .controller("packetsPanelCtrl", function ($scope, $http, $window, packetListActiveClass,
-                                              packetListNonActiveClass, packetListPageCount, labelLabel,
-                                              updateCompts, deleteCompts, updatePackets, deletePackets,
-                                              addPackets, loadDataPath, saveAllChangesToBasePath,
-                                              loadPacketByIdPath, initialPacketIndex, errorStatus404,
-                                              narrowPacketCaption, widePacketCaption) {
+    .controller("packetsPanelCtrl", function ($scope, $http, $window, packetListActiveClass, packetListNonActiveClass,
+                                              updateCompts, deleteCompts, updatePackets, deletePackets, addPackets,
+                                              saveAllChangesToBasePath, errorStatus404, narrowPacketCaption,
+                                              widePacketCaption) {
         var data;
 
         $scope.showAggregateButtons = function () {
@@ -59,7 +53,7 @@ angular.module("packetApp")
 
         $scope.getPacketClass = function (packet) {
             var pktId = packet.id;
-            var result = $scope.$parent.data.selectedPacket.id == pktId
+            var result = $scope.$parent.data.selectedPacket && $scope.$parent.data.selectedPacket.id == pktId
                 ? packetListActiveClass
                 : packetListNonActiveClass;
             result += " ";

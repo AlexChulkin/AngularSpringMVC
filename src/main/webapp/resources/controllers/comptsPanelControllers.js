@@ -2,10 +2,12 @@
  * Created by alexc_000 on 2016-08-30.
  */
 var app = angular.module("packetApp");
-
-app.constant("packetListActiveClass", "btn-primary btn-sm")
-    .constant("packetListNonActiveClass", "btn-sm")
-    .controller("comptsPanelCtrl", function ($scope, $http, $window, packetListActiveClass, packetListNonActiveClass) {
+app
+    .constant("pageListActiveClass", "btn-primary btn-sm")
+    .constant("pageListNonActiveClass", "btn-sm")
+    .constant("packetListPageCount", 10)
+    .controller("comptsPanelCtrl", function ($scope, $http, $window, pageListActiveClass, pageListNonActiveClass,
+                                             packetListPageCount) {
 
         var data;
         $scope.$watch('$parent.data.selectedPacket', function (newValue, oldValue) {
@@ -105,7 +107,7 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
         };
 
         $scope.getPageClass = function (page) {
-            return $scope.selectedPage === page ? packetListActiveClass : packetListNonActiveClass;
+            return $scope.$parent.data.selectedPage === page ? pageListActiveClass : pageListNonActiveClass;
         };
 
         $scope.notNull = function (item) {
@@ -116,6 +118,9 @@ app.constant("packetListActiveClass", "btn-primary btn-sm")
             data = {};
             data.comptsIsSelected = null;
             data.isSelectedPacketNew = null;
+            $scope.data.selectedCompts = [];
+            $scope.data.selectedComptLabels = {};
+            $scope.data.pageSize = packetListPageCount;
         };
 
         init();
