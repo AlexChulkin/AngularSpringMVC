@@ -48,29 +48,65 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
                 .ifPresent(Cache::evictAll);
     }
 
-    @DataSets(before = "/com/somecode/service/ComptDaoTest_Compt.xls")
+    @DataSets(before = "/com/somecode/service/testLoadCompts_before.xls")
     @Test
     @DirtiesContext
-    public void testLoadCompts_positive() throws Exception {
+    public void testLoadCompts_onePacket_positive() throws Exception {
         final Long packetId = 1L;
-        final String expectedLabel = "compt_label_1";
-        final int expectedResultLength = 1;
+        final String labelPrefix = "compt_label_";
+        final int expectedResultLength = 2;
+        final List<String> expectedComptsLabelsList = generateDiverseLabelsList(labelPrefix, expectedResultLength);
 
         final List<ComptInfo> result = comptDao.loadCompts(packetId);
 
         assertEquals(expectedResultLength, result.size());
-        assertEquals(expectedLabel, result.get(0).getLabel());
+        IntStream.range(0, expectedResultLength)
+                .boxed()
+                .forEach(i ->
+                        assertEquals(expectedComptsLabelsList.get(i), result.get(i).getLabel())
+                );
     }
 
-    @DataSets(before = "/com/somecode/service/ComptDaoTest_Compt.xls")
+    @DataSets(before = "/com/somecode/service/testLoadCompts_before.xls")
     @Test
     @DirtiesContext
-    public void testLoadCompts_negative() throws Exception {
-        final Long packetId = 2L;
+    public void testLoadCompts_onePacket_negative() throws Exception {
+        final Long packetId = 3L;
         final int expectedResultSize = 0;
         final List<ComptInfo> result = comptDao.loadCompts(packetId);
 
         assertEquals(expectedResultSize, result.size());
+    }
+
+    @DataSets(before = "/com/somecode/service/testLoadCompts_before.xls")
+    @Test
+    @DirtiesContext
+    public void testLoadCompts_allPackets_positive() throws Exception {
+        final Long packetId = null;
+        final String labelPrefix = "compt_label_";
+        final int expectedResultLength = 4;
+        final List<String> expectedComptsLabelsList = generateDiverseLabelsList(labelPrefix, expectedResultLength);
+
+        final List<ComptInfo> result = comptDao.loadCompts(packetId);
+
+        assertEquals(expectedResultLength, result.size());
+        IntStream.range(0, expectedResultLength)
+                .boxed()
+                .forEach(i ->
+                        assertEquals(expectedComptsLabelsList.get(i), result.get(i).getLabel())
+                );
+    }
+
+    @DataSets(before = "/com/somecode/service/testLoadCompts_allPackets_negative_before.xls")
+    @Test
+    @DirtiesContext
+    public void testLoadCompts_allPackets_negative() throws Exception {
+        final Long packetId = null;
+        final int expectedResultLength = 0;
+
+        final List<ComptInfo> result = comptDao.loadCompts(packetId);
+
+        assertEquals(expectedResultLength, result.size());
     }
 
     @DataSets(before = "/com/somecode/service/ComptDaoTest_Compt_SupplInfo.xls")
@@ -139,18 +175,18 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
     }
 
     private List<String> generateDiverseLabelsList(String labelPrefix, int numOfLabels) {
-        final List<String> comboDataLabels = new ArrayList<>();
+        final List<String> labels = new ArrayList<>();
         IntStream.rangeClosed(1, numOfLabels)
                 .boxed()
-                .forEach(i -> comboDataLabels.add(labelPrefix + i.toString()));
-        return comboDataLabels;
+                .forEach(i -> labels.add(labelPrefix + i.toString()));
+        return labels;
     }
 
     private List<String> generateEqualLabelsList(String labelPrefix, int numOfLabels) {
-        final List<String> comboDataLabels = new ArrayList<>();
+        final List<String> labels = new ArrayList<>();
         IntStream.rangeClosed(1, numOfLabels)
-                .forEach(i -> comboDataLabels.add(labelPrefix + "1"));
-        return comboDataLabels;
+                .forEach(i -> labels.add(labelPrefix + "1"));
+        return labels;
     }
 
     private List<String> generateIteratedLabelsList(final String labelPrefix,
@@ -158,14 +194,14 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
                                                     final Integer numOfStates,
                                                     final Integer numOfComboData) {
 
-        final List<String> comboDataLabels = new ArrayList<>();
+        final List<String> labels = new ArrayList<>();
         final int numOfIterations = numOfCompts * numOfStates;
         List<String> elementaryComboDataList = generateDiverseLabelsList(labelPrefix, numOfComboData);
         IntStream.rangeClosed(1, numOfIterations)
                 .boxed()
-                .forEach(i -> comboDataLabels.addAll(elementaryComboDataList));
+                .forEach(i -> labels.addAll(elementaryComboDataList));
 
-        return comboDataLabels;
+        return labels;
     }
 
     private int calculateExpectedNumOfDataCompts(final int expectedNumOfCompts,
