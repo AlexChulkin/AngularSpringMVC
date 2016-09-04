@@ -1,10 +1,10 @@
 <div ng-controller="comptsPanelCtrl">
     <div class="alert alert-warning" ng-if="$parent.isDataLoadedProperly()
-                    && !isPacketsNotLoaded() && isPacketSelected() && isComptsSelected()">
+                    && !isPacketsNotLoaded() && isPacketSelected() && !isComptsSelected()">
         The selected packet is empty. Please add new compts or select another one.
     </div>
     <div class="alert alert-warning" ng-if="$parent.isDataLoadedProperly() && !isPacketsNotLoaded()
-    && !isPacketSelected() && isPacketNeverSelectedSoFar()">
+                                && !isPacketSelected() && isPacketAlreadySelectedAtLeastOnce()">
         No packet is selected. Please select (or add and select) one.
     </div>
     <div class="alert alert-warning" ng-if="$parent.isDataLoadedProperly() && isPacketsNotLoaded()">
@@ -21,7 +21,8 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="compt in data.selectedCompts | filter:notNull | range:selectedPage:pageSize">
+                    <tr ng-repeat="compt in data.selectedCompts | filter:notNull
+                                                    | range:$parent.data.selectedPage:data.pageSize">
                         <td width="43%">
                             <span ng-bind="compt.label"/>
                         </td>
@@ -46,7 +47,7 @@
                     </tbody>
                 </table>
                 <div class="pull-right btn-group">
-                    <a ng-repeat="page in data.selectedCompts | filter:notNull | pageCount:pageSize"
+                    <a ng-repeat="page in data.selectedCompts | filter:notNull | pageCount:data.pageSize"
                        ng-click="$parent.selectPage(page)" class="btn btn-default"
                        ng-class="getPageClass(page)">
                         <span ng-bind="page"></span>
