@@ -50,7 +50,11 @@ public class ComptDaoImpl implements  ComptDao {
     public List<PacketInfo> loadPackets(Long packetId) {
         List<PacketInfo> result = new LinkedList<>();
         if (packetId != null) {
-            result.add(new PacketInfo(packetRepository.findOne(packetId)));
+            Packet onlyResult = packetRepository.findOne(packetId);
+            if (onlyResult == null) {
+                return result;
+            }
+            result.add(new PacketInfo(onlyResult));
         } else {
             packetRepository.findAll().forEach(p -> result.add(new PacketInfo(p)));
         }

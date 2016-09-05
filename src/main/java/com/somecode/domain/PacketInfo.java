@@ -6,19 +6,19 @@ package com.somecode.domain;
 
 
 public class PacketInfo {
-    private long id;
-    private long stateId;
+    private Long id;
+    private Long stateId;
 
     public PacketInfo(Packet packet) {
         this.id = packet.getId();
         this.stateId = packet.getState().getId();
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public long getStateId() {
+    public Long getStateId() {
         return stateId;
     }
 

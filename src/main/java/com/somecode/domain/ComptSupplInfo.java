@@ -5,24 +5,24 @@ package com.somecode.domain;
  */
 
 public class ComptSupplInfo implements HasLabel {
-    private long comptId;
-    private long stateId;
+    private Long comptId;
+    private Long stateId;
     private String label;
     private boolean checked;
 
-    public ComptSupplInfo(long comptId, long stateId, String label, boolean checked){
+    public ComptSupplInfo(Long comptId, Long stateId, String label, boolean checked) {
         this.comptId = comptId;
         this.stateId = stateId;
         this.label = label;
         this.checked = checked;
     }
 
-    public long getComptId() {
+    public Long getComptId() {
         return comptId;
     }
 
 
-    public long getStateId() {
+    public Long getStateId() {
         return stateId;
     }
 

@@ -48,7 +48,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
                 .ifPresent(Cache::evictAll);
     }
 
-    @DataSets(before = "/com/somecode/service/testLoadCompts_before.xls")
+    @DataSets(before = "/com/somecode/service/testLoadCompts.xls")
     @Test
     @DirtiesContext
     public void testLoadCompts_onePacket_positive() throws Exception {
@@ -63,11 +63,14 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         IntStream.range(0, expectedResultLength)
                 .boxed()
                 .forEach(i ->
-                        assertEquals(expectedComptsLabelsList.get(i), result.get(i).getLabel())
+                        {
+                            assertEquals(expectedComptsLabelsList.get(i), result.get(i).getLabel());
+                            assertEquals((long) (i + 1), result.get(i).getId());
+                        }
                 );
     }
 
-    @DataSets(before = "/com/somecode/service/testLoadCompts_before.xls")
+    @DataSets(before = "/com/somecode/service/testLoadCompts.xls")
     @Test
     @DirtiesContext
     public void testLoadCompts_onePacket_negative() throws Exception {
@@ -78,7 +81,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         assertEquals(expectedResultSize, result.size());
     }
 
-    @DataSets(before = "/com/somecode/service/testLoadCompts_before.xls")
+    @DataSets(before = "/com/somecode/service/testLoadCompts.xls")
     @Test
     @DirtiesContext
     public void testLoadCompts_allPackets_positive() throws Exception {
@@ -93,11 +96,13 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         IntStream.range(0, expectedResultLength)
                 .boxed()
                 .forEach(i ->
-                        assertEquals(expectedComptsLabelsList.get(i), result.get(i).getLabel())
+                        {
+                            assertEquals(expectedComptsLabelsList.get(i), result.get(i).getLabel());
+                            assertEquals((long) (i + 1), result.get(i).getId());
+                        }
                 );
     }
 
-    @DataSets(before = "/com/somecode/service/testLoadCompts_allPackets_negative_before.xls")
     @Test
     @DirtiesContext
     public void testLoadCompts_allPackets_negative() throws Exception {
@@ -109,7 +114,7 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         assertEquals(expectedResultLength, result.size());
     }
 
-    @DataSets(before = "/com/somecode/service/ComptDaoTest_Compt_SupplInfo.xls")
+    @DataSets(before = "/com/somecode/service/testLoadComptsSupplInfo.xls")
     @Test
     @DirtiesContext
     public void testLoadComptsSupplInfo_positive() throws Exception {
@@ -118,59 +123,76 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         final Integer expectedNumOfStates = 3;
         final Integer expectedNumOfComboData = 3;
         final Integer expectedNumOfCompts = 1;
+        final Long expectedComptId = 1L;
+        final String expectedComboDatalLabelPrefix = "combo_label_";
         final int expectedResultLength = calculateExpectedNumOfDataCompts(expectedNumOfCompts, expectedNumOfStates,
                 expectedNumOfComboData);
 
-        findComboData(ComboDataGetTestCase.COMPTS_SUPPL_INFO, packetId, expectedResultLength,
+        loadAndCheckComptsSupplInfo(expectedComptId, packetId, expectedComboDatalLabelPrefix, expectedResultLength,
                 expectedNumOfCompts, expectedNumOfStates, expectedNumOfComboData);
     }
 
-    @DataSets(before = "/com/somecode/service/ComptDaoTest_Compt_SupplInfo.xls")
+    @DataSets(before = "/com/somecode/service/testLoadComptsSupplInfo.xls")
     @Test
     @DirtiesContext
     public void testLoadComptsSupplInfo_negative() throws Exception {
         final long packetId = 2L;
         final int expectedResultSize = 0;
-//        final List<ComptSupplInfo> result = comptDao.findComptsSupplInfoByPacketId(packetId);
+        final List<ComptSupplInfo> result = comptDao.loadComptsSupplInfo(packetId);
 
-//        assertEquals(expectedResultSize, result.size());
+        assertEquals(expectedResultSize, result.size());
     }
 
-    @DataSets(before = "/com/somecode/service/ComptDaoTest_ComboData.xls")
+    @DataSets(before = "/com/somecode/service/testLoadComboData.xls")
     @Test
     @DirtiesContext
-    public void testGetComboData_positive() throws Exception {
+    public void testLoadComboData_positive() throws Exception {
         final int expectedNumOfComboData = 3;
-
-        findComboData(ComboDataGetTestCase.COMBO_DATA_PROPERLY, null, expectedNumOfComboData, null, null, null);
-    }
-
-    private void findComboData(ComboDataGetTestCase testCase, final Long packetId,
-                               final Integer expectedResultLength, final Integer expectedNumOfCompts,
-                               final Integer expectedNumOfStates, final Integer expectedNumOfComboData)
-            throws Exception {
         final String comboDataLabelPrefix = "combo_label_";
 
-        final List<String> expectedComboDataLabels = (testCase == ComboDataGetTestCase.COMBO_DATA_PROPERLY)
-                ? generateDiverseLabelsList(comboDataLabelPrefix, expectedResultLength)
-                : (testCase == ComboDataGetTestCase.COMPTS_SUPPL_INFO)
-                ? generateIteratedLabelsList(comboDataLabelPrefix, expectedNumOfCompts,
-                expectedNumOfStates, expectedNumOfComboData)
-                : new ArrayList<>();
+        loadAndCheckComboData(expectedNumOfComboData, comboDataLabelPrefix);
+    }
 
-        List<HasLabel> result = new ArrayList<>();
+    private void loadAndCheckComboData(final Integer expectedResultLength, final String expectedComboDataLabelPrefix)
+            throws Exception {
+        final List<String> expectedComboDataLabels
+                = generateDiverseLabelsList(expectedComboDataLabelPrefix, expectedResultLength);
 
-        if (testCase == ComboDataGetTestCase.COMPTS_SUPPL_INFO) {
-//            comptDao.findComptsSupplInfoByPacketId(packetId).forEach(result::add);
-        } else if (testCase == ComboDataGetTestCase.COMBO_DATA_PROPERLY) {
-//            comptDao.findAllComboData().forEach(result::add);
-        }
+        List<ComboData> result = comptDao.loadAllComboData();
 
         assertEquals((long) expectedResultLength, result.size());
         IntStream.range(0, expectedResultLength)
                 .boxed()
                 .forEach(i ->
-                        assertEquals(expectedComboDataLabels.get(i), result.get(i).getLabel())
+                        {
+                            assertEquals(expectedComboDataLabels.get(i), result.get(i).getLabel());
+                            assertEquals((long) (i + 1), result.get(i).getId().longValue());
+                        }
+                );
+    }
+
+    private void loadAndCheckComptsSupplInfo(final Long expectedComptId, final Long packetId,
+                                             final String expectedComboDataLabelPrefix,
+                                             final Integer expectedResultLength, final Integer expectedNumOfCompts,
+                                             final Integer expectedNumOfStates, final Integer expectedNumOfComboData)
+            throws Exception {
+
+        final List<String> expectedComboDataLabels
+                = generateIteratedLabelsList(expectedComboDataLabelPrefix, expectedNumOfCompts, expectedNumOfStates,
+                expectedNumOfComboData);
+
+        List<ComptSupplInfo> result = comptDao.loadComptsSupplInfo(packetId);
+
+        assertEquals((long) expectedResultLength, result.size());
+        IntStream.range(0, expectedResultLength)
+                .boxed()
+                .forEach(i ->
+                        {
+                            assertEquals(expectedComboDataLabels.get(i), result.get(i).getLabel());
+                            assertEquals(expectedComptId, result.get(i).getComptId());
+                            assertEquals((long) (i / 3 + 1), result.get(i).getStateId().longValue());
+                            assertEquals((i % 3 == 0), result.get(i).isChecked());
+                        }
                 );
     }
 
@@ -211,38 +233,97 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         return expectedNumOfCompts * expectedNumOfStates * expectedNumOfComboData;
     }
 
-    @Test
+    @Test(expected = DatabaseException.class)
     @DirtiesContext
-    public void testGetComboData_negative() throws Exception {
-        final int expectedResultLength = 0;
-//        final List<ComboData> result = comptDao.findAllComboData();
-
-//        assertEquals(expectedResultLength, result.size());
+    public void testLoadComboData_negative() throws Exception {
+        comptDao.loadAllComboData();
     }
 
-    @DataSets(before = "/com/somecode/service/ComptDaoTest_State.xls")
+    @DataSets(before = "/com/somecode/service/testLoadStates.xls")
     @Test
     @DirtiesContext
-    public void testGetStates_positive() throws Exception {
+    public void testLoadAllStates_positive() throws Exception {
         final String expectedLabelsPrefix = "state_label_";
         final int expectedResultLength = 3;
         final List<String> expectedLabels = generateDiverseLabelsList(expectedLabelsPrefix, expectedResultLength);
 
-//        final List<State> result = comptDao.findAllStates();
+        final List<State> result = comptDao.loadAllStates();
 
-//        assertEquals(expectedResultLength, result.size());
-//        IntStream.range(0, expectedResultLength)
-//                .boxed()
-//                .forEach(i -> assertEquals(expectedLabels.get(i), result.get(i).getLabel()));
+        assertEquals(expectedResultLength, result.size());
+        IntStream.range(0, expectedResultLength)
+                .boxed()
+                .forEach(i -> assertEquals(expectedLabels.get(i), result.get(i).getLabel()));
+    }
+
+    @Test(expected = DatabaseException.class)
+    @DirtiesContext
+    public void testLoadAllStates_negative() throws Exception {
+        final int expectedResultLength = 0;
+        final List<State> result = comptDao.loadAllStates();
+
+        assertEquals(expectedResultLength, result.size());
+    }
+
+    @DataSets(before = "/com/somecode/service/testLoadPackets.xls")
+    @Test
+    @DirtiesContext
+    public void testLoadPackets_onePacket_positive() throws Exception {
+        final Long packetId = 1L;
+        final int expectedResultLength = 1;
+
+        final List<PacketInfo> result = comptDao.loadPackets(packetId);
+
+        assertEquals(expectedResultLength, result.size());
+        IntStream.range(0, expectedResultLength)
+                .boxed()
+                .forEach(i ->
+                        {
+                            assertEquals((long) (i + 1), result.get(i).getStateId().longValue());
+                            assertEquals((long) (i + 1), result.get(i).getId().longValue());
+                        }
+                );
+    }
+
+    @DataSets(before = "/com/somecode/service/testLoadPackets.xls")
+    @Test
+    @DirtiesContext
+    public void testLoadPackets_onePacket_negative() throws Exception {
+        final Long packetId = 3L;
+        final int expectedResultSize = 0;
+        final List<PacketInfo> result = comptDao.loadPackets(packetId);
+
+        assertEquals(expectedResultSize, result.size());
+    }
+
+    @DataSets(before = "/com/somecode/service/testLoadPackets.xls")
+    @Test
+    @DirtiesContext
+    public void testLoadPackets_allPackets_positive() throws Exception {
+        final Long packetId = null;
+        final int expectedResultLength = 2;
+
+        final List<PacketInfo> result = comptDao.loadPackets(packetId);
+
+        assertEquals(expectedResultLength, result.size());
+        IntStream.range(0, expectedResultLength)
+                .boxed()
+                .forEach(i ->
+                        {
+                            assertEquals((long) (i + 1), result.get(i).getStateId().longValue());
+                            assertEquals((long) (i + 1), result.get(i).getId().longValue());
+                        }
+                );
     }
 
     @Test
     @DirtiesContext
-    public void testGetAllStates_negative() throws Exception {
+    public void testLoadPackets_allPackets_negative() throws Exception {
+        final Long packetId = null;
         final int expectedResultLength = 0;
-//        final List<State> result = comptDao.findAllStates();
 
-//        assertEquals(expectedResultLength, result.size());
+        final List<PacketInfo> result = comptDao.loadPackets(packetId);
+
+        assertEquals(expectedResultLength, result.size());
     }
 
     @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Update_Compts.xls",

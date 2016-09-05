@@ -17,11 +17,11 @@ public interface ComptDao {
 
     List<ComptInfo> loadCompts(Long packetId);
 
+    List<ComboData> loadAllComboData() throws DatabaseException;
+
     List<Long> deleteCompts(List<Long> idsToRemove);
 
     List<Long> deletePackets(List<Long> packetIdsToDelete);
-
-    List<ComboData> loadAllComboData() throws DatabaseException;
 
     Map<Long, List<Long>> updateCompts(List<ComptParams> comptParamsList) throws DatabaseException;
 
