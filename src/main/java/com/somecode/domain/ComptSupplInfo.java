@@ -4,7 +4,7 @@ package com.somecode.domain;
  * Created by alexc_000 on 2016-07-16.
  */
 
-public class ComptSupplInfo implements HasLabel {
+public class ComptSupplInfo {
     private Long comptId;
     private Long stateId;
     private String label;
