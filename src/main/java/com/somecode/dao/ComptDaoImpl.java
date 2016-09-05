@@ -133,6 +133,8 @@ public class ComptDaoImpl implements  ComptDao {
                 .boxed()
                 .collect(Collectors.toMap(i -> allComboData.get(i).getLabel(), Function.identity()));
 
+        LOGGER.info("MapComboLabelsToIndices: " + mapComboLabelsToIndices);
+
         return allComboData;
     }
 
@@ -304,6 +306,7 @@ public class ComptDaoImpl implements  ComptDao {
     public void addOrUpdatePackets(List<PacketParams> packetParamsList, OperationType operationType)
             throws DatabaseException {
         loadAllStates();
+        loadAllComboData();
 
         List<Packet> packets = new LinkedList<>();
 
