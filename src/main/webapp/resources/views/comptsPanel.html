@@ -65,7 +65,7 @@
                 </div>
             </div>
         </div>
-        <form name="form" ng-if="isPacketSelected()">
+        <form name="form" ng-if="isPacketSelected()" novalidate>
             <div class="row grid-row">
                 <div class="col-sm-5">
                     <div class="form-group">
@@ -79,14 +79,14 @@
                                    blacklist="blacklist"
                                    regex="regex"
                                    required/>
-                            <div style="color:maroon" role="alert">
+                            <span class="error" role="alert">
                                 <div ng-show="form.newLabelName.$error.required">You did not enter a label</div>
                                 <div ng-show="form.newLabelName.$error.maxlength">Label is too long</div>
                                 <div ng-show="form.newLabelName.$error.blacklist">Label is not unique</div>
                                 <div ng-show="form.newLabelName.$error.regex">
                                     Label should contain latin letters, digits, underscore and spaces only.
                                 </div>
-                            </div>
+                            </span>
                         </label>
                     </div>
                 </div>
@@ -97,12 +97,12 @@
                     </select>
                 </div>
                 <div class="col-sm-1">
-                            <span class="input-group-btn">
-                                <button class="btn btn-xs btn-success" id="addBtn"
-                                        ng-click="addComptLocally()"
-                                        ng-disabled="form.$invalid">Add
-                                </button>
-                            </span>
+                        <span class="input-group-btn">
+                            <button class="btn btn-xs btn-success" id="addBtn"
+                                    ng-click="addComptLocally()"
+                                    ng-disabled="form.$invalid">Add
+                            </button>
+                        </span>
                 </div>
             </div>
         </form>
