@@ -55,14 +55,6 @@ select.special {
     padding: 0 13px 1px;
 }
 
-.ng-invalid {
-    background-color: #ebcccc;
-}
-
-.ng-valid {
-    background-color: #b2dba1;
-}
-
 span.error {
     color: maroon;
     font-weight: bold;
