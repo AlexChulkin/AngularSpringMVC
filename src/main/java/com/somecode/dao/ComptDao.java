@@ -9,6 +9,9 @@ import java.util.Map;
  * Created by alexc_000 on 2016-06-24.
  */
 public interface ComptDao {
+
+    Role getUserRole(String username, String password);
+
     List<ComptSupplInfo> loadComptsSupplInfo(Long packetId);
 
     List<PacketInfo> loadPackets(Long packetId);

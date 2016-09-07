@@ -18,6 +18,10 @@ public class ComptService {
     @Autowired
     private ComptDao comptDao;
 
+    public Role getUserRole(String username, String password) {
+        return comptDao.getUserRole(username, password);
+    }
+
     public Data loadData(Long packetId) {
         LOGGER.info(packetId == null
                 ? "ComptService. Load All Data."

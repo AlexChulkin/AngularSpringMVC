@@ -2,7 +2,7 @@
  * Created by alexc_000 on 2016-08-30.
  */
 
-angular.module("packetApp")
+angular.module("packetAppAdmin")
     .constant("packetListActiveClass", "btn-primary btn-sm")
     .constant("packetListNonActiveClass", "btn-sm")
     .constant("updateCompts", "UPDATE_COMPTS")
@@ -10,15 +10,16 @@ angular.module("packetApp")
     .constant("updatePackets", "UPDATE_PACKETS")
     .constant("deletePackets", "DELETE_PACKETS")
     .constant("addPackets", "ADD_PACKETS")
-    .constant("saveAllChangesToBasePath", "/saveAllChangesToBase")
+    .constant("saveAllChangesToBaseUrl", "/saveAllChangesToBase")
     .constant("initialPacketIndex", -1)
     .constant("errorStatus404", 404)
     .constant("narrowPacketCaption", "narrow-packet-caption")
     .constant("widePacketCaption", "wide-packet-caption")
-    .controller("packetsPanelCtrl", function ($scope, $http, $window, packetListActiveClass, packetListNonActiveClass,
+    .constant("adminRole", "ADMIN")
+    .controller("packetsPanelCtrl", function ($scope, $http, $location, packetListActiveClass, packetListNonActiveClass,
                                               updateCompts, deleteCompts, updatePackets, deletePackets, addPackets,
-                                              saveAllChangesToBasePath, errorStatus404, narrowPacketCaption,
-                                              widePacketCaption) {
+                                              saveAllChangesToBaseUrl, errorStatus404, narrowPacketCaption,
+                                              widePacketCaption, adminRole) {
         var data;
 
         $scope.showAggregateButtons = function () {
@@ -48,7 +49,7 @@ angular.module("packetApp")
         };
 
         $scope.reloadRoute = function () {
-            $window.location.reload();
+            $scope.$parent.init();
         };
 
         $scope.getPacketClass = function (packet) {
@@ -67,11 +68,11 @@ angular.module("packetApp")
         };
 
         $scope.saveAllChangesToBase = function (savedPacketId) {
-            var params = generateParamsForSaving(savedPacketId);
+            var dataParams = generateDataParamsForSaving(savedPacketId);
             var errorMap = generateErrorMap();
 
             $http
-                .post(contextPath + saveAllChangesToBasePath, {params: params})
+                .post(contextPath + saveAllChangesToBaseUrl, {dataParams: dataParams})
                 .then(
                     function success(data) {
                         angular.forEach(data, function (el) {
@@ -129,7 +130,7 @@ angular.module("packetApp")
             return checkedVals;
         };
 
-        var generateParamsForSaving = function (savedPacketId) {
+        var generateDataParamsForSaving = function (savedPacketId) {
             var packetsToUpdateParamsList = [];
             var packetsToAddParamsList = [];
             var comptsToUpdateParamsList = [];
@@ -216,6 +217,8 @@ angular.module("packetApp")
         var init = function () {
             data = {};
             data.packetIdsToDelete = [];
+            $scope.data = {};
+            $scope.data.adminRoleTitle = adminRole;
         };
 
         init();

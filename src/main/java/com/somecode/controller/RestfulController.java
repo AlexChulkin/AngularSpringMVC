@@ -1,9 +1,6 @@
 package com.somecode.controller;
 
-import com.somecode.domain.Data;
-import com.somecode.domain.Params;
-import com.somecode.domain.PersistError;
-import com.somecode.domain.RequestObj;
+import com.somecode.domain.*;
 import com.somecode.service.ComptService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +24,22 @@ public class RestfulController {
 
     @RequestMapping({"/home", ""})
     public String home(){
-        return "/WEB-INF/jsp/home.jsp";
+        return "/resources/admin.jsp";
+    }
+
+    @RequestMapping(value = "/users/login", method = RequestMethod.POST)
+    public
+    @ResponseBody
+    Role getUserRole(@RequestBody RequestObj requestObj) {
+        return comptService.getUserRole(requestObj.getSecurityParams().getUsername(),
+                requestObj.getSecurityParams().getPassword());
     }
 
     @RequestMapping(value = "/loadData", method = RequestMethod.POST)
     public
     @ResponseBody
     Data loadData(@RequestBody RequestObj requestObj) throws Exception {
-        Long packetId = requestObj.getParams().getPacketId();
+        Long packetId = requestObj.getDataParams().getPacketId();
         LOGGER.info(packetId == null ? "Load All Data" : "Load Data for packetId: " + packetId);
         return comptService.loadData(packetId);
     }
@@ -42,7 +47,7 @@ public class RestfulController {
     @RequestMapping(value = "/saveAllChangesToBase", method = RequestMethod.POST)
     public EnumSet<PersistError> saveAllChangesToBase(@RequestBody RequestObj requestObj) throws Exception {
         LOGGER.info("Save All Changes to Base");
-        Params params = requestObj.getParams();
+        DataParams params = requestObj.getDataParams();
         return comptService.saveAllChangesToBase(params.getComptIdsToDelete(),
                 params.getPacketIdsToDelete(),
                 params.getComptsToUpdateParamsList(),

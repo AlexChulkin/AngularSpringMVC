@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by vharutyunyan on 20.06.2014.
  */
-public class Params {
+public class DataParams {
 
     private List<Long> comptIdsToDelete;
     private List<Long> packetIdsToDelete;

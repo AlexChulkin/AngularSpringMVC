@@ -1,7 +1,7 @@
 /**
  * Created by alexc_000 on 2016-08-30.
  */
-var app = angular.module("packetApp");
+var app = angular.module("packetAppAdmin");
 app
     .constant("pageListActiveClass", "btn-primary btn-sm")
     .constant("pageListNonActiveClass", "btn-sm")
@@ -10,25 +10,34 @@ app
                                              packetListPageCount) {
 
         var data;
-        $scope.$watch('$parent.data.selectedPacket', function (newValue, oldValue) {
-            if (newValue) {
-                if (oldValue) {
-                    var oldSelectedPacketId = oldValue.id;
-                    $scope.$parent.data.compts[$scope.$parent.data.packetIdToInd[oldSelectedPacketId]]
-                        = $scope.data.selectedCompts;
-                    $scope.$parent.data.comptLabels[oldSelectedPacketId] = $scope.data.selectedComptLabels;
-                }
-                data.selectedPacketId = newValue.id;
-                $scope.$parent.data.packetIsAlreadySelectedAtLeastOnce = true;
-                data.isSelectedPacketNew = data.selectedPacketId in $scope.$parent.data.newPackets;
+
+        $scope.$watch('$parent.data.packetIsSelectedOrSelectedPacketIsReloaded', function (flag) {
+            var oldValue = flag.oldVal;
+            var newValue = flag.newVal;
+            if (newValue !== oldValue) {
+                if (newValue) {
+                    if (oldValue) {
+                        var oldSelectedPacketId = oldValue.id;
+                        $scope.$parent.data.compts[$scope.$parent.data.packetIdToInd[oldSelectedPacketId]]
+                            = $scope.data.selectedCompts;
+                        $scope.$parent.data.comptLabels[oldSelectedPacketId] = $scope.data.selectedComptLabels;
+                    }
+                    data.selectedPacketId = newValue.id;
+                    $scope.$parent.data.packetIsAlreadySelectedAtLeastOnce = true;
+                    data.isSelectedPacketNew = data.selectedPacketId in $scope.$parent.data.newPackets;
+                    $scope.data.selectedCompts
+                        = $scope.$parent.data.compts[$scope.$parent.data.packetIdToInd[data.selectedPacketId]] || [];
+                    $scope.data.selectedComptLabels = $scope.$parent.data.comptLabels[data.selectedPacketId] || {};
+                } else {
+                    $scope.data.selectedCompts = [];
+                    $scope.data.selectedComptLabels = {};
+                    data.isSelectedPacketNew = null;
+                    data.selectedPacketId = null;
+                }   
+            } else {
                 $scope.data.selectedCompts
                     = $scope.$parent.data.compts[$scope.$parent.data.packetIdToInd[data.selectedPacketId]] || [];
                 $scope.data.selectedComptLabels = $scope.$parent.data.comptLabels[data.selectedPacketId] || {};
-            } else {
-                $scope.data.selectedCompts = [];
-                $scope.data.selectedComptLabels = {};
-                data.isSelectedPacketNew = null;
-                data.selectedPacketId = null;
             }
         });
 
@@ -78,8 +87,6 @@ app
 
             delete $scope.data.selectedComptLabels[comptLabel.toUpperCase()];
             $scope.data.selectedCompts[$scope.$parent.data.comptIdToInd[comptId]] = null;
-            delete $scope.$parent.data.allCheckedComboData[comptId];
-            delete $scope.$parent.data.allComboData[comptId];
             if ($scope.$parent.data.comptIdsToUpdate[pktId]) {
                 delete $scope.$parent.data.comptIdsToUpdate[pktId][comptId];
             }
@@ -116,7 +123,6 @@ app
 
         var init = function () {
             data = {};
-            data.comptsIsSelected = null;
             data.isSelectedPacketNew = null;
             $scope.data.selectedCompts = [];
             $scope.data.selectedComptLabels = {};
@@ -131,10 +137,10 @@ app.directive('blacklist', function () {
         require: 'ngModel',
         link: function ($scope, elem, attr, ngModel) {
             ngModel.$parsers.unshift(function (label) {
-                var label = label.replace(/\s{2,}/g, " ");
-                var upperCaseLabel = label.toUpperCase();
+                var updatedLabel = label.replace(/\s{2,}/g, " ");
+                var upperCaseLabel = updatedLabel.toUpperCase();
                 ngModel.$setValidity('blacklist', !$scope.data.selectedComptLabels[upperCaseLabel]);
-                return label;
+                return updatedLabel;
             });
         }
     };

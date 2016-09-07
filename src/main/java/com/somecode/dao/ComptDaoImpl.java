@@ -46,6 +46,21 @@ public class ComptDaoImpl implements  ComptDao {
     @Autowired
     private PacketRepository packetRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Override
+    public Role getUserRole(String username, String password) {
+        List<User> users = userRepository.findByUsername(username);
+        if (!users.isEmpty()) {
+            User user = users.get(0);
+            if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                return user.getRole();
+            }
+        }
+        return null;
+    }
+
     @Override
     public List<PacketInfo> loadPackets(Long packetId) {
         List<PacketInfo> result = new LinkedList<>();

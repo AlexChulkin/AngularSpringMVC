@@ -59,3 +59,7 @@ span.error {
     color: maroon;
     font-weight: bold;
 }
+
+span.title {
+    text-align: center;
+}

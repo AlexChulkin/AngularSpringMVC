@@ -1,27 +1,27 @@
 /**
  * Created by achulkin on 04.06.14.
  */
-angular.module("packetApp")
+angular.module("packetAppAdmin")
     .constant("packetListPageCount", 10)
     .constant("labelLabel", "Label")
-    .constant("loadDataPath", "/loadData")
+    .constant("loadDataUrl", "/loadData")
     .constant("initialPacketIndex", -1)
-    .controller("mainCtrl", function ($scope, $http, packetListPageCount, labelLabel, loadDataPath,
+    .controller("mainCtrl", function ($scope, $http, packetListPageCount, labelLabel, loadDataUrl,
                                       initialPacketIndex) {
 
         var data;
 
         $scope.loadPacketById = function (packetId) {
-            var isPacketIdNull = packetId == null;
-            var packetIndex = isPacketIdNull ? initialPacketIndex : $scope.data.packetIdToInd[packetId];
-            var params = isPacketIdNull ? {} : {packetId: packetId};
+
+            var packetIndex = !packetId ? initialPacketIndex : $scope.data.packetIdToInd[packetId];
+            var dataParams = !packetId ? {} : {packetId: packetId};
             $http
-                .post(contextPath + loadDataPath, {params: params})
+                .post(contextPath + loadDataUrl, {dataParams: dataParams})
                 .then(
                     function success(result) {
                         var data = result.data;
                         prepareCompts(data.compts, packetIndex);
-                        preparePackets(data.packets, isPacketIdNull);
+                        preparePackets(data.packets, !packetId);
                         prepareStates(data.states);
                         prepareComboData(data.comboData);
                         if (!$scope.isComptsNotLoaded()
@@ -29,6 +29,16 @@ angular.module("packetApp")
                             && !$scope.isStatesNotLoaded()) {
 
                             prepareComptsSupplInfo(data.comptSupplInfo);
+                        }
+                        var selPacket = $scope.data.selectedPacket;
+                        if (packetId && selPacket && packetId == selPacket.id) {
+                            $scope.data.packetIsSelectedOrSelectedPacketIsReloaded
+                                =
+                            {
+                                oldVal: selPacket,
+                                newVal: selPacket,
+                                selectedPacketsReloadCounter: ++$scope.data.selectedPacketsReloadCounter
+                            };
                         }
                     },
                     function error(error) {
@@ -62,7 +72,9 @@ angular.module("packetApp")
         };
 
         $scope.selectPacket = function (packet) {
+            var oldSelectedPacket = $scope.data.selectedPacket;
             $scope.data.selectedPacket = packet;
+            $scope.data.packetIsSelectedOrSelectedPacketIsReloaded = {oldVal: oldSelectedPacket, newVal: packet};
             $scope.selectPage(1);
         };
 
@@ -163,15 +175,7 @@ angular.module("packetApp")
 
         var setDefaultDataAndScopeData = function () {
             data = {};
-            data.loadedNoComptsSupplInfo = null;
-            data.loadedNoCompts = null;
-
             $scope.data = {};
-            $scope.data.loadError = null;
-            $scope.data.loadedNoPackets = null;
-            $scope.data.loadedNoStates = null;
-            $scope.data.loadedNoComboData = null;
-            $scope.data.packetIsAlreadySelectedAtLeastOnce = false;
             $scope.data.comptIdToInd = {};
             $scope.data.packetIdToInd = {};
             $scope.data.comptLabels = {};
@@ -190,15 +194,15 @@ angular.module("packetApp")
             $scope.data.comptIdsToUpdate = {};
             $scope.data.newComptLabels = {true: {}, false: {}};
             $scope.data.comptIdsTaggedToDelete = {};
-            $scope.data.selectedPacket = null;
-
+            $scope.data.packetIsSelectedOrSelectedPacketIsReloaded = {oldVal: null, newVal: null};
+            $scope.data.selectedPacketsReloadCounter = 0;
         };
 
-        var init = function () {
+        $scope.init = function () {
             setDefaultDataAndScopeData();
             $scope.loadPacketById(null);
         };
 
-        init();
+        $scope.init();
     });
 

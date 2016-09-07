@@ -5,7 +5,8 @@
             Packet#<span ng-bind="pkt.id"/>
         </a>
         <a ng-click="saveAllChangesToBase(pkt.id)"
-           class="btn btn-sm btn-success expanded-margin-bottom">
+           class="btn btn-sm btn-success expanded-margin-bottom"
+           ng-disabled="$parent.$parent.$parent.$parent.role !== data.adminRoleTitle">
             Save
         </a>
         <a ng-click="$parent.loadPacketById(pkt.id)"
@@ -18,17 +19,18 @@
         </a>
     </div>
     <div class="btn-group" id="aggregate-btns" ng-if="showAggregateButtons()">
-        <a ng-click="addPacketLocally()"
-           class="btn btn-md btn-block btn-default">
+        <button ng-click="addPacketLocally()"
+                class="btn btn-md btn-block btn-default">
             Add packet
-        </a>
-        <a ng-click="saveAllChangesToBase(null)"
-           class="btn btn-md btn-block btn-success">
+        </button>
+        <button ng-click="saveAllChangesToBase(null)"
+                class="btn btn-md btn-block btn-success"
+                ng-disabled="$parent.$parent.$parent.$parent.role !== data.adminRoleTitle">
             Save changes
-        </a>
-        <a ng-click="reloadRoute()"
+        </button>
+        <button ng-click="reloadRoute()"
            class="btn btn-md btn-block btn-warning">
             Reload all
-        </a>
+        </button>
     </div>
 </div>
