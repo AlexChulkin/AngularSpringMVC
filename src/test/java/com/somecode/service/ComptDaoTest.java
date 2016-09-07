@@ -16,14 +16,16 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import javax.persistence.Cache;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DaoTestConfig.class})
@@ -36,17 +38,6 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
 
     @PersistenceContext
     private EntityManager em;
-
-    @Override
-    protected void clearCachedData() {
-        deleteFromTables("DATA_COMPT", "COMBO_DATA", "COMPT", "PACKET", "STATE");
-        Optional.of(em)
-                .ifPresent(EntityManager::clear);
-        Optional.of(em)
-                .map(EntityManager::getEntityManagerFactory)
-                .map(EntityManagerFactory::getCache)
-                .ifPresent(Cache::evictAll);
-    }
 
     @DataSets(before = "/com/somecode/service/testLoadCompts.xls")
     @Test
@@ -347,8 +338,8 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
         em.flush();
     }
 
-    @DataSets(before = "/com/somecode/service/ComptDaoTest_Before_Update_Compts.xls",
-            after = "/com/somecode/service/ComptDaoTest_Before_Update_Compts.xls")
+    @DataSets(before = "/com/somecode/service/testUpdateCompts_before.xls",
+            after = "/com/somecode/service/testUpdateCompts_before.xls")
     @Rollback(false)
     @Test
     @DirtiesContext
@@ -706,5 +697,39 @@ public class ComptDaoTest extends AbstractDbunitTransactionalJUnit4SpringContext
 
         comptDao.deleteCompts(comptIdsToRemove);
         em.flush();
+    }
+
+    @DataSets(before = "/com/somecode/service/testGetUserRole.xls")
+    @Rollback(false)
+    @Test
+    @DirtiesContext
+    public void testGetUserRole_positive() throws Exception {
+        final String username = "ADMIN";
+        final String password = "ADMIN";
+        final Role expectedRole = Role.ADMIN;
+
+        assertEquals(expectedRole, comptDao.getUserRole(username, password));
+    }
+
+    @DataSets(before = "/com/somecode/service/testGetUserRole.xls")
+    @Rollback(false)
+    @Test
+    @DirtiesContext
+    public void testGetUserRole_negative_invalidUsername() throws Exception {
+        final String username = "USER";
+        final String password = "ADMIN";
+
+        assertNull(comptDao.getUserRole(username, password));
+    }
+
+    @DataSets(before = "/com/somecode/service/testGetUserRole.xls")
+    @Rollback(false)
+    @Test
+    @DirtiesContext
+    public void testGetUserRole_negative_invalidPassword() throws Exception {
+        final String username = "ADMIN";
+        final String password = "admin";
+
+        assertNull(comptDao.getUserRole(username, password));
     }
 }

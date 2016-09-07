@@ -48,10 +48,8 @@ public abstract class AbstractDbunitTransactionalJUnit4SpringContextTests
         IDataSet expectedDataSet = xlsDataFileLoader.load(afterDatasetFileName);
         Assertion.assertEquals(expectedDataSet, databaseDataSet);
         databaseTester.onTearDown();
-        clearCachedData();
     }
 
-    abstract protected void clearCachedData();
 
     static class DbunitTestExecutionListener extends AbstractTestExecutionListener {
 
