@@ -2,7 +2,7 @@
  * Created by alexc_000 on 2016-08-30.
  */
 
-angular.module("packetAppAdmin")
+angular.module("packetAdminApp")
     .constant("packetListActiveClass", "btn-primary btn-sm")
     .constant("packetListNonActiveClass", "btn-sm")
     .constant("updateCompts", "UPDATE_COMPTS")

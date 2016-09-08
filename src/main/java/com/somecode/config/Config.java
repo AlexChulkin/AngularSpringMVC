@@ -26,5 +26,4 @@ public class Config extends WebMvcConfigurerAdapter {
         urlBasedViewResolver.setViewClass(JstlView.class);
         return urlBasedViewResolver;
     }
-
 }

@@ -1,7 +1,7 @@
 /**
  * Created by alexc_000 on 2016-09-06.
  */
-angular.module("packetAppAdmin")
+angular.module("packetAdminApp")
     .constant("authUrl", "/users/login")
     .constant("mainUrl", "/main")
     .constant("loginUrl", "/login")

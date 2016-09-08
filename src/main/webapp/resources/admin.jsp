@@ -6,7 +6,7 @@
   To change this template use File | Settings | File Templates.
 --%>
 <!DOCTYPE html>
-<html ng-app="packetAppAdmin">
+<html ng-app="packetAdminApp">
 <head>
     <title>Packet App Administration</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,7 +16,7 @@
     <link href="resources/css/bootstrap-theme.css" rel="stylesheet"/>
     <link href="resources/css/home-styles.css" rel="stylesheet"/>
     <script>
-        angular.module("packetAppAdmin", ["customFilters", "ngRoute"])
+        angular.module("packetAdminApp", ["customFilters", "ngRoute"])
                 .config(function ($routeProvider) {
 
                     $routeProvider.when("/login", {

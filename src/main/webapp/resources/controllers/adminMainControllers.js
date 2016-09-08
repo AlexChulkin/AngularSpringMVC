@@ -1,7 +1,7 @@
 /**
  * Created by achulkin on 04.06.14.
  */
-angular.module("packetAppAdmin")
+angular.module("packetAdminApp")
     .constant("packetListPageCount", 10)
     .constant("labelLabel", "Label")
     .constant("loadDataUrl", "/loadData")

@@ -1,7 +1,7 @@
 /**
  * Created by alexc_000 on 2016-08-30.
  */
-var app = angular.module("packetAppAdmin");
+var app = angular.module("packetAdminApp");
 app
     .constant("pageListActiveClass", "btn-primary btn-sm")
     .constant("pageListNonActiveClass", "btn-sm")
