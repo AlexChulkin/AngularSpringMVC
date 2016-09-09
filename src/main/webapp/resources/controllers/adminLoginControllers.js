@@ -12,29 +12,27 @@ angular.module("packetAdminApp")
                 password: pass
             };
             $http.post(contextPath + authUrl, {
-                securityParams: securityParams,
-                withCredentials: true
+                securityParams: securityParams
             }).success(function (role) {
                 if (role) {
-                    $scope.role = role;
-                    $scope.username = username;
-                    $scope.authenticationError = undefined;
-                    $cookies.put("username", $scope.username);
-                    $cookies.put("role", $scope.role);
-                    $cookies.remove("authenticationError");
+                    $cookies.put("username", username);
+                    $cookies.put("role", role);
+                    $scope.data.role = role;
+                    $scope.data.username = username;
+                    $scope.data.authenticationError = null;
                     $location.path(mainUrl);
                 } else {
-                    setAuthenticationError({status: "Username and/or password are incorrect"});
+                    setAuthenticationError({status: "username and/or password are incorrect"});
                 }
             }).error(function (error) {
                 setAuthenticationError(error);
             }).finally(function (data) {
-                $scope.password = undefined;
+                $scope.data.password = null;
             });
         };
 
         $scope.isUserAuthorized = function () {
-            return $scope.role;
+            return $scope.data.role;
         };
 
         $scope.logout = function () {
@@ -45,25 +43,23 @@ angular.module("packetAdminApp")
         var setAuthenticationError = function (authenticationError) {
             $cookies.remove("username");
             $cookies.remove("role");
-            $scope.username = undefined;
-            $scope.role = undefined;
-            $scope.authenticationError = authenticationError;
-            $cookies.put("authenticationError", $scope.authenticationError);
+            $scope.data = {};
+            $scope.data.authenticationError = authenticationError;
+            $scope.data.authenticationError.report = authenticationError.status
+                ? 'Authentication failed (' + authenticationError.status + '). Try again.'
+                : 'Authentication failed. Try again.';
         };
 
         var nullifyAll = function () {
             $cookies.remove("username");
             $cookies.remove("role");
-            $cookies.remove("authenticationError");
-            $scope.username = undefined;
-            $scope.role = undefined;
-            $scope.authenticationError = undefined;
+            $scope.data = {};
         };
 
         var init = function () {
-            $scope.username = $cookies.get("username");
-            $scope.role = $cookies.get("role");
-            $scope.authenticationError = $cookies.get("authenticationError");
+            $scope.data = {};
+            $scope.data.username = $cookies.get("username");
+            $scope.data.role = $cookies.get("role");
         };
 
         init();

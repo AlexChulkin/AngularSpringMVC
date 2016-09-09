@@ -6,15 +6,6 @@ package com.somecode.domain;
 public class RequestObj {
     private DataParams dataParams;
     private SecurityParams securityParams;
-    private boolean withCredentials;
-
-    public boolean isWithCredentials() {
-        return withCredentials;
-    }
-
-    public void setWithCredentials(boolean withCredentials) {
-        this.withCredentials = withCredentials;
-    }
 
     public SecurityParams getSecurityParams() {
         return securityParams;
