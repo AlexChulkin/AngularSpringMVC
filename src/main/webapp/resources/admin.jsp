@@ -12,11 +12,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="application/javascript" src="resources/angular_v1.5.8.js"></script>
     <script src="resources/ngmodules/angular-route.js"></script>
+    <script src="resources/ngmodules/angular-cookies.js"></script>
     <link href="resources/css/bootstrap.css" rel="stylesheet"/>
     <link href="resources/css/bootstrap-theme.css" rel="stylesheet"/>
     <link href="resources/css/home-styles.css" rel="stylesheet"/>
     <script>
-        angular.module("packetAdminApp", ["customFilters", "ngRoute"])
+        angular.module("packetAdminApp", ["customFilters", "ngRoute", "ngCookies"])
                 .config(function ($routeProvider) {
 
                     $routeProvider.when("/login", {

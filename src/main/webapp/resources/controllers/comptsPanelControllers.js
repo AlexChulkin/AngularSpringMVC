@@ -6,7 +6,7 @@ app
     .constant("pageListActiveClass", "btn-primary btn-sm")
     .constant("pageListNonActiveClass", "btn-sm")
     .constant("packetListPageCount", 10)
-    .controller("comptsPanelCtrl", function ($scope, $http, $window, pageListActiveClass, pageListNonActiveClass,
+    .controller("comptsPanelCtrl", function ($scope, pageListActiveClass, pageListNonActiveClass,
                                              packetListPageCount) {
 
         var data;

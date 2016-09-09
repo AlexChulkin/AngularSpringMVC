@@ -16,10 +16,10 @@ angular.module("packetAdminApp")
     .constant("narrowPacketCaption", "narrow-packet-caption")
     .constant("widePacketCaption", "wide-packet-caption")
     .constant("adminRole", "ADMIN")
-    .controller("packetsPanelCtrl", function ($scope, $http, $location, packetListActiveClass, packetListNonActiveClass,
-                                              updateCompts, deleteCompts, updatePackets, deletePackets, addPackets,
-                                              saveAllChangesToBaseUrl, errorStatus404, narrowPacketCaption,
-                                              widePacketCaption, adminRole) {
+    .controller("packetsPanelCtrl", function ($scope, $http, $location, $cookies, packetListActiveClass,
+                                              packetListNonActiveClass, updateCompts, deleteCompts, updatePackets,
+                                              deletePackets, addPackets, saveAllChangesToBaseUrl, errorStatus404,
+                                              narrowPacketCaption, widePacketCaption, adminRole) {
         var data;
 
         $scope.showAggregateButtons = function () {
@@ -218,7 +218,7 @@ angular.module("packetAdminApp")
             data = {};
             data.packetIdsToDelete = [];
             $scope.data = {};
-            $scope.data.adminRoleTitle = adminRole;
+            $scope.data.isRoleAdmin = $cookies === adminRole;
         };
 
         init();
