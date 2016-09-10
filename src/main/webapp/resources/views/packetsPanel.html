@@ -1,12 +1,12 @@
 <div ng-controller="packetsPanelCtrl">
-    <div class="flex" ng-repeat="pkt in $parent.data.allPackets">
+    <div class="flex" ng-repeat="pkt in allPackets">
         <a ng-click="$parent.selectPacket(pkt)"
            ng-class="getPacketClass(pkt)">
             Packet#<span ng-bind="pkt.id"/>
         </a>
         <a ng-click="saveAllChangesToBase(pkt.id)"
            class="btn btn-sm btn-success expanded-margin-bottom"
-           ng-disabled="data.isRoleNotAdmin">
+           ng-disabled="isRoleNotAdmin">
             Save
         </a>
         <a ng-click="$parent.loadPacketById(pkt.id)"
@@ -25,7 +25,7 @@
         </button>
         <button ng-click="saveAllChangesToBase(null)"
                 class="btn btn-md btn-block btn-success"
-                ng-disabled="data.isRoleNotAdmin">
+                ng-disabled="isRoleNotAdmin">
             Save changes
         </button>
         <button ng-click="reloadRoute()"

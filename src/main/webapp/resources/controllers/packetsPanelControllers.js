@@ -21,7 +21,7 @@ angular.module("packetAdminApp")
                                               deleteCompts, updatePackets, deletePackets, addPackets,
                                               saveAllChangesToBaseUrl, errorStatus404, narrowPacketCaption,
                                               widePacketCaption, adminRole) {
-        var data;
+        var packetIdsToDelete = [];
 
         $scope.showAggregateButtons = function () {
             return !exchangeService.getLoadError() && exchangeService.getLoadedNoStates() === false
@@ -43,7 +43,7 @@ angular.module("packetAdminApp")
         $scope.deletePacketLocally = function (packet) {
             var pktId = packet.id;
             if (!exchangeService.getNewPackets(pktId)) {
-                data.packetIdsToDelete.push(pktId);
+                packetIdsToDelete.push(pktId);
             }
             var isPktNew = pktId in exchangeService.getNewPackets();
             exchangeService.deleteNewComptLabels(isPktNew, pktId);
@@ -179,7 +179,7 @@ angular.module("packetAdminApp")
 
             if (packetsToUpdateParamsList.length == 0 && packetsToAddParamsList.length == 0
                 && comptIdsToDelete.length == 0 && comptsToUpdateParamsList.length == 0
-                && (savedPktId || data.packetIdsToDelete.length == 0)) {
+                && (savedPktId || packetIdsToDelete.length == 0)) {
                 return;
             }
 
@@ -190,7 +190,7 @@ angular.module("packetAdminApp")
                 comptIdsToDelete: comptIdsToDelete
             };
             if (!savedPktId) {
-                params['packetIdsToDelete'] = data.packetIdsToDelete;
+                params['packetIdsToDelete'] = packetIdsToDelete;
             } else {
                 params['packetId'] = savedPacketId;
             }
@@ -204,7 +204,7 @@ angular.module("packetAdminApp")
             errorMap[deleteCompts] = exchangeService.getComptIdsToDelete();
             errorMap[updatePackets] = exchangeService.getNewComptLabels(false);
             errorMap[addPackets] = exchangeService.getNewPackets();
-            errorMap[deletePackets] = data.packetIdsToDelete;
+            errorMap[deletePackets] = packetIdsToDelete;
 
             return errorMap;
         };
@@ -220,11 +220,8 @@ angular.module("packetAdminApp")
         };
 
         var init = function () {
-            data = {};
-            data.packetIdsToDelete = [];
-            $scope.data = {};
-            $scope.data.adminRoleTitle = adminRole;
-            $scope.data.isRoleNotAdmin = $cookies.get("role") !== $scope.data.adminRoleTitle;
+            $scope.adminRoleTitle = adminRole;
+            $scope.isRoleNotAdmin = $cookies.get("role") !== $scope.adminRoleTitle;
         };
 
         init();
