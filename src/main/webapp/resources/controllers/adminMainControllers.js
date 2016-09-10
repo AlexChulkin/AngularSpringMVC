@@ -96,16 +96,16 @@ angular.module("packetAdminApp")
                 var packetId = el.packetId;
                 if (!visitedPacket[packetId]) {
                     visitedPacket[packetId] = true;
-                    exchangeService.setComptLabels(packetId, {});
+                    exchangeService.setComptLabels({}, packetId);
                     if (initialPacketIndex == initialPacketInd) {
                         exchangeService.pushToCompts([]);
-                        exchangeService.setPacketIdToInd(packetId, ++packetInd);
+                        exchangeService.setPacketIdToInd(++packetInd, packetId);
                     } else {
                         exchangeService.setCompts([], packetInd)
                     }
                 }
 
-                exchangeService.setComptLabels(packetId, true, label);
+                exchangeService.setComptLabels(true, packetId, label);
                 exchangeService.setComptIdToInd[id, exchangeService.getComptsLength(packetInd)];
                 exchangeService.pushToCompts(packetInd, el);
                 if (id > exchangeService.getMaximalComptId()) {
@@ -129,12 +129,12 @@ angular.module("packetAdminApp")
                 if (pktId > exchangeService.getMaximalPacketId()) {
                     exchangeService.setMaximalPacketId(pktId);
                 }
-                exchangeService.setPacketInitialStateIds(pkt.id, pkt.stateId);
+                exchangeService.setPacketInitialStateIds(pkt.stateId, pkt.id);
             });
         };
 
         var addItemToAllPackets = function (pktId, pkt) {
-            exchangeService.setAllPackets(pktId, pkt);
+            exchangeService.setAllPackets(pkt, pktId);
         };
 
         var prepareStates = function (states) {
@@ -169,7 +169,7 @@ angular.module("packetAdminApp")
                 if (!exchangeService.getAllComboData(comptId, stateId)) {
                     exchangeService.setAllComboData([], comptId, stateId);
                 }
-                exchangeService.pushToAllComboData(comptId, stateId, label);
+                exchangeService.pushToAllComboData(label, comptId, stateId);
                 var checked = item.checked;
                 if (checked) {
                     if (!exchangeService.getAllCheckedComboData(comptId)) {

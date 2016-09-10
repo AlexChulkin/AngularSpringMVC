@@ -16,27 +16,24 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th ng-show="$parent.data.allStateLabels"
-                            ng-repeat="label in $parent.data.allStateLabels"><span ng-bind="label"/></th>
+                        <th ng-show="allStateLabels" ng-repeat="label in allStateLabels"><span ng-bind="label"/></th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr ng-repeat="compt in data.selectedCompts | filter:notNull
-                                                    | range:$parent.data.selectedPage:data.pageSize">
+                    <tr ng-repeat="compt in selectedCompts | filter:notNull | range:selectedPage:pageSize">
                         <td width="43%">
                             <span ng-bind="compt.label"/>
                         </td>
-                        <td width="17%" ng-repeat="state in $parent.data.allStates">
-                                    <span ng-bind="$parent.data.allCheckedComboData[compt.id][state.id]"
-                                          ng-hide="$parent.data.selectedPacket.stateId == state.id"></span>
-                                    <span ng-show="$parent.data.selectedPacket.stateId == state.id">
-                                          <select class="standard"
-                                                  ng-options=
-                                                          "el for el in $parent.data.allComboData[compt.id][state.id]"
-                                                  ng-model="$parent.data.allCheckedComboData[compt.id][state.id]"
-                                                  ng-change="updateComptLocally(compt)">
-                                          </select>
-                                    </span>
+                        <td width="17%" ng-repeat="state in allStates">
+                            <span ng-bind="allCheckedComboData[compt.id][state.id]"
+                                  ng-hide="selectedPacket.stateId == state.id"></span>
+                            <span ng-show="selectedPacket.stateId == state.id">
+                                  <select class="standard"
+                                          ng-options="el for el in allComboData[compt.id][state.id]"
+                                          ng-model="allCheckedComboData[compt.id][state.id]"
+                                          ng-change="updateComptLocally(compt)">
+                                  </select>
+                            </span>
                         </td>
                         <td>
                             <button ng-click="deleteComptLocally(compt)" class="btn btn-xs btn-primary">
@@ -47,7 +44,7 @@
                     </tbody>
                 </table>
                 <div class="pull-right btn-group">
-                    <a ng-repeat="page in data.selectedCompts | filter:notNull | pageCount:data.pageSize"
+                    <a ng-repeat="page in selectedCompts | filter:notNull | pageCount:pageSize"
                        ng-click="$parent.selectPage(page)" class="btn btn-default"
                        ng-class="getPageClass(page)">
                         <span ng-bind="page"></span>
@@ -56,11 +53,11 @@
             </div>
             <div class="well">
                 <div id="states">
-                    <div class="state" ng-repeat="state in $parent.data.allStates">
+                    <div class="state" ng-repeat="state in allStates">
                         <input type="radio"
-                               ng-model="$parent.data.selectedPacket.stateId"
+                               ng-model="selectedPacket.stateId"
                                ng-value="state.id">
-                        <span ng-bind="$parent.data.allStateLabels[state.id]"></span>
+                        <span ng-bind="allStateLabels[state.id]"></span>
                     </div>
                 </div>
             </div>
@@ -73,7 +70,7 @@
                             Enter new compt label:
                             <input class="text"
                                    name="newLabelName"
-                                   ng-model="data.newLabel"
+                                   ng-model="newLabel"
                                    ng-trim="true"
                                    ng-maxlength="75"
                                    blacklist="blacklist"
@@ -90,10 +87,10 @@
                         </label>
                     </div>
                 </div>
-                <div class="col-sm-2" ng-repeat="state in $parent.data.allStates track by $index">
+                <div class="col-sm-2" ng-repeat="state in allStates track by $index">
                     <select class="special"
-                            ng-options="el for el in $parent.data.comboDataDefaultSet"
-                            ng-model="$parent.data.newComptCheckedVals[$index]">
+                            ng-options="el for el in comboDataDefaultSet"
+                            ng-model="newComptCheckedVals[$index]">
                     </select>
                 </div>
                 <div class="col-sm-1">

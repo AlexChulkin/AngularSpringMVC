@@ -38,9 +38,9 @@ app.service('exchangeService', function ($rootScope) {
     var isSelectedPacketNew = null;
     var comptsIsSelected = null;
 
-    var activatePacketIsSelectedOrSelectedPacketIsReloadedListener = function (item) {
-        var oldValue = item.oldVal;
-        var newValue = item.newVal;
+    var activatePacketIsSelectedOrSelectedPacketIsReloadedListener = function (value) {
+        var oldValue = value.oldVal;
+        var newValue = value.newVal;
         if (newValue !== oldValue) {
             if (newValue) {
                 if (oldValue) {
@@ -65,100 +65,100 @@ app.service('exchangeService', function ($rootScope) {
         }
     };
 
-    var activateSelectedComptLabelsListener = function (item) {
-        comptsIsSelected = !angular.equals({}, item);
+    var activateSelectedComptLabelsListener = function (value) {
+        comptsIsSelected = !angular.equals({}, value);
     };
 
-    var setSelectedPacket = function (item) {
-        selectedPacket = item;
+    var setSelectedPacket = function (value) {
+        selectedPacket = value;
     };
 
     var getSelectedPacket = function () {
         return selectedPacket;
     };
 
-    var setLoadError = function (item) {
-        loadError = item;
+    var setLoadError = function (value) {
+        loadError = value;
     };
 
     var getLoadError = function () {
         return loadError;
     };
 
-    var setLoadedNoStates = function (item) {
-        loadedNoStates = item;
+    var setLoadedNoStates = function (value) {
+        loadedNoStates = value;
     };
 
     var getLoadedNoStates = function () {
         return loadedNoStates;
     };
 
-    var setLoadedNoComboData = function (item) {
-        loadedNoComboData = item;
+    var setLoadedNoComboData = function (value) {
+        loadedNoComboData = value;
     };
 
     var getLoadedNoComboData = function () {
         return loadedNoComboData;
     };
 
-    var setMaximalPacketId = function (item) {
-        maximalPacketId = item;
+    var setMaximalPacketId = function (value) {
+        maximalPacketId = value;
     };
 
     var getMaximalPacketId = function () {
         return maximalPacketId;
     };
 
-    var setMaximalPacketIndex = function (item) {
-        maximalPacketIndex = item;
+    var setMaximalPacketIndex = function (value) {
+        maximalPacketIndex = value;
     };
 
     var getMaximalPacketIndex = function () {
         return maximalPacketIndex;
     };
 
-    var setLoadEmpty = function (item) {
-        loadEmpty = item;
+    var setLoadEmpty = function (value) {
+        loadEmpty = value;
     };
 
     var getLoadEmpty = function () {
         return loadEmpty;
     };
 
-    var setSelectedPacketId = function (item) {
-        selectedPacketId = item;
+    var setSelectedPacketId = function (value) {
+        selectedPacketId = value;
     };
 
     var getSelectedPacketId = function () {
         return selectedPacketId;
     };
 
-    var setSelectedPage = function (item) {
-        selectedPage = item;
+    var setSelectedPage = function (value) {
+        selectedPage = value;
     };
 
     var getSelectedPage = function () {
         return selectedPage;
     };
 
-    var setLoadedNoPackets = function (item) {
-        loadedNoPackets = item;
+    var setLoadedNoPackets = function (value) {
+        loadedNoPackets = value;
     };
 
     var getLoadedNoPackets = function () {
         return loadedNoPackets;
     };
 
-    var setMaximalComptId = function (item) {
-        maximalComptId = item;
+    var setMaximalComptId = function (value) {
+        maximalComptId = value;
     };
 
     var getMaximalComptId = function () {
         return maximalComptId;
     };
 
-    var setPacketIsSelectedOrSelectedPacketIsReloaded = function (item) {
-        packetIsSelectedOrSelectedPacketIsReloaded = item;
+    var setPacketIsSelectedOrSelectedPacketIsReloaded = function (value) {
+        packetIsSelectedOrSelectedPacketIsReloaded = value;
         activatePacketIsSelectedOrSelectedPacketIsReloadedListener(packetIsSelectedOrSelectedPacketIsReloaded);
     };
 
@@ -166,19 +166,19 @@ app.service('exchangeService', function ($rootScope) {
         return packetIsSelectedOrSelectedPacketIsReloaded;
     };
 
-    var setPacketIsAlreadySelectedAtLeastOnce = function (item) {
-        packetIsAlreadySelectedAtLeastOnce = item;
+    var setPacketIsAlreadySelectedAtLeastOnce = function (value) {
+        packetIsAlreadySelectedAtLeastOnce = value;
     };
 
     var getPacketIsAlreadySelectedAtLeastOnce = function () {
         return packetIsAlreadySelectedAtLeastOnce;
     };
 
-    var setComptLabels = function (pktId, item, label) {
+    var setComptLabels = function (value, pktId, label) {
         if (label) {
-            comptLabels[pktId][label] = item;
+            comptLabels[pktId][label] = value;
         } else {
-            comptLabels[pktId] = item;
+            comptLabels[pktId] = value;
         }
     };
 
@@ -194,8 +194,8 @@ app.service('exchangeService', function ($rootScope) {
         return packetIdToInd[packetId];
     };
 
-    var setPacketIdToInd = function (packetId, item) {
-        packetIdToInd[packetId] = item;
+    var setPacketIdToInd = function (value, packetId) {
+        packetIdToInd[packetId] = value;
     };
 
     var getComptIdToInd = function (id) {
@@ -206,15 +206,15 @@ app.service('exchangeService', function ($rootScope) {
         comptIdToInd[id] = index;
     };
 
-    var setCompts = function (item, packetInd) {
-        compts[packetInd] = item;
+    var setCompts = function (value, packetInd) {
+        compts[packetInd] = value;
     };
 
-    var pushToCompts = function (item, packetInd) {
+    var pushToCompts = function (value, packetInd) {
         if (packetInd) {
-            compts[packetInd].push(item);
+            compts[packetInd].push(value);
         } else {
-            compts.push(item);
+            compts.push(value);
         }
     };
 
@@ -226,8 +226,8 @@ app.service('exchangeService', function ($rootScope) {
         return compts[packetInd].length;
     };
 
-    var setAllPackets = function (pktId, item) {
-        allPackets[pktId] = item;
+    var setAllPackets = function (value, pktId) {
+        allPackets[pktId] = value;
     };
 
     var getAllPackets = function (pktId) {
@@ -242,8 +242,8 @@ app.service('exchangeService', function ($rootScope) {
         delete allPackets[pktId];
     };
 
-    var setPacketInitialStateIds = function (pktId, item) {
-        packetInitialStateIds[pktId] = item;
+    var setPacketInitialStateIds = function (value, pktId) {
+        packetInitialStateIds[pktId] = value;
     };
 
     var getPacketInitialStateIds = function (pktId) {
@@ -263,36 +263,36 @@ app.service('exchangeService', function ($rootScope) {
     };
 
 
-    var pushToAllStateLabels = function (item) {
-        allStateLabels.push(item);
+    var pushToAllStateLabels = function (value) {
+        allStateLabels.push(value);
     };
 
-    var pushToComboDataDefaultSet = function (item) {
-        comboDataDefaultSet.push(item);
+    var pushToComboDataDefaultSet = function (value) {
+        comboDataDefaultSet.push(value);
     };
 
     var getComboDataDefaultSet = function (index) {
         return comboDataDefaultSet[index];
     };
 
-    var pushToNewComptCheckedVals = function (item) {
-        newComptCheckedVals.push(item);
+    var pushToNewComptCheckedVals = function (value) {
+        newComptCheckedVals.push(value);
     };
 
     var getNewComptCheckedVals = function (index) {
         return newComptCheckedVals[index];
     };
 
-    var setAllComboData = function (item, comptId, stateId) {
+    var setAllComboData = function (value, comptId, stateId) {
         if (!stateId) {
-            allComboData[comptId] = item;
+            allComboData[comptId] = value;
         } else {
-            allComboData[comptId][stateId] = item;
+            allComboData[comptId][stateId] = value;
         }
     };
 
-    var pushToAllComboData = function (comptId, stateId, item) {
-        allComboData[comptId][stateId].push(item);
+    var pushToAllComboData = function (value, comptId, stateId) {
+        allComboData[comptId][stateId].push(value);
     };
 
     var getAllComboData = function (comptId, stateId) {
@@ -303,12 +303,12 @@ app.service('exchangeService', function ($rootScope) {
         return allComboData[comptId][stateId];
     };
 
-    var setAllCheckedComboData = function (item, comptId, stateId) {
+    var setAllCheckedComboData = function (value, comptId, stateId) {
         if (!stateId) {
-            allCheckedComboData[comptId] = item;
+            allCheckedComboData[comptId] = value;
         }
 
-        allCheckedComboData[comptId][stateId] = item;
+        allCheckedComboData[comptId][stateId] = value;
     };
 
     var getAllCheckedComboData = function (comptId, stateId) {
@@ -319,8 +319,8 @@ app.service('exchangeService', function ($rootScope) {
         return allCheckedComboData[comptId][stateId];
     };
 
-    var setNewPackets = function (pktId, item) {
-        newPackets[pktId] = item;
+    var setNewPackets = function (value, pktId) {
+        newPackets[pktId] = value;
     };
 
     var getNewPackets = function (pktId) {
@@ -330,24 +330,30 @@ app.service('exchangeService', function ($rootScope) {
         return newPackets;
     };
 
-    var deleteNewComptLabels = function (isPktNew, pktId) {
-        delete newComptLabels[isPktNew][pktId];
-    };
-
-    var getNewComptLabels = function (isPktNew, pktId) {
-        if (pktId) {
-            return newComptLabels[isPktNew][pktId];
+    var deleteNewComptLabels = function (isPktNew, pktId, comptId) {
+        if (!comptId) {
+            delete newComptLabels[isPktNew][pktId];
         }
-        return newComptLabels[isPktNew];
+        delete newComptLabels[isPktNew][pktId][comptId];
     };
 
-    var setNewComptLabels = function (item, isPktNew, pktId, comptId) {
+    var getNewComptLabels = function (isPktNew, pktId, comptId) {
         if (!pktId && !comptId) {
-            newComptLabels[isPktNew] = item;
+            return newComptLabels[isPktNew];
         } else if (pktId && !comptId) {
-            newComptLabels[isPktNew][pktId] = item;
+            return newComptLabels[isPktNew][pktId];
         } else if (pktId && comptId) {
-            newComptLabels[isPktNew][pktId][comptId] = item;
+            return newComptLabels[isPktNew][pktId][comptId];
+        }
+    };
+
+    var setNewComptLabels = function (value, isPktNew, pktId, comptId) {
+        if (!pktId && !comptId) {
+            newComptLabels[isPktNew] = value;
+        } else if (pktId && !comptId) {
+            newComptLabels[isPktNew][pktId] = value;
+        } else if (pktId && comptId) {
+            newComptLabels[isPktNew][pktId][comptId] = value;
         }
     };
 
@@ -359,6 +365,21 @@ app.service('exchangeService', function ($rootScope) {
         return comptIdsToDelete[pktId];
     };
 
+    var setComptIdsToDelete = function (value, pktId) {
+        comptIdsToDelete[pktId] = value;
+    };
+
+    var pushToComptIdsToDelete = function (value, pktId) {
+        comptIdsToDelete[pktId].push(value);
+    };
+
+    var setComptIdsToUpdate = function (value, pktId, comptId) {
+        if (comptId) {
+            comptIdsToUpdate[pktId][comptId] = value;
+        }
+        return comptIdsToUpdate[pktId] = value;
+    };
+    
     var getComptIdsToUpdate = function (pktId) {
         if (pktId) {
             return comptIdsToUpdate[pktId];
@@ -366,16 +387,24 @@ app.service('exchangeService', function ($rootScope) {
         return comptIdsToUpdate;
     };
 
-    var setSelectedComptLabels = function (item, label) {
+    var deleteSelectedComptLabels = function (label) {
+        delete selectedComptLabels[label];
+    };
+
+    var setSelectedComptLabels = function (value, label) {
         if (label) {
-            selectedComptLabels[label] = item;
+            selectedComptLabels[label] = value;
         } else {
-            selectedComptLabels = item;
+            selectedComptLabels = value;
         }
         activateSelectedComptLabelsListener(selectedComptLabels);
     };
 
-    var getSelectedComptLabels = function () {
+    var getSelectedComptLabels = function (label) {
+        if (!label) {
+            return selectedComptLabels[label];
+        }
+
         return selectedComptLabels;
     };
 
@@ -383,16 +412,31 @@ app.service('exchangeService', function ($rootScope) {
         return comptsIsSelected;
     };
 
-    var pushToSelectedCompts = function (item) {
-        selectedCompts.push(item);
+    var setSelectedCompts = function (value, index) {
+        selectedCompts[index] = value;
+    };
+
+    var pushToSelectedCompts = function (value) {
+        selectedCompts.push(value);
     };
 
     var getSelectedCompts = function () {
         return selectedCompts;
     };
 
+    var getSelectedComptsLength = function () {
+        return selectedCompts.length;
+    };
+
     var getisSelectedPacketNew = function () {
         return isSelectedPacketNew;
+    };
+
+    var deleteComptIdsToUpdate = function (pktId, comptId) {
+        if (comptId) {
+            return comptIdsToUpdate[pktId][comptId];
+        }
+        return comptIdsToUpdate[pktId];
     };
     
     return {
@@ -463,6 +507,13 @@ app.service('exchangeService', function ($rootScope) {
         getIsSelectedPacketNew: getisSelectedPacketNew,
         setNewComptLabels: setNewComptLabels,
         getAllStatesLength: getAllStatesLength,
-        getNewComptCheckedVals: getNewComptCheckedVals
+        getNewComptCheckedVals: getNewComptCheckedVals,
+        deleteSelectedComptLabels: deleteSelectedComptLabels,
+        setSelectedCompts: setSelectedCompts,
+        deleteComptIdsToUpdate: deleteComptIdsToUpdate,
+        setComptIdsToDelete: setComptIdsToDelete,
+        pushToComptIdsToDelete: pushToComptIdsToDelete,
+        setComptIdsToUpdate: setComptIdsToUpdate,
+        getSelectedComptsLength: getSelectedComptsLength
     };
 });

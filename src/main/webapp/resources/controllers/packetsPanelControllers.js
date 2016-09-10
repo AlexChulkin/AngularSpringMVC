@@ -34,9 +34,9 @@ angular.module("packetAdminApp")
             var maximalPktIndex = exchangeService.getMaximalPacketIndex() + 1;
             exchangeService.setMaximalPacketIndex(maximalPktIndex);
             var newPacket = {id: maximalPktId, stateId: 1};
-            exchangeService.setPacketIdToInd(maximalPktId, maximalPktIndex);
-            exchangeService.setNewPackets(maximalPktId, newPacket);
-            exchangeService.setAllPackets(maximalPktId, newPacket);
+            exchangeService.setPacketIdToInd(maximalPktIndex, maximalPktId);
+            exchangeService.setNewPackets(newPacket, maximalPktId);
+            exchangeService.setAllPackets(newPacket, maximalPktId);
             exchangeService.setLoadEmpty(null);
         };
 

@@ -9,10 +9,11 @@ app
     .controller("comptsPanelCtrl", function ($scope, pageListActiveClass, pageListNonActiveClass,
                                              packetListPageCount, exchangeService) {
 
-        var data;
+        $scope.pageSize = packetListPageCount;
+
 
         $scope.isComptsSelected = function () {
-            return data.comptsIsSelected;
+            return exchangeService.getComptsIsSelected();
         };
 
         $scope.isPacketSelected = function () {
@@ -25,81 +26,74 @@ app
 
         $scope.addComptLocally = function () {
             var comptId = exchangeService.getMaximalComptId() + 1;
+            var isSelectedPacketNew = exchangeService.getIsSelectedPacketNew();
             exchangeService.setMaximalComptId(comptId);
 
-            var usualLabel = $scope.data.newLabel;
+            var usualLabel = $scope.newLabel;
             var upperCaseLabel = usualLabel.toUpperCase();
             var newCompt = {id: comptId, label: usualLabel};
             exchangeService.setSelectedComptLabels(true, upperCaseLabel);
-            exchangeService.setComptIdToInd(comptId, $scope.data.selectedCompts.length);
+            exchangeService.setComptIdToInd(comptId, exchangeService.getSelectedComptsLength());
             exchangeService.pushToSelectedCompts(newCompt);
-            var pktId = data.selectedPacketId;
-            exchangeService.setNewPackets();
-            exchangeService.setNewComptLabels($scope.$parent.data.newComptLabels[data.isSelectedPacketNew] || {},
-                exchangeService.getIsSelectedPacketNew());
-            exchangeService.setNewComptLabels($scope.$parent.data.newComptLabels[data.isSelectedPacketNew][pktId] || {},
-                exchangeService.getIsSelectedPacketNew(), pktId);
-            exchangeService.setNewComptLabels(
-                $scope.$parent.data.newComptLabels[data.isSelectedPacketNew][pktId][comptId] || {},
-                exchangeService.getIsSelectedPacketNew(),
-                pktId,
-                comptId
-            );
+            var pktId = exchangeService.getSelectedPacketId();
+            exchangeService.setNewComptLabels(exchangeService.getNewComptLabels(isSelectedPacketNew) || {},
+                isSelectedPacketNew);
+            exchangeService.setNewComptLabels(exchangeService.getNewComptLabels(isSelectedPacketNew, pktId) || {},
+                isSelectedPacketNew, pktId);
+            exchangeService.setNewComptLabels(usualLabel, isSelectedPacketNew, pktId, comptId);
             exchangeService.setAllComboData({}, comptId);
             exchangeService.setAllCheckedComboData({}, comptId);
             for (var i = 1; i <= exchangeService.getAllStatesLength(); i++) {
                 exchangeService.setAllComboData(exchangeService.getComboDataDefaultSet(), comptId, i);
                 exchangeService.setAllCheckedComboData(exchangeService.getNewComptCheckedVals(i - 1), comptId, i);
             }
-            $scope.data.newLabel = null;
+            $scope.newLabel = null;
         };
 
         $scope.deleteComptLocally = function (compt) {
             var comptLabel = compt.label;
             var comptId = compt.id;
-            var pktId = data.selectedPacketId;
+            var pktId = exchangeService.getSelectedPacketId();
+            var isSelectedPacketNew = exchangeService.getIsSelectedPacketNew();
 
-            delete $scope.data.selectedComptLabels[comptLabel.toUpperCase()];
-            $scope.data.selectedCompts[$scope.$parent.data.comptIdToInd[comptId]] = null;
-            if ($scope.$parent.data.comptIdsToUpdate[pktId]) {
-                delete $scope.$parent.data.comptIdsToUpdate[pktId][comptId];
+            exchangeService.deleteSelectedComptLabels(comptLabel.toUpperCase());
+            exchangeService.setSelectedCompts(null, exchangeService.getComptIdToInd(comptId));
+
+            if (exchangeService.getComptIdsToUpdate(pktId)) {
+                exchangeService.deleteComptIdsToUpdate(pktId, comptId);
             }
-            if ($scope.$parent.data.newComptLabels[data.isSelectedPacketNew][pktId]
-                && $scope.$parent.data.newComptLabels[data.isSelectedPacketNew][pktId][comptId]) {
+            if (exchangeService.getNewComptLabels(isSelectedPacketNew, pktId)
+                && exchangeService.getNewComptLabels(isSelectedPacketNew, pktId, comptId)) {
 
-                delete $scope.$parent.data.newComptLabels[data.isSelectedPacketNew][pktId][comptId];
+                exchangeService.deleteNewComptLabels(isSelectedPacketNew, pktId, comptId);
                 
             } else {
-                $scope.$parent.data.comptIdsTaggedToDelete[pktId]
-                    = $scope.$parent.data.comptIdsTaggedToDelete[pktId] || [];
-                $scope.$parent.data.comptIdsTaggedToDelete[pktId].push(comptId);
+                exchangeService.setComptIdsToDelete(exchangeService.getComptIdsToUpdate(pktId) || [], pktId);
+                exchangeService.pushToComptIdsToDelete(comptId, pktId);
             }
         };
 
         $scope.updateComptLocally = function (compt) {
-            var pktId = data.selectedPacketId;
+            var pktId = exchangeService.getSelectedPacketId();
+            var isSelectedPacketNew = exchangeService.getIsSelectedPacketNew();
             var comptId = compt.id;
-            if ($scope.$parent.data.newComptLabels[data.isSelectedPacketNew][pktId] &&
-                $scope.$parent.data.newComptLabels[data.isSelectedPacketNew][pktId][comptId]) {
+            if (exchangeService.getNewComptLabels(isSelectedPacketNew, pktId) &&
+                exchangeService.getNewComptLabels(isSelectedPacketNew, pktId, comptId)) {
                 return;
             }
-            $scope.$parent.data.comptIdsToUpdate[pktId] = $scope.$parent.data.comptIdsToUpdate[pktId] || {};
-            $scope.$parent.data.comptIdsToUpdate[pktId][comptId] = true;
+            exchangeService.setComptIdsToUpdate(exchangeService.getComptIdsToUpdate(pktId) || {}, pktId);
+            exchangeService.setComptIdsToUpdate(true, pktId, comptId);
         };
 
         $scope.getPageClass = function (page) {
-            return $scope.$parent.data.selectedPage === page ? pageListActiveClass : pageListNonActiveClass;
+            return exchangeService.getSelectedPage() === page ? pageListActiveClass : pageListNonActiveClass;
         };
 
-        $scope.notNull = function (item) {
-            return item;
+        $scope.notNull = function (value) {
+            return value;
         };
 
         var init = function () {
-            data = {};
-            $scope.data.selectedCompts = [];
-            $scope.data.selectedComptLabels = {};
-            $scope.data.pageSize = packetListPageCount;
         };
 
         init();
@@ -108,11 +102,11 @@ app
 app.directive('blacklist', function () {
     return {
         require: 'ngModel',
-        link: function ($scope, elem, attr, ngModel) {
+        link: function ($scope, elem, attr, ngModel, exchangeService) {
             ngModel.$parsers.unshift(function (label) {
                 var updatedLabel = label.replace(/\s{2,}/g, " ");
                 var upperCaseLabel = updatedLabel.toUpperCase();
-                ngModel.$setValidity('blacklist', !$scope.data.selectedComptLabels[upperCaseLabel]);
+                ngModel.$setValidity('blacklist', !exchangeService.getSelectedComptLabels(upperCaseLabel));
                 return updatedLabel;
             });
         }
