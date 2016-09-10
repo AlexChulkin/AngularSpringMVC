@@ -17,7 +17,7 @@
     <link href="resources/css/bootstrap-theme.css" rel="stylesheet"/>
     <link href="resources/css/home-styles.css" rel="stylesheet"/>
     <script>
-        angular.module("packetAdminApp", ["customFilters", "ngRoute", "ngCookies"])
+        angular.module("packetAdminApp", ["customFilters", "exchangeService", "ngRoute", "ngCookies"])
                 .config(function ($routeProvider) {
 
                     $routeProvider.when("/login", {
@@ -38,6 +38,7 @@
     <script type="application/javascript" src="resources/controllers/packetsPanelControllers.js"></script>
     <script type="application/javascript" src="resources/controllers/comptsPanelControllers.js"></script>
     <script type="application/javascript" src="resources/filters/customFilters.js"></script>
+    <script type="application/javascript" src="resources/services/exchangeService.js"></script>
 
     <script type="text/javascript" charset="utf-8">
         var contextPath = '${pageContext.request.contextPath}';

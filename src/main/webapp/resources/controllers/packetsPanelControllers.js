@@ -16,45 +16,49 @@ angular.module("packetAdminApp")
     .constant("narrowPacketCaption", "narrow-packet-caption")
     .constant("widePacketCaption", "wide-packet-caption")
     .constant("adminRole", "ADMIN")
-    .controller("packetsPanelCtrl", function ($scope, $http, $location, $cookies, packetListActiveClass,
-                                              packetListNonActiveClass, updateCompts, deleteCompts, updatePackets,
-                                              deletePackets, addPackets, saveAllChangesToBaseUrl, errorStatus404,
-                                              narrowPacketCaption, widePacketCaption, adminRole) {
+    .controller("packetsPanelCtrl", function ($scope, $http, $location, $cookies, exchangeService,
+                                              packetListActiveClass, packetListNonActiveClass, updateCompts,
+                                              deleteCompts, updatePackets, deletePackets, addPackets,
+                                              saveAllChangesToBaseUrl, errorStatus404, narrowPacketCaption,
+                                              widePacketCaption, adminRole) {
         var data;
 
         $scope.showAggregateButtons = function () {
-            return !$scope.$parent.data.loadError && $scope.$parent.data.loadedNoStates === false
-                && $scope.$parent.data.loadedNoComboData === false;
+            return !exchangeService.getLoadError() && exchangeService.getLoadedNoStates() === false
+                && exchangeService.getLoadedNoComboData() === false;
         };
 
         $scope.addPacketLocally = function () {
-            var newPacket = {id: ++$scope.$parent.data.maximalPacketId, stateId: 1};
-            $scope.$parent.data.packetIdToInd[$scope.$parent.data.maximalPacketId] 
-                = ++$scope.$parent.data.maximalPacketIndex;
-            $scope.$parent.data.newPackets[$scope.$parent.data.maximalPacketId] = newPacket;
-            $scope.$parent.data.allPackets[$scope.$parent.data.maximalPacketId] = newPacket;
-            $scope.$parent.data.loadEmpty = null;
+            var maximalPktId = exchangeService.getMaximalPacketId() + 1;
+            exchangeService.setMaximalPacketId(maximalPktId);
+            var maximalPktIndex = exchangeService.getMaximalPacketIndex() + 1;
+            exchangeService.setMaximalPacketIndex(maximalPktIndex);
+            var newPacket = {id: maximalPktId, stateId: 1};
+            exchangeService.setPacketIdToInd(maximalPktId, maximalPktIndex);
+            exchangeService.setNewPackets(maximalPktId, newPacket);
+            exchangeService.setAllPackets(maximalPktId, newPacket);
+            exchangeService.setLoadEmpty(null);
         };
 
         $scope.deletePacketLocally = function (packet) {
-            var packetId = packet.id;
-            if (!$scope.$parent.data.newPackets[packetId]) {
-                data.packetIdsToDelete.push(packetId);
+            var pktId = packet.id;
+            if (!exchangeService.getNewPackets(pktId)) {
+                data.packetIdsToDelete.push(pktId);
             }
-            var isPktNew = packetId in $scope.$parent.data.newPackets;
-            delete $scope.$parent.data.newComptLabels[isPktNew][packetId];
-            delete $scope.$parent.data.allPackets[packetId];
-            delete $scope.$parent.data.comptIdsTaggedToDelete[packetId];
-            $scope.$parent.data.selectedPacket = null;
+            var isPktNew = pktId in exchangeService.getNewPackets();
+            exchangeService.deleteNewComptLabels(isPktNew, pktId);
+            exchangeService.deleteAllPackets(pktId);
+            exchangeService.deleteComptIdsToDelete(pktId);
+            exchangeService.setSelectedPacket(null);
         };
 
         $scope.reloadRoute = function () {
-            $scope.$parent.init();
+            $location.reload();
         };
 
         $scope.getPacketClass = function (packet) {
             var pktId = packet.id;
-            var result = $scope.$parent.data.selectedPacket && $scope.$parent.data.selectedPacket.id == pktId
+            var result = exchangeService.getSelectedPacketId() == pktId
                 ? packetListActiveClass
                 : packetListNonActiveClass;
             result += " ";
@@ -67,8 +71,8 @@ angular.module("packetAdminApp")
             return result;
         };
 
-        $scope.saveAllChangesToBase = function (savedPacketId) {
-            var dataParams = generateDataParamsForSaving(savedPacketId);
+        $scope.saveAllChangesToBase = function (savedPktId) {
+            var dataParams = generateDataParamsForSaving(savedPktId);
             var errorMap = generateErrorMap();
 
             $http
@@ -108,7 +112,7 @@ angular.module("packetAdminApp")
 
         var generateComptParamsListForPackets = function (pktId, operation) {
             var result = [];
-            angular.forEach($scope.$parent.data.newComptLabels[operation == "add"][pktId], function (lbl, comptId) {
+            angular.forEach(exchangeService.getNewComptLabels(operation === "add", pktId), function (lbl, comptId) {
                 result.push({label: lbl, vals: findCheckedValsForCompt(comptId)});
             });
             return result;
@@ -116,7 +120,7 @@ angular.module("packetAdminApp")
 
         var generateComptParamsListToUpdateForPackets = function (pktId) {
             var result = [];
-            angular.forEach($scope.$parent.data.comptIdsToUpdate[pktId], function (unused, comptId) {
+            angular.forEach(exchangeService.getComptIdsToUpdate(pktId), function (unused, comptId) {
                 result.push({id: comptId, vals: findCheckedValsForCompt(comptId)});
             });
             return result;
@@ -124,35 +128,35 @@ angular.module("packetAdminApp")
 
         var findCheckedValsForCompt = function (comptId) {
             var checkedVals = [];
-            angular.forEach($scope.$parent.data.allStates, function (state, ind) {
-                checkedVals.push($scope.$parent.data.allCheckedComboData[comptId][ind + 1]);
+            angular.forEach(exchangeService.getAllStates(), function (state, ind) {
+                checkedVals.push(exchangeService.getAllCheckedComboData(comptId, ind + 1));
             });
             return checkedVals;
         };
 
-        var generateDataParamsForSaving = function (savedPacketId) {
+        var generateDataParamsForSaving = function (savedPktId) {
             var packetsToUpdateParamsList = [];
             var packetsToAddParamsList = [];
             var comptsToUpdateParamsList = [];
 
             var packetsToSave = {};
-            if (!savedPacketId) {
-                packetsToSave = $scope.$parent.data.allPackets;
+            if (!savedPktId) {
+                packetsToSave = exchangeService.getAllPackets();
             } else {
-                packetsToSave[savedPacketId] = $scope.$parent.data.allPackets[savedPacketId];
+                packetsToSave[savedPktId] = exchangeService.getAllPackets(savedPktId);
             }
 
             for (var pktId in packetsToSave) {
                 var pkt = packetsToSave[pktId];
                 var packetConfig = {};
-                if (!$scope.$parent.data.newPackets[pktId]) {
+                if (!exchangeService.getNewPackets(pktId)) {
                     var updatedComptParamsList = generateComptParamsListToUpdateForPackets(pktId);
                     if (updatedComptParamsList.length > 0) {
                         comptsToUpdateParamsList = comptsToUpdateParamsList.concat(updatedComptParamsList);
                     }
 
                     packetConfig.id = pktId;
-                    if (pkt.stateId != $scope.$parent.data.packetInitialStateIds[pktId]) {
+                    if (pkt.stateId != exchangeService.getPacketInitialStateIds(pktId)) {
                         packetConfig.stateId = pkt.stateId;
                     }
                     packetConfig.newComptParamsList = generateComptParamsListForPackets(pktId, "update");
@@ -167,14 +171,15 @@ angular.module("packetAdminApp")
             }
             var comptIdsToDelete = [];
             angular.forEach(packetsToSave, function (unused, pktId) {
-                if (!$scope.$parent.isDataEmpty($scope.$parent.data.comptIdsTaggedToDelete[pktId])) {
-                    comptIdsToDelete = comptIdsToDelete.concat($scope.$parent.data.comptIdsTaggedToDelete[pktId]);
+                var comptIdsTaggedToDelete = exchangeService.getComptIdsTaggedToDelete(pktId);
+                if (!$scope.$parent.isDataEmpty(comptIdsTaggedToDelete)) {
+                    comptIdsToDelete = comptIdsToDelete.concat(comptIdsTaggedToDelete);
                 }
             });
 
             if (packetsToUpdateParamsList.length == 0 && packetsToAddParamsList.length == 0
                 && comptIdsToDelete.length == 0 && comptsToUpdateParamsList.length == 0
-                && (savedPacketId || data.packetIdsToDelete.length == 0)) {
+                && (savedPktId || data.packetIdsToDelete.length == 0)) {
                 return;
             }
 
@@ -184,7 +189,7 @@ angular.module("packetAdminApp")
                 comptsToUpdateParamsList: comptsToUpdateParamsList,
                 comptIdsToDelete: comptIdsToDelete
             };
-            if (!savedPacketId) {
+            if (!savedPktId) {
                 params['packetIdsToDelete'] = data.packetIdsToDelete;
             } else {
                 params['packetId'] = savedPacketId;
@@ -195,10 +200,10 @@ angular.module("packetAdminApp")
         var generateErrorMap = function () {
             var errorMap = {};
 
-            errorMap[updateCompts] = $scope.$parent.data.comptIdsToUpdate;
-            errorMap[deleteCompts] = $scope.$parent.data.comptIdsTaggedToDelete;
-            errorMap[updatePackets] = $scope.$parent.data.newComptLabels[false];
-            errorMap[addPackets] = $scope.$parent.data.newPackets;
+            errorMap[updateCompts] = exchangeService.getComptIdsToUpdate();
+            errorMap[deleteCompts] = exchangeService.getComptIdsToDelete();
+            errorMap[updatePackets] = exchangeService.getNewComptLabels(false);
+            errorMap[addPackets] = exchangeService.getNewPackets();
             errorMap[deletePackets] = data.packetIdsToDelete;
 
             return errorMap;
