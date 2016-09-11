@@ -51,16 +51,16 @@ app.service('exchangeService', function ($rootScope) {
                 selectedPacketId = newValue.id;
                 packetIsAlreadySelectedAtLeastOnce = true;
                 isSelectedPacketNew = selectedPacketId in newPackets;
-                selectedCompts = compts[packetIdToInd[selectedPacketId]] || [];
+                setSelectedCompts(compts[packetIdToInd[selectedPacketId]] || []);
                 setSelectedComptLabels(comptLabels[selectedPacketId] || {});
             } else {
-                selectedCompts = [];
+                setSelectedCompts([]);
                 setSelectedComptLabels({});
                 isSelectedPacketNew = null;
                 selectedPacketId = null;
             }
         } else {
-            selectedCompts = compts[packetIdToInd[selectedPacketId]] || [];
+            setSelectedCompts(compts[packetIdToInd[selectedPacketId]] || []);
             setSelectedComptLabels(comptLabels[selectedPacketId] || {});
         }
     };
@@ -71,6 +71,7 @@ app.service('exchangeService', function ($rootScope) {
 
     var setSelectedPacket = function (value) {
         selectedPacket = value;
+        $rootScope.$broadcast('selectedPacket:updated', selectedPacket);
     };
 
     var getSelectedPacket = function () {
@@ -135,6 +136,7 @@ app.service('exchangeService', function ($rootScope) {
 
     var setSelectedPage = function (value) {
         selectedPage = value;
+        $rootScope.$broadcast('selectedPage:updated', selectedPage);
     };
 
     var getSelectedPage = function () {
@@ -185,9 +187,8 @@ app.service('exchangeService', function ($rootScope) {
     var getComptLabels = function (pktId, label) {
         if (label) {
             return comptLabels[pktId][label];
-        } else {
-            return comptLabels[pktId];
         }
+        return comptLabels[pktId];
     };
 
     var getPacketIdToInd = function (packetId) {
@@ -228,6 +229,7 @@ app.service('exchangeService', function ($rootScope) {
 
     var setAllPackets = function (value, pktId) {
         allPackets[pktId] = value;
+        $rootScope.$broadcast('allPackets:update', allPackets);
     };
 
     var getAllPackets = function (pktId) {
@@ -235,11 +237,11 @@ app.service('exchangeService', function ($rootScope) {
             return allPackets[pktId];
         }
         return allPackets;
-
     };
 
     var deleteAllPackets = function (pktId) {
         delete allPackets[pktId];
+        $rootScope.$broadcast('allPackets:update', allPackets);
     };
 
     var setPacketInitialStateIds = function (value, pktId) {
@@ -252,6 +254,7 @@ app.service('exchangeService', function ($rootScope) {
 
     var setAllStates = function (states) {
         allStates = states;
+        $rootScope.$broadcast('allStates:update', allStates);
     };
 
     var getAllStates = function () {
@@ -262,9 +265,13 @@ app.service('exchangeService', function ($rootScope) {
         return allStates.length;
     };
 
-
     var pushToAllStateLabels = function (value) {
         allStateLabels.push(value);
+        $rootScope.$broadcast('allStateLabels:update', allStateLabels);
+    };
+
+    var getAllStateLabels = function () {
+        return allStateLabels;
     };
 
     var pushToComboDataDefaultSet = function (value) {
@@ -289,33 +296,34 @@ app.service('exchangeService', function ($rootScope) {
         } else {
             allComboData[comptId][stateId] = value;
         }
+        $rootScope.$broadcast('allComboData:update', allComboData);
     };
 
     var pushToAllComboData = function (value, comptId, stateId) {
         allComboData[comptId][stateId].push(value);
+        $rootScope.$broadcast('allComboData:update', allComboData);
     };
 
     var getAllComboData = function (comptId, stateId) {
         if (!stateId) {
             return allComboData[comptId];
         }
-
         return allComboData[comptId][stateId];
     };
 
     var setAllCheckedComboData = function (value, comptId, stateId) {
         if (!stateId) {
             allCheckedComboData[comptId] = value;
+        } else {
+            allCheckedComboData[comptId][stateId] = value;
         }
-
-        allCheckedComboData[comptId][stateId] = value;
+        $rootScope.$broadcast('allCheckedComboData:update', allCheckedComboData);
     };
 
     var getAllCheckedComboData = function (comptId, stateId) {
         if (!stateId) {
             return allCheckedComboData[comptId];
         }
-
         return allCheckedComboData[comptId][stateId];
     };
 
@@ -376,8 +384,9 @@ app.service('exchangeService', function ($rootScope) {
     var setComptIdsToUpdate = function (value, pktId, comptId) {
         if (comptId) {
             comptIdsToUpdate[pktId][comptId] = value;
+        } else {
+            comptIdsToUpdate[pktId] = value;
         }
-        return comptIdsToUpdate[pktId] = value;
     };
     
     var getComptIdsToUpdate = function (pktId) {
@@ -404,7 +413,6 @@ app.service('exchangeService', function ($rootScope) {
         if (!label) {
             return selectedComptLabels[label];
         }
-
         return selectedComptLabels;
     };
 
@@ -413,11 +421,17 @@ app.service('exchangeService', function ($rootScope) {
     };
 
     var setSelectedCompts = function (value, index) {
-        selectedCompts[index] = value;
+        if (index) {
+            selectedCompts[index] = value;
+        } else {
+            selectedCompts = value;
+        }
+        $rootScope.$broadcast('selectedCompts:update', selectedCompts);
     };
 
     var pushToSelectedCompts = function (value) {
         selectedCompts.push(value);
+        $rootScope.$broadcast('selectedCompts:update', selectedCompts);
     };
 
     var getSelectedCompts = function () {
@@ -434,9 +448,10 @@ app.service('exchangeService', function ($rootScope) {
 
     var deleteComptIdsToUpdate = function (pktId, comptId) {
         if (comptId) {
-            return comptIdsToUpdate[pktId][comptId];
+            delete comptIdsToUpdate[pktId][comptId];
+        } else {
+            delete comptIdsToUpdate[pktId];
         }
-        return comptIdsToUpdate[pktId];
     };
     
     return {
@@ -481,6 +496,7 @@ app.service('exchangeService', function ($rootScope) {
         setAllStates: setAllStates,
         getAllStates: getAllStates,
         pushToAllStateLabels: pushToAllStateLabels,
+        getAllStateLabels: getAllStateLabels,
         pushToComboDataDefaultSet: pushToComboDataDefaultSet,
         getComboDataDefaultSet: getComboDataDefaultSet,
         pushToNewComptCheckedVals: pushToNewComptCheckedVals,

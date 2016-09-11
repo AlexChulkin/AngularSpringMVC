@@ -9,8 +9,33 @@ app
     .controller("comptsPanelCtrl", function ($scope, pageListActiveClass, pageListNonActiveClass,
                                              packetListPageCount, exchangeService) {
 
-        $scope.pageSize = packetListPageCount;
+        $scope.$on('selectedCompts:update', function (event, data) {
+            $scope.selectedCompts = data;
+        });
 
+        $scope.$on('selectedPage:update', function (event, data) {
+            $scope.selectedPage = data;
+        });
+
+        $scope.$on('selectedPacket:update', function (event, data) {
+            $scope.selectedPacket = data;
+        });
+
+        $scope.$on('allStates:update', function (event, data) {
+            $scope.allStates = data;
+        });
+
+        $scope.$on('allStateLabels:update', function (event, data) {
+            $scope.allStateLabels = data;
+        });
+
+        $scope.$on('allComboData:update', function (event, data) {
+            $scope.allComboData = data;
+        });
+
+        $scope.$on('allCheckedComboData:update', function (event, data) {
+            $scope.allCheckedComboData = data;
+        });
 
         $scope.isComptsSelected = function () {
             return exchangeService.getComptsIsSelected();
@@ -94,6 +119,14 @@ app
         };
 
         var init = function () {
+            $scope.pageSize = packetListPageCount;
+            $scope.selectedCompts = exchangeService.getSelectedCompts();
+            $scope.selectedPage = exchangeService.getSelectedPage();
+            $scope.selectedPacket = exchangeService.getSelectedPacket();
+            $scope.allStates = exchangeService.getAllStates();
+            $scope.allStateLabels = exchangeService.getAllStateLabels();
+            $scope.allComboData = exchangeService.getAllComboData();
+            $scope.allCheckedComboData = exchangeService.getAllCheckedComboData();
         };
 
         init();

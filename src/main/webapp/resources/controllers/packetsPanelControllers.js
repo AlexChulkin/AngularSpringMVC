@@ -16,12 +16,18 @@ angular.module("packetAdminApp")
     .constant("narrowPacketCaption", "narrow-packet-caption")
     .constant("widePacketCaption", "wide-packet-caption")
     .constant("adminRole", "ADMIN")
+    .constant("role", "role")
     .controller("packetsPanelCtrl", function ($scope, $http, $location, $cookies, exchangeService,
                                               packetListActiveClass, packetListNonActiveClass, updateCompts,
                                               deleteCompts, updatePackets, deletePackets, addPackets,
                                               saveAllChangesToBaseUrl, errorStatus404, narrowPacketCaption,
-                                              widePacketCaption, adminRole) {
-        var packetIdsToDelete = [];
+                                              widePacketCaption, role, adminRole) {
+
+        var packetIdsToDelete;
+
+        $scope.$on('allPackets:update', function (event, data) {
+            $scope.allPackets = data;
+        });
 
         $scope.showAggregateButtons = function () {
             return !exchangeService.getLoadError() && exchangeService.getLoadedNoStates() === false
@@ -221,7 +227,9 @@ angular.module("packetAdminApp")
 
         var init = function () {
             $scope.adminRoleTitle = adminRole;
-            $scope.isRoleNotAdmin = $cookies.get("role") !== $scope.adminRoleTitle;
+            $scope.isRoleNotAdmin = $cookies.get(role) !== $scope.adminRoleTitle;
+            $scope.allPackets = exchangeService.getAllPackets();
+            packetIdsToDelete = [];
         };
 
         init();

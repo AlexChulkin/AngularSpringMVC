@@ -9,8 +9,8 @@ angular.module("packetAdminApp")
     .controller("mainCtrl", function ($scope, $http, packetListPageCount, labelLabel, loadDataUrl,
                                       initialPacketIndex, exchangeService) {
 
-        var selectedPacketsReloadCounter = 0;
-        var loadedNoCompts = null;
+        var selectedPacketsReloadCounter;
+        var loadedNoCompts;
 
         $scope.loadPacketById = function (packetId) {
 
@@ -140,7 +140,7 @@ angular.module("packetAdminApp")
         var prepareStates = function (states) {
             exchangeService.setLoadedNoStates($scope.isDataEmpty(states));
             exchangeService.setAllStates(states);
-            exchangeService.pushToAllStateLabels(stateLabel);
+            exchangeService.pushToAllStateLabels(labelLabel);
             angular.forEach(exchangeService.getAllStates(), function (state) {
                 exchangeService.pushToAllStateLabels(state.label);
             });
@@ -181,7 +181,9 @@ angular.module("packetAdminApp")
         };
 
         $scope.init = function () {
-            $scope.loadPacketById(null);
+            selectedPacketsReloadCounter = 0;
+            loadedNoCompts = null;
+            $scope.loadPacketById();
         };
 
         $scope.init();
