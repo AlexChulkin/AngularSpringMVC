@@ -14,15 +14,16 @@ angular.module("packetAdminApp")
 
         $scope.loadPacketById = function (packetId) {
 
-            var packetIndex = !packetId ? initialPacketIndex : exchangeService.getPacketIdToInd[packetId];
-            var dataParams = !packetId ? {} : {packetId: packetId};
+            var packetIdUndefined = packetId == undefined;
+            var packetIndex = packetIdUndefined ? initialPacketIndex : exchangeService.getPacketIdToInd[packetId];
+            var dataParams = packetIdUndefined ? {} : {packetId: packetId};
             $http
                 .post(contextPath + loadDataUrl, {dataParams: dataParams})
                 .then(
                     function success(result) {
                         var data = result.data;
                         prepareCompts(data.compts, packetIndex);
-                        preparePackets(data.packets, !packetId);
+                        preparePackets(data.packets, packetIdUndefined);
                         prepareStates(data.states);
                         prepareComboData(data.comboData);
                         if (!loadedNoCompts && !$scope.isComboDataNotLoaded() && !$scope.isStatesNotLoaded()) {
@@ -117,10 +118,10 @@ angular.module("packetAdminApp")
             }
         };
 
-        var preparePackets = function (packets, isPacketIdNull) {
+        var preparePackets = function (packets, isPacketIdUndefined) {
             exchangeService.setLoadedNoPackets($scope.isDataEmpty(packets));
 
-            if (!exchangeService.getLoadedNoPackets() && isPacketIdNull) {
+            if (!exchangeService.getLoadedNoPackets() && isPacketIdUndefined) {
                 $scope.selectPacket(packets[0]);
             }
             angular.forEach(packets, function (pkt) {
