@@ -17,7 +17,7 @@
     <link href="resources/css/bootstrap-theme.css" rel="stylesheet"/>
     <link href="resources/css/home-styles.css" rel="stylesheet"/>
     <script>
-        angular.module("packetAdminApp", ["customFilters", "exchangeService", "ngRoute", "ngCookies"])
+        angular.module("packetAdminApp", ["customFilters", "ngRoute", "ngCookies"])
                 .config(function ($routeProvider) {
 
                     $routeProvider.when("/login", {
@@ -49,7 +49,7 @@
     <span class="navbar-brand title">THE PACKETS AND THEIR COMPONENTS</span>
     <div class="navbar-right" ng-show="isUserAuthorized()">
         <div class="navbar-text">
-            Hello, {{data.username}}
+            Hello, {{username}}
         </div>
         <button ng-click="logout()" class="btn btn-default navbar-btn">Logout</button>
     </div>

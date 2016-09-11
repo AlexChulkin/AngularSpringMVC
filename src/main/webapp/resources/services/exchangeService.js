@@ -1,9 +1,7 @@
 /**
  * Created by alexc_000 on 2016-09-01.
  */
-var app = angular.module("packetApp");
-
-app.service('exchangeService', function ($rootScope) {
+angular.module("packetAdminApp").service('exchangeService', function ($rootScope) {
     var comptIdToInd = {};
     var loadError = null;
     var loadedNoStates = null;

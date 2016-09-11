@@ -17,9 +17,9 @@ angular.module("packetAdminApp")
                 if (role) {
                     $cookies.put("username", username);
                     $cookies.put("role", role);
-                    $scope.data.role = role;
-                    $scope.data.username = username;
-                    $scope.data.authenticationError = null;
+                    $scope.role = role;
+                    $scope.username = username;
+                    $scope.authenticationError = null;
                     $location.path(mainUrl);
                 } else {
                     setAuthenticationError({status: "username and/or password are incorrect"});
@@ -27,12 +27,12 @@ angular.module("packetAdminApp")
             }).error(function (error) {
                 setAuthenticationError(error);
             }).finally(function (data) {
-                $scope.data.password = null;
+                $scope.password = null;
             });
         };
 
         $scope.isUserAuthorized = function () {
-            return $scope.data.role;
+            return $scope.role;
         };
 
         $scope.logout = function () {
@@ -43,9 +43,9 @@ angular.module("packetAdminApp")
         var setAuthenticationError = function (authenticationError) {
             $cookies.remove("username");
             $cookies.remove("role");
-            $scope.data = {};
-            $scope.data.authenticationError = authenticationError;
-            $scope.data.authenticationError.report = authenticationError.status
+            $scope = {};
+            $scope.authenticationError = authenticationError;
+            $scope.authenticationError.report = authenticationError.status
                 ? 'Authentication failed (' + authenticationError.status + '). Try again.'
                 : 'Authentication failed. Try again.';
         };
@@ -53,13 +53,13 @@ angular.module("packetAdminApp")
         var nullifyAll = function () {
             $cookies.remove("username");
             $cookies.remove("role");
-            $scope.data = {};
+            $scope = {};
         };
 
         var init = function () {
-            $scope.data = {};
-            $scope.data.username = $cookies.get("username");
-            $scope.data.role = $cookies.get("role");
+            $scope = {};
+            $scope.username = $cookies.get("username");
+            $scope.role = $cookies.get("role");
         };
 
         init();

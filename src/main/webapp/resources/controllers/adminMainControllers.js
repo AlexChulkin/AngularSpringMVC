@@ -107,7 +107,7 @@ angular.module("packetAdminApp")
 
                 exchangeService.setComptLabels(true, packetId, label);
                 exchangeService.setComptIdToInd[id, exchangeService.getComptsLength(packetInd)];
-                exchangeService.pushToCompts(packetInd, el);
+                exchangeService.pushToCompts(el, packetInd);
                 if (id > exchangeService.getMaximalComptId()) {
                     exchangeService.setMaximalComptId(id);
                 }
@@ -157,8 +157,6 @@ angular.module("packetAdminApp")
         };
 
         var prepareComptsSupplInfo = function (comptSupplInfo) {
-            exchangeService.setLoadedNoComptsSupplInfo($scope.isDataEmpty(comptSupplInfo));
-
             angular.forEach(comptSupplInfo, function (item) {
                 var comptId = item.comptId;
                 var stateId = item.stateId;
