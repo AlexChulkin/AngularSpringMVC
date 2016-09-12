@@ -141,23 +141,31 @@ angular.module("packetAdminApp")
         var prepareStates = function (states) {
             exchangeService.setLoadedNoStates($scope.isDataEmpty(states));
             exchangeService.setAllStates(states);
-            exchangeService.pushToAllStateLabels(labelLabel);
-            angular.forEach(exchangeService.getAllStates(), function (state) {
-                exchangeService.pushToAllStateLabels(state.label);
+            exchangeService.pushToAllStateLabels(labelLabel, false);
+            var statesLength = states.length;
+            var i = 0;
+            angular.forEach(states, function (state) {
+                exchangeService.pushToAllStateLabels(state.label, i++ === statesLength - 1);
             });
         };
 
         var prepareComboData = function (comboData) {
             exchangeService.setLoadedNoComboData($scope.isDataEmpty(comboData));
+            var comboDataLength = comboData.length;
+            var i = 0;
             angular.forEach(comboData, function (cd) {
-                exchangeService.pushToComboDataDefaultSet(cd.label);
+                exchangeService.pushToComboDataDefaultSet(cd.label, i++ === comboDataLength - 1);
             });
-            angular.forEach(exchangeService.getAllStates(), function () {
-                exchangeService.pushToNewComptCheckedVals(exchangeService.getComboDataDefaultSet(0));
-            });
+            var allStatesLength = exchangeService.getAllStatesLength();
+            var defaultCheckedVal = exchangeService.getComboDataDefaultSet(0);
+            for (i = 0; i < allStatesLength; i++) {
+                exchangeService.pushToNewComptCheckedVals(defaultCheckedVal, i === allStatesLength - 1);
+            }
         };
 
         var prepareComptsSupplInfo = function (comptSupplInfo) {
+            var comptSupplInfoLength = comptSupplInfo.length;
+            var i = 0;
             angular.forEach(comptSupplInfo, function (item) {
                 var comptId = item.comptId;
                 var stateId = item.stateId;
@@ -168,7 +176,7 @@ angular.module("packetAdminApp")
                 if (!exchangeService.getAllComboData(comptId, stateId)) {
                     exchangeService.setAllComboData([], comptId, stateId);
                 }
-                exchangeService.pushToAllComboData(label, comptId, stateId);
+                exchangeService.pushToAllComboData(label, comptId, stateId, i++ === comptSupplInfoLength - 1);
                 var checked = item.checked;
                 if (checked) {
                     if (!exchangeService.getAllCheckedComboData(comptId)) {

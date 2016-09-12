@@ -37,6 +37,14 @@ app
             $scope.allCheckedComboData = data;
         });
 
+        $scope.$on('comboDataDefaultSet:update', function (event, data) {
+            $scope.comboDataDefaultSet = data;
+        });
+
+        $scope.$on('newComptCheckedVals:update', function (event, data) {
+            $scope.newComptCheckedVals = data;
+        });
+
         $scope.isComptsSelected = function () {
             return exchangeService.getComptsIsSelected();
         };
@@ -54,7 +62,7 @@ app
             var isSelectedPacketNew = exchangeService.getIsSelectedPacketNew();
             exchangeService.setMaximalComptId(comptId);
 
-            var usualLabel = $scope.newLabel;
+            var usualLabel = $scope.data.newLabel;
             var upperCaseLabel = usualLabel.toUpperCase();
             var newCompt = {id: comptId, label: usualLabel};
             exchangeService.setSelectedComptLabels(true, upperCaseLabel);
@@ -69,10 +77,10 @@ app
             exchangeService.setAllComboData({}, comptId);
             exchangeService.setAllCheckedComboData({}, comptId);
             for (var i = 1; i <= exchangeService.getAllStatesLength(); i++) {
-                exchangeService.setAllComboData(exchangeService.getComboDataDefaultSet(), comptId, i);
-                exchangeService.setAllCheckedComboData(exchangeService.getNewComptCheckedVals(i - 1), comptId, i);
+                exchangeService.setAllComboData($scope.comboDataDefaultSet, comptId, i);
+                exchangeService.setAllCheckedComboData($scope.newComptCheckedVals[i - 1], comptId, i);
             }
-            $scope.newLabel = null;
+            $scope.data.newLabel = null;
         };
 
         $scope.deleteComptLocally = function (compt) {
@@ -127,15 +135,18 @@ app
             $scope.allStateLabels = exchangeService.getAllStateLabels();
             $scope.allComboData = exchangeService.getAllComboData();
             $scope.allCheckedComboData = exchangeService.getAllCheckedComboData();
+            $scope.comboDataDefaultSet = exchangeService.getComboDataDefaultSet();
+            $scope.newComptCheckedVals = exchangeService.getNewComptCheckedVals();
+            $scope.data = {};
         };
 
         init();
     });
 
-app.directive('blacklist', function () {
+app.directive('blacklist', ['exchangeService', function (exchangeService) {
     return {
         require: 'ngModel',
-        link: function ($scope, elem, attr, ngModel, exchangeService) {
+        link: function ($scope, elem, attr, ngModel) {
             ngModel.$parsers.unshift(function (label) {
                 var updatedLabel = label.replace(/\s{2,}/g, " ");
                 var upperCaseLabel = updatedLabel.toUpperCase();
@@ -144,7 +155,7 @@ app.directive('blacklist', function () {
             });
         }
     };
-});
+}]);
 
 app.directive('regex', function () {
     return {

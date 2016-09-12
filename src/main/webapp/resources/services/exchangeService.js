@@ -69,7 +69,7 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
 
     var setSelectedPacket = function (value) {
         selectedPacket = value;
-        $rootScope.$broadcast('selectedPacket:updated', selectedPacket);
+        $rootScope.$broadcast('selectedPacket:update', selectedPacket);
     };
 
     var getSelectedPacket = function () {
@@ -134,7 +134,7 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
 
     var setSelectedPage = function (value) {
         selectedPage = value;
-        $rootScope.$broadcast('selectedPage:updated', selectedPage);
+        $rootScope.$broadcast('selectedPage:update', selectedPage);
     };
 
     var getSelectedPage = function () {
@@ -263,29 +263,40 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
         return allStates.length;
     };
 
-    var pushToAllStateLabels = function (value) {
+    var pushToAllStateLabels = function (value, broadcast) {
         allStateLabels.push(value);
-        $rootScope.$broadcast('allStateLabels:update', allStateLabels);
+        if (broadcast) {
+            $rootScope.$broadcast('allStateLabels:update', allStateLabels);
+        }
     };
 
     var getAllStateLabels = function () {
         return allStateLabels;
     };
 
-    var pushToComboDataDefaultSet = function (value) {
+    var pushToComboDataDefaultSet = function (value, broadcast) {
         comboDataDefaultSet.push(value);
+        if (broadcast) {
+            $rootScope.$broadcast('comboDataDefaultSet:update', comboDataDefaultSet);
+        }
     };
 
     var getComboDataDefaultSet = function (index) {
         return comboDataDefaultSet[index];
     };
 
-    var pushToNewComptCheckedVals = function (value) {
+    var pushToNewComptCheckedVals = function (value, broadcast) {
         newComptCheckedVals.push(value);
+        if (broadcast) {
+            $rootScope.$broadcast('newComptCheckedVals:update', newComptCheckedVals);
+        }
     };
 
     var getNewComptCheckedVals = function (index) {
-        return newComptCheckedVals[index];
+        if (index != undefined) {
+            return newComptCheckedVals[index];
+        }
+        return newComptCheckedVals;
     };
 
     var setAllComboData = function (value, comptId, stateId) {
@@ -297,9 +308,11 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
         $rootScope.$broadcast('allComboData:update', allComboData);
     };
 
-    var pushToAllComboData = function (value, comptId, stateId) {
+    var pushToAllComboData = function (value, comptId, stateId, broadcast) {
         allComboData[comptId][stateId].push(value);
-        $rootScope.$broadcast('allComboData:update', allComboData);
+        if (broadcast) {
+            $rootScope.$broadcast('allComboData:update', allComboData);
+        }
     };
 
     var getAllComboData = function (comptId, stateId) {
@@ -408,7 +421,7 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
     };
 
     var getSelectedComptLabels = function (label) {
-        if (label == undefined) {
+        if (label != undefined) {
             return selectedComptLabels[label];
         }
         return selectedComptLabels;
@@ -427,7 +440,7 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
         $rootScope.$broadcast('selectedCompts:update', selectedCompts);
     };
 
-    var pushToSelectedCompts = function (value) {
+    var pushToSelectedCompts = function (value, broadcast) {
         selectedCompts.push(value);
         $rootScope.$broadcast('selectedCompts:update', selectedCompts);
     };
