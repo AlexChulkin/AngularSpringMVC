@@ -5,7 +5,7 @@ angular.module("packetAdminApp")
     .constant("authUrl", "/users/login")
     .constant("mainUrl", "/main")
     .constant("loginUrl", "/login")
-    .controller("authCtrl", function ($scope, $http, $location, $cookies, authUrl, mainUrl, loginUrl) {
+    .controller("authCtrl", function ($scope, $http, $location, $cookies, authUrl, mainUrl, loginUrl, exchangeService) {
         $scope.authenticate = function (username, pass) {
             var securityParams = {
                 username: username,
@@ -17,9 +17,9 @@ angular.module("packetAdminApp")
                 if (role) {
                     $cookies.put("username", username);
                     $cookies.put("role", role);
-                    $scope.role = role;
-                    $scope.username = username;
-                    $scope.authenticationError = null;
+                    $scope.data.role = role;
+                    $scope.data.username = username;
+                    $scope.data.authenticationError = null;
                     $location.path(mainUrl);
                 } else {
                     setAuthenticationError({status: "username and/or password are incorrect"});
@@ -27,25 +27,25 @@ angular.module("packetAdminApp")
             }).error(function (error) {
                 setAuthenticationError(error);
             }).finally(function (data) {
-                $scope.password = null;
+                $scope.data.password = null;
             });
         };
 
         $scope.isUserAuthorized = function () {
-            return $scope.role;
+            return $scope.data.role;
         };
 
         $scope.logout = function () {
-            $location.path(loginUrl);
+            exchangeService.init();
             nullifyAll();
+            $location.path(loginUrl);
         };
 
         var setAuthenticationError = function (authenticationError) {
             $cookies.remove("username");
             $cookies.remove("role");
-            $scope = {};
-            $scope.authenticationError = authenticationError;
-            $scope.authenticationError.report = authenticationError.status
+            $scope.data.authenticationError = authenticationError;
+            $scope.data.authenticationError.report = authenticationError.status
                 ? 'Authentication failed (' + authenticationError.status + '). Try again.'
                 : 'Authentication failed. Try again.';
         };
@@ -53,13 +53,13 @@ angular.module("packetAdminApp")
         var nullifyAll = function () {
             $cookies.remove("username");
             $cookies.remove("role");
-            $scope = {};
+            $scope.data = {};
         };
 
         var init = function () {
-            $scope = {};
-            $scope.username = $cookies.get("username");
-            $scope.role = $cookies.get("role");
+            $scope.data = {};
+            $scope.data.username = $cookies.get("username");
+            $scope.data.role = $cookies.get("role");
         };
 
         init();

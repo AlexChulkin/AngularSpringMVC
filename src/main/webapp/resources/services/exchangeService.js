@@ -2,39 +2,75 @@
  * Created by alexc_000 on 2016-09-01.
  */
 angular.module("packetAdminApp").service('exchangeService', function ($rootScope) {
-    var comptIdToInd = {};
-    var loadError = null;
-    var loadedNoStates = null;
-    var loadedNoComboData = null;
-    var maximalPacketId = null;
-    var packetIdToInd = {};
-    var maximalPacketIndex = null;
-    var allPackets = {};
-    var newPackets = {};
-    var loadEmpty = null;
-    var newComptLabels = {true: {}, false: {}};
-    var comptIdsToDelete = {};
-    var comptIdsToUpdate = {};
-    var allStates = [];
-    var allStateLabels = [];
-    var allComboData = {};
-    var allCheckedComboData = {};
-    var packetInitialStateIds = {};
-    var selectedCompts = [];
-    var packetIsSelectedOrSelectedPacketIsReloaded = {oldVal: null, newVal: null};
-    var compts = [];
-    var selectedPacketId = null;
-    var selectedPacket = null;
-    var selectedPage = null;
-    var loadedNoPackets = null;
-    var maximalComptId = null;
-    var packetIsAlreadySelectedAtLeastOnce = null;
-    var newComptCheckedVals = [];
-    var comptLabels = {};
-    var comboDataDefaultSet = [];
-    var selectedComptLabels = {};
-    var isSelectedPacketNew = null;
-    var comptsIsSelected = null;
+    var comptIdToInd;
+    var loadError;
+    var loadedNoStates;
+    var loadedNoComboData;
+    var maximalPacketId;
+    var packetIdToInd;
+    var maximalPacketIndex;
+    var allPackets;
+    var newPackets;
+    var loadEmpty;
+    var newComptLabels;
+    var comptIdsToDelete;
+    var comptIdsToUpdate;
+    var allStates;
+    var allStateLabels;
+    var allComboData;
+    var allCheckedComboData;
+    var packetInitialStateIds;
+    var selectedCompts;
+    var packetIsSelectedOrSelectedPacketIsReloaded;
+    var compts;
+    var selectedPacketId;
+    var selectedPacket;
+    var selectedPage;
+    var loadedNoPackets;
+    var maximalComptId;
+    var packetIsAlreadySelectedAtLeastOnce;
+    var newComptCheckedVals;
+    var comptLabels;
+    var comboDataDefaultSet;
+    var selectedComptLabels;
+    var isSelectedPacketNew;
+    var comptsIsSelected;
+
+    var init = function () {
+        comptIdToInd = {};
+        loadError = null;
+        loadedNoStates = null;
+        loadedNoComboData = null;
+        maximalPacketId = null;
+        packetIdToInd = {};
+        maximalPacketIndex = null;
+        allPackets = {};
+        newPackets = {};
+        loadEmpty = null;
+        newComptLabels = {true: {}, false: {}};
+        comptIdsToDelete = {};
+        comptIdsToUpdate = {};
+        allStates = [];
+        allStateLabels = [];
+        allComboData = {};
+        allCheckedComboData = {};
+        packetInitialStateIds = {};
+        selectedCompts = [];
+        packetIsSelectedOrSelectedPacketIsReloaded = {oldVal: null, newVal: null};
+        compts = [];
+        selectedPacketId = null;
+        selectedPacket = null;
+        selectedPage = null;
+        loadedNoPackets = null;
+        maximalComptId = null;
+        packetIsAlreadySelectedAtLeastOnce = null;
+        newComptCheckedVals = [];
+        comptLabels = {};
+        comboDataDefaultSet = [];
+        selectedComptLabels = {};
+        isSelectedPacketNew = null;
+        comptsIsSelected = null;
+    };
 
     var activatePacketIsSelectedOrSelectedPacketIsReloadedListener = function (value) {
         var oldValue = value.oldVal;
@@ -175,7 +211,7 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
     };
 
     var setComptLabels = function (value, pktId, label) {
-        if (label) {
+        if (label != undefined) {
             comptLabels[pktId][label] = value;
         } else {
             comptLabels[pktId] = value;
@@ -183,7 +219,7 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
     };
 
     var getComptLabels = function (pktId, label) {
-        if (label) {
+        if (label != undefined) {
             return comptLabels[pktId][label];
         }
         return comptLabels[pktId];
@@ -274,6 +310,10 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
         return allStateLabels;
     };
 
+    var setAllStateLabels = function (value) {
+        allStateLabels = value;
+    };
+
     var pushToComboDataDefaultSet = function (value, broadcast) {
         comboDataDefaultSet.push(value);
         if (broadcast) {
@@ -283,6 +323,13 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
 
     var getComboDataDefaultSet = function (index) {
         return comboDataDefaultSet[index];
+    };
+
+    var setComboDataDefaultSet = function (value, broadcast) {
+        comboDataDefaultSet = value;
+        if (broadcast) {
+            $rootScope.$broadcast('comboDataDefaultSet:update', comboDataDefaultSet);
+        }
     };
 
     var pushToNewComptCheckedVals = function (value, broadcast) {
@@ -297,6 +344,13 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
             return newComptCheckedVals[index];
         }
         return newComptCheckedVals;
+    };
+
+    var setNewComptCheckedVals = function (value, broadcast) {
+        newComptCheckedVals = value;
+        if (broadcast) {
+            $rootScope.$broadcast('newComptCheckedVals:update', newComptCheckedVals);
+        }
     };
 
     var setAllComboData = function (value, comptId, stateId) {
@@ -357,22 +411,30 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
     };
 
     var getNewComptLabels = function (isPktNew, pktId, comptId) {
-        if (pktId == undefined && comptId == undefined) {
-            return newComptLabels[isPktNew];
-        } else if (pktId != undefined && comptId == undefined) {
-            return newComptLabels[isPktNew][pktId];
-        } else if (pktId != undefined && comptId != undefined) {
-            return newComptLabels[isPktNew][pktId][comptId];
+        if (pktId == undefined) {
+            if (comptId == undefined) {
+                return newComptLabels[isPktNew];
+            }
+        } else {
+            if (comptId == undefined) {
+                return newComptLabels[isPktNew][pktId];
+            } else {
+                return newComptLabels[isPktNew][pktId][comptId];
+            }
         }
     };
 
     var setNewComptLabels = function (value, isPktNew, pktId, comptId) {
-        if (pktId == undefined && comptId == undefined) {
-            newComptLabels[isPktNew] = value;
-        } else if (pktId != undefined && comptId == undefined) {
-            newComptLabels[isPktNew][pktId] = value;
-        } else if (pktId != undefined && comptId != undefined) {
-            newComptLabels[isPktNew][pktId][comptId] = value;
+        if (pktId == undefined) {
+            if (comptId == undefined) {
+                newComptLabels[isPktNew] = value;
+            }
+        } else {
+            if (comptId == undefined) {
+                newComptLabels[isPktNew][pktId] = value;
+            } else {
+                newComptLabels[isPktNew][pktId][comptId] = value;
+            }
         }
     };
 
@@ -508,9 +570,12 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
         getAllStates: getAllStates,
         pushToAllStateLabels: pushToAllStateLabels,
         getAllStateLabels: getAllStateLabels,
+        setAllStateLabels: setAllStateLabels,
         pushToComboDataDefaultSet: pushToComboDataDefaultSet,
         getComboDataDefaultSet: getComboDataDefaultSet,
+        setComboDataDefaultSet: setComboDataDefaultSet,
         pushToNewComptCheckedVals: pushToNewComptCheckedVals,
+        setNewComptCheckedVals: setNewComptCheckedVals,
         setAllComboData: setAllComboData,
         getAllComboData: getAllComboData,
         pushToAllComboData: pushToAllComboData,
@@ -541,6 +606,7 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
         setComptIdsToDelete: setComptIdsToDelete,
         pushToComptIdsToDelete: pushToComptIdsToDelete,
         setComptIdsToUpdate: setComptIdsToUpdate,
-        getSelectedComptsLength: getSelectedComptsLength
+        getSelectedComptsLength: getSelectedComptsLength,
+        init: init
     };
 });

@@ -10,39 +10,39 @@ app
                                              packetListPageCount, exchangeService) {
 
         $scope.$on('selectedCompts:update', function (event, data) {
-            $scope.selectedCompts = data;
+            $scope.data.selectedCompts = data;
         });
 
         $scope.$on('selectedPage:update', function (event, data) {
-            $scope.selectedPage = data;
+            $scope.data.selectedPage = data;
         });
 
         $scope.$on('selectedPacket:update', function (event, data) {
-            $scope.selectedPacket = data;
+            $scope.data.selectedPacket = data;
         });
 
         $scope.$on('allStates:update', function (event, data) {
-            $scope.allStates = data;
+            $scope.data.allStates = data;
         });
 
         $scope.$on('allStateLabels:update', function (event, data) {
-            $scope.allStateLabels = data;
+            $scope.data.allStateLabels = data;
         });
 
         $scope.$on('allComboData:update', function (event, data) {
-            $scope.allComboData = data;
+            $scope.data.allComboData = data;
         });
 
         $scope.$on('allCheckedComboData:update', function (event, data) {
-            $scope.allCheckedComboData = data;
+            $scope.data.allCheckedComboData = data;
         });
 
         $scope.$on('comboDataDefaultSet:update', function (event, data) {
-            $scope.comboDataDefaultSet = data;
+            $scope.data.comboDataDefaultSet = data;
         });
 
         $scope.$on('newComptCheckedVals:update', function (event, data) {
-            $scope.newComptCheckedVals = data;
+            $scope.data.newComptCheckedVals = data;
         });
 
         $scope.isComptsSelected = function () {
@@ -101,7 +101,8 @@ app
                 exchangeService.deleteNewComptLabels(isSelectedPacketNew, pktId, comptId);
                 
             } else {
-                exchangeService.setComptIdsToDelete(exchangeService.getComptIdsToUpdate(pktId) || [], pktId);
+                var comptIdsToDelete = exchangeService.getComptIdsToDelete(pktId) || [];
+                exchangeService.setComptIdsToDelete(comptIdsToDelete, pktId);
                 exchangeService.pushToComptIdsToDelete(comptId, pktId);
             }
         };
@@ -114,7 +115,8 @@ app
                 exchangeService.getNewComptLabels(isSelectedPacketNew, pktId, comptId)) {
                 return;
             }
-            exchangeService.setComptIdsToUpdate(exchangeService.getComptIdsToUpdate(pktId) || {}, pktId);
+            var comptIdsToUpdate = exchangeService.getComptIdsToUpdate(pktId) || {};
+            exchangeService.setComptIdsToUpdate(comptIdsToUpdate, pktId);
             exchangeService.setComptIdsToUpdate(true, pktId, comptId);
         };
 
@@ -127,17 +129,17 @@ app
         };
 
         var init = function () {
-            $scope.pageSize = packetListPageCount;
-            $scope.selectedCompts = exchangeService.getSelectedCompts();
-            $scope.selectedPage = exchangeService.getSelectedPage();
-            $scope.selectedPacket = exchangeService.getSelectedPacket();
-            $scope.allStates = exchangeService.getAllStates();
-            $scope.allStateLabels = exchangeService.getAllStateLabels();
-            $scope.allComboData = exchangeService.getAllComboData();
-            $scope.allCheckedComboData = exchangeService.getAllCheckedComboData();
-            $scope.comboDataDefaultSet = exchangeService.getComboDataDefaultSet();
-            $scope.newComptCheckedVals = exchangeService.getNewComptCheckedVals();
             $scope.data = {};
+            $scope.data.pageSize = packetListPageCount;
+            $scope.data.selectedCompts = exchangeService.getSelectedCompts();
+            $scope.data.selectedPage = exchangeService.getSelectedPage();
+            $scope.data.selectedPacket = exchangeService.getSelectedPacket();
+            $scope.data.allStates = exchangeService.getAllStates();
+            $scope.data.allStateLabels = exchangeService.getAllStateLabels();
+            $scope.data.allComboData = exchangeService.getAllComboData();
+            $scope.data.allCheckedComboData = exchangeService.getAllCheckedComboData();
+            $scope.data.comboDataDefaultSet = exchangeService.getComboDataDefaultSet();
+            $scope.data.newComptCheckedVals = exchangeService.getNewComptCheckedVals();
         };
 
         init();

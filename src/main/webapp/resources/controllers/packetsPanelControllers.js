@@ -17,7 +17,7 @@ angular.module("packetAdminApp")
     .constant("widePacketCaption", "wide-packet-caption")
     .constant("adminRole", "ADMIN")
     .constant("role", "role")
-    .controller("packetsPanelCtrl", function ($scope, $http, $location, $cookies, exchangeService,
+    .controller("packetsPanelCtrl", function ($scope, $http, $window, $cookies, exchangeService,
                                               packetListActiveClass, packetListNonActiveClass, updateCompts,
                                               deleteCompts, updatePackets, deletePackets, addPackets,
                                               saveAllChangesToBaseUrl, errorStatus404, narrowPacketCaption,
@@ -59,7 +59,7 @@ angular.module("packetAdminApp")
         };
 
         $scope.reloadRoute = function () {
-            $location.reload();
+            $window.location.reload();
         };
 
         $scope.getPacketClass = function (packet) {
@@ -146,7 +146,7 @@ angular.module("packetAdminApp")
             var comptsToUpdateParamsList = [];
 
             var packetsToSave = {};
-            if (!savedPktId) {
+            if (savedPktId == undefined) {
                 packetsToSave = exchangeService.getAllPackets();
             } else {
                 packetsToSave[savedPktId] = exchangeService.getAllPackets(savedPktId);
@@ -195,10 +195,10 @@ angular.module("packetAdminApp")
                 comptsToUpdateParamsList: comptsToUpdateParamsList,
                 comptIdsToDelete: comptIdsToDelete
             };
-            if (!savedPktId) {
+            if (savedPktId == undefined) {
                 params['packetIdsToDelete'] = packetIdsToDelete;
             } else {
-                params['packetId'] = savedPacketId;
+                params['packetId'] = savedPktId;
             }
             return params;
         };
@@ -226,9 +226,10 @@ angular.module("packetAdminApp")
         };
 
         var init = function () {
-            $scope.adminRoleTitle = adminRole;
-            $scope.isRoleNotAdmin = $cookies.get(role) !== $scope.adminRoleTitle;
-            $scope.allPackets = exchangeService.getAllPackets();
+            $scope.data = {};
+            $scope.data.adminRoleTitle = adminRole;
+            $scope.data.isRoleNotAdmin = $cookies.get(role) !== $scope.data.adminRoleTitle;
+            $scope.data.allPackets = exchangeService.getAllPackets();
             packetIdsToDelete = [];
         };
 
