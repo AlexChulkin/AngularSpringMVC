@@ -21,7 +21,6 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
     var allCheckedComboData;
     var packetInitialStateIds;
     var selectedCompts;
-    var packetIsSelectedOrSelectedPacketIsReloaded;
     var compts;
     var selectedPacketId;
     var selectedPacket;
@@ -56,7 +55,6 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
         allCheckedComboData = {};
         packetInitialStateIds = {};
         selectedCompts = [];
-        packetIsSelectedOrSelectedPacketIsReloaded = {oldVal: null, newVal: null};
         compts = [];
         selectedPacketId = null;
         selectedPacket = null;
@@ -103,8 +101,9 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
         comptsIsSelected = !angular.equals({}, value);
     };
 
-    var setSelectedPacket = function (value) {
+    var setSelectedPacket = function (value, packetIsSelectedOrSelectedPacketIsReloaded) {
         selectedPacket = value;
+        activatePacketIsSelectedOrSelectedPacketIsReloadedListener(packetIsSelectedOrSelectedPacketIsReloaded);
         $rootScope.$broadcast('selectedPacket:update', selectedPacket);
     };
 
@@ -191,22 +190,6 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
 
     var getMaximalComptId = function () {
         return maximalComptId;
-    };
-
-    var setPacketIsSelectedOrSelectedPacketIsReloaded = function (value) {
-        packetIsSelectedOrSelectedPacketIsReloaded = value;
-        activatePacketIsSelectedOrSelectedPacketIsReloadedListener(packetIsSelectedOrSelectedPacketIsReloaded);
-    };
-
-    var getPacketIsSelectedOrSelectedPacketIsReloaded = function () {
-        return packetIsSelectedOrSelectedPacketIsReloaded;
-    };
-
-    var setSelectedPacketStateId = function (value) {
-        if (selectedPacket) {
-            selectedPacket.stateId = value;
-            $rootScope.$broadcast('selectedPacket:update', selectedPacket);
-        }
     };
 
     var setPacketIsAlreadySelectedAtLeastOnce = function (value) {
@@ -544,8 +527,6 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
         getLoadedNoPackets: getLoadedNoPackets,
         setMaximalComptId: setMaximalComptId,
         getMaximalComptId: getMaximalComptId,
-        setPacketIsSelectedOrSelectedPacketIsReloaded: setPacketIsSelectedOrSelectedPacketIsReloaded,
-        getPacketIsSelectedOrSelectedPacketIsReloaded: getPacketIsSelectedOrSelectedPacketIsReloaded,
         setPacketIdToInd: setPacketIdToInd,
         getPacketIdToInd: getPacketIdToInd,
         setPacketIsAlreadySelectedAtLeastOnce: setPacketIsAlreadySelectedAtLeastOnce,
@@ -598,7 +579,6 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
         pushToComptIdsToDelete: pushToComptIdsToDelete,
         setComptIdsToUpdate: setComptIdsToUpdate,
         getSelectedComptsLength: getSelectedComptsLength,
-        setSelectedPacketStateId: setSelectedPacketStateId,
         init: init
     };
 });

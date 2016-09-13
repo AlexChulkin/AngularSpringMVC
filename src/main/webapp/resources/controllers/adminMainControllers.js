@@ -9,7 +9,6 @@ angular.module("packetAdminApp")
     .controller("mainCtrl", function ($scope, $http, packetListPageCount, labelLabel, loadDataUrl,
                                       initialPacketIndex, exchangeService) {
 
-        var selectedPacketsReloadCounter;
         var loadedNoCompts;
 
         $scope.loadPacketById = function (packetId) {
@@ -28,18 +27,8 @@ angular.module("packetAdminApp")
                         if (!loadedNoCompts && !$scope.isComboDataNotLoaded() && !$scope.isStatesNotLoaded()) {
                             prepareComptsSupplInfo(data.comptSupplInfo);
                         }
-                        var selPacket = exchangeService.getSelectedPacket();
-                        if (!isPacketIdUndefined && selPacket && packetId == selPacket.id) {
-                            var selectedPacketIsReloaded =
-                            {
-                                oldVal: selPacket,
-                                newVal: selPacket,
-                                selectedPacketsReloadCounter: ++selectedPacketsReloadCounter
-                            };
-                            exchangeService.setPacketIsSelectedOrSelectedPacketIsReloaded(selectedPacketIsReloaded);
-                        }
                     },
-                    function error(error) {
+                    function error() {
                         exchangeService.setLoadError(true);
                     }
                 );
@@ -68,9 +57,8 @@ angular.module("packetAdminApp")
 
         $scope.selectPacket = function (packet) {
             var oldSelectedPacket = exchangeService.getSelectedPacket();
-            exchangeService.setSelectedPacket(packet);
             var packetIsSelectedOrSelectedPacketIsReloaded = {oldVal: oldSelectedPacket, newVal: packet};
-            exchangeService.setPacketIsSelectedOrSelectedPacketIsReloaded(packetIsSelectedOrSelectedPacketIsReloaded);
+            exchangeService.setSelectedPacket(packet, packetIsSelectedOrSelectedPacketIsReloaded);
             $scope.selectPage(1);
         };
 
@@ -79,10 +67,7 @@ angular.module("packetAdminApp")
         };
 
         $scope.isDataEmpty = function (data) {
-            if (!data || !angular.isArray(data) || data.length == 0) {
-                return true;
-            }
-            return false;
+            return (!(data && angular.isArray(data) && data.length !== 0));
         };
 
         var prepareCompts = function (uploadedCompts, initialPacketInd, packetId) {
@@ -125,14 +110,9 @@ angular.module("packetAdminApp")
             exchangeService.setLoadedNoPackets(loadedNoPackets);
 
             if (!loadedNoPackets) {
-                var firstPacket = packets[0];
-                if (isPacketIdUndefined) {
-                    $scope.selectPacket(firstPacket);
-                } else {
-                    var selectedPacketId = exchangeService.getSelectedPacketId();
-                    if (firstPacket.id === selectedPacketId) {
-                        exchangeService.setSelectedPacketStateId(firstPacket.stateId);
-                    }
+                var firstOrSingleReloadedPacket = packets[0];
+                if (isPacketIdUndefined || firstOrSingleReloadedPacket.id === exchangeService.getSelectedPacketId()) {
+                    $scope.selectPacket(firstOrSingleReloadedPacket);
                 }
             }
             angular.forEach(packets, function (pkt) {
@@ -184,7 +164,6 @@ angular.module("packetAdminApp")
         };
 
         $scope.init = function () {
-            selectedPacketsReloadCounter = 0;
             loadedNoCompts = null;
             exchangeService.init();
             $scope.loadPacketById();
