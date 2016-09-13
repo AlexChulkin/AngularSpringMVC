@@ -76,9 +76,10 @@ app
             exchangeService.setNewComptLabels(usualLabel, isSelectedPacketNew, pktId, comptId);
             exchangeService.setAllComboData({}, comptId);
             exchangeService.setAllCheckedComboData({}, comptId);
-            for (var i = 1; i <= exchangeService.getAllStatesLength(); i++) {
-                exchangeService.setAllComboData($scope.comboDataDefaultSet, comptId, i);
-                exchangeService.setAllCheckedComboData($scope.newComptCheckedVals[i - 1], comptId, i);
+            var allStatesLength = exchangeService.getAllStatesLength();
+            for (var i = 1; i <= allStatesLength; i++) {
+                exchangeService.setAllComboData($scope.data.comboDataDefaultSet, comptId, i);
+                exchangeService.setAllCheckedComboData($scope.data.newComptCheckedVals[i - 1], comptId, i);
             }
             $scope.data.newLabel = null;
         };

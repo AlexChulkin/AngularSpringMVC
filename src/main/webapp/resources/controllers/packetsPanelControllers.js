@@ -177,7 +177,7 @@ angular.module("packetAdminApp")
             }
             var comptIdsToDelete = [];
             angular.forEach(packetsToSave, function (unused, pktId) {
-                var comptIdsTaggedToDelete = exchangeService.getComptIdsTaggedToDelete(pktId);
+                var comptIdsTaggedToDelete = exchangeService.getComptIdsToDelete(pktId);
                 if (!$scope.$parent.isDataEmpty(comptIdsTaggedToDelete)) {
                     comptIdsToDelete = comptIdsToDelete.concat(comptIdsTaggedToDelete);
                 }
