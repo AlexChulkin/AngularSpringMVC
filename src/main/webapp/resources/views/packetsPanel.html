@@ -1,7 +1,7 @@
 <div ng-controller="packetsPanelCtrl">
     <div class="flex" ng-repeat="pkt in data.allPackets">
         <a ng-click="$parent.selectPacket(pkt)"
-           ng-class="getPacketClass(pkt)">
+           ng-class="getPacketClass(pkt)" ng-cloak>
             Packet#{{pkt.id}}
         </a>
         <a ng-click="saveAllChangesToBase(pkt.id)"

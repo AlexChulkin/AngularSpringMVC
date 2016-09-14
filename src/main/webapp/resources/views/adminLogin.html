@@ -7,7 +7,7 @@
         Enter your username and password and click Log In to authenticate
     </div>
 
-    <div class="alert alert-danger" ng-show="data.authenticationError">
+    <div class="alert alert-danger" ng-show="data.authenticationError" ng-cloak>
         {{data.authenticationError.report}}
     </div>
 
