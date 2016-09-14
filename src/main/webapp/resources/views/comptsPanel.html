@@ -17,7 +17,7 @@
                     <thead>
                     <tr>
                         <th ng-show="data.allStateLabels" ng-repeat="label in data.allStateLabels track by $index">
-                            <span ng-bind="allStateLabels[$index]"/>
+                            {{allStateLabels[$index]}}
                         </th>
                     </tr>
                     </thead>
@@ -25,7 +25,7 @@
                     <tr ng-repeat="compt in data.selectedCompts | filter:notNull
                                                                 | range:data.selectedPage:data.pageSize">
                         <td width="43%">
-                            <span ng-bind="compt.label"/>
+                            {{compt.label}}
                         </td>
                         <td width="17%" ng-repeat="state in data.allStates">
                             <span ng-bind="data.allCheckedComboData[compt.id][state.id]"
@@ -50,7 +50,7 @@
                     <a ng-repeat="page in data.selectedCompts | filter:notNull | pageCount:data.pageSize"
                        ng-click="$parent.selectPage(page)" class="btn btn-default"
                        ng-class="getPageClass(page)">
-                        <span ng-bind="page"></span>
+                        {{page}}
                     </a>
                 </div>
             </div>
@@ -60,7 +60,7 @@
                         <input type="radio"
                                ng-model="data.selectedPacket.stateId"
                                ng-value="state.id">
-                        <span ng-bind="data.allStateLabels[state.id]"></span>
+                        {{data.allStateLabels[state.id]}}
                     </div>
                 </div>
             </div>
