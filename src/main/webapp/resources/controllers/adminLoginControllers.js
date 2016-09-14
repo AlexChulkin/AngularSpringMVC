@@ -20,10 +20,7 @@ angular.module("packetAdminApp")
                 securityParams: securityParams
             }).success(function (role) {
                 if (role) {
-                    timeoutLogoutPromise = $timeout(function () {
-                        $scope.data.timeout = true;
-                        $scope.logout();
-                    }, timeoutLogoutDelay);
+                    timeoutLogoutPromise = $timeout(timeoutLogoutFn, timeoutLogoutDelay);
                     $cookies.put("username", username);
                     $cookies.put("role", role);
                     $scope.data.role = role;
@@ -60,6 +57,11 @@ angular.module("packetAdminApp")
             $location.path(mainUrl);
         };
 
+        var timeoutLogoutFn = function () {
+            $scope.logout();
+            $scope.data.timeout = true;
+        };
+        
         var setAuthenticationError = function (authenticationError) {
             $cookies.remove("username");
             $cookies.remove("role");

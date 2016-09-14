@@ -1,7 +1,6 @@
 <div class="well">
-
-    <div ng-show="data.timeout" class="alert alert-warning">
-        Your session has expired.
+    <div class="alert alert-warning" ng-show="data.timeout">
+        Your session has expired
     </div>
 
     <div class="alert alert-info" ng-hide="data.authenticationError || isUserAuthorized()">
@@ -36,4 +35,5 @@
             </button>
         </div>
     </form>
+
 </div>
