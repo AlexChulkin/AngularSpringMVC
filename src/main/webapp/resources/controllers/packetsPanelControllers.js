@@ -26,7 +26,7 @@ angular.module("packetAdminApp")
         var packetIdsToDelete;
 
         $scope.$on('allPackets:update', function (event, data) {
-            $scope.allPackets = data;
+            $scope.data.allPackets = data;
         });
 
         $scope.showAggregateButtons = function () {
@@ -48,14 +48,16 @@ angular.module("packetAdminApp")
 
         $scope.deletePacketLocally = function (packet) {
             var pktId = packet.id;
-            if (!exchangeService.getNewPackets(pktId)) {
+            var isPktNew = pktId in exchangeService.getNewPackets();
+            if (!isPktNew) {
                 packetIdsToDelete.push(pktId);
             }
-            var isPktNew = pktId in exchangeService.getNewPackets();
             exchangeService.deleteNewComptLabels(isPktNew, pktId);
             exchangeService.deleteAllPackets(pktId);
             exchangeService.deleteComptIdsToDelete(pktId);
-            exchangeService.setSelectedPacket(null);
+            if (pktId === exchangeService.getSelectedPacketId()) {
+                exchangeService.setSelectedPacket(null);
+            }    
         };
 
         $scope.reloadRoute = function () {
@@ -178,7 +180,7 @@ angular.module("packetAdminApp")
             var comptIdsToDelete = [];
             angular.forEach(packetsToSave, function (unused, pktId) {
                 var comptIdsTaggedToDelete = exchangeService.getComptIdsToDelete(pktId);
-                if (!$scope.$parent.isDataEmpty(comptIdsTaggedToDelete)) {
+                if (!exchangeService.isEmpty(comptIdsTaggedToDelete)) {
                     comptIdsToDelete = comptIdsToDelete.concat(comptIdsTaggedToDelete);
                 }
             });

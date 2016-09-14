@@ -5,7 +5,12 @@ angular.module("packetAdminApp")
     .constant("authUrl", "/users/login")
     .constant("mainUrl", "/main")
     .constant("loginUrl", "/login")
-    .controller("authCtrl", function ($scope, $http, $location, $cookies, authUrl, mainUrl, loginUrl, exchangeService) {
+    .constant("timeoutLogoutDelay", 30 * 60 * 1000)
+    .controller("authCtrl", function ($scope, $http, $location, $cookies, $timeout,
+                                      authUrl, mainUrl, loginUrl, timeoutLogoutDelay, exchangeService) {
+
+        var timeoutLogoutPromise;
+
         $scope.authenticate = function (username, pass) {
             var securityParams = {
                 username: username,
@@ -15,6 +20,10 @@ angular.module("packetAdminApp")
                 securityParams: securityParams
             }).success(function (role) {
                 if (role) {
+                    timeoutLogoutPromise = $timeout(function () {
+                        $scope.data.timeout = true;
+                        $scope.logout();
+                    }, timeoutLogoutDelay);
                     $cookies.put("username", username);
                     $cookies.put("role", role);
                     $scope.data.role = role;
@@ -26,19 +35,29 @@ angular.module("packetAdminApp")
                 }
             }).error(function (error) {
                 setAuthenticationError(error);
-            }).finally(function (data) {
+            }).finally(function () {
+                $scope.data.timeout = false;
                 $scope.data.password = null;
             });
         };
 
         $scope.isUserAuthorized = function () {
-            return $scope.data.role;
+            return !exchangeService.isUndefinedOrNull($scope.data.role);
         };
 
         $scope.logout = function () {
+            $timeout.cancel(timeoutLogoutPromise);
             exchangeService.init();
             nullifyAll();
             $location.path(loginUrl);
+        };
+
+        $scope.redirectToLoginPage = function () {
+            $location.path(loginUrl);
+        };
+
+        $scope.redirectToMainPage = function () {
+            $location.path(mainUrl);
         };
 
         var setAuthenticationError = function (authenticationError) {
@@ -51,9 +70,9 @@ angular.module("packetAdminApp")
         };
 
         var nullifyAll = function () {
+            $scope.data = {};
             $cookies.remove("username");
             $cookies.remove("role");
-            $scope.data = {};
         };
 
         var init = function () {

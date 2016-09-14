@@ -70,10 +70,11 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
         comptsIsSelected = null;
     };
 
-    var activatePacketIsSelectedOrSelectedPacketIsReloadedListener = function (value) {
-        var oldValue = value.oldVal;
-        var newValue = value.newVal;
-        if (newValue !== oldValue) {
+    var setSelectedPacket = function (newValue) {
+        var oldValue = selectedPacket;
+        selectedPacket = newValue;
+        $rootScope.$broadcast('selectedPacket:update', selectedPacket);
+        if (!angular.equals(newValue, oldValue)) {
             if (newValue) {
                 if (oldValue) {
                     var oldSelectedPacketId = oldValue.id;
@@ -95,16 +96,6 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
             setSelectedCompts(compts[packetIdToInd[selectedPacketId]] || []);
             setSelectedComptLabels(comptLabels[selectedPacketId] || {});
         }
-    };
-
-    var activateSelectedComptLabelsListener = function (value) {
-        comptsIsSelected = !angular.equals({}, value);
-    };
-
-    var setSelectedPacket = function (value, packetIsSelectedOrSelectedPacketIsReloaded) {
-        selectedPacket = value;
-        activatePacketIsSelectedOrSelectedPacketIsReloadedListener(packetIsSelectedOrSelectedPacketIsReloaded);
-        $rootScope.$broadcast('selectedPacket:update', selectedPacket);
     };
 
     var getSelectedPacket = function () {
@@ -302,7 +293,11 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
     };
 
     var getComboDataDefaultSet = function (index) {
-        return comboDataDefaultSet[index];
+        if (!isUndefinedOrNull(index)) {
+            return comboDataDefaultSet[index];
+        }
+        return comboDataDefaultSet;
+
     };
 
     var setComboDataDefaultSet = function (comboData) {
@@ -347,8 +342,12 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
     };
 
     var getAllComboData = function (comptId, stateId) {
-        if (stateId == undefined) {
-            return allComboData[comptId];
+        if (isUndefinedOrNull(stateId)) {
+            if (!isUndefinedOrNull(comptId)) {
+                return allComboData[comptId];
+            } else {
+                return allComboData;
+            }   
         }
         return allComboData[comptId][stateId];
     };
@@ -363,8 +362,12 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
     };
 
     var getAllCheckedComboData = function (comptId, stateId) {
-        if (stateId == undefined) {
-            return allCheckedComboData[comptId];
+        if (isUndefinedOrNull(stateId)) {
+            if (!isUndefinedOrNull(comptId)) {
+                return allCheckedComboData[comptId];
+            } else {
+                return allCheckedComboData;
+            }
         }
         return allCheckedComboData[comptId][stateId];
     };
@@ -383,8 +386,9 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
     var deleteNewComptLabels = function (isPktNew, pktId, comptId) {
         if (comptId == undefined) {
             delete newComptLabels[isPktNew][pktId];
+        } else {
+            delete newComptLabels[isPktNew][pktId][comptId];
         }
-        delete newComptLabels[isPktNew][pktId][comptId];
     };
 
     var getNewComptLabels = function (isPktNew, pktId, comptId) {
@@ -456,7 +460,7 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
         } else {
             selectedComptLabels = value;
         }
-        activateSelectedComptLabelsListener(selectedComptLabels);
+        comptsIsSelected = !angular.equals({}, selectedComptLabels);
     };
 
     var getSelectedComptLabels = function (label) {
@@ -502,6 +506,14 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
         } else {
             delete comptIdsToUpdate[pktId];
         }
+    };
+
+    var isUndefinedOrNull = function (value) {
+        return angular.isUndefined(value) || value === null
+    };
+
+    var isEmpty = function (value) {
+        return (!(value && angular.isArray(value) && value.length !== 0));
     };
     
     return {
@@ -579,6 +591,8 @@ angular.module("packetAdminApp").service('exchangeService', function ($rootScope
         pushToComptIdsToDelete: pushToComptIdsToDelete,
         setComptIdsToUpdate: setComptIdsToUpdate,
         getSelectedComptsLength: getSelectedComptsLength,
+        isUndefinedOrNull: isUndefinedOrNull,
+        isEmpty: isEmpty,
         init: init
     };
 });

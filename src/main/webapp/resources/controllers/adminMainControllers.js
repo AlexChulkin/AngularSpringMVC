@@ -19,8 +19,9 @@ angular.module("packetAdminApp")
                 .post(contextPath + loadDataUrl, {dataParams: dataParams})
                 .then(
                     function success(result) {
+                        initializeService(isPacketIdUndefined, packetId);
                         var data = result.data;
-                        prepareCompts(data.compts, packetIndex, packetId);
+                        prepareCompts(data.compts, packetIndex, packetId, isPacketIdUndefined);
                         preparePackets(data.packets, isPacketIdUndefined);
                         prepareStates(data.states);
                         prepareComboData(data.comboData);
@@ -56,9 +57,7 @@ angular.module("packetAdminApp")
         };
 
         $scope.selectPacket = function (packet) {
-            var oldSelectedPacket = exchangeService.getSelectedPacket();
-            var packetIsSelectedOrSelectedPacketIsReloaded = {oldVal: oldSelectedPacket, newVal: packet};
-            exchangeService.setSelectedPacket(packet, packetIsSelectedOrSelectedPacketIsReloaded);
+            exchangeService.setSelectedPacket(packet);
             $scope.selectPage(1);
         };
 
@@ -66,38 +65,40 @@ angular.module("packetAdminApp")
             exchangeService.setSelectedPage(newPage);
         };
 
-        $scope.isDataEmpty = function (data) {
-            return (!(data && angular.isArray(data) && data.length !== 0));
-        };
-
-        var prepareCompts = function (uploadedCompts, initialPacketInd, packetId) {
-            if (packetId != undefined) {
+        var initializeService = function (isPacketIdUndefined, packetId) {
+            if (!isPacketIdUndefined) {
                 exchangeService.setComptIdsToDelete([], packetId);
                 exchangeService.setComptIdsToUpdate({}, packetId);
+            } else {
+                exchangeService.init();
             }
-            loadedNoCompts = $scope.isDataEmpty(uploadedCompts);
+        };
+
+        var prepareCompts = function (uploadedCompts, initialPacketInd, packetId, isPacketIdUndefined) {
+            loadedNoCompts = exchangeService.isEmpty(uploadedCompts);
             var packetInd = initialPacketInd;
             var visitedPackets = {};
             angular.forEach(uploadedCompts, function (el) {
-                var id = el.id;
+                var comptId = el.id;
                 var label = el.label.toUpperCase();
-                var packetId = el.packetId;
-                if (!visitedPackets[packetId]) {
-                    visitedPackets[packetId] = true;
-                    exchangeService.setComptLabels({}, packetId);
-                    if (initialPacketIndex == initialPacketInd) {
+                var localPktId = isPacketIdUndefined ? el.packetId : packetId;
+
+                if (!visitedPackets[localPktId]) {
+                    visitedPackets[localPktId] = true;
+                    exchangeService.setComptLabels({}, localPktId);
+                    if (isPacketIdUndefined) {
                         exchangeService.pushToCompts([]);
-                        exchangeService.setPacketIdToInd(++packetInd, packetId);
+                        exchangeService.setPacketIdToInd(++packetInd, localPktId);
                     } else {
-                        exchangeService.setCompts([], packetInd)
+                        exchangeService.setCompts([], packetInd);
                     }
                 }
-                exchangeService.setComptLabels(true, packetId, label);
+                exchangeService.setComptLabels(true, localPktId, label);
                 var comptIndex = exchangeService.getComptsLength(packetInd);
-                exchangeService.setComptIdToInd(id, comptIndex);
+                exchangeService.setComptIdToInd(comptId, comptIndex);
                 exchangeService.pushToCompts(el, packetInd);
-                if (id > exchangeService.getMaximalComptId()) {
-                    exchangeService.setMaximalComptId(id);
+                if (comptId > exchangeService.getMaximalComptId()) {
+                    exchangeService.setMaximalComptId(comptId);
                 }
             });
             if (packetInd > exchangeService.getMaximalPacketIndex()) {
@@ -106,15 +107,9 @@ angular.module("packetAdminApp")
         };
 
         var preparePackets = function (packets, isPacketIdUndefined) {
-            var loadedNoPackets = $scope.isDataEmpty(packets);
+            var loadedNoPackets = exchangeService.isEmpty(packets);
             exchangeService.setLoadedNoPackets(loadedNoPackets);
 
-            if (!loadedNoPackets) {
-                var firstOrSingleReloadedPacket = packets[0];
-                if (isPacketIdUndefined || firstOrSingleReloadedPacket.id === exchangeService.getSelectedPacketId()) {
-                    $scope.selectPacket(firstOrSingleReloadedPacket);
-                }
-            }
             angular.forEach(packets, function (pkt) {
                 var pktId = pkt.id;
                 exchangeService.setAllPackets(pkt, pktId);
@@ -123,16 +118,23 @@ angular.module("packetAdminApp")
                 }
                 exchangeService.setPacketInitialStateIds(pkt.id, pkt.stateId);
             });
+
+            if (!loadedNoPackets) {
+                var firstOrSingleReloadedPacket = packets[0];
+                if (isPacketIdUndefined || firstOrSingleReloadedPacket.id === exchangeService.getSelectedPacketId()) {
+                    $scope.selectPacket(firstOrSingleReloadedPacket);
+                }
+            }
         };
 
         var prepareStates = function (states) {
-            exchangeService.setLoadedNoStates($scope.isDataEmpty(states));
+            exchangeService.setLoadedNoStates(exchangeService.isEmpty(states));
             exchangeService.setAllStates(states);
             exchangeService.setAllStateLabels(states, labelLabel);
         };
 
         var prepareComboData = function (comboData) {
-            exchangeService.setLoadedNoComboData($scope.isDataEmpty(comboData));
+            exchangeService.setLoadedNoComboData(exchangeService.isEmpty(comboData));
             exchangeService.setComboDataDefaultSet(comboData);
             exchangeService.setNewComptCheckedVals();
         };
@@ -165,7 +167,6 @@ angular.module("packetAdminApp")
 
         $scope.init = function () {
             loadedNoCompts = null;
-            exchangeService.init();
             $scope.loadPacketById();
         };
 
