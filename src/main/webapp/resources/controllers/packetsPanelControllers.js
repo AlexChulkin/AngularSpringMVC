@@ -148,7 +148,7 @@ angular.module("packetAdminApp")
             var comptsToUpdateParamsList = [];
 
             var packetsToSave = {};
-            if (savedPktId == undefined) {
+            if (exchangeService.isUndefinedOrNull(savedPktId)) {
                 packetsToSave = exchangeService.getAllPackets();
             } else {
                 packetsToSave[savedPktId] = exchangeService.getAllPackets(savedPktId);
@@ -197,7 +197,7 @@ angular.module("packetAdminApp")
                 comptsToUpdateParamsList: comptsToUpdateParamsList,
                 comptIdsToDelete: comptIdsToDelete
             };
-            if (savedPktId == undefined) {
+            if (exchangeService.isUndefinedOrNull(savedPktId)) {
                 params['packetIdsToDelete'] = packetIdsToDelete;
             } else {
                 params['packetId'] = savedPktId;

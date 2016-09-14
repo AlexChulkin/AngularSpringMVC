@@ -12,17 +12,17 @@ angular.module("packetAdminApp")
         var loadedNoCompts;
 
         $scope.loadPacketById = function (packetId) {
-            var isPacketIdUndefined = packetId == undefined;
-            var packetIndex = isPacketIdUndefined ? initialPacketIndex : exchangeService.getPacketIdToInd(packetId);
-            var dataParams = isPacketIdUndefined ? {} : {packetId: packetId};
+            var isPacketIdUndefinedOrNull = exchangeService.isUndefinedOrNull(packetId);
+            var packetIndex = isPacketIdUndefinedOrNull ? initialPacketIndex : exchangeService.getPacketIdToInd(packetId);
+            var dataParams = isPacketIdUndefinedOrNull ? {} : {packetId: packetId};
             $http
                 .post(contextPath + loadDataUrl, {dataParams: dataParams})
                 .then(
                     function success(result) {
-                        initializeService(isPacketIdUndefined, packetId);
+                        initializeService(isPacketIdUndefinedOrNull, packetId);
                         var data = result.data;
-                        prepareCompts(data.compts, packetIndex, packetId, isPacketIdUndefined);
-                        preparePackets(data.packets, isPacketIdUndefined);
+                        prepareCompts(data.compts, packetIndex, packetId, isPacketIdUndefinedOrNull);
+                        preparePackets(data.packets, isPacketIdUndefinedOrNull);
                         prepareStates(data.states);
                         prepareComboData(data.comboData);
                         if (!loadedNoCompts && !$scope.isComboDataNotLoaded() && !$scope.isStatesNotLoaded()) {
@@ -65,8 +65,8 @@ angular.module("packetAdminApp")
             exchangeService.setSelectedPage(newPage);
         };
 
-        var initializeService = function (isPacketIdUndefined, packetId) {
-            if (!isPacketIdUndefined) {
+        var initializeService = function (isPacketIdUndefinedOrNull, packetId) {
+            if (!isPacketIdUndefinedOrNull) {
                 exchangeService.setComptIdsToDelete([], packetId);
                 exchangeService.setComptIdsToUpdate({}, packetId);
             } else {
@@ -74,19 +74,19 @@ angular.module("packetAdminApp")
             }
         };
 
-        var prepareCompts = function (uploadedCompts, initialPacketInd, packetId, isPacketIdUndefined) {
+        var prepareCompts = function (uploadedCompts, initialPacketInd, packetId, isPacketIdUndefinedOrNull) {
             loadedNoCompts = exchangeService.isEmpty(uploadedCompts);
             var packetInd = initialPacketInd;
             var visitedPackets = {};
             angular.forEach(uploadedCompts, function (el) {
                 var comptId = el.id;
                 var label = el.label.toUpperCase();
-                var localPktId = isPacketIdUndefined ? el.packetId : packetId;
+                var localPktId = isPacketIdUndefinedOrNull ? el.packetId : packetId;
 
                 if (!visitedPackets[localPktId]) {
                     visitedPackets[localPktId] = true;
                     exchangeService.setComptLabels({}, localPktId);
-                    if (isPacketIdUndefined) {
+                    if (isPacketIdUndefinedOrNull) {
                         exchangeService.pushToCompts([]);
                         exchangeService.setPacketIdToInd(++packetInd, localPktId);
                     } else {
@@ -106,7 +106,7 @@ angular.module("packetAdminApp")
             }
         };
 
-        var preparePackets = function (packets, isPacketIdUndefined) {
+        var preparePackets = function (packets, isPacketIdUndefinedOrNull) {
             var loadedNoPackets = exchangeService.isEmpty(packets);
             exchangeService.setLoadedNoPackets(loadedNoPackets);
 
@@ -121,7 +121,7 @@ angular.module("packetAdminApp")
 
             if (!loadedNoPackets) {
                 var firstOrSingleReloadedPacket = packets[0];
-                if (isPacketIdUndefined || firstOrSingleReloadedPacket.id === exchangeService.getSelectedPacketId()) {
+                if (isPacketIdUndefinedOrNull || firstOrSingleReloadedPacket.id === exchangeService.getSelectedPacketId()) {
                     $scope.selectPacket(firstOrSingleReloadedPacket);
                 }
             }
