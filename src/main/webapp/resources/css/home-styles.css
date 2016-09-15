@@ -59,3 +59,11 @@ span.error {
     color: maroon;
     font-weight: bold;
 }
+
+form .ng-invalid.ng-dirty {
+    background-color: lightpink;
+}
+
+form .ng-valid.ng-dirty {
+    background-color: lightgreen;
+}
