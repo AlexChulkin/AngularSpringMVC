@@ -46,7 +46,7 @@
 </head>
 <body ng-controller="authCtrl">
 <div class="navbar navbar-inverse">
-    <span class="navbar-brand title">THE PACKETS AND THEIR COMPONENTS</span>
+    <span class="navbar-brand">THE PACKETS AND THEIR COMPONENTS</span>
     <div class="navbar-right" ng-show="isUserAuthorized()">
         <div class="navbar-text" ng-cloak>
             Hello, {{data.username}}

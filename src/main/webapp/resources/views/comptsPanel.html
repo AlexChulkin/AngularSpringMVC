@@ -66,7 +66,7 @@
                 </div>
             </div>
         </div>
-        <form name="form" ng-show="isPacketSelected()" novalidate>
+        <form name="form" ng-show="isPacketSelected()" ng-submit="addComptLocally()" novalidate>
             <div class="row grid-row">
                 <div class="col-sm-5">
                     <div class="form-group">
@@ -99,8 +99,7 @@
                 </div>
                 <div class="col-sm-1">
                         <span class="input-group-btn">
-                            <button class="btn btn-xs btn-success" id="addBtn"
-                                    ng-click="addComptLocally()"
+                            <button type="submit" class="btn btn-xs btn-success" id="addBtn"
                                     ng-disabled="form.$invalid">Add
                             </button>
                         </span>
