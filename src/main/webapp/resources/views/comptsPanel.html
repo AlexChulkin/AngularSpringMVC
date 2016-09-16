@@ -1,6 +1,6 @@
 <div ng-controller="comptsPanelCtrl">
-    <div class="alert alert-warning" ng-show="$parent.isDataLoadedProperly()
-                    && !isPacketsNotLoaded() && isPacketSelected() && !isComptsSelected()">
+    <div class="alert alert-warning" ng-show="$parent.isDataLoadedProperly() && !isPacketsNotLoaded()
+                                && !isSelectedPacketNotLoaded() && isPacketSelected() && !isComptsSelected()">
         The selected packet is empty. Please add new compts or select another one.
     </div>
     <div class="alert alert-warning" ng-show="$parent.isDataLoadedProperly() && !isPacketsNotLoaded()
@@ -9,6 +9,9 @@
     </div>
     <div class="alert alert-warning" ng-show="$parent.isDataLoadedProperly() && isPacketsNotLoaded()">
         There are no loaded packets. Please add one.
+    </div>
+    <div class="alert alert-warning" ng-show="$parent.isDataLoadedProperly() && isSelectedPacketNotLoaded()">
+        The selected packet can't be reloaded. Please retry or check the DB.
     </div>
     <div id="rightColumn" ng-show="isPacketSelected()">
         <div id="table-pagination-radio">

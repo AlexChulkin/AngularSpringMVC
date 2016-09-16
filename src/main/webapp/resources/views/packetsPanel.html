@@ -10,7 +10,8 @@
             Save
         </a>
         <a ng-click="$parent.loadPacketById(pkt.id)"
-           class="btn btn-sm btn-warning expanded-margin-bottom">
+           class="btn btn-sm btn-warning expanded-margin-bottom"
+           ng-disabled="data.newPackets[pkt.id]">
             Reload
         </a>
         <a ng-click="deletePacketLocally(pkt)"

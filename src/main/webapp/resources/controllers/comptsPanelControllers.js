@@ -57,9 +57,12 @@ app
             return exchangeService.getLoadedNoPackets();
         };
 
+        $scope.isSelectedPacketNotLoaded = function () {
+            return exchangeService.getLoadedNoSelectedPacket();
+        };
+
         $scope.addComptLocally = function () {
             var comptId = exchangeService.getMaximalComptId() + 1;
-            var isSelectedPacketNew = exchangeService.getIsSelectedPacketNew();
             exchangeService.setMaximalComptId(comptId);
 
             var usualLabel = $scope.data.newLabel;
@@ -69,11 +72,10 @@ app
             exchangeService.setComptIdToInd(comptId, exchangeService.getSelectedComptsLength());
             exchangeService.pushToSelectedCompts(newCompt);
             var pktId = exchangeService.getSelectedPacketId();
-            exchangeService.setNewComptLabels(exchangeService.getNewComptLabels(isSelectedPacketNew) || {},
-                isSelectedPacketNew);
-            exchangeService.setNewComptLabels(exchangeService.getNewComptLabels(isSelectedPacketNew, pktId) || {},
-                isSelectedPacketNew, pktId);
-            exchangeService.setNewComptLabels(usualLabel, isSelectedPacketNew, pktId, comptId);
+            exchangeService.setNewComptLabels(exchangeService.getNewComptLabels() || {});
+            exchangeService.setNewComptLabels(exchangeService.getNewComptLabels(pktId) || {},
+                pktId);
+            exchangeService.setNewComptLabels(usualLabel, pktId, comptId);
             exchangeService.setAllComboData({}, comptId);
             exchangeService.setAllCheckedComboData({}, comptId);
             var allStatesLength = exchangeService.getAllStatesLength();
@@ -88,7 +90,6 @@ app
             var comptLabel = compt.label;
             var comptId = compt.id;
             var pktId = exchangeService.getSelectedPacketId();
-            var isSelectedPacketNew = exchangeService.getIsSelectedPacketNew();
 
             exchangeService.deleteSelectedComptLabels(comptLabel.toUpperCase());
             exchangeService.setSelectedCompts(null, exchangeService.getComptIdToInd(comptId));
@@ -96,10 +97,10 @@ app
             if (exchangeService.getComptIdsToUpdate(pktId)) {
                 exchangeService.deleteComptIdsToUpdate(pktId, comptId);
             }
-            if (exchangeService.getNewComptLabels(isSelectedPacketNew, pktId)
-                && exchangeService.getNewComptLabels(isSelectedPacketNew, pktId, comptId)) {
+            if (exchangeService.getNewComptLabels(pktId)
+                && exchangeService.getNewComptLabels(pktId, comptId)) {
 
-                exchangeService.deleteNewComptLabels(isSelectedPacketNew, pktId, comptId);
+                exchangeService.deleteNewComptLabels(pktId, comptId);
                 
             } else {
                 var comptIdsToDelete = exchangeService.getComptIdsToDelete(pktId) || [];
@@ -110,10 +111,8 @@ app
 
         $scope.updateComptLocally = function (compt) {
             var pktId = exchangeService.getSelectedPacketId();
-            var isSelectedPacketNew = exchangeService.getIsSelectedPacketNew();
             var comptId = compt.id;
-            if (exchangeService.getNewComptLabels(isSelectedPacketNew, pktId) &&
-                exchangeService.getNewComptLabels(isSelectedPacketNew, pktId, comptId)) {
+            if (exchangeService.getNewComptLabels(pktId) && exchangeService.getNewComptLabels(pktId, comptId)) {
                 return;
             }
             var comptIdsToUpdate = exchangeService.getComptIdsToUpdate(pktId) || {};
