@@ -128,6 +128,22 @@ app
             return value;
         };
 
+        $scope.getError = function (input, errorType) {
+            var error = input.$error;
+            var resultMap = {};
+            if (angular.isDefined(error)) {
+                if (errorType == "required" && error.required && input.$dirty) {
+                    return "You did not enter a label";
+                } else if (errorType == "maxlength" && error.maxlength) {
+                    return "Label is too long";
+                } else if (errorType == "blacklist" && error.blacklist) {
+                    return "Label is not unique";
+                } else if (errorType == "regex" && error.regex) {
+                    return "Label should contain latin letters, digits, underscore and spaces only";
+                }
+            }
+        };
+
         var init = function () {
             $scope.data = {};
             $scope.data.pageSize = packetListPageCount;

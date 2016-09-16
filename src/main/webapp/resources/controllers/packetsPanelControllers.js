@@ -12,7 +12,8 @@ angular.module("packetAdminApp")
     .constant("addPackets", "ADD_PACKETS")
     .constant("saveAllChangesToBaseUrl", "/saveAllChangesToBase")
     .constant("initialPacketIndex", -1)
-    .constant("errorStatus404", 404)
+    .constant("errorStatusBadRequest", 400)
+    .constant("errorStatusNotFound", 404)
     .constant("narrowPacketCaption", "narrow-packet-caption")
     .constant("widePacketCaption", "wide-packet-caption")
     .constant("adminRole", "ADMIN")
@@ -20,8 +21,8 @@ angular.module("packetAdminApp")
     .controller("packetsPanelCtrl", function ($scope, $http, $window, $cookies, exchangeService,
                                               packetListActiveClass, packetListNonActiveClass, updateCompts,
                                               deleteCompts, updatePackets, deletePackets, addPackets,
-                                              saveAllChangesToBaseUrl, errorStatus404, narrowPacketCaption,
-                                              widePacketCaption, role, adminRole) {
+                                              saveAllChangesToBaseUrl, errorStatusNotFound, errorStatusBadRequest,
+                                              narrowPacketCaption, widePacketCaption, role, adminRole) {
 
         var packetIdsToDelete;
 
@@ -115,7 +116,7 @@ angular.module("packetAdminApp")
                         clearCollectionsForSaving(errorMap, savedPktId);
                     },
                     function error(error) {
-                        if (String(error.status).startsWith("4")) {
+                        if (error.status == errorStatusBadRequest || error.status == errorStatusNotFound) {
                             clearCollectionsForSaving(errorMap, savedPktId);
                         }
                     }

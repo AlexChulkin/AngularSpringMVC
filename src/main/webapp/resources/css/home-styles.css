@@ -28,7 +28,7 @@ select.standard {
 select.special {
     background-color: #b6fffd;
     font-weight: bold;
-    width: 80%;
+    height: 22px;
 }
 
 .grid-row > div {

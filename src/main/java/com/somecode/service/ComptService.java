@@ -51,7 +51,6 @@ public class ComptService {
         return result.setComptSupplInfo(Collections.EMPTY_LIST);
     }
 
-
     public EnumSet<PersistError> saveAllChangesToBase(List<Long> comptIdsToDelete,
                                                       List<Long> packetIdsToDelete,
                                                       List<ComptParams> comptsToUpdateParamsList,
