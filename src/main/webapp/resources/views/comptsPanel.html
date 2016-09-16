@@ -80,8 +80,8 @@
                                    ng-model="data.newLabel"
                                    ng-trim="true"
                                    ng-maxlength="75"
+                                   ng-pattern="comptLabelMatchPattern"
                                    blacklist="blacklist"
-                                   regex="regex"
                                    required/>
                             <span class="error" role="alert">
                                 <div ng-show="form.newLabelName.$error.required && form.newLabelName.$dirty">
@@ -93,8 +93,8 @@
                                 <div ng-show="form.newLabelName.$error.blacklist">
                                    {{getError(form.newLabelName, 'blacklist')}}
                                 </div>
-                                <div ng-show="form.newLabelName.$error.regex">
-                                   {{getError(form.newLabelName, 'regex')}}
+                                <div ng-show="form.newLabelName.$error.pattern">
+                                   {{getError(form.newLabelName, 'pattern')}}
                                 </div>
                             </span>
                         </label>

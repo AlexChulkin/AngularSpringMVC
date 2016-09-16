@@ -6,8 +6,9 @@ app
     .constant("pageListActiveClass", "btn-primary btn-sm")
     .constant("pageListNonActiveClass", "btn-sm")
     .constant("packetListPageCount", 10)
+    .constant("formLabelPattern", "^[\\w\\s]*$")
     .controller("comptsPanelCtrl", function ($scope, pageListActiveClass, pageListNonActiveClass,
-                                             packetListPageCount, exchangeService) {
+                                             packetListPageCount, exchangeService, formLabelPattern) {
 
         $scope.$on('selectedCompts:update', function (event, data) {
             $scope.data.selectedCompts = data;
@@ -138,7 +139,7 @@ app
                     return "Label is too long";
                 } else if (errorType == "blacklist" && error.blacklist) {
                     return "Label is not unique";
-                } else if (errorType == "regex" && error.regex) {
+                } else if (errorType == "pattern" && error.pattern) {
                     return "Label should contain latin letters, digits, underscore and spaces only";
                 }
             }
@@ -156,6 +157,7 @@ app
             $scope.data.allCheckedComboData = exchangeService.getAllCheckedComboData();
             $scope.data.comboDataDefaultSet = exchangeService.getComboDataDefaultSet();
             $scope.data.newComptCheckedVals = exchangeService.getNewComptCheckedVals();
+            $scope.comptLabelMatchPattern = new RegExp(formLabelPattern);
         };
 
         init();
@@ -174,15 +176,3 @@ app.directive('blacklist', ['exchangeService', function (exchangeService) {
         }
     };
 }]);
-
-app.directive('regex', function () {
-    return {
-        require: 'ngModel',
-        link: function ($scope, elem, attr, ngModel) {
-            ngModel.$parsers.unshift(function (label) {
-                ngModel.$setValidity('regex', label.search(/[^\w\s]/g) == -1);
-                return label;
-            });
-        }
-    };
-});

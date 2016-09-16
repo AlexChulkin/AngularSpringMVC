@@ -20,14 +20,17 @@
     padding: 1% 0 1% 43%;
 }
 
+select {
+    font-weight: bold;
+    width: 135px;
+}
+
 select.standard {
     background-color: lightcyan;
-    font-weight: bold;
 }
 
 select.special {
     background-color: #b6fffd;
-    font-weight: bold;
     height: 22px;
 }
 
