@@ -1,16 +1,16 @@
 <div ng-controller="comptsPanelCtrl">
-    <div class="alert alert-warning" ng-show="$parent.isDataLoadedProperly() && !isPacketsNotLoaded()
+    <div class="alert alert-warning" ng-show="isDataLoadedProperly() && !isPacketsNotLoaded()
                                 && !isSelectedPacketNotLoaded() && isPacketSelected() && !isComptsSelected()">
         The selected packet is empty. Please add new compts or select another one.
     </div>
-    <div class="alert alert-warning" ng-show="$parent.isDataLoadedProperly() && !isPacketsNotLoaded()
+    <div class="alert alert-warning" ng-show="isDataLoadedProperly() && !isPacketsNotLoaded()
                                 && !isPacketSelected() && isPacketAlreadySelectedAtLeastOnce()">
         No packet is selected. Please select (or add and select) one.
     </div>
-    <div class="alert alert-warning" ng-show="$parent.isDataLoadedProperly() && isPacketsNotLoaded()">
+    <div class="alert alert-warning" ng-show="isDataLoadedProperly() && isPacketsNotLoaded()">
         There are no loaded packets. Please add one.
     </div>
-    <div class="alert alert-warning" ng-show="$parent.isDataLoadedProperly() && isSelectedPacketNotLoaded()">
+    <div class="alert alert-warning" ng-show="isDataLoadedProperly() && isSelectedPacketNotLoaded()">
         The selected packet can't be reloaded. Please retry or check the DB.
     </div>
     <div id="rightColumn" ng-show="isPacketSelected()">
@@ -52,7 +52,7 @@
                 </table>
                 <div class="pull-right btn-group">
                     <a ng-repeat="page in data.selectedCompts | filter:notNull | pageCount:data.pageSize"
-                       ng-click="$parent.selectPage(page)" class="btn btn-default"
+                       ng-click="selectPage(page)" class="btn btn-default"
                        ng-class="getPageClass(page)" ng-cloak>
                         {{page}}
                     </a>

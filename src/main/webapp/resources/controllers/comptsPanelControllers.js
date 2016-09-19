@@ -70,7 +70,7 @@ app
             var upperCaseLabel = usualLabel.toUpperCase();
             var newCompt = {id: comptId, label: usualLabel};
             exchangeService.setSelectedComptLabels(true, upperCaseLabel);
-            exchangeService.setComptIdToInd(comptId, exchangeService.getSelectedComptsLength());
+            exchangeService.setComptIdToInd(exchangeService.getSelectedComptsLength(), comptId);
             exchangeService.pushToSelectedCompts(newCompt);
             var pktId = exchangeService.getSelectedPacketId();
             exchangeService.setNewComptLabels(exchangeService.getNewComptLabels() || {});
@@ -148,15 +148,6 @@ app
         var init = function () {
             $scope.data = {};
             $scope.data.pageSize = packetListPageCount;
-            $scope.data.selectedCompts = exchangeService.getSelectedCompts();
-            $scope.data.selectedPage = exchangeService.getSelectedPage();
-            $scope.data.selectedPacket = exchangeService.getSelectedPacket();
-            $scope.data.allStates = exchangeService.getAllStates();
-            $scope.data.allStateLabels = exchangeService.getAllStateLabels();
-            $scope.data.allComboData = exchangeService.getAllComboData();
-            $scope.data.allCheckedComboData = exchangeService.getAllCheckedComboData();
-            $scope.data.comboDataDefaultSet = exchangeService.getComboDataDefaultSet();
-            $scope.data.newComptCheckedVals = exchangeService.getNewComptCheckedVals();
             $scope.comptLabelMatchPattern = new RegExp(formLabelPattern);
         };
 

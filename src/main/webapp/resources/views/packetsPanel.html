@@ -1,6 +1,6 @@
 <div ng-controller="packetsPanelCtrl">
     <div class="flex" ng-repeat="pkt in data.allPackets">
-        <a ng-click="$parent.selectPacket(pkt)"
+        <a ng-click="selectPacket(pkt)"
            ng-class="getPacketClass(pkt)" ng-cloak>
             Packet#{{pkt.id}}
         </a>
@@ -9,7 +9,7 @@
            ng-disabled="data.isRoleNotAdmin">
             Save
         </a>
-        <a ng-click="$parent.loadPacketById(pkt.id)"
+        <a ng-click="loadPacketById(pkt.id)"
            class="btn btn-sm btn-warning expanded-margin-bottom"
            ng-disabled="data.newPackets[pkt.id]">
             Reload

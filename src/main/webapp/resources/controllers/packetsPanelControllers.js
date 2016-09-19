@@ -252,8 +252,6 @@ angular.module("packetAdminApp")
             $scope.data = {};
             $scope.data.adminRoleTitle = adminRole;
             $scope.data.isRoleNotAdmin = $cookies.get(role) !== $scope.data.adminRoleTitle;
-            $scope.data.allPackets = {};
-            $scope.data.newPackets = {};
             packetIdsToDelete = [];
         };
 

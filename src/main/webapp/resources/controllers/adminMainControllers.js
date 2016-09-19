@@ -97,7 +97,7 @@ angular.module("packetAdminApp")
                 }
                 exchangeService.setComptLabels(true, localPktId, label);
                 var comptIndex = exchangeService.getComptsLength(packetInd);
-                exchangeService.setComptIdToInd(comptId, comptIndex);
+                exchangeService.setComptIdToInd(comptIndex, comptId);
                 exchangeService.pushToCompts(el, packetInd);
                 if (comptId > exchangeService.getMaximalComptId()) {
                     exchangeService.setMaximalComptId(comptId);
@@ -125,7 +125,7 @@ angular.module("packetAdminApp")
                 if (pktId > exchangeService.getMaximalPacketId()) {
                     exchangeService.setMaximalPacketId(pktId);
                 }
-                exchangeService.setPacketInitialStateIds(pkt.id, pkt.stateId);
+                exchangeService.setPacketInitialStateIds(pkt.stateId, pkt.id);
             });
 
             if (!isPacketsEmpty) {
@@ -145,7 +145,7 @@ angular.module("packetAdminApp")
         var prepareComboData = function (comboData) {
             exchangeService.setLoadedNoComboData(exchangeService.isEmpty(comboData));
             exchangeService.setComboDataDefaultSet(comboData);
-            exchangeService.setNewComptCheckedVals();
+            exchangeService.initializeNewComptCheckedVals();
         };
 
         var prepareComptsSupplInfo = function (comptSupplInfo) {
