@@ -33,6 +33,7 @@
                     });
                 });
     </script>
+    <script type="application/javascript" src="resources/directives/directives.js"></script>
     <script type="application/javascript" src="resources/controllers/adminLoginControllers.js"></script>
     <script type="application/javascript" src="resources/controllers/adminMainControllers.js"></script>
     <script type="application/javascript" src="resources/controllers/packetsPanelControllers.js"></script>

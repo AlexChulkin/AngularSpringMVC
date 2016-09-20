@@ -226,7 +226,7 @@ angular.module("packetAdminApp")
             return errorMap;
         };
 
-        var purgePacketIdsToDelete = function () {
+        var clearPacketIdsToDelete = function () {
             packetIdsToDelete = [];
         };
 
@@ -244,7 +244,7 @@ angular.module("packetAdminApp")
                 exchangeService.deleteNewPackets(savedPktId);
             }
             if (deletePackets in errorMap) {
-                purgePacketIdsToDelete();
+                clearPacketIdsToDelete();
             }
         };
 

@@ -153,17 +153,3 @@ app
 
         init();
     });
-
-app.directive('blacklist', ['exchangeService', function (exchangeService) {
-    return {
-        require: 'ngModel',
-        link: function ($scope, elem, attr, ngModel) {
-            ngModel.$parsers.unshift(function (label) {
-                var updatedLabel = label.replace(/\s{2,}/g, " ");
-                var upperCaseLabel = updatedLabel.toUpperCase();
-                ngModel.$setValidity('blacklist', !exchangeService.getSelectedComptLabels(upperCaseLabel));
-                return updatedLabel;
-            });
-        }
-    };
-}]);
