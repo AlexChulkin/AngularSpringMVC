@@ -16,8 +16,9 @@
     <link href="resources/css/bootstrap.css" rel="stylesheet"/>
     <link href="resources/css/bootstrap-theme.css" rel="stylesheet"/>
     <link href="resources/css/home-styles.css" rel="stylesheet"/>
+    <script type="application/javascript" src="resources/filters/filters.js"></script>
     <script>
-        angular.module("packetAdminApp", ["customFilters", "ngRoute", "ngCookies"])
+        angular.module("packetAdminApp", ["customFilters", "customServices", "customDirectives", "ngRoute", "ngCookies"])
                 .config(function ($routeProvider) {
 
                     $routeProvider.when("/login", {
@@ -33,13 +34,12 @@
                     });
                 });
     </script>
-    <script type="application/javascript" src="resources/directives/directives.js"></script>
     <script type="application/javascript" src="resources/controllers/adminLoginControllers.js"></script>
     <script type="application/javascript" src="resources/controllers/adminMainControllers.js"></script>
     <script type="application/javascript" src="resources/controllers/packetsPanelControllers.js"></script>
     <script type="application/javascript" src="resources/controllers/comptsPanelControllers.js"></script>
-    <script type="application/javascript" src="resources/filters/customFilters.js"></script>
-    <script type="application/javascript" src="resources/services/exchangeService.js"></script>
+    <script type="application/javascript" src="resources/directives/directives.js"></script>
+    <script type="application/javascript" src="resources/services/services.js"></script>
 
     <script type="text/javascript" charset="utf-8">
         var contextPath = '${pageContext.request.contextPath}';
