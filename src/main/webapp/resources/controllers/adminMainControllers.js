@@ -11,7 +11,7 @@ angular.module("packetAdminApp")
 
         var loadedNoCompts;
 
-        $scope.loadPacketById = function (packetId) {
+        $scope.loadPackets = function (packetId) {
             var isPacketIdUndefined = angular.isUndefined(packetId);
             var packetIndex = isPacketIdUndefined ? initialPacketIndex : exchangeService.getPacketIdToInd(packetId);
             var dataParams = isPacketIdUndefined ? {} : {packetId: packetId};
@@ -176,7 +176,7 @@ angular.module("packetAdminApp")
 
         $scope.init = function () {
             loadedNoCompts = null;
-            $scope.loadPacketById();
+            $scope.loadPackets();
         };
 
         $scope.init();
