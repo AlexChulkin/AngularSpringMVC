@@ -19,7 +19,14 @@
     <script type="application/javascript" src="resources/filters/filters.js"></script>
     <script>
         angular.module("packetAdminApp", ["customFilters", "customServices", "customDirectives", "ngRoute", "ngCookies"])
-                .config(function ($routeProvider) {
+                .config(function ($routeProvider, $locationProvider) {
+
+                    if (window.history && history.pushState) {
+                        $locationProvider.html5Mode({
+                            enabled: true,
+                            requireBase: false
+                        });
+                    }
 
                     $routeProvider.when("/login", {
                         templateUrl: contextPath + "/resources/views/adminLogin.html"
