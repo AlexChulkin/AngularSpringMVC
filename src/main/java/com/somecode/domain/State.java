@@ -3,22 +3,25 @@ package com.somecode.domain;
 
 import javax.persistence.*;
 
+import static com.somecode.helper.Helper.getMessage;
+
 /**
  * Created by achulkin on 03.06.14.
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"LABEL"}))
 public class State implements EntityType {
-
+    private static final String ID_COLUMN = "STATE_ID";
+    private static final String STRING_VERSION = "state.toString";
+    private static final int ID_COLUMN_LENTGTH = 2;
+    private static final int LABEL_COLUMN_LENTGTH = 20;
     private Long id;
-
     private String label;
-
     private Integer version;
 
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    @Column(name = "STATE_ID", length = 2, nullable = false)
+    @Column(name = ID_COLUMN, length = ID_COLUMN_LENTGTH, nullable = false)
     public Long getId() {
         return id;
     }
@@ -28,7 +31,6 @@ public class State implements EntityType {
     }
 
     @Version
-    @Column(name = "VERSION", nullable = false)
     public Integer getVersion() {
         return this.version;
     }
@@ -37,7 +39,7 @@ public class State implements EntityType {
         this.version = version;
     }
 
-    @Column(name = "LABEL", nullable = false, length = 20)
+    @Column(nullable = false, length = LABEL_COLUMN_LENTGTH)
     public String getLabel() {
         return label;
     }
@@ -48,6 +50,6 @@ public class State implements EntityType {
 
     @Override
     public String toString() {
-        return "State with id: "+id+" and label: "+label;
+        return getMessage(STRING_VERSION, new Object[]{id, label});
     }
 }

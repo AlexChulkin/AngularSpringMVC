@@ -4,8 +4,11 @@ package com.somecode.domain;
  * Created by alexc_000 on 2016-07-16.
  */
 
+import static com.somecode.helper.Helper.getMessage;
 
 public class ComptInfo {
+    private final static String STRING_VERSION = "comptInfo.toString";
+
     private long id;
     private String label;
     private long packetId;
@@ -30,6 +33,6 @@ public class ComptInfo {
 
     @Override
     public String toString() {
-        return "Compt Info with id: " + id + ", label: " + label + " and packet Id " + packetId;
+        return getMessage(STRING_VERSION, new Object[]{id, label, packetId});
     }
 }

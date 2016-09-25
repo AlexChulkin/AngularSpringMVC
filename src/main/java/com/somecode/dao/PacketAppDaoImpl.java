@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.somecode.domain.*;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -17,14 +18,56 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.somecode.helper.Helper.getMessage;
+
 @Service
 @Repository
 @Transactional(readOnly = true)
-public class ComptDaoImpl implements  ComptDao {
-    private static final Logger LOGGER = Logger.getLogger(ComptDaoImpl.class);
+public class PacketAppDaoImpl implements PacketAppDao {
+    private static final Logger LOGGER = Logger.getLogger(PacketAppDaoImpl.class);
     private static final int DEFAULT_COMBO_DATA_INDEX = 0;
     private static final int DEFAULT_STATE_INDEX = 0;
-
+    private static final String PACKET_ID = "packetId";
+    private static final String LOAD_ALL_COMPTSSUPPLINFO_QUERY_NAME = "Compt.loadAllComptsSupplInfo";
+    private static final String LOAD_COMPTSSUPPLINFO_BY_PACKETID_QUERY_NAME = "Compt.loadComptsSupplInfoByPacketId";
+    private static final String ALL_PACKETS_LOADED = "packetAppDao.allPacketsLoaded";
+    private static final String ALL_COMPTSSUPPLINFO_LOADED = "packetAppDao.allComptsSupplInfoLoaded";
+    private static final String ALL_STATES_LOADED = "packetAppDao.allStatesLoaded";
+    private static final String ALL_COMBODATA_LOADED = "packetAppDao.allComboDataLoaded";
+    private static final String ALL_COMPTS_FROM_ALL_PACKETS_LOADED = "packetAppDao.allComptsFromAllPacketsLoaded";
+    private static final String ALL_COMPTS_FROM_GIVEN_PACKET_LOADED = "packetAppDao.allComptsFromGivenPacketLoaded";
+    private static final String NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT =
+            "packetAppDao.nonExistingComboDataLabelErrorReport";
+    private static final String NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_COMPT_UPDATE =
+            "packetAppDao.nonExistingComboDataLabelErrorReport.comptUpdate";
+    private static final String NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_ADD_NEW_COMPTS_TO_PERSISTED_PACKET =
+            "packetAppDao.nonExistingComboDataLabelErrorReport.addNewComptsToPersistedPacket";
+    private static final String NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_ADD_NEW_COMPTS_TO_UNPERSISTED_PACKET =
+            "packetAppDao.nonExistingComboDataLabelErrorReport.addNewComptsToUnpersistedPacket";
+    private static final String MAP_COMBODATA_LABELS_TO_INDICES = "Map of comboData labels to indices: ";
+    private static final String COMPT_UPDATE_NON_EXISTING_COMPT = "packetAppDao.comptUpdate.nonExistingCompt";
+    private static final String COMPT_UPDATE_DATACOMPT_UPDATE =
+            "packetAppDao.comptUpdate.dataComptUpdate.successReport";
+    private static final String COMPT_UPDATE_SUCCESS_REPORT = "packetAppDao.comptUpdate.successReport";
+    private static final String COMPTS_DELETE_NON_EXISTING_COMPTS = "packetAppDao.comptsDelete.nonExistingCompts";
+    private static final String COMPTS_DELETE_SUCCESS_REPORT = "packetAppDao.comptsDelete.successReport";
+    private static final String PACKETS_DELETE_NON_EXISTING_COMPTS = "packetAppDao.packetsDelete.nonExistingCompts";
+    private static final String PACKETS_DELETE_SUCCESS_REPORT = "packetAppDao.packetsDelete.successReport";
+    private static final String PACKET_ADD_OR_UPDATE_NOT_EXISTING_PACKET =
+            "packetAppDao.packetAddOrUpdate.notExistingPacket";
+    private static final String PACKET_ADDING_ADD_COMPTS = "packetAppDao.packetAddOrUpdate.addPacket.addCompts";
+    private static final String PACKET_UPDATE_ADD_COMPTS = "packetAppDao.packetAddOrUpdate.updatePacket.addCompts";
+    private static final String PACKET_ADDING_SUCCESS_REPORT = "packetAppDao.packetAddOrUpdate.addPacket.successReport";
+    private static final String PACKET_UPDATE_SUCCESS_REPORT =
+            "packetAppDao.packetAddOrUpdate.updatePacket.successReport";
+    private static final String PACKET_UPDATE_STATE_UPDATE_SUCCESS_REPORT =
+            "packetAppDao.packetAddOrUpdate.updatePacket.updateState.successReport";
+    private static final String PACKET_ADDING_STATE_UPDATE_SUCCESS_REPORT =
+            "packetAppDao.packetAddOrUpdate.addPacket.updateState.successReport";
+    private static final String PACKET_UPDATE_STATE_UPDATE_NOT_EXISTING_STATE =
+            "packetAppDao.packetAddOrUpdate.updatePacket.updateState.notExistingState";
+    private static final String PACKET_ADDING_STATE_UPDATE_NOT_EXISTING_STATE =
+            "packetAppDao.packetAddOrUpdate.addPacket.updateState.notExistingState";
 
     private List<ComboData> allComboData = Collections.EMPTY_LIST;
     private List<State> allStates = Collections.EMPTY_LIST;
@@ -33,6 +76,9 @@ public class ComptDaoImpl implements  ComptDao {
 
     @PersistenceContext
     private EntityManager em;
+
+    @Autowired
+    private ApplicationContext context;
 
     @Autowired
     private ComboDataRepository comboDataRepository;
@@ -73,8 +119,8 @@ public class ComptDaoImpl implements  ComptDao {
         } else {
             packetRepository.findAll().forEach(p -> result.add(new PacketInfo(p)));
         }
-        LOGGER.info("All Packets Loaded, here are their ids: "
-                + result.stream().map(PacketInfo::getId).collect(Collectors.toList()));
+        LOGGER.info(getMessage(ALL_PACKETS_LOADED,
+                new Object[]{result.stream().map(PacketInfo::getId).collect(Collectors.toList())}));
         return result;
     }
 
@@ -82,15 +128,15 @@ public class ComptDaoImpl implements  ComptDao {
     public List<ComptSupplInfo> loadComptsSupplInfo(Long packetId) {
         List<ComptSupplInfo> result;
         if (packetId == null) {
-            result = em.createNamedQuery("Compt.loadAllComptsSupplInfo", ComptSupplInfo.class)
+            result = em.createNamedQuery(LOAD_ALL_COMPTSSUPPLINFO_QUERY_NAME, ComptSupplInfo.class)
                     .getResultList();
         } else {
-            result = em.createNamedQuery("Compt.loadComptsSupplInfoByPacketId", ComptSupplInfo.class)
-                    .setParameter("packetId", packetId)
+            result = em.createNamedQuery(LOAD_COMPTSSUPPLINFO_BY_PACKETID_QUERY_NAME, ComptSupplInfo.class)
+                    .setParameter(PACKET_ID, packetId)
                     .getResultList();
         }
 
-        LOGGER.info("The ComptsSupplInfo Loaded: " + result);
+        LOGGER.info(getMessage(ALL_COMPTSSUPPLINFO_LOADED, new Object[]{result}));
         return result;
     }
 
@@ -116,7 +162,7 @@ public class ComptDaoImpl implements  ComptDao {
         if (allStates.isEmpty()) {
             throw new EmptyStateTableException();
         }
-        LOGGER.info("All states loaded: " + allStates);
+        LOGGER.info(getMessage(ALL_STATES_LOADED, new Object[]{allStates}));
         return allStates;
     }
 
@@ -138,7 +184,7 @@ public class ComptDaoImpl implements  ComptDao {
         if (allComboData.isEmpty()) {
             throw new EmptyComboDataTableException();
         }
-        LOGGER.info("All Combo Data loaded: " + allComboData);
+        LOGGER.info(getMessage(ALL_COMBODATA_LOADED, new Object[]{allComboData}));
 
         if (checkComboDataListsForEquality(allComboData, oldAllComboData)) {
             return allComboData;
@@ -148,7 +194,7 @@ public class ComptDaoImpl implements  ComptDao {
                 .boxed()
                 .collect(Collectors.toMap(i -> allComboData.get(i).getLabel(), Function.identity()));
 
-        LOGGER.info("MapComboLabelsToIndices: " + mapComboLabelsToIndices);
+        LOGGER.info(MAP_COMBODATA_LABELS_TO_INDICES + mapComboLabelsToIndices);
 
         return allComboData;
     }
@@ -177,8 +223,9 @@ public class ComptDaoImpl implements  ComptDao {
             result = listOfCompts;
         }
         LOGGER.info(packetId == null
-                ? "ComptService. Loaded All Compts: " + result
-                : "ComptService. Loaded compts for packet#" + packetId + ": " + result);
+                ? getMessage(ALL_COMPTS_FROM_ALL_PACKETS_LOADED, new Object[]{result})
+                : getMessage(ALL_COMPTS_FROM_GIVEN_PACKET_LOADED, new Object[]{packetId, result})
+        );
         return result;
     }
 
@@ -198,19 +245,20 @@ public class ComptDaoImpl implements  ComptDao {
     }
 
     private String generateNonExistingComboDataLabelErrorReport(String label, Long comptId, Long packetId) {
-        String errorReport = "Label '" + label + "' doesn't exist. So it's " +
-                "automatically replaced with the following one: '" +
-                allComboData.get(DEFAULT_COMBO_DATA_INDEX).getLabel() + "'";
+        String errorReport = getMessage(NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT,
+                new Object[]{label, allComboData.get(DEFAULT_COMBO_DATA_INDEX).getLabel()});
         StringBuilder sb = new StringBuilder();
         if (comptId != null) {
-            errorReport = sb.append("Compt#" + comptId + " update. ")
-                    .append(errorReport).toString();
+            errorReport = sb.append(getMessage(NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_COMPT_UPDATE,
+                    new Object[]{comptId})).append(errorReport).toString();
         } else if (packetId != null) {
-            errorReport = sb.append("Adding new compts to the packet#" + packetId + ". ")
-                    .append(errorReport).toString();
+            errorReport = sb.append(
+                    getMessage(NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_ADD_NEW_COMPTS_TO_PERSISTED_PACKET,
+                            new Object[]{packetId})).append(errorReport).toString();
         } else {
-            errorReport = sb.append("Adding new compts to the non-persisted packet. ")
-                    .append(errorReport).toString();
+            errorReport = sb.append(
+                    getMessage(NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_ADD_NEW_COMPTS_TO_UNPERSISTED_PACKET,
+                            null)).append(errorReport).toString();
         }
         return errorReport;
     }
@@ -225,7 +273,7 @@ public class ComptDaoImpl implements  ComptDao {
             long comptId = comptParams.getId();
             Compt compt = em.find(Compt.class, comptId, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
             if (compt == null) {
-                LOGGER.error("Compt#" + comptId + " update. The compt with this id does not exist.");
+                LOGGER.error(getMessage(COMPT_UPDATE_NON_EXISTING_COMPT, new Object[]{comptId}));
                 continue;
             }
             List<Integer> newCheckedIndices;
@@ -238,7 +286,7 @@ public class ComptDaoImpl implements  ComptDao {
                 if (!checked && newCheckedIndices.get(stateIndex) == comboDataIndex
                         || checked && newCheckedIndices.get(stateIndex) != comboDataIndex) {
                     dc.setChecked(!checked);
-                    LOGGER.info("Compt#" + comptId + " update: DataCompt updated widh id = " + dc.getId());
+                    LOGGER.info(getMessage(COMPT_UPDATE_DATACOMPT_UPDATE, new Object[]{comptId, dc.getId()}));
                 }
             }
             Long packetId = compt.getPacket().getId();
@@ -247,7 +295,7 @@ public class ComptDaoImpl implements  ComptDao {
             }
             result.get(packetId).add(comptId);
         }
-        result.forEach((k, v) -> LOGGER.info("Packet#" + k + ": List of the updated compts: " + v));
+        result.forEach((k, v) -> LOGGER.info(getMessage(COMPT_UPDATE_SUCCESS_REPORT, new Object[]{k, v})));
 
         return result;
     }
@@ -263,19 +311,18 @@ public class ComptDaoImpl implements  ComptDao {
 
         int comptsSize = compts.size();
         if (comptsSize == 0) {
-            LOGGER.error("Compts' delete. Can't delete any of the compts with the following(ALL GIVEN TO METHOD)" +
-                    " ids cause they don't exist: " + idsToDelete);
+            LOGGER.error(getMessage(COMPTS_DELETE_NON_EXISTING_COMPTS, new Object[]{idsToDelete}));
             return Collections.EMPTY_LIST;
         }
 
         comptRepository.delete(compts);
         List<Long> result = getIdsFromEntities(compts.toArray(new Compt[0]));
-        LOGGER.info("Deleted compts with the following ids: " + result);
+        LOGGER.info(getMessage(COMPTS_DELETE_SUCCESS_REPORT, new Object[]{result}));
 
         if (comptsSize != idsToDelete.size()) {
             Set<Long> idsToDeleteSet = new HashSet<>(idsToDelete);
-            LOGGER.error("Packets' delete. Can't delete any of the packets with the following ids cause " +
-                    "they don't exist: " + idsToDeleteSet.removeAll(result));
+            LOGGER.error(getMessage(COMPTS_DELETE_NON_EXISTING_COMPTS,
+                    new Object[]{idsToDeleteSet.removeAll(result)}));
         }
 
         return result;
@@ -298,23 +345,20 @@ public class ComptDaoImpl implements  ComptDao {
 
         int packetsSize = packets.size();
         if (packetsSize == 0) {
-            LOGGER.error("Packets' delete. Can't delete any of the packets with the following(ALL GIVEN TO METHOD)" +
-                    " ids cause they don't exist: " + idsToDelete);
+            LOGGER.info(getMessage(PACKETS_DELETE_NON_EXISTING_COMPTS, new Object[]{idsToDelete}));
             return Collections.EMPTY_LIST;
         }
         packetRepository.delete(packets);
         List<Long> result = getIdsFromEntities(packets.toArray(new Packet[0]));
-        LOGGER.info("Packets' delete. Deleted packets with the following ids: " + result);
+        LOGGER.info(getMessage(PACKETS_DELETE_SUCCESS_REPORT, new Object[]{result}));
 
         if (packetsSize != idsToDelete.size()) {
             Set<Long> idsToDeleteSet = new HashSet<>(idsToDelete);
-            LOGGER.error("Packets' delete. Can't delete any of the packets with the following ids cause " +
-                    "they don't exist: " + idsToDeleteSet.removeAll(result));
+            LOGGER.info(getMessage(PACKETS_DELETE_NON_EXISTING_COMPTS, new Object[]{idsToDeleteSet.removeAll(result)}));
         }
 
         return result;
     }
-
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -332,7 +376,7 @@ public class ComptDaoImpl implements  ComptDao {
                 long packetId = packetParams.getId();
                 packet = loadPacket(packetId);
                 if (packet == null) {
-                    LOGGER.info("Packet update. The packet with id " + packetId + " does not exist.");
+                    LOGGER.info(getMessage(PACKET_ADD_OR_UPDATE_NOT_EXISTING_PACKET, new Object[]{packetId}));
                     continue;
                 }
             }
@@ -342,10 +386,10 @@ public class ComptDaoImpl implements  ComptDao {
             if (!comptParamsList.isEmpty()) {
                 List<Compt> addedCompts = preparePacketAndComptsForSaving(packet, comptParamsList);
                 if (operationType == OperationType.ADD) {
-                    LOGGER.info("Adding the packets. The following compts for the new packet were added: " + addedCompts);
+                    LOGGER.info(getMessage(PACKET_ADDING_ADD_COMPTS,
+                            new Object[]{addedCompts}));
                 } else if (operationType == OperationType.UPDATE) {
-                    LOGGER.info("Packet update. The following compts for the packet#" + packet.getId() +
-                            " were added: " + addedCompts);
+                    LOGGER.info(getMessage(PACKET_UPDATE_ADD_COMPTS, new Object[]{packet.getId(), addedCompts}));
                 }
             }
 
@@ -359,11 +403,11 @@ public class ComptDaoImpl implements  ComptDao {
     private String generateSavePacketReport(Packet pkt, OperationType operationType) {
         String report = "";
         if (operationType == OperationType.ADD) {
-            report = "Adding the packet. Persisted new packet#" + pkt.getId() + " with the following state id: "
-                    + pkt.getState().getId() + " and compts: " + pkt.getCompts();
+            report = getMessage(PACKET_ADDING_SUCCESS_REPORT,
+                    new Object[]{pkt.getId(), pkt.getState().getId(), pkt.getCompts()});
         } else if (operationType == OperationType.UPDATE) {
-            report = "Packet update. Merged packet#" + pkt.getId() + " with the following state id: " +
-                    pkt.getState().getId() + " and compts: " + pkt.getCompts();
+            report = getMessage(PACKET_UPDATE_SUCCESS_REPORT,
+                    new Object[]{pkt.getId(), pkt.getState().getId(), pkt.getCompts()});
         }
         return report;
     }
@@ -376,21 +420,21 @@ public class ComptDaoImpl implements  ComptDao {
             if (state != null) {
                 packet.setState(state);
                 if (operationType == OperationType.UPDATE) {
-                    report = "Packet update. The state for the packet#" + packet.getId() +
-                            " was updated. The new state has the following id: " + stateId;
+                    report = getMessage(PACKET_UPDATE_STATE_UPDATE_SUCCESS_REPORT,
+                            new Object[]{packet.getId(), stateId});
                 } else if (operationType == OperationType.ADD) {
-                    report = "Adding the packet. The state for the new packet was set. It has the following id: " + stateId;
+                    report = getMessage(PACKET_ADDING_STATE_UPDATE_SUCCESS_REPORT,
+                            new Object[]{stateId});
                 }
             } else {
                 State defaultState = allStates.get(DEFAULT_STATE_INDEX);
                 if (operationType == OperationType.UPDATE) {
-                    report = "Packet update. Packet#" + packet.getId() + "state update. " +
-                            "The state with id = " + stateId + "does not exist.";
+                    report = getMessage(PACKET_ADDING_STATE_UPDATE_NOT_EXISTING_STATE,
+                            new Object[]{packet.getId(), stateId});
                 } else if (operationType == OperationType.ADD) {
                     packet.setState(defaultState);
-                    report = "Adding the packet. The state with id = " + stateId + "does not exist.So it's " +
-                            "automatically replaced with the state with id = " + DEFAULT_STATE_INDEX +
-                            " and label: '" + defaultState.getLabel() + "'";
+                    report = getMessage(PACKET_UPDATE_STATE_UPDATE_NOT_EXISTING_STATE,
+                            new Object[]{stateId, DEFAULT_STATE_INDEX, defaultState.getLabel()});
                 }
             }
             LOGGER.info(report);

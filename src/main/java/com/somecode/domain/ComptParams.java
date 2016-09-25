@@ -2,10 +2,14 @@ package com.somecode.domain;
 
 import java.util.List;
 
+import static com.somecode.helper.Helper.getMessage;
+
 /**
  * Created by alexc_000 on 2016-07-22.
  */
 public class ComptParams {
+    private static final String STRING_VERSION = "comptParams.toString";
+
     private List<String> vals;
     private String label;
     private long id;
@@ -35,5 +39,10 @@ public class ComptParams {
     public ComptParams setLabel(String label) {
         this.label = label;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return getMessage(STRING_VERSION, new Object[]{id, label, vals});
     }
 }

@@ -6,22 +6,25 @@ import javax.validation.constraints.NotNull;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.somecode.helper.Helper.getMessage;
 @Entity
 public class Packet implements EntityType {
+    private static final String ID_COLUMN = "PACKET_ID";
+    private static final String STATE_ID_FK = "STATE_ID_FK";
+    private static final String PACKET_FOREIGN_COLUMN_MAPPING = "packet";
+    private static final String STRING_VERSION = "packet.toString";
+    private static final int ID_COLUMN_LENGTH = 11;
 
     private Long id;
-
     private Integer version;
-
     private State state;
-
     private List<Compt> compts = new LinkedList<>();
 
     public Packet() {  }
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name = "PACKET_ID", length = 11)
+    @Column(name = ID_COLUMN, length = ID_COLUMN_LENGTH)
     public Long getId() {
         return id;
     }
@@ -31,7 +34,6 @@ public class Packet implements EntityType {
     }
 
     @Version
-    @Column(name = "VERSION")
     public Integer getVersion() {
         return this.version;
     }
@@ -42,7 +44,7 @@ public class Packet implements EntityType {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "STATE_ID_FK")
+    @JoinColumn(name = STATE_ID_FK)
     public State getState() {
         return state;
     }
@@ -51,7 +53,7 @@ public class Packet implements EntityType {
         this.state = state;
     }
 
-    @OneToMany(mappedBy = "packet", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = PACKET_FOREIGN_COLUMN_MAPPING, cascade = CascadeType.ALL, orphanRemoval = true)
     public List<Compt> getCompts() {
         return compts;
     }
@@ -67,6 +69,6 @@ public class Packet implements EntityType {
 
     @Override
     public String toString() {
-        return "\nPacket with id: " + id + "\nand state: " + state;
+        return getMessage(STRING_VERSION, new Object[]{id, state});
     }
 }

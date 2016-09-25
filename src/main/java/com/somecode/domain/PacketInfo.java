@@ -1,11 +1,14 @@
 package com.somecode.domain;
 
+import static com.somecode.helper.Helper.getMessage;
 /**
  * Created by alexc_000 on 2016-07-16.
  */
 
 
 public class PacketInfo {
+    private static final String STRING_VERSION = "packetInfo.toString";
+
     private Long id;
     private Long stateId;
 
@@ -24,7 +27,7 @@ public class PacketInfo {
 
     @Override
     public String toString() {
-        return "Packet Info with id: " + id + " and state Id: " + stateId;
+        return getMessage(STRING_VERSION, new Object[]{id, stateId});
     }
 
 }

@@ -8,6 +8,8 @@ import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.somecode.helper.Helper.getMessage;
+
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"PACKET_ID_FK", "LABEL"}))
 @NamedQueries( {
@@ -21,6 +23,15 @@ import java.util.List;
 })
 public class Compt implements EntityType {
 
+    private final static String COMPT_ID = "COMPT_ID";
+    private final static String PACKET_ID_FK = "PACKET_ID_FK";
+    private final static String COMPT = "compt";
+    private final static String NOT_EMPTY_LABEL_MESSAGE = "Compt label can't be empty";
+    private final static String LABEL_SIZE_MESSAGE = "Compt label length can't exceed 75 symbols";
+    private final static String STRING_VERSION = "compt.toString";
+    private final static int COMPT_LENGTH = 11;
+    private final static int MAX_LABEL_SIZE = 75;
+
     private Long id;
     private String label;
 	private Packet packet;
@@ -29,7 +40,7 @@ public class Compt implements EntityType {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name = "COMPT_ID", length = 11)
+    @Column(name = COMPT_ID, length = COMPT_LENGTH)
     public Long getId() {
         return id;
     }
@@ -39,7 +50,6 @@ public class Compt implements EntityType {
     }
 
     @Version
-    @Column(name = "VERSION")
     public Integer getVersion() {
         return this.version;
     }
@@ -48,7 +58,7 @@ public class Compt implements EntityType {
         this.version = version;
     }
 
-    @OneToMany(mappedBy = "compt", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = COMPT, cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy
     public List<DataCompt> getDataCompts() {
         return dataCompts;
@@ -68,8 +78,8 @@ public class Compt implements EntityType {
         getDataCompts().remove(dataCompt);
     }
 
-    @NotEmpty(message = "Compt label can't be empty")
-    @Size(max = 75, message = "Compt label length can't exceed 75 symbols")
+    @NotEmpty(message = NOT_EMPTY_LABEL_MESSAGE)
+    @Size(max = MAX_LABEL_SIZE, message = LABEL_SIZE_MESSAGE)
     @Column
     public String getLabel() {
         return label;
@@ -81,7 +91,7 @@ public class Compt implements EntityType {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "packet_id_fk")
+    @JoinColumn(name = PACKET_ID_FK)
     public Packet getPacket() {
         return packet;
     }
@@ -92,6 +102,6 @@ public class Compt implements EntityType {
 
     @Override
     public String toString() {
-        return "Component with id: " + id + " and label: "+label+"\nand packet: " + packet ;
+        return getMessage(STRING_VERSION, new Object[]{id, label, packet});
     }
 }

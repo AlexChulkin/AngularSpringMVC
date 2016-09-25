@@ -2,6 +2,8 @@ package com.somecode.config;
 
 import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -19,14 +21,33 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Properties;
 
+import static com.somecode.helper.Helper.getMessage;
+
 
 @Configuration
 @EnableTransactionManagement
 @EnableJpaRepositories("com.somecode")
 public class PersistenceJPAConfig {
 
+    private final static String USERNAME_PROP = "username";
+    private final static String PASSWORD_PROP = "password";
+    private final static String URL_PROP = "url";
+    private final static String CLASSNAME_PROP = "className";
+    private final static String SHOW_SQL_PROP = "hibernate.show_sql";
+    private final static String PACKAGE_TO_SCAN = "com.somecode";
+    private final static String DEV_PROPS_FILENAME = "properties/db-dev.properties";
+    private final static String ERROR_IN_DB_PROPERTIES = "config.errorInDbProperties";
+    private final static String DEV_PROFILE = "dev";
+    private final static boolean GENERATED_DDL = true;
+    private final static int DATASOURCE_MAX_ACTIVE = 10;
+    private final static int DATASOURCE_MAX_WAIT = 100;
+    private final static int DATASOURCE_INITIAL_SIZE = 3;
+
     protected static Logger LOGGER;
-    protected Properties properties;
+    protected Properties dbProperties;
+
+    @Autowired
+    ApplicationContext context;
 
     @PostConstruct
     protected void setPropertiesAndLogger() {
@@ -35,11 +56,11 @@ public class PersistenceJPAConfig {
     }
 
     protected void setProperties() {
-        properties = new Properties();
+        dbProperties = new Properties();
         try {
-            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream("db-dev.properties"));
+            dbProperties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream(DEV_PROPS_FILENAME));
         } catch (IOException e) {
-            LOGGER.error("Error in properties", e);
+            LOGGER.error(getMessage(ERROR_IN_DB_PROPERTIES, null), e);
         }
     }
 
@@ -52,28 +73,28 @@ public class PersistenceJPAConfig {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
 
         em.setDataSource(dataSource());
-        em.setPackagesToScan("com.somecode");
+        em.setPackagesToScan(PACKAGE_TO_SCAN);
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
-        vendorAdapter.setGenerateDdl(true);
-        vendorAdapter.setShowSql(Boolean.parseBoolean(properties.getProperty("hibernate.show_sql")));
+        vendorAdapter.setGenerateDdl(GENERATED_DDL);
+        vendorAdapter.setShowSql(Boolean.parseBoolean(dbProperties.getProperty(SHOW_SQL_PROP)));
 
         em.setJpaVendorAdapter(vendorAdapter);
-        em.setJpaProperties(properties);
+        em.setJpaProperties(dbProperties);
 
         return em;
     }
 
-    @Profile("dev")
+    @Profile(DEV_PROFILE)
     @Bean
     public DataSource dataSource() {
         BasicDataSource dataSource = new BasicDataSource();
-        dataSource.setDriverClassName(properties.getProperty("className"));
-        dataSource.setUrl(properties.getProperty("url"));
-        dataSource.setUsername(properties.getProperty("username"));
-        dataSource.setPassword(properties.getProperty("password"));
-        dataSource.setMaxActive(10);
-        dataSource.setMaxWait(100);
-        dataSource.setInitialSize(3);
+        dataSource.setDriverClassName(dbProperties.getProperty(CLASSNAME_PROP));
+        dataSource.setUrl(dbProperties.getProperty(URL_PROP));
+        dataSource.setUsername(dbProperties.getProperty(USERNAME_PROP));
+        dataSource.setPassword(dbProperties.getProperty(PASSWORD_PROP));
+        dataSource.setMaxActive(DATASOURCE_MAX_ACTIVE);
+        dataSource.setMaxWait(DATASOURCE_MAX_WAIT);
+        dataSource.setInitialSize(DATASOURCE_INITIAL_SIZE);
 
         return dataSource;
     }

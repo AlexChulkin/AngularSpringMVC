@@ -1,4 +1,4 @@
-package com.somecode.service;
+package com.somecode.dao;
 
 import com.somecode.config.PersistenceJPAConfig;
 import org.apache.log4j.Logger;
@@ -29,9 +29,9 @@ public class DaoTestConfig extends PersistenceJPAConfig {
 
     @Override
     protected void setProperties() {
-        properties = new Properties();
+        dbProperties = new Properties();
         try {
-            properties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream("db-test.properties"));
+            dbProperties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream("properties/db-test.properties"));
         } catch (IOException e) {
             LOGGER.error("Error in properties", e);
         }

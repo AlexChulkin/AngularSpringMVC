@@ -5,7 +5,6 @@ package com.somecode.domain;
  */
 public interface EntityType {
     Long getId();
-
     Integer getVersion();
 }
 

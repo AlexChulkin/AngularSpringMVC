@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Created by alexc_000 on 2016-06-24.
  */
-public interface ComptDao {
+public interface PacketAppDao {
 
     Role getUserRole(String username, String password);
 

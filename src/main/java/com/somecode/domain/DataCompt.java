@@ -6,10 +6,23 @@ import org.hibernate.annotations.Type;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+import static com.somecode.helper.Helper.getMessage;
+
+
 @Entity
 @Table(name = "DATA_COMPT",
         uniqueConstraints = @UniqueConstraint(columnNames = {"COMPT_ID_FK", "STATE_ID_FK", "COMBO_DATA_ID_FK"}))
 public class DataCompt implements EntityType {
+
+    private static final String ID_COLUMN = "DATA_COMPT_ID";
+    private static final String COMBO_DATA_ID_FK = "COMBO_DATA_ID_FK";
+    private static final String COMPT_ID_FK = "COMPT_ID_FK";
+    private static final String STATE_ID_FK = "STATE_ID_FK";
+    private static final String CHECKED_COLUMN_NAME = "CHECKED";
+    private static final String CHECKED_COLUMN_TYPE = "yes_no";
+    private static final String STRING_VERSION = "dataCompt.toString";
+    private static final int ID_COLUMN_LENGTH = 21;
+    private static final int CHECKED_COLUMN_LENGTH = 1;
 
     private Long id;
     private Compt compt;
@@ -28,7 +41,7 @@ public class DataCompt implements EntityType {
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    @Column(name = "DATA_COMPT_ID", length = 21)
+    @Column(name = ID_COLUMN, length = ID_COLUMN_LENGTH)
     public Long getId() {
         return id;
     }
@@ -38,7 +51,6 @@ public class DataCompt implements EntityType {
     }
 
     @Version
-    @Column(name = "VERSION")
     public Integer getVersion() {
         return this.version;
     }
@@ -49,7 +61,7 @@ public class DataCompt implements EntityType {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "COMBO_DATA_ID_FK")
+    @JoinColumn(name = COMBO_DATA_ID_FK)
     public ComboData getComboData() {
         return comboData;
     }
@@ -60,7 +72,7 @@ public class DataCompt implements EntityType {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "COMPT_ID_FK")
+    @JoinColumn(name = COMPT_ID_FK)
     public Compt getCompt() {
         return compt;
     }
@@ -71,7 +83,7 @@ public class DataCompt implements EntityType {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "STATE_ID_FK")
+    @JoinColumn(name = STATE_ID_FK)
     public State getState() {
         return state;
     }
@@ -80,8 +92,8 @@ public class DataCompt implements EntityType {
         this.state = state;
     }
 
-    @Column(name = "CHECKED", length = 1)
-    @Type(type="yes_no")
+    @Column(name = CHECKED_COLUMN_NAME, length = CHECKED_COLUMN_LENGTH)
+    @Type(type = CHECKED_COLUMN_TYPE)
     public boolean getChecked() {
         return checked;
     }
@@ -92,8 +104,7 @@ public class DataCompt implements EntityType {
 
     @Override
     public String toString() {
-        return "\nData Component with id: " + id + " and checked flag: " + checked + "\nand component: " + compt +
-                "\nand state: " + state + "\nand combo data: " + comboData;
+        return getMessage(STRING_VERSION, new Object[]{id, checked, compt, state, comboData});
     }
 
 }

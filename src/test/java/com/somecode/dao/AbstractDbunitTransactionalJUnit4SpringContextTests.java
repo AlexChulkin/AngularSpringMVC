@@ -1,4 +1,4 @@
-package com.somecode.service;
+package com.somecode.dao;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dbunit.Assertion;

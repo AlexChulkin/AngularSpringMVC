@@ -1,4 +1,4 @@
-package com.somecode.service;
+package com.somecode.dao;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +9,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @interface DataSets {
     String before() default "";
-
     String after() default "";
 }
