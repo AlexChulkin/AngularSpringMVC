@@ -110,12 +110,12 @@ angular.module("packetAdminApp")
 
         var preparePackets = function (packets, packetId, isPacketIdUndefined) {
             var isPacketsEmpty = exchangeService.isEmpty(packets);
-            var loadedNoPackets = isPacketsEmpty && isPacketIdUndefined;
+            var noPackets = isPacketsEmpty && isPacketIdUndefined;
             var loadedNoSelectedPacket = isPacketsEmpty && !isPacketIdUndefined
                 && packetId === exchangeService.getSelectedPacketId();
             var loadedNoUnSelectedPacket = isPacketsEmpty && !isPacketIdUndefined
                 && packetId !== exchangeService.getSelectedPacketId();
-            exchangeService.setLoadedNoPackets(loadedNoPackets);
+            exchangeService.setNoPackets(noPackets);
             exchangeService.setLoadedNoSelectedPacket(loadedNoSelectedPacket);
             exchangeService.setLoadedNoUnSelectedPacket(loadedNoUnSelectedPacket, packetId);
 

@@ -3,8 +3,8 @@
  */
 
 angular.module("packetAdminApp")
-    .constant("packetListActiveClass", "btn-primary btn-sm")
-    .constant("packetListNonActiveClass", "btn-sm")
+    .constant("packetListActiveClass", "btn-primary btn-md")
+    .constant("packetListNonActiveClass", "btn-md")
     .constant("updateCompts", "UPDATE_COMPTS")
     .constant("deleteCompts", "DELETE_COMPTS")
     .constant("updatePackets", "UPDATE_PACKETS")
@@ -14,8 +14,8 @@ angular.module("packetAdminApp")
     .constant("initialPacketIndex", -1)
     .constant("errorStatusBadRequest", 400)
     .constant("errorStatusNotFound", 404)
-    .constant("narrowPacketCaption", "narrow-packet-caption")
-    .constant("widePacketCaption", "wide-packet-caption")
+    .constant("narrowPacketCaption", "narrow-packet-selection")
+    .constant("widePacketCaption", "wide-packet-selection")
     .constant("adminRole", "ADMIN")
     .constant("role", "role")
     .controller("packetsPanelCtrl", function ($scope, $http, $window, $cookies, exchangeService,

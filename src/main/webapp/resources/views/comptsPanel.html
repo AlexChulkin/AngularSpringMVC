@@ -1,21 +1,21 @@
 <div ng-controller="comptsPanelCtrl">
-    <div class="alert alert-warning" ng-show="isDataLoadedProperly() && !isPacketsNotLoaded()
-                                && !isSelectedPacketNotLoaded() && isPacketSelected() && !isComptsSelected()">
+    <div id="emptyPkt" class="alert alert-warning" ng-show="isDataLoadedProperly() && !isPacketsNotLoaded()
+                                && !isSelectedPacketNotLoaded() && isPacketSelected() && isSelectedPacketEmpty()">
         The selected packet is empty. Please add new compts or select another one.
     </div>
-    <div class="alert alert-warning" ng-show="isDataLoadedProperly() && !isPacketsNotLoaded()
+    <div id="noPktSelected" class="alert alert-warning" ng-show="isDataLoadedProperly() && !isPacketsNotLoaded()
                                 && !isPacketSelected() && isPacketAlreadySelectedAtLeastOnce()">
-        No packet is selected. Please select (or add and select) one.
+        No packet is selected. Please select one.
     </div>
-    <div class="alert alert-warning" ng-show="isDataLoadedProperly() && isPacketsNotLoaded()">
-        There are no loaded packets. Please add one.
+    <div id="noPackets" class="alert alert-warning" ng-show="isDataLoadedProperly() && isPacketsNotLoaded()">
+        There are no packets. Please add one.
     </div>
     <div class="alert alert-warning" ng-show="isDataLoadedProperly() && isSelectedPacketNotLoaded()">
         The selected packet can't be reloaded. Please retry or check the DB.
     </div>
     <div id="rightColumn" ng-show="isPacketSelected()">
         <div id="table-pagination-radio">
-            <div ng-show="isComptsSelected()">
+            <div ng-show="!isSelectedPacketEmpty()">
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -32,8 +32,9 @@
                             {{compt.label}}
                         </td>
                         <td width="17%" ng-repeat="state in data.allStates">
-                            <span ng-bind="data.allCheckedComboData[compt.id][state.id]"
-                                  ng-hide="data.selectedPacket.stateId == state.id"></span>
+                            <span ng-hide="data.selectedPacket.stateId == state.id" ng-cloak>
+                                {{data.allCheckedComboData[compt.id][state.id]}}
+                            </span>
                             <span ng-show="data.selectedPacket.stateId == state.id">
                                   <select class="standard"
                                           ng-options="el for el in data.allComboData[compt.id][state.id]"
@@ -50,7 +51,7 @@
                     </tr>
                     </tbody>
                 </table>
-                <div class="pull-right btn-group">
+                <div id="pagination" class="pull-right btn-group">
                     <a ng-repeat="page in data.selectedCompts | filter:notNull | pageCount:data.pageSize"
                        ng-click="selectPage(page)" class="btn btn-default"
                        ng-class="getPageClass(page)" ng-cloak>
@@ -60,7 +61,7 @@
             </div>
             <div class="well">
                 <div id="states">
-                    <div class="state" ng-repeat="state in data.allStates" ng-cloak>
+                    <div id="state" ng-repeat="state in data.allStates" ng-cloak>
                         <input type="radio"
                                ng-model="data.selectedPacket.stateId"
                                ng-value="state.id">
@@ -75,7 +76,8 @@
                     <div class="form-group">
                         <label ng-class="label-primary">
                             Enter new compt label:
-                            <input class="text"
+                            <input id="newComptLabel"
+                                   class="text"
                                    name="newLabelName"
                                    ng-model="data.newLabel"
                                    ng-trim="true"
@@ -100,7 +102,7 @@
                         </label>
                     </div>
                 </div>
-                <div class="col-sm-2" ng-repeat="state in data.allStates track by $index">
+                <div class="col-sm-2" id="newComptVals" ng-repeat="state in data.allStates track by $index">
                     <select class="special"
                             ng-options="el for el in data.comboDataDefaultSet"
                             ng-model="data.newComptCheckedVals[$index]">
@@ -108,7 +110,7 @@
                 </div>
                 <div class="col-sm-1">
                         <span class="input-group-btn">
-                            <button type="submit" class="btn btn-group-justified btn-success" id="addBtn"
+                            <button type="submit" class="btn btn-xs btn-success" id="addComptBtn"
                                     ng-disabled="form.$invalid">Add
                             </button>
                         </span>

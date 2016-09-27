@@ -1,36 +1,37 @@
-<div ng-controller="packetsPanelCtrl">
-    <div class="flex" ng-repeat="pkt in data.allPackets">
+<div id="packetsPanel" ng-controller="packetsPanelCtrl">
+    <div class="packet-buttons-div" ng-repeat="pkt in data.allPackets">
         <a ng-click="selectPacket(pkt)"
            ng-class="getPacketClass(pkt)" ng-cloak>
             Packet#{{pkt.id}}
         </a>
         <a ng-click="saveAllChangesToBase(pkt.id)"
-           class="btn btn-sm btn-success expanded-margin-bottom"
+           class="btn btn-md btn-success packet-button"
            ng-disabled="data.isRoleNotAdmin">
             Save
         </a>
         <a ng-click="loadPackets(pkt.id)"
-           class="btn btn-sm btn-warning expanded-margin-bottom"
+           class="btn btn-md btn-warning packet-button"
            ng-disabled="data.newPackets[pkt.id]">
             Reload
         </a>
         <a ng-click="deletePacketLocally(pkt)"
-           class="btn btn-sm btn-danger expanded-margin-bottom">
+           class="btn btn-md btn-danger packet-button">
             Del
         </a>
     </div>
     <div class="btn-group" id="aggregate-btns" ng-show="showAggregateButtons()">
         <button ng-click="addPacketLocally()"
-                class="btn btn-md btn-block btn-default">
+                id="addPacketBtn"
+                class="btn btn-md btn-block btn-default aggregate-button">
             Add packet
         </button>
         <button ng-click="saveAllChangesToBase()"
-                class="btn btn-md btn-block btn-success"
+                class="btn btn-md btn-block btn-success aggregate-button"
                 ng-disabled="data.isRoleNotAdmin">
             Save changes
         </button>
         <button ng-click="reloadRoute()"
-           class="btn btn-md btn-block btn-warning">
+                class="btn btn-md btn-block btn-warning aggregate-button">
             Reload all
         </button>
     </div>

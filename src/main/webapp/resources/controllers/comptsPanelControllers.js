@@ -7,7 +7,7 @@ app
     .constant("pageListNonActiveClass", "btn-sm")
     .constant("packetListPageCount", 10)
     .constant("formLabelPattern", "^[\\w\\s]*$")
-    .controller("comptsPanelCtrl", function ($scope, pageListActiveClass, pageListNonActiveClass,
+    .controller("comptsPanelCtrl", function ($scope, $filter, pageListActiveClass, pageListNonActiveClass,
                                              packetListPageCount, exchangeService, formLabelPattern) {
 
         $scope.$on('selectedCompts:update', function (event, data) {
@@ -46,8 +46,8 @@ app
             $scope.data.newComptCheckedVals = data;
         });
 
-        $scope.isComptsSelected = function () {
-            return exchangeService.getComptsIsSelected();
+        $scope.isSelectedPacketEmpty = function () {
+            return exchangeService.getSelectedPacketIsEmpty();
         };
 
         $scope.isPacketSelected = function () {
@@ -55,7 +55,7 @@ app
         };
 
         $scope.isPacketsNotLoaded = function () {
-            return exchangeService.getLoadedNoPackets();
+            return exchangeService.getNoPackets();
         };
 
         $scope.isSelectedPacketNotLoaded = function () {
@@ -93,7 +93,7 @@ app
             var pktId = exchangeService.getSelectedPacketId();
 
             exchangeService.deleteSelectedComptLabels(comptLabel.toUpperCase());
-            exchangeService.setSelectedCompts(null, exchangeService.getComptIdToInd(comptId));
+            exchangeService.setSelectedCompt(exchangeService.getComptIdToInd(comptId), null, $scope.data.pageSize);
 
             if (exchangeService.getComptIdsToUpdate(pktId)) {
                 exchangeService.deleteComptIdsToUpdate(pktId, comptId);
@@ -126,7 +126,7 @@ app
         };
 
         $scope.notNull = function (value) {
-            return value;
+            return value !== null;
         };
 
         $scope.getError = function (input, errorType) {

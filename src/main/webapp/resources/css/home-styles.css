@@ -1,15 +1,16 @@
-.state {
+#state {
     width: 31%;
     display: inline-block;
 }
 
 .column {
-    padding-right: 10px;
-    padding-left: 10px;
+    padding-right: 3px;
+    padding-left: 3px;
 }
 
-.flex {
+.packet-buttons-div {
     display: inline-flex;
+    width: 100%;
 }
 
 #aggregate-btns {
@@ -22,7 +23,7 @@
 
 select {
     font-weight: bold;
-    width: 135px;
+    width: 130px;
 }
 
 select.standard {
@@ -38,23 +39,32 @@ select.special {
     padding-left: 24px;
 }
 
-.expanded-margin-bottom {
+form > div {
+    padding-right: 15px;
+}
+
+.packet-buttons-div > a {
     margin-bottom: 3px;
 }
 
-.narrow-packet-caption {
-    padding-left: 6px;
-    padding-right: 11px;
+.packet-button {
+    padding: 6px 12px;
+}
+
+.narrow-packet-selection {
+    padding: 5px 10px;
     margin-bottom: 3px;
 }
 
-.wide-packet-caption {
-    padding-left: 6px;
-    padding-right: 5px;
-    margin-bottom: 3px;
+.wide-packet-selection {
+    padding: 5px 2px 5px 10px;
 }
 
-#addBtn {
+.aggregate-button {
+    width: 250px;
+}
+
+#addComptBtn {
     padding: 0 13px 1px;
 }
 

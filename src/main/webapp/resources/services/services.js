@@ -26,7 +26,7 @@ angular.module("customServices", [])
     var selectedPacketId;
     var selectedPacket;
     var selectedPage;
-    var loadedNoPackets;
+        var noPackets;
     var loadedNoPacket;
     var maximalComptId;
     var packetIsAlreadySelectedAtLeastOnce;
@@ -34,7 +34,7 @@ angular.module("customServices", [])
     var comptLabels;
     var comboDataDefaultSet;
     var selectedComptLabels;
-    var comptsIsSelected;
+        var selectedPacketIsEmpty;
 
     var init = function () {
         setComptIdToInd({});
@@ -59,7 +59,7 @@ angular.module("customServices", [])
         setSelectedPacket(null);
         setSelectedPage(null);
         setLoadedNoPacket({});
-        setLoadedNoPackets(null);
+        setNoPackets(null);
         setMaximalComptId(null);
         setPacketIsAlreadySelectedAtLeastOnce(null);
         setComboDataDefaultSet([]);
@@ -189,12 +189,12 @@ angular.module("customServices", [])
         }
     };
 
-    var setLoadedNoPackets = function (value) {
-        loadedNoPackets = value;
+        var setNoPackets = function (value) {
+            noPackets = value;
     };
 
-    var getLoadedNoPackets = function () {
-        return loadedNoPackets;
+        var getNoPackets = function () {
+            return noPackets;
     };
 
     var setMaximalComptId = function (value) {
@@ -286,6 +286,7 @@ angular.module("customServices", [])
         } else {
             allPackets = value;
         }
+        noPackets = angular.equals({}, allPackets);
         $rootScope.$broadcast('allPackets:update', allPackets);
     };
 
@@ -298,6 +299,7 @@ angular.module("customServices", [])
 
     var deleteAllPackets = function (pktId) {
         delete allPackets[pktId];
+        noPackets = angular.equals({}, allPackets);
         $rootScope.$broadcast('allPackets:update', allPackets);
     };
 
@@ -539,6 +541,7 @@ angular.module("customServices", [])
 
     var deleteSelectedComptLabels = function (label) {
         delete selectedComptLabels[label];
+        selectedPacketIsEmpty = angular.equals({}, selectedComptLabels);
     };
 
     var setSelectedComptLabels = function (value, label) {
@@ -547,7 +550,7 @@ angular.module("customServices", [])
         } else {
             selectedComptLabels = value;
         }
-        comptsIsSelected = !angular.equals({}, selectedComptLabels);
+        selectedPacketIsEmpty = angular.equals({}, selectedComptLabels);
     };
 
     var getSelectedComptLabels = function (label) {
@@ -557,17 +560,37 @@ angular.module("customServices", [])
         return selectedComptLabels;
     };
 
-    var getComptsIsSelected = function () {
-        return comptsIsSelected;
+        var getSelectedPacketIsEmpty = function () {
+            return selectedPacketIsEmpty;
     };
 
-    var setSelectedCompts = function (value, index) {
-        if (angular.isDefined(index)) {
-            selectedCompts[index] = value;
-        } else {
+        var setSelectedCompts = function (value) {
             selectedCompts = value;
-        }
         $rootScope.$broadcast('selectedCompts:update', selectedCompts);
+        };
+
+        var setSelectedCompt = function (index, value, pageSize) {
+            selectedCompts[index] = value;
+
+            if (angular.isNull(value) && getNumberOfNotNullSelectedCompts() % pageSize === 0) {
+                if (selectedPage === 1) {
+                    selectedPacketIsEmpty = true;
+                } else {
+                    setSelectedPage(selectedPage - 1);
+                }
+            }
+            $rootScope.$broadcast('selectedCompts:update', selectedCompts);
+        };
+
+
+        var getNumberOfNotNullSelectedCompts = function () {
+            var notNullCompts = 0;
+            angular.forEach(selectedCompts, function (compt) {
+                if (!angular.isNull(compt)) {
+                    notNullCompts++;
+                }
+            });
+            return notNullCompts;
     };
 
     var pushToSelectedCompts = function (value) {
@@ -623,8 +646,8 @@ angular.module("customServices", [])
         setLoadedNoSelectedPacket: setLoadedNoSelectedPacket,
         getLoadedNoSelectedPacket: getLoadedNoSelectedPacket,
         setLoadedNoUnSelectedPacket: setLoadedNoUnSelectedPacket,
-        setLoadedNoPackets: setLoadedNoPackets,
-        getLoadedNoPackets: getLoadedNoPackets,
+        setNoPackets: setNoPackets,
+        getNoPackets: getNoPackets,
         setMaximalComptId: setMaximalComptId,
         getMaximalComptId: getMaximalComptId,
         setPacketIdToInd: setPacketIdToInd,
@@ -666,7 +689,7 @@ angular.module("customServices", [])
         getComptIdsToDelete: getComptIdsToDelete,
         getSelectedComptLabels: getSelectedComptLabels,
         setSelectedComptLabels: setSelectedComptLabels,
-        getComptsIsSelected: getComptsIsSelected,
+        getSelectedPacketIsEmpty: getSelectedPacketIsEmpty,
         pushToSelectedCompts: pushToSelectedCompts,
         getSelectedCompts: getSelectedCompts,
         setNewComptLabels: setNewComptLabels,
@@ -674,6 +697,7 @@ angular.module("customServices", [])
         getNewComptCheckedVals: getNewComptCheckedVals,
         deleteSelectedComptLabels: deleteSelectedComptLabels,
         setSelectedCompts: setSelectedCompts,
+        setSelectedCompt: setSelectedCompt,
         deleteComptIdsToUpdate: deleteComptIdsToUpdate,
         setComptIdsToDelete: setComptIdsToDelete,
         pushToComptIdsToDelete: pushToComptIdsToDelete,
