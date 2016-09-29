@@ -81,21 +81,22 @@
                                    name="newLabelName"
                                    ng-model="data.newLabel"
                                    ng-trim="true"
-                                   ng-maxlength="75"
+                                   ng-maxlength="70"
                                    ng-pattern="comptLabelMatchPattern"
                                    blacklist="blacklist"
                                    required/>
                             <span class="error" role="alert">
-                                <div ng-show="form.newLabelName.$error.required && form.newLabelName.$dirty">
+                                <div id="required"
+                                     ng-show="form.newLabelName.$error.required && form.newLabelName.$dirty">
                                    {{getError(form.newLabelName, 'required')}}
                                 </div>
-                                <div ng-show="form.newLabelName.$error.maxlength">
+                                <div id="maxlength" ng-show="form.newLabelName.$error.maxlength">
                                    {{getError(form.newLabelName, 'maxlength')}}
                                 </div>
-                                <div ng-show="form.newLabelName.$error.blacklist">
+                                <div id="blacklist" ng-show="form.newLabelName.$error.blacklist">
                                    {{getError(form.newLabelName, 'blacklist')}}
                                 </div>
-                                <div ng-show="form.newLabelName.$error.pattern">
+                                <div id="pattern" ng-show="form.newLabelName.$error.pattern">
                                    {{getError(form.newLabelName, 'pattern')}}
                                 </div>
                             </span>

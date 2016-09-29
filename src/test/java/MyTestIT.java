@@ -28,7 +28,9 @@ public class MyTestIT {
 
     @AfterClass
     public static void finish(){
-        webDriver.close();
+        if (webDriver != null) {
+            webDriver.close();
+        }
     }
 
     @Test
@@ -93,7 +95,34 @@ public class MyTestIT {
 
         WebElement newComptLabelEl = webDriver.findElement(By.cssSelector("#newComptLabel"));
 
-        newComptLabelEl.sendKeys("1");
+        newComptLabelEl.sendKeys("");
+        WebElement requiredDiv = webDriver.findElement(By.cssSelector("#required"));
+        assertFalse("Compt adding button is enabled for empty label", addComptBtnEl.isEnabled());
+        assertNotNull("Error 'You did not enter a label' is not shown", requiredDiv);
+        newComptLabelEl.clear();
+
+        int exceededTextLength = 71;
+        StringBuilder sb = new StringBuilder();
+        IntStream.rangeClosed(1, exceededTextLength).forEach(i -> sb.append("a"));
+        newComptLabelEl.sendKeys(sb.toString());
+        WebElement maxlengthDiv = webDriver.findElement(By.cssSelector("#maxlength"));
+        assertFalse("Compt adding button is enabled for exceeded label length", addComptBtnEl.isEnabled());
+        assertNotNull("Error 'Label is too long' is not shown", maxlengthDiv);
+        newComptLabelEl.clear();
+
+
+        String[] forbiddenSymbols = {"{", "-", "@", "я", "\""};
+        for (String s : forbiddenSymbols) {
+            newComptLabelEl.sendKeys(s);
+            WebElement patternDiv = webDriver.findElement(By.cssSelector("#pattern"));
+            assertFalse("Compt adding button is enabled for improper label pattern", addComptBtnEl.isEnabled());
+            assertNotNull("Error 'Label should contain latin letters, digits, underscore and spaces only'" +
+                    " is not shown", patternDiv);
+            newComptLabelEl.clear();
+        }
+
+        String weirdButProperLabel = " 1_ E o 8 ";
+        newComptLabelEl.sendKeys(weirdButProperLabel);
         assertTrue("Compt adding button is not enabled", addComptBtnEl.isEnabled());
 
         List<WebElement> newComptValsSelects = webDriver.findElements(By.cssSelector("div#newComptVals>select"));
@@ -101,6 +130,11 @@ public class MyTestIT {
             assertEquals("Default new compt val is improper", "VERY_WEAK", (new Select(sel)).getFirstSelectedOption().getText());
         });
         addComptBtnEl.click();
+
+        newComptLabelEl.sendKeys(weirdButProperLabel);
+        WebElement blacklistDiv = webDriver.findElement(By.cssSelector("#blacklist"));
+        assertFalse("Compt adding button is enabled for already used label", addComptBtnEl.isEnabled());
+        assertNotNull("Error 'Label is not unique' is not shown", blacklistDiv);
 
         checkRightColumn(false, false, false);
 
@@ -140,7 +174,6 @@ public class MyTestIT {
         List<WebElement> paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertTrue("pagination buttons do exist", paginationBtns.isEmpty());
 
-
         int numOfComptsToAdd = 11;
         for (int i = 1; i <= numOfComptsToAdd; i++) {
             newComptLabelEl.sendKeys(Integer.toString(i));
@@ -161,8 +194,6 @@ public class MyTestIT {
         deleteComptBtns.get(0).click();
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertTrue("More or less than one pagination button", paginationBtns.size() == 1);
-
-
     }
 
     @Test
@@ -270,7 +301,6 @@ public class MyTestIT {
         } else {
             assertTrue("Compts found ", comptsSpans.isEmpty());
         }
-
     }
 
     private void performLogin() throws InterruptedException {

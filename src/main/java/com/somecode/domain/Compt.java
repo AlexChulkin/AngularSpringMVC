@@ -27,10 +27,10 @@ public class Compt implements EntityType {
     private final static String PACKET_ID_FK = "PACKET_ID_FK";
     private final static String COMPT = "compt";
     private final static String NOT_EMPTY_LABEL_MESSAGE = "Compt label can't be empty";
-    private final static String LABEL_SIZE_MESSAGE = "Compt label length can't exceed 75 symbols";
+    private final static String LABEL_SIZE_MESSAGE = "Compt label length can't exceed 70 symbols";
     private final static String STRING_VERSION = "compt.toString";
     private final static int COMPT_LENGTH = 11;
-    private final static int MAX_LABEL_SIZE = 75;
+    private final static int MAX_LABEL_SIZE = 70;
 
     private Long id;
     private String label;
