@@ -2,7 +2,7 @@ package com.somecode.controller;
 
 import com.somecode.domain.*;
 import com.somecode.service.PacketAppService;
-import org.apache.log4j.Logger;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.PropertySource;
@@ -18,10 +18,10 @@ import static com.somecode.helper.Helper.getMessage;
 
 
 @Controller
-@PropertySource(value = "classpath:properties/messages.properties")
+@PropertySource(value = "classpath:messages.properties")
+@Log4j
 public class RestfulController {
 
-    private static final Logger LOGGER = Logger.getLogger(RestfulController.class);
     private final static String HOME_MAPPING = "/home";
     private final static String HOME_MAPPING_FILE = "/resources/admin.jsp";
     private final static String USER_LOGIN_MAPPING = "/users/login";
@@ -52,7 +52,7 @@ public class RestfulController {
     @ResponseBody
     Data loadData(@RequestBody RequestObj requestObj) throws Exception {
         Long packetId = requestObj.getDataParams().getPacketId();
-        LOGGER.info(packetId == null
+        log.debug(packetId == null
                 ? getMessage(LOAD_DATA_FOR_ALL_PACKETS, null)
                 : getMessage(LOAD_DATA_FOR_GIVEN_PACKET, new Object[]{packetId})
         );
@@ -61,7 +61,7 @@ public class RestfulController {
 
     @RequestMapping(value = SAVE_ALL_CHANGES_MAPPING, method = RequestMethod.POST)
     public EnumSet<PersistError> saveAllChangesToBase(@RequestBody RequestObj requestObj) throws Exception {
-        LOGGER.info(getMessage("restful.saveAllChangesToBase", null));
+        log.debug(getMessage("restful.saveAllChangesToBase", null));
         DataParams params = requestObj.getDataParams();
         return packetAppService.saveAllChangesToBase(params.getComptIdsToDelete(),
                 params.getPacketIdsToDelete(),

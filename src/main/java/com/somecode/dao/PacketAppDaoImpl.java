@@ -2,7 +2,7 @@ package com.somecode.dao;
 
 import com.google.common.collect.Lists;
 import com.somecode.domain.*;
-import org.apache.log4j.Logger;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
@@ -23,8 +23,8 @@ import static com.somecode.helper.Helper.getMessage;
 @Service
 @Repository
 @Transactional(readOnly = true)
+@Log4j
 public class PacketAppDaoImpl implements PacketAppDao {
-    private static final Logger LOGGER = Logger.getLogger(PacketAppDaoImpl.class);
     private static final int DEFAULT_COMBO_DATA_INDEX = 0;
     private static final int DEFAULT_STATE_INDEX = 0;
     private static final String PACKET_ID = "packetId";
@@ -119,7 +119,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
         } else {
             packetRepository.findAll().forEach(p -> result.add(new PacketInfo(p)));
         }
-        LOGGER.info(getMessage(ALL_PACKETS_LOADED,
+        log.debug(getMessage(ALL_PACKETS_LOADED,
                 new Object[]{result.stream().map(PacketInfo::getId).collect(Collectors.toList())}));
         return result;
     }
@@ -136,7 +136,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
                     .getResultList();
         }
 
-        LOGGER.info(getMessage(ALL_COMPTSSUPPLINFO_LOADED, new Object[]{result}));
+        log.debug(getMessage(ALL_COMPTSSUPPLINFO_LOADED, new Object[]{result}));
         return result;
     }
 
@@ -149,7 +149,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
         try {
             return loadAllStatesLocally();
         } catch (EmptyDBTableException cause) {
-            LOGGER.error(cause.getStackTrace());
+            log.error(cause.getStackTrace());
             DatabaseException exc = new DatabaseException();
             exc.initCause(cause);
             throw exc;
@@ -162,7 +162,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
         if (allStates.isEmpty()) {
             throw new EmptyStateTableException();
         }
-        LOGGER.info(getMessage(ALL_STATES_LOADED, new Object[]{allStates}));
+        log.debug(getMessage(ALL_STATES_LOADED, new Object[]{allStates}));
         return allStates;
     }
 
@@ -171,7 +171,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
         try {
             return loadAllComboDataLocally();
         } catch (EmptyDBTableException cause) {
-            LOGGER.error(cause.getStackTrace());
+            log.error(cause.getStackTrace());
             DatabaseException exc = new DatabaseException();
             exc.initCause(cause);
             throw exc;
@@ -184,7 +184,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
         if (allComboData.isEmpty()) {
             throw new EmptyComboDataTableException();
         }
-        LOGGER.info(getMessage(ALL_COMBODATA_LOADED, new Object[]{allComboData}));
+        log.debug(getMessage(ALL_COMBODATA_LOADED, new Object[]{allComboData}));
 
         if (checkComboDataListsForEquality(allComboData, oldAllComboData)) {
             return allComboData;
@@ -194,7 +194,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
                 .boxed()
                 .collect(Collectors.toMap(i -> allComboData.get(i).getLabel(), Function.identity()));
 
-        LOGGER.info(MAP_COMBODATA_LABELS_TO_INDICES + mapComboLabelsToIndices);
+        log.debug(MAP_COMBODATA_LABELS_TO_INDICES + mapComboLabelsToIndices);
 
         return allComboData;
     }
@@ -222,7 +222,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
             comptRepository.findAll().forEach(c -> listOfCompts.add(new ComptInfo(c)));
             result = listOfCompts;
         }
-        LOGGER.info(packetId == null
+        log.debug(packetId == null
                 ? getMessage(ALL_COMPTS_FROM_ALL_PACKETS_LOADED, new Object[]{result})
                 : getMessage(ALL_COMPTS_FROM_GIVEN_PACKET_LOADED, new Object[]{packetId, result})
         );
@@ -239,7 +239,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
         if (result == null) {
             result = DEFAULT_COMBO_DATA_INDEX;
             String errorReport = generateNonExistingComboDataLabelErrorReport(label, comptId, packetId);
-            LOGGER.error(errorReport);
+            log.error(errorReport);
         }
         return result;
     }
@@ -273,7 +273,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
             long comptId = comptParams.getId();
             Compt compt = em.find(Compt.class, comptId, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
             if (compt == null) {
-                LOGGER.error(getMessage(COMPT_UPDATE_NON_EXISTING_COMPT, new Object[]{comptId}));
+                log.error(getMessage(COMPT_UPDATE_NON_EXISTING_COMPT, new Object[]{comptId}));
                 continue;
             }
             List<Integer> newCheckedIndices;
@@ -286,7 +286,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
                 if (!checked && newCheckedIndices.get(stateIndex) == comboDataIndex
                         || checked && newCheckedIndices.get(stateIndex) != comboDataIndex) {
                     dc.setChecked(!checked);
-                    LOGGER.info(getMessage(COMPT_UPDATE_DATACOMPT_UPDATE, new Object[]{comptId, dc.getId()}));
+                    log.debug(getMessage(COMPT_UPDATE_DATACOMPT_UPDATE, new Object[]{comptId, dc.getId()}));
                 }
             }
             Long packetId = compt.getPacket().getId();
@@ -295,7 +295,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
             }
             result.get(packetId).add(comptId);
         }
-        result.forEach((k, v) -> LOGGER.info(getMessage(COMPT_UPDATE_SUCCESS_REPORT, new Object[]{k, v})));
+        result.forEach((k, v) -> log.debug(getMessage(COMPT_UPDATE_SUCCESS_REPORT, new Object[]{k, v})));
 
         return result;
     }
@@ -311,17 +311,17 @@ public class PacketAppDaoImpl implements PacketAppDao {
 
         int comptsSize = compts.size();
         if (comptsSize == 0) {
-            LOGGER.error(getMessage(COMPTS_DELETE_NON_EXISTING_COMPTS, new Object[]{idsToDelete}));
+            log.error(getMessage(COMPTS_DELETE_NON_EXISTING_COMPTS, new Object[]{idsToDelete}));
             return Collections.EMPTY_LIST;
         }
 
         comptRepository.delete(compts);
         List<Long> result = getIdsFromEntities(compts.toArray(new Compt[0]));
-        LOGGER.info(getMessage(COMPTS_DELETE_SUCCESS_REPORT, new Object[]{result}));
+        log.debug(getMessage(COMPTS_DELETE_SUCCESS_REPORT, new Object[]{result}));
 
         if (comptsSize != idsToDelete.size()) {
             Set<Long> idsToDeleteSet = new HashSet<>(idsToDelete);
-            LOGGER.error(getMessage(COMPTS_DELETE_NON_EXISTING_COMPTS,
+            log.error(getMessage(COMPTS_DELETE_NON_EXISTING_COMPTS,
                     new Object[]{idsToDeleteSet.removeAll(result)}));
         }
 
@@ -345,16 +345,16 @@ public class PacketAppDaoImpl implements PacketAppDao {
 
         int packetsSize = packets.size();
         if (packetsSize == 0) {
-            LOGGER.info(getMessage(PACKETS_DELETE_NON_EXISTING_COMPTS, new Object[]{idsToDelete}));
+            log.debug(getMessage(PACKETS_DELETE_NON_EXISTING_COMPTS, new Object[]{idsToDelete}));
             return Collections.EMPTY_LIST;
         }
         packetRepository.delete(packets);
         List<Long> result = getIdsFromEntities(packets.toArray(new Packet[0]));
-        LOGGER.info(getMessage(PACKETS_DELETE_SUCCESS_REPORT, new Object[]{result}));
+        log.debug(getMessage(PACKETS_DELETE_SUCCESS_REPORT, new Object[]{result}));
 
         if (packetsSize != idsToDelete.size()) {
             Set<Long> idsToDeleteSet = new HashSet<>(idsToDelete);
-            LOGGER.info(getMessage(PACKETS_DELETE_NON_EXISTING_COMPTS, new Object[]{idsToDeleteSet.removeAll(result)}));
+            log.debug(getMessage(PACKETS_DELETE_NON_EXISTING_COMPTS, new Object[]{idsToDeleteSet.removeAll(result)}));
         }
 
         return result;
@@ -376,7 +376,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
                 long packetId = packetParams.getId();
                 packet = loadPacket(packetId);
                 if (packet == null) {
-                    LOGGER.info(getMessage(PACKET_ADD_OR_UPDATE_NOT_EXISTING_PACKET, new Object[]{packetId}));
+                    log.debug(getMessage(PACKET_ADD_OR_UPDATE_NOT_EXISTING_PACKET, new Object[]{packetId}));
                     continue;
                 }
             }
@@ -386,17 +386,17 @@ public class PacketAppDaoImpl implements PacketAppDao {
             if (!comptParamsList.isEmpty()) {
                 List<Compt> addedCompts = preparePacketAndComptsForSaving(packet, comptParamsList);
                 if (operationType == OperationType.ADD) {
-                    LOGGER.info(getMessage(PACKET_ADDING_ADD_COMPTS,
+                    log.debug(getMessage(PACKET_ADDING_ADD_COMPTS,
                             new Object[]{addedCompts}));
                 } else if (operationType == OperationType.UPDATE) {
-                    LOGGER.info(getMessage(PACKET_UPDATE_ADD_COMPTS, new Object[]{packet.getId(), addedCompts}));
+                    log.debug(getMessage(PACKET_UPDATE_ADD_COMPTS, new Object[]{packet.getId(), addedCompts}));
                 }
             }
 
             packets.add(packet);
         }
         packetRepository.save(packets).forEach(pkt -> {
-            LOGGER.info(generateSavePacketReport(pkt, operationType));
+            log.debug(generateSavePacketReport(pkt, operationType));
         });
     }
 
@@ -437,7 +437,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
                             new Object[]{stateId, DEFAULT_STATE_INDEX, defaultState.getLabel()});
                 }
             }
-            LOGGER.info(report);
+            log.debug(report);
         }
     }
 

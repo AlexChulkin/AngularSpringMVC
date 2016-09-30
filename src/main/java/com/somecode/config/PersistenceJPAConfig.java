@@ -35,7 +35,7 @@ public class PersistenceJPAConfig {
     private final static String CLASSNAME_PROP = "className";
     private final static String SHOW_SQL_PROP = "hibernate.show_sql";
     private final static String PACKAGE_TO_SCAN = "com.somecode";
-    private final static String DEV_PROPS_FILENAME = "properties/db-dev.properties";
+    private final static String DEV_PROPS_FILENAME = "db-dev.properties";
     private final static String ERROR_IN_DB_PROPERTIES = "config.errorInDbProperties";
     private final static String DEV_PROFILE = "dev";
     private final static boolean GENERATED_DDL = true;
@@ -43,29 +43,20 @@ public class PersistenceJPAConfig {
     private final static int DATASOURCE_MAX_WAIT = 100;
     private final static int DATASOURCE_INITIAL_SIZE = 3;
 
-    protected static Logger LOGGER;
+    protected static Logger log;
     protected Properties dbProperties;
 
     @Autowired
     ApplicationContext context;
 
     @PostConstruct
-    protected void setPropertiesAndLogger() {
-        setProperties();
-        setLogger();
-    }
-
     protected void setProperties() {
         dbProperties = new Properties();
         try {
             dbProperties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream(DEV_PROPS_FILENAME));
         } catch (IOException e) {
-            LOGGER.error(getMessage(ERROR_IN_DB_PROPERTIES, null), e);
+            log.fatal(getMessage(ERROR_IN_DB_PROPERTIES, null), e);
         }
-    }
-
-    protected void setLogger() {
-        LOGGER = Logger.getLogger(PersistenceJPAConfig.class);
     }
 
     @Bean

@@ -2,13 +2,16 @@ package com.somecode.config;
 
 import com.somecode.helper.Helper;
 import org.springframework.context.annotation.*;
-import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
+
+import java.util.Locale;
 
 @Profile("dev")
 @Configuration
@@ -19,7 +22,7 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 public class Config extends WebMvcConfigurerAdapter {
     private final static String RESOURCE_HANDLER = "/resources/**";
     private final static String RESOURCE_LOCATIONS = "/resources/";
-    private final static String MESSAGES_LOCATION = "properties/messages";
+    private final static String MESSAGES_BASENAME = "classpath:messages";
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -27,11 +30,18 @@ public class Config extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public ResourceBundleMessageSource messageSource() {
-        ResourceBundleMessageSource source = new ResourceBundleMessageSource();
-        source.setBasenames(MESSAGES_LOCATION);
-        source.setUseCodeAsDefaultMessage(true);
+    public ReloadableResourceBundleMessageSource messageSource() {
+        ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
+        source.setBasename(MESSAGES_BASENAME);
+//        source.setUseCodeAsDefaultMessage(true);
         return source;
+    }
+
+    @Bean
+    public SessionLocaleResolver sessionLocaleResolver() {
+        SessionLocaleResolver resolver = new SessionLocaleResolver();
+        resolver.setDefaultLocale(Locale.ENGLISH);
+        return resolver;
     }
 
     @Bean

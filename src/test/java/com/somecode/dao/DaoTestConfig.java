@@ -1,7 +1,7 @@
 package com.somecode.dao;
 
 import com.somecode.config.PersistenceJPAConfig;
-import org.apache.log4j.Logger;
+import lombok.extern.log4j.Log4j;
 import org.dbunit.DataSourceDatabaseTester;
 import org.dbunit.util.fileloader.XlsDataFileLoader;
 import org.springframework.context.annotation.Bean;
@@ -19,27 +19,18 @@ import java.util.Properties;
 @Profile("test")
 @Configuration
 @ComponentScan(basePackages = {"com.somecode"})
+@Log4j
 public class DaoTestConfig extends PersistenceJPAConfig {
 
     @Override
     @PostConstruct
-    protected void setPropertiesAndLogger() {
-        super.setPropertiesAndLogger();
-    }
-
-    @Override
     protected void setProperties() {
         dbProperties = new Properties();
         try {
-            dbProperties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream("properties/db-test.properties"));
+            dbProperties.load(PersistenceJPAConfig.class.getClassLoader().getResourceAsStream("db-test.properties"));
         } catch (IOException e) {
-            LOGGER.error("Error in properties", e);
+            log.fatal("Error in properties", e);
         }
-    }
-
-    @Override
-    protected void setLogger() {
-        LOGGER = Logger.getLogger(DaoTestConfig.class);
     }
 
     @Override

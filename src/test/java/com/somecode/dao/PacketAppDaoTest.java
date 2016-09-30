@@ -37,49 +37,49 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
     private static final String ADMIN = "ADMIN";
     private static final String admin = "admin";
     private static final String USER = "USER";
-    private static final String TEST_LOAD_COMPTS_FILENAME = "/com/somecode/service/testLoadCompts.xls";
+    private static final String TEST_LOAD_COMPTS_FILENAME = "/com/somecode/dao/testLoadCompts.xls";
     private static final String TEST_LOAD_COMPTSSUPPLINFO_FILENAME =
-            "/com/somecode/service/testLoadComptsSupplInfo.xls";
-    private static final String TEST_LOAD_STATES_FILENAME = "/com/somecode/service/testLoadStates.xls";
-    private static final String TEST_LOAD_COMBODATA_FILENAME = "/com/somecode/service/testLoadComboData.xls";
-    private static final String TEST_LOAD_PACKETS_FILENAME = "/com/somecode/service/testLoadPackets.xls";
+            "/com/somecode/dao/testLoadComptsSupplInfo.xls";
+    private static final String TEST_LOAD_STATES_FILENAME = "/com/somecode/dao/testLoadStates.xls";
+    private static final String TEST_LOAD_COMBODATA_FILENAME = "/com/somecode/dao/testLoadComboData.xls";
+    private static final String TEST_LOAD_PACKETS_FILENAME = "/com/somecode/dao/testLoadPackets.xls";
     private static final String TEST_UPDATE_COMPTS_BEFORE_FILENAME =
-            "/com/somecode/service/testUpdateCompts_before.xls";
-    private static final String TEST_UPDATE_COMPTS_AFTER_FILENAME = "/com/somecode/service/testUpdateCompts_after.xls";
-    private static final String TEST_ADD_PACKETS_BEFORE_FILENAME = "/com/somecode/service/testAddPackets_before.xls";
+            "/com/somecode/dao/testUpdateCompts_before.xls";
+    private static final String TEST_UPDATE_COMPTS_AFTER_FILENAME = "/com/somecode/dao/testUpdateCompts_after.xls";
+    private static final String TEST_ADD_PACKETS_BEFORE_FILENAME = "/com/somecode/dao/testAddPackets_before.xls";
     private static final String TEST_ADD_PACKETS_AFTER_POSITIVE_FILENAME =
-            "/com/somecode/service/testAddPackets_after_positive.xls";
+            "/com/somecode/dao/testAddPackets_after_positive.xls";
     private static final String TEST_ADD_PACKETS_AFTER_NEGATIVE_FILENAME =
-            "/com/somecode/service/testAddPackets_after_negative.xls";
+            "/com/somecode/dao/testAddPackets_after_negative.xls";
     private static final String TEST_DELETE_PACKETS_BEFORE_FILENAME =
-            "/com/somecode/service/testDeletePackets_before.xls";
+            "/com/somecode/dao/testDeletePackets_before.xls";
     private static final String TEST_DELETE_PACKETS_AFTER_POSITIVE_FILENAME =
-            "/com/somecode/service/testDeletePackets_after_positive.xls";
+            "/com/somecode/dao/testDeletePackets_after_positive.xls";
     private static final String TEST_DELETE_PACKETS_AFTER_NEGATIVE_FILENAME =
-            "/com/somecode/service/testDeletePackets_after_negative.xls";
+            "/com/somecode/dao/testDeletePackets_after_negative.xls";
     private static final String TEST_UPDATE_PACKETS_BEFORE_FILENAME =
-            "/com/somecode/service/testUpdatePackets_before.xls";
+            "/com/somecode/dao/testUpdatePackets_before.xls";
     private static final String TEST_UPDATE_PACKETS_AFTER_POSITIVE_FILENAME =
-            "/com/somecode/service/testUpdatePackets_after_positive.xls";
+            "/com/somecode/dao/testUpdatePackets_after_positive.xls";
     private static final String TEST_UPDATE_PACKETS_AFTER_NEGATIVE_FILENAME =
-            "/com/somecode/service/testUpdatePackets_after_negative.xls";
+            "/com/somecode/dao/testUpdatePackets_after_negative.xls";
     private static final String TEST_ADD_COMPTS_BEFORE_FILENAME =
-            "/com/somecode/service/testAddCompts_before.xls";
+            "/com/somecode/dao/testAddCompts_before.xls";
     private static final String TEST_ADD_COMPTS_AFTER_POSITIVE_FILENAME =
-            "/com/somecode/service/testAddCompts_after_positive.xls";
+            "/com/somecode/dao/testAddCompts_after_positive.xls";
     private static final String TEST_ADD_COMPTS_AFTER_NEGATIVE_NONEXISTENTPACKETID_FILENAME =
-            "/com/somecode/service/testAddCompts_after_negative_nonExistentPacketId.xls";
+            "/com/somecode/dao/testAddCompts_after_negative_nonExistentPacketId.xls";
     private static final String TEST_ADD_COMPTS_BEFORE_EQUAL_LABELS_FILENAME =
-            "/com/somecode/service/testAddCompts_before_equalLabels.xls";
+            "/com/somecode/dao/testAddCompts_before_equalLabels.xls";
     private static final String TEST_ADD_COMPTS_AFTER_NEGATIVE_EQUAL_LABELS_FILENAME =
-            "/com/somecode/service/testAddCompts_after_negative_equalLabels.xls";
+            "/com/somecode/dao/testAddCompts_after_negative_equalLabels.xls";
     private static final String TEST_DELETE_COMPTS_BEFORE_FILENAME =
-            "/com/somecode/service/testDeleteCompts_before.xls";
+            "/com/somecode/dao/testDeleteCompts_before.xls";
     private static final String TEST_DELETE_COMPTS_AFTER_NEGATIVE_FILENAME =
-            "/com/somecode/service/testDeleteCompts_after_negative.xls";
+            "/com/somecode/dao/testDeleteCompts_after_negative.xls";
     private static final String TEST_DELETE_COMPTS_AFTER_POSITIVE_FILENAME =
-            "/com/somecode/service/testDeleteCompts_after_positive.xls";
-    private static final String TEST_GET_USER_ROLE_FILENAME = "/com/somecode/service/testGetUserRole.xls";
+            "/com/somecode/dao/testDeleteCompts_after_positive.xls";
+    private static final String TEST_GET_USER_ROLE_FILENAME = "/com/somecode/dao/testGetUserRole.xls";
 
     @Autowired
     PacketAppDao packetAppDao;

@@ -2,7 +2,7 @@ package com.somecode.service;
 
 import com.somecode.dao.PacketAppDao;
 import com.somecode.domain.*;
-import org.apache.log4j.Logger;
+import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,8 +13,8 @@ import java.util.List;
 import static com.somecode.helper.Helper.getMessage;
 
 @Service("comptService")
+@Log4j
 public class PacketAppService {
-    private static final Logger LOGGER = Logger.getLogger(PacketAppService.class);
     private static final String LOAD_DATA_FOR_ALL_PACKETS = "packetAppService.loadDataForAllPackets";
     private static final String LOAD_DATA_FOR_GIVEN_PACKET = "packetAppService.loadDataForGivenPacket";
     private static final String PERSIST_ALL_PACKETS = "packetAppService.persistDataForAllPackets";
@@ -29,7 +29,7 @@ public class PacketAppService {
     }
 
     public Data loadData(Long packetId) {
-        LOGGER.info(packetId == null
+        log.debug(packetId == null
                 ? getMessage(LOAD_DATA_FOR_ALL_PACKETS, null)
                 : getMessage(LOAD_DATA_FOR_GIVEN_PACKET, new Object[]{packetId}));
 
@@ -65,7 +65,7 @@ public class PacketAppService {
                                                       List<PacketParams> packetsToUpdateParamsList,
                                                       Long packetId) {
 
-        LOGGER.info(packetId != null
+        log.debug(packetId != null
                 ? getMessage(PERSIST_GIVEN_PACKET, new Object[]{packetId})
                 : getMessage(PERSIST_ALL_PACKETS, null));
 
@@ -86,7 +86,7 @@ public class PacketAppService {
                 packetAppDao.updateCompts(comptsToUpdateParamsList);
                 persistErrors.remove(PersistError.UPDATE_COMPTS);
             } catch (DatabaseException e) {
-                LOGGER.error(getMessage(EXCEPTION_MESSAGE, new Object[]{e.getMessage(), e.getStackTrace()}));
+                log.error(getMessage(EXCEPTION_MESSAGE, new Object[]{e.getMessage(), e.getStackTrace()}));
             }
         } else {
             persistErrors.remove(PersistError.UPDATE_COMPTS);
@@ -97,7 +97,7 @@ public class PacketAppService {
                 packetAppDao.addOrUpdatePackets(packetsToAddParamsList, OperationType.ADD);
                 persistErrors.remove(PersistError.ADD_PACKETS);
             } catch (DatabaseException e) {
-                LOGGER.error(getMessage(EXCEPTION_MESSAGE, new Object[]{e.getMessage(), e.getStackTrace()}));
+                log.error(getMessage(EXCEPTION_MESSAGE, new Object[]{e.getMessage(), e.getStackTrace()}));
             }
         } else {
             persistErrors.remove(PersistError.ADD_PACKETS);
@@ -108,7 +108,7 @@ public class PacketAppService {
                 packetAppDao.addOrUpdatePackets(packetsToUpdateParamsList, OperationType.UPDATE);
                 persistErrors.remove(PersistError.UPDATE_PACKETS);
             } catch (DatabaseException e) {
-                LOGGER.error(getMessage(EXCEPTION_MESSAGE, new Object[]{e.getMessage(), e.getStackTrace()}));
+                log.error(getMessage(EXCEPTION_MESSAGE, new Object[]{e.getMessage(), e.getStackTrace()}));
             }
         } else {
             persistErrors.remove(PersistError.UPDATE_PACKETS);

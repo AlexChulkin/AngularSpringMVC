@@ -13,10 +13,10 @@ import java.util.Locale;
 @Service
 public class Helper implements ApplicationContextAware {
     private static ApplicationContext ctx;
-    private static Locale US_LOCALE = Locale.US;
+    private static Locale EN_LOCALE = Locale.ENGLISH;
 
     public static String getMessage(String s, Object[] objects) {
-        return ctx.getMessage(s, objects, US_LOCALE);
+        return ctx.getMessage(s, objects, EN_LOCALE);
     }
 
     @Override

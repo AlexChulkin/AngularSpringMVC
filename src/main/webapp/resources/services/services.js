@@ -572,7 +572,7 @@ angular.module("customServices", [])
         var setSelectedCompt = function (index, value, pageSize) {
             selectedCompts[index] = value;
 
-            if (angular.isNull(value) && getNumberOfNotNullSelectedCompts() % pageSize === 0) {
+            if (value == null && getNumberOfNotNullSelectedCompts() % pageSize === 0) {
                 if (selectedPage === 1) {
                     selectedPacketIsEmpty = true;
                 } else {
@@ -586,7 +586,7 @@ angular.module("customServices", [])
         var getNumberOfNotNullSelectedCompts = function () {
             var notNullCompts = 0;
             angular.forEach(selectedCompts, function (compt) {
-                if (!angular.isNull(compt)) {
+                if (compt !== null) {
                     notNullCompts++;
                 }
             });

@@ -17,7 +17,7 @@ import static com.somecode.helper.Helper.getMessage;
 @Aspect
 @Component
 public class LoggingAspect {
-    private static final Logger LOGGER = Logger.getLogger(PacketAppDaoImpl.class);
+    private static final Logger log = Logger.getLogger(PacketAppDaoImpl.class);
     private static final String BEFORE_DAO_LOGGING = "loggingAspect.beforeDaoLogging";
     private static final String BEFORE_LOGGING = "loggingAspect.beforeLogging";
     private static final String AFTER_LOGGING = "loggingAspect.afterLogging";
@@ -33,9 +33,9 @@ public class LoggingAspect {
     @Around("basicDaoMethods()")
     public Object daoLoggingAroundAdvice(ProceedingJoinPoint pjp) throws Throwable {
         Signature signature = pjp.getSignature();
-        LOGGER.info(getMessage(BEFORE_DAO_LOGGING, new Object[]{pjp.getSignature().getName(), pjp.getArgs()}));
+        log.debug(getMessage(BEFORE_DAO_LOGGING, new Object[]{pjp.getSignature().getName(), pjp.getArgs()}));
         Object retVal = pjp.proceed();
-        LOGGER.info(getMessage(AFTER_LOGGING, new Object[]{ClassType.DAO.toString(), pjp.getSignature().getName()}));
+        log.debug(getMessage(AFTER_LOGGING, new Object[]{ClassType.DAO.toString(), pjp.getSignature().getName()}));
         return retVal;
     }
 
@@ -45,10 +45,10 @@ public class LoggingAspect {
 
     @Around("allControllerMethods()")
     public Object controllerLoggingAroundAdvice(ProceedingJoinPoint pjp) throws Throwable {
-        LOGGER.info(getMessage(BEFORE_LOGGING,
+        log.debug(getMessage(BEFORE_LOGGING,
                 new Object[]{ClassType.CONTROLLER.toString(), pjp.getSignature().getName()}));
         Object retVal = pjp.proceed();
-        LOGGER.info(getMessage(AFTER_LOGGING,
+        log.debug(getMessage(AFTER_LOGGING,
                 new Object[]{ClassType.CONTROLLER.toString(), pjp.getSignature().getName()}));
         return retVal;
     }
@@ -59,10 +59,10 @@ public class LoggingAspect {
 
     @Around("allServiceMethods()")
     public Object serviceLoggingAroundAdvice(ProceedingJoinPoint pjp) throws Throwable {
-        LOGGER.info(getMessage(BEFORE_LOGGING,
+        log.debug(getMessage(BEFORE_LOGGING,
                 new Object[]{ClassType.SERVICE.toString(), pjp.getSignature().getName()}));
         Object retVal = pjp.proceed();
-        LOGGER.info(getMessage(AFTER_LOGGING,
+        log.debug(getMessage(AFTER_LOGGING,
                 new Object[]{ClassType.SERVICE.toString(), pjp.getSignature().getName()}));
         return retVal;
     }
