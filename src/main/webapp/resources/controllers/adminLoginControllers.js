@@ -1,6 +1,8 @@
 /**
  * Created by alexc_000 on 2016-09-06.
  */
+'use strict';
+
 angular.module("packetAdminApp")
     .constant("authUrl", "/users/login")
     .constant("mainUrl", "/main")

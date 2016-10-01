@@ -1,6 +1,8 @@
 /**
  * Created by alexc_000 on 2016-09-01.
  */
+'use strict';
+
 angular.module("packetAdminApp")
     .service('exchangeService', function ($rootScope) {
     var comptIdToInd;
@@ -369,7 +371,7 @@ angular.module("packetAdminApp")
 
     var initializeNewComptCheckedVals = function () {
         var defaultCheckedVal = comboDataDefaultSet[0];
-        for (i = 0; i < allStates.length; i++) {
+        for (var i = 0; i < allStates.length; i++) {
             newComptCheckedVals.push(defaultCheckedVal);
         }
         $rootScope.$broadcast('newComptCheckedVals:update', newComptCheckedVals);

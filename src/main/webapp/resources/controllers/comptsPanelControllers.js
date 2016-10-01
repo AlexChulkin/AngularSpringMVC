@@ -1,6 +1,8 @@
 /**
  * Created by alexc_000 on 2016-08-30.
  */
+'use strict';
+
 var app = angular.module("packetAdminApp");
 app
     .constant("pageListActiveClass", "btn-primary btn-sm")

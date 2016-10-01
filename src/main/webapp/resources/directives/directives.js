@@ -1,6 +1,8 @@
 /**
  * Created by alexc_000 on 2016-09-20.
  */
+'use strict';
+
 angular.module("packetAdminApp")
     .directive('blacklist', function (exchangeService) {
         return {

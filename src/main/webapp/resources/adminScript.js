@@ -1,6 +1,8 @@
 /**
  * Created by alexc_000 on 2016-09-30.
  */
+'use strict';
+
 angular.module("packetAdminApp", ["ngRoute", "ngCookies"])
     .config(function ($routeProvider) {
         $routeProvider.when("/login", {

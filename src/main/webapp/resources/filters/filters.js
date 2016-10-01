@@ -1,6 +1,8 @@
 /**
  * Created by alexc_000 on 2016-08-10.
  */
+'use strict';
+
 angular.module("packetAdminApp")
     .filter("range", function ($filter) {
         return function (data, page, size) {

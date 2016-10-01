@@ -1,6 +1,7 @@
 /**
  * Created by alexc_000 on 2016-08-30.
  */
+'use strict';
 
 angular.module("packetAdminApp")
     .constant("packetListActiveClass", "btn-primary btn-md")

@@ -1,6 +1,8 @@
 /**
  * Created by achulkin on 04.06.14.
  */
+'use strict';
+
 angular.module("packetAdminApp")
     .constant("packetListPageCount", 10)
     .constant("labelLabel", "Label")
