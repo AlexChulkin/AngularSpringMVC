@@ -33,7 +33,6 @@ public class Config extends WebMvcConfigurerAdapter {
     public ReloadableResourceBundleMessageSource messageSource() {
         ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
         source.setBasename(MESSAGES_BASENAME);
-//        source.setUseCodeAsDefaultMessage(true);
         return source;
     }
 

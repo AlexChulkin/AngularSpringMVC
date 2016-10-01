@@ -1,7 +1,7 @@
 /**
  * Created by alexc_000 on 2016-08-10.
  */
-angular.module("customFilters", [])
+angular.module("packetAdminApp")
     .filter("range", function ($filter) {
         return function (data, page, size) {
             if (angular.isArray(data) && angular.isNumber(page) && angular.isNumber(size)) {

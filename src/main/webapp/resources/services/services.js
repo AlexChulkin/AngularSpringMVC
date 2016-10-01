@@ -1,7 +1,7 @@
 /**
  * Created by alexc_000 on 2016-09-01.
  */
-angular.module("customServices", [])
+angular.module("packetAdminApp")
     .service('exchangeService', function ($rootScope) {
     var comptIdToInd;
     var loadError;

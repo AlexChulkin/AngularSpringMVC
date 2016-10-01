@@ -16,7 +16,7 @@ angular.module("packetAdminApp")
                 username: username,
                 password: pass
             };
-            $http.post(contextPath + authUrl, {
+            $http.post(authUrl, {
                 securityParams: securityParams
             }).success(function (role) {
                 if (role) {
@@ -45,8 +45,10 @@ angular.module("packetAdminApp")
         $scope.logout = function () {
             $timeout.cancel(timeoutLogoutPromise);
             exchangeService.init();
-            nullifyAll();
-            $location.path(loginUrl);
+            $scope.data = {};
+            $cookies.remove("username");
+            $cookies.remove("role");
+            $scope.redirectToLoginPage();
         };
 
         $scope.redirectToLoginPage = function () {
@@ -66,15 +68,13 @@ angular.module("packetAdminApp")
             $cookies.remove("username");
             $cookies.remove("role");
             $scope.data.authenticationError = authenticationError;
-            $scope.data.authenticationError.report = authenticationError.status
-                ? 'Authentication failed (' + authenticationError.status + '). Try again.'
-                : 'Authentication failed. Try again.';
-        };
-
-        var nullifyAll = function () {
-            $scope.data = {};
-            $cookies.remove("username");
-            $cookies.remove("role");
+            if ($scope.data.authenticationError) {
+                $scope.data.authenticationError.report = authenticationError.status
+                    ? 'Authentication failed (' + authenticationError.status + '). Try again.'
+                    : 'Authentication failed. Try again.';
+            } else {
+                $scope.data.authenticationError = {report: 'Authentication failed. Try again.'};
+            }
         };
 
         var init = function () {

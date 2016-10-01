@@ -10,41 +10,22 @@
 <head>
     <title>Packet App Administration</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script type="application/javascript" src="resources/angular_v1.5.8.js"></script>
+    <script type="application/javascript" src="resources/angular.js"></script>
     <script src="resources/ngmodules/angular-route.js"></script>
     <script src="resources/ngmodules/angular-cookies.js"></script>
     <link href="resources/css/bootstrap.css" rel="stylesheet"/>
     <link href="resources/css/bootstrap-theme.css" rel="stylesheet"/>
     <link href="resources/css/home-styles.css" rel="stylesheet"/>
-    <script type="application/javascript" src="resources/filters/filters.js"></script>
-    <script>
-        angular.module("packetAdminApp", ["customFilters", "customServices", "customDirectives",
-            "ngRoute", "ngCookies"])
-                .config(function ($routeProvider) {
-                    $routeProvider.when("/login", {
-                        templateUrl: contextPath + "/resources/views/adminLogin.html"
-                    });
-
-                    $routeProvider.when("/main", {
-                        templateUrl: contextPath + "/resources/views/adminMain.html"
-                    });
-
-                    $routeProvider.otherwise({
-                        redirectTo: "/login"
-                    });
-                });
-    </script>
+    <script type="application/javascript" src="resources/adminScript.js"></script>
     <script type="application/javascript" src="resources/controllers/adminLoginControllers.js"></script>
     <script type="application/javascript" src="resources/controllers/adminMainControllers.js"></script>
     <script type="application/javascript" src="resources/controllers/packetsPanelControllers.js"></script>
     <script type="application/javascript" src="resources/controllers/comptsPanelControllers.js"></script>
     <script type="application/javascript" src="resources/directives/directives.js"></script>
     <script type="application/javascript" src="resources/services/services.js"></script>
+    <script type="application/javascript" src="resources/filters/filters.js"></script>
 
-    <script type="text/javascript" charset="utf-8">
-        var contextPath = '${pageContext.request.contextPath}';
-    </script>
-</head>
+
 <body ng-controller="authCtrl">
 <div class="navbar navbar-inverse">
     <span class="navbar-brand">THE PACKETS AND THEIR COMPONENTS</span>

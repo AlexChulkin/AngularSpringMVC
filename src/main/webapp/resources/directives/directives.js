@@ -1,7 +1,7 @@
 /**
  * Created by alexc_000 on 2016-09-20.
  */
-angular.module("customDirectives", ["customServices"])
+angular.module("packetAdminApp")
     .directive('blacklist', function (exchangeService) {
         return {
             require: 'ngModel',
