@@ -19,7 +19,7 @@ angular.module("packetAdminApp")
     .constant("widePacketCaption", "wide-packet-selection")
     .constant("adminRole", "ADMIN")
     .constant("role", "role")
-    .controller("packetsPanelCtrl", function ($scope, $http, $window, $cookies, exchangeService,
+    .controller("packetsPanelCtrl", function ($scope, $http, $window, $cookies, exchangeService, helperService,
                                               packetListActiveClass, packetListNonActiveClass, updateCompts,
                                               deleteCompts, updatePackets, deletePackets, addPackets,
                                               saveAllChangesToBaseUrl, errorStatusNotFound, errorStatusBadRequest,
@@ -90,7 +90,7 @@ angular.module("packetAdminApp")
             var errorMap = generateErrorMap(savedPktId);
 
             $http
-                .post(contextPath + saveAllChangesToBaseUrl, {dataParams: dataParams})
+                .post(saveAllChangesToBaseUrl, {dataParams: dataParams})
                 .then(
                     function success(data) {
                         angular.forEach(data, function (el) {
@@ -186,7 +186,7 @@ angular.module("packetAdminApp")
             var comptIdsToDelete = [];
             angular.forEach(packetsToSave, function (unused, pktId) {
                 var comptIdsTaggedToDelete = exchangeService.getComptIdsToDelete(pktId);
-                if (!exchangeService.isEmpty(comptIdsTaggedToDelete)) {
+                if (!helperService.isEmpty(comptIdsTaggedToDelete)) {
                     comptIdsToDelete = comptIdsToDelete.concat(comptIdsTaggedToDelete);
                 }
             });

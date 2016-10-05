@@ -9,22 +9,22 @@ angular.module("packetAdminApp")
     .constant("loadDataUrl", "/loadData")
     .constant("initialPacketIndex", -1)
     .controller("mainCtrl", function ($scope, $http, packetListPageCount, labelLabel, loadDataUrl,
-                                      initialPacketIndex, exchangeService) {
+                                      initialPacketIndex, exchangeService, helperService) {
 
         var loadedNoCompts;
 
-        $scope.loadPackets = function (packetId) {
+        $scope.loadPackets = function (packetId, numOfOtherPkts) {
             var isPacketIdUndefined = angular.isUndefined(packetId);
             var packetIndex = isPacketIdUndefined ? initialPacketIndex : exchangeService.getPacketIdToInd(packetId);
             var dataParams = isPacketIdUndefined ? {} : {packetId: packetId};
             $http
-                .post(contextPath + loadDataUrl, {dataParams: dataParams})
+                .post(loadDataUrl, {dataParams: dataParams})
                 .then(
                     function success(result) {
                         initializeService(isPacketIdUndefined, packetId);
                         var data = result.data;
                         prepareCompts(data.compts, packetIndex, packetId, isPacketIdUndefined);
-                        preparePackets(data.packets, packetId, isPacketIdUndefined);
+                        preparePackets(data.packets, packetId, isPacketIdUndefined, numOfOtherPkts);
                         prepareStates(data.states);
                         prepareComboData(data.comboData);
                         if (!loadedNoCompts && !$scope.isComboDataNotLoaded() && !$scope.isStatesNotLoaded()) {
@@ -79,15 +79,14 @@ angular.module("packetAdminApp")
         };
 
         var prepareCompts = function (uploadedCompts, initialPacketInd, packetId, isPacketIdUndefined) {
-            loadedNoCompts = exchangeService.isEmpty(uploadedCompts);
+            loadedNoCompts = helperService.isEmpty(uploadedCompts);
             var packetInd = initialPacketInd;
             var visitedPackets = {};
-            angular.forEach(uploadedCompts, function (el) {
-                var comptId = el.id;
-                var label = el.label.toUpperCase();
-                var localPktId = isPacketIdUndefined ? el.packetId : packetId;
-
-                if (!visitedPackets[localPktId]) {
+            angular.forEach(uploadedCompts, function (compt) {
+                var comptId = compt.id;
+                var label = compt.label.toUpperCase();
+                var localPktId = isPacketIdUndefined ? compt.packetId : packetId;
+                if (!(localPktId in visitedPackets)) {
                     visitedPackets[localPktId] = true;
                     exchangeService.setComptLabels({}, localPktId);
                     if (isPacketIdUndefined) {
@@ -100,7 +99,7 @@ angular.module("packetAdminApp")
                 exchangeService.setComptLabels(true, localPktId, label);
                 var comptIndex = exchangeService.getComptsLength(packetInd);
                 exchangeService.setComptIdToInd(comptIndex, comptId);
-                exchangeService.pushToCompts(el, packetInd);
+                exchangeService.pushToCompts(compt, packetInd);
                 if (comptId > exchangeService.getMaximalComptId()) {
                     exchangeService.setMaximalComptId(comptId);
                 }
@@ -110,14 +109,13 @@ angular.module("packetAdminApp")
             }
         };
 
-        var preparePackets = function (packets, packetId, isPacketIdUndefined) {
-            var isPacketsEmpty = exchangeService.isEmpty(packets);
-            var noPackets = isPacketsEmpty && isPacketIdUndefined;
-            var loadedNoSelectedPacket = isPacketsEmpty && !isPacketIdUndefined
-                && packetId === exchangeService.getSelectedPacketId();
-            var loadedNoUnSelectedPacket = isPacketsEmpty && !isPacketIdUndefined
-                && packetId !== exchangeService.getSelectedPacketId();
-            exchangeService.setNoPackets(noPackets);
+        var preparePackets = function (packets, packetId, isPacketIdUndefined, numOfOtherPkts) {
+            var isPacketsEmpty = helperService.isEmpty(packets);
+            var loadedNoPackets = isPacketsEmpty && (isPacketIdUndefined || numOfOtherPkts === 0);
+            var selPktId = exchangeService.getSelectedPacketId();
+            var loadedNoSelectedPacket = isPacketsEmpty && !isPacketIdUndefined && packetId === selPktId;
+            var loadedNoUnSelectedPacket = isPacketsEmpty && !isPacketIdUndefined && packetId !== selPktId;
+            exchangeService.setLoadedNoPackets(loadedNoPackets);
             exchangeService.setLoadedNoSelectedPacket(loadedNoSelectedPacket);
             exchangeService.setLoadedNoUnSelectedPacket(loadedNoUnSelectedPacket, packetId);
 
@@ -127,25 +125,25 @@ angular.module("packetAdminApp")
                 if (pktId > exchangeService.getMaximalPacketId()) {
                     exchangeService.setMaximalPacketId(pktId);
                 }
-                exchangeService.setPacketInitialStateIds(pkt.stateId, pkt.id);
+                exchangeService.setPacketInitialStateIds(pkt.stateId, pktId);
             });
 
             if (!isPacketsEmpty) {
                 var firstOrSingleReloadedPacket = packets[0];
-                if (isPacketIdUndefined || firstOrSingleReloadedPacket.id === exchangeService.getSelectedPacketId()) {
+                if (isPacketIdUndefined || firstOrSingleReloadedPacket.id === selPktId) {
                     $scope.selectPacket(firstOrSingleReloadedPacket);
                 }
             }
         };
 
         var prepareStates = function (states) {
-            exchangeService.setLoadedNoStates(exchangeService.isEmpty(states));
+            exchangeService.setLoadedNoStates(helperService.isEmpty(states));
             exchangeService.setAllStates(states);
             exchangeService.setAllStateLabels(states, labelLabel);
         };
 
         var prepareComboData = function (comboData) {
-            exchangeService.setLoadedNoComboData(exchangeService.isEmpty(comboData));
+            exchangeService.setLoadedNoComboData(helperService.isEmpty(comboData));
             exchangeService.setComboDataDefaultSet(comboData);
             exchangeService.initializeNewComptCheckedVals();
         };
@@ -158,6 +156,7 @@ angular.module("packetAdminApp")
                 var comptId = item.comptId;
                 var stateId = item.stateId;
                 var label = item.label;
+                var checked = item.checked;
                 if (!exchangeService.getAllComboData(comptId) || !visitedComptIds[comptId]) {
                     exchangeService.setAllComboData({}, comptId);
                     visitedComptIds[comptId] = true;
@@ -166,21 +165,21 @@ angular.module("packetAdminApp")
                     exchangeService.setAllComboData([], comptId, stateId);
                 }
                 exchangeService.pushToAllComboData(label, comptId, stateId, i, comptSupplInfoLength);
-                var checked = item.checked;
                 if (checked) {
                     if (!exchangeService.getAllCheckedComboData(comptId)) {
                         exchangeService.setAllCheckedComboData({}, comptId);
                     }
                     exchangeService.setAllCheckedComboData(label, comptId, stateId);
                 }
+                i++;
             });
         };
 
-        $scope.init = function () {
+        var init = function () {
             loadedNoCompts = null;
             $scope.loadPackets();
         };
 
-        $scope.init();
+        init();
     });
 

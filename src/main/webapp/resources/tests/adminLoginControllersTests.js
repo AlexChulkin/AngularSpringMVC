@@ -3,11 +3,11 @@
  */
 'use strict';
 
-describe("Controller Test", function () {
-    var mockScope = {};
+describe("Login Controller Test", function () {
+    var mockScope;
     var controller;
-    var location;
-    var cookies;
+    var mockLocation;
+    var mockCookies;
     var mockTimeout;
     var mainUrl_, loginUrl_, authUrl_;
     var username, password, role;
@@ -17,9 +17,9 @@ describe("Controller Test", function () {
     var initial_role_value;
     var timeoutLogoutDelay_;
     var backend;
-    var initial_username, initial_role;
     var error;
     var errorStatus;
+    var mockExchangeService, mockHelperService;
 
     beforeEach(function () {
         module("packetAdminApp");
@@ -33,25 +33,39 @@ describe("Controller Test", function () {
         backend = $httpBackend;
     }));
 
-    beforeEach(angular.mock.inject(function ($controller, $rootScope, $http, $location, $timeout,
-                                             $cookies, timeoutLogoutDelay) {
+    beforeEach(angular.mock.inject(function ($controller, $rootScope, $http, $location, $timeout, $cookies,
+                                             timeoutLogoutDelay) {
         timeoutLogoutDelay_ = timeoutLogoutDelay;
         mockScope = $rootScope.$new();
         mockTimeout = $timeout;
-        location = $location;
-        cookies = $cookies;
+        mockLocation = $location;
+        mockCookies = $cookies;
         username_label = "username";
         initial_username_value = "username";
         role_label = "role";
         initial_role_value = "role";
-        cookies.put(username_label, initial_username_value);
-        cookies.put(role_label, initial_role_value);
-        controller = $controller("authCtrl", {
+        mockCookies.put(username_label, initial_username_value);
+        mockCookies.put(role_label, initial_role_value);
+
+        mockHelperService = {
+            isUndefinedOrNull: function () {
+            }
+        };
+        spyOn(mockHelperService, 'isUndefinedOrNull').and.returnValue(false);
+
+        mockExchangeService = {
+            init: function () {
+            }
+        };
+        spyOn(mockExchangeService, 'init');
+
+        controller = $controller("loginCtrl", {
             $scope: mockScope,
             $http: $http,
-            $timeout: mockTimeout
+            $timeout: mockTimeout,
+            exchangeService: mockExchangeService,
+            helperService: mockHelperService
         });
-
     }));
 
     afterEach(function () {
@@ -59,48 +73,50 @@ describe("Controller Test", function () {
         backend.verifyNoOutstandingRequest();
     });
 
-    describe("Controller init", function () {
-        it("Init performs correctly", function () {
-            initial_username = mockScope.data.username;
-            initial_role = mockScope.data.role;
-            expect(initial_username).toEqual(initial_username_value);
-            expect(initial_role).toEqual(initial_role_value);
-        });
-    });
-
     describe("Test controller functions", function () {
+        it("Init performs correctly", function () {
+            expect(mockScope.data.username).toEqual(initial_username_value);
+            expect(mockScope.data.role).toEqual(initial_role_value);
+        });
+
         it("Logout performs correctly", function () {
             mockScope.logout();
+            expect(mockExchangeService.init).toHaveBeenCalledWith();
             mockTimeout.verifyNoPendingTasks();
             expect(mockScope.data).toEqual({});
-            expect(cookies.get(username_label)).toBeUndefined();
-            expect(cookies.get(role_label)).toBeUndefined();
-            expect(location.path()).toEqual(loginUrl_);
+            expect(mockCookies.get(username_label)).toBeUndefined();
+            expect(mockCookies.get(role_label)).toBeUndefined();
+            expect(mockLocation.path()).toEqual(loginUrl_);
+        });
+
+        it("isUserAuthorized() performs correctly", function () {
+            expect(mockScope.isUserAuthorized()).toBeTruthy();
+            expect(mockHelperService.isUndefinedOrNull).toHaveBeenCalledWith(mockScope.data.role);
         });
 
         it("Login page redirect performs correctly", function () {
             mockScope.redirectToLoginPage();
-            expect(location.path()).toEqual(loginUrl_);
+            expect(mockLocation.path()).toEqual(loginUrl_);
         });
 
         it("Main page redirect performs correctly", function () {
             mockScope.redirectToMainPage();
-            expect(location.path()).toEqual(mainUrl_);
+            expect(mockLocation.path()).toEqual(mainUrl_);
         });
     });
 
     describe("Successful Authentication", function () {
-        beforeEach(angular.mock.inject(function () {
+        beforeEach(function () {
             username = "ADMIN";
             password = "ADMIN";
-            backend.expect("POST", authUrl_).respond(role);
+            backend.expect("POST", authUrl_, {securityParams: {username: username, password: password}}).respond(role);
             mockScope.authenticate(username, password);
             backend.flush();
-        }));
+        });
 
         it("Cookies contain proper values", function () {
-            expect(cookies.get(username_label)).toBe(username);
-            expect(cookies.get(role_label)).toBe(role);
+            expect(mockCookies.get(username_label)).toBe(username);
+            expect(mockCookies.get(role_label)).toBe(role);
         });
 
         it("Scope variables have proper values", function () {
@@ -111,28 +127,28 @@ describe("Controller Test", function () {
         });
 
         it("Path is proper", function () {
-            expect(location.path()).toEqual(mainUrl_);
+            expect(mockLocation.path()).toEqual(mainUrl_);
         });
 
         it("Reaction to timeout countdown is proper", function () {
             expect(mockScope.data.timeout).toBeFalsy();
             mockTimeout.flush(timeoutLogoutDelay_);
             mockTimeout.verifyNoPendingTasks();
-            expect(location.path()).toEqual(loginUrl_);
+            expect(mockLocation.path()).toEqual(loginUrl_);
             expect(mockScope.data.timeout).toBeTruthy();
         });
     });
 
     describe('Erroneous authentication', function () {
         afterEach(angular.mock.inject(function () {
-            expect(cookies.get(username_label)).toBeUndefined();
-            expect(cookies.get(role_label)).toBeUndefined();
+            expect(mockCookies.get(username_label)).toBeUndefined();
+            expect(mockCookies.get(role_label)).toBeUndefined();
             expect(mockScope.data.timeout).toBeFalsy();
             expect(mockScope.data.password).toBeNull();
         }));
 
         it("Properly elaborates the authentication error", function () {
-            errorStatus = 500;
+            errorStatus = 400;
             backend.expect("POST", authUrl_).respond(errorStatus);
             mockScope.authenticate(username, password);
             backend.flush();

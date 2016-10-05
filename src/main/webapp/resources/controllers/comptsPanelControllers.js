@@ -57,7 +57,7 @@ app
         };
 
         $scope.isPacketsNotLoaded = function () {
-            return exchangeService.getNoPackets();
+            return exchangeService.getLoadedNoPackets();
         };
 
         $scope.isSelectedPacketNotLoaded = function () {

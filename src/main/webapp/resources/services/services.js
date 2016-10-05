@@ -4,7 +4,7 @@
 'use strict';
 
 angular.module("packetAdminApp")
-    .service('exchangeService', function ($rootScope) {
+    .service('exchangeService', function ($rootScope, helperService) {
     var comptIdToInd;
     var loadError;
     var loadedNoStates;
@@ -28,7 +28,7 @@ angular.module("packetAdminApp")
     var selectedPacketId;
     var selectedPacket;
     var selectedPage;
-        var noPackets;
+        var loadedNoPackets;
     var loadedNoPacket;
     var maximalComptId;
     var packetIsAlreadySelectedAtLeastOnce;
@@ -61,7 +61,7 @@ angular.module("packetAdminApp")
         setSelectedPacket(null);
         setSelectedPage(null);
         setLoadedNoPacket({});
-        setNoPackets(null);
+        setLoadedNoPackets(null);
         setMaximalComptId(null);
         setPacketIsAlreadySelectedAtLeastOnce(null);
         setComboDataDefaultSet([]);
@@ -96,7 +96,7 @@ angular.module("packetAdminApp")
     };
 
     var checkIfTheSamePacketIsReselected = function (pkt1, pkt2) {
-        return !isUndefinedOrNull(pkt1) && !isUndefinedOrNull(pkt2) && pkt1.id === pkt2.id;
+        return !helperService.isUndefinedOrNull(pkt1) && !helperService.isUndefinedOrNull(pkt2) && pkt1.id === pkt2.id;
     };
 
     var getSelectedPacket = function () {
@@ -173,30 +173,30 @@ angular.module("packetAdminApp")
     };
 
     var setLoadedNoSelectedPacket = function (value) {
-        if (!isUndefinedOrNull(selectedPacketId)) {
+        if (!helperService.isUndefinedOrNull(selectedPacketId)) {
             loadedNoPacket[selectedPacketId] = value;
         }
     };
 
     var getLoadedNoSelectedPacket = function () {
-        if (!isUndefinedOrNull(selectedPacketId)) {
+        if (!helperService.isUndefinedOrNull(selectedPacketId)) {
             return loadedNoPacket[selectedPacketId];
         }
         return false;
     };
 
     var setLoadedNoUnSelectedPacket = function (value, pktId) {
-        if (!isUndefinedOrNull(pktId)) {
+        if (!helperService.isUndefinedOrNull(pktId)) {
             loadedNoPacket[pktId] = value;
         }
     };
 
-        var setNoPackets = function (value) {
-            noPackets = value;
+        var setLoadedNoPackets = function (value) {
+            loadedNoPackets = value;
     };
 
-        var getNoPackets = function () {
-            return noPackets;
+        var getLoadedNoPackets = function () {
+            return loadedNoPackets;
     };
 
     var setMaximalComptId = function (value) {
@@ -288,7 +288,7 @@ angular.module("packetAdminApp")
         } else {
             allPackets = value;
         }
-        noPackets = angular.equals({}, allPackets);
+        loadedNoPackets = angular.equals({}, allPackets);
         $rootScope.$broadcast('allPackets:update', allPackets);
     };
 
@@ -301,7 +301,7 @@ angular.module("packetAdminApp")
 
     var deleteAllPackets = function (pktId) {
         delete allPackets[pktId];
-        noPackets = angular.equals({}, allPackets);
+        loadedNoPackets = angular.equals({}, allPackets);
         $rootScope.$broadcast('allPackets:update', allPackets);
     };
 
@@ -618,14 +618,6 @@ angular.module("packetAdminApp")
         }
     };
 
-    var isUndefinedOrNull = function (value) {
-        return angular.isUndefined(value) || value === null
-    };
-
-    var isEmpty = function (value) {
-        return (!(value && angular.isArray(value) && value.length !== 0));
-    };
-    
     return {
         getSelectedPacket: getSelectedPacket,
         setSelectedPacket: setSelectedPacket,
@@ -648,8 +640,8 @@ angular.module("packetAdminApp")
         setLoadedNoSelectedPacket: setLoadedNoSelectedPacket,
         getLoadedNoSelectedPacket: getLoadedNoSelectedPacket,
         setLoadedNoUnSelectedPacket: setLoadedNoUnSelectedPacket,
-        setNoPackets: setNoPackets,
-        getNoPackets: getNoPackets,
+        setLoadedNoPackets: setLoadedNoPackets,
+        getLoadedNoPackets: getLoadedNoPackets,
         setMaximalComptId: setMaximalComptId,
         getMaximalComptId: getMaximalComptId,
         setPacketIdToInd: setPacketIdToInd,
@@ -705,8 +697,23 @@ angular.module("packetAdminApp")
         pushToComptIdsToDelete: pushToComptIdsToDelete,
         setComptIdsToUpdate: setComptIdsToUpdate,
         getSelectedComptsLength: getSelectedComptsLength,
-        isUndefinedOrNull: isUndefinedOrNull,
-        isEmpty: isEmpty,
         init: init
     };
 });
+
+angular.module("packetAdminApp")
+    .service('helperService', function ($rootScope) {
+
+        var isUndefinedOrNull = function (value) {
+            return angular.isUndefined(value) || value === null
+        };
+
+        var isEmpty = function (value) {
+            return (!(value && angular.isArray(value) && value.length !== 0));
+        };
+
+        return {
+            isUndefinedOrNull: isUndefinedOrNull,
+            isEmpty: isEmpty
+        }
+    });

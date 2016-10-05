@@ -26,7 +26,7 @@
     <script type="application/javascript" src="resources/filters/filters.js"></script>
 
 
-<body ng-controller="authCtrl">
+<body ng-controller="loginCtrl">
 <div class="navbar navbar-inverse">
     <span class="navbar-brand">THE PACKETS AND THEIR COMPONENTS</span>
     <div class="navbar-right" ng-show="isUserAuthorized()">

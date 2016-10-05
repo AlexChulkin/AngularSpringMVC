@@ -9,7 +9,7 @@
            ng-disabled="data.isRoleNotAdmin">
             Save
         </a>
-        <a ng-click="loadPackets(pkt.id)"
+        <a ng-click="loadPackets(pkt.id, data.allPackets.length-1)"
            class="btn btn-md btn-warning packet-button"
            ng-disabled="data.newPackets[pkt.id]">
             Reload

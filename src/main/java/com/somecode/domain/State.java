@@ -15,6 +15,7 @@ public class State implements EntityType {
     private static final String STRING_VERSION = "state.toString";
     private static final int ID_COLUMN_LENTGTH = 2;
     private static final int LABEL_COLUMN_LENTGTH = 20;
+
     private Long id;
     private String label;
     private Integer version;

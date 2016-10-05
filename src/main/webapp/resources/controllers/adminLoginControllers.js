@@ -8,8 +8,8 @@ angular.module("packetAdminApp")
     .constant("mainUrl", "/main")
     .constant("loginUrl", "/login")
     .constant("timeoutLogoutDelay", 30 * 60 * 1000)
-    .controller("authCtrl", function ($scope, $http, $location, $cookies, $timeout,
-                                      authUrl, mainUrl, loginUrl, timeoutLogoutDelay, exchangeService) {
+    .controller("loginCtrl", function ($scope, $http, $location, $cookies, $timeout, authUrl, mainUrl, loginUrl,
+                                       timeoutLogoutDelay, exchangeService, helperService) {
 
         var timeoutLogoutPromise;
 
@@ -41,7 +41,7 @@ angular.module("packetAdminApp")
         };
 
         $scope.isUserAuthorized = function () {
-            return !exchangeService.isUndefinedOrNull($scope.data.role);
+            return !helperService.isUndefinedOrNull($scope.data.role);
         };
 
         $scope.logout = function () {
