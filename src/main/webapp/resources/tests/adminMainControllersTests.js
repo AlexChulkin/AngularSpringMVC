@@ -183,7 +183,7 @@ describe("Login Controller Test", function () {
                 backend.flush();
             }));
             it("", (inject(function ($controller, $rootScope, $http) {
-                initOrLoadAllPacketsTestFn(false, false, false, false);
+                initOrLoadAllPacketsTestFn(false);
             })));
         });
 
@@ -197,7 +197,7 @@ describe("Login Controller Test", function () {
             it("", (inject(function ($controller, $rootScope, $http) {
                 mockScope.loadPackets();
                 backend.flush();
-                initOrLoadAllPacketsTestFn(false, false, false, false);
+                initOrLoadAllPacketsTestFn(false);
             })));
         });
     });
@@ -212,7 +212,7 @@ describe("Login Controller Test", function () {
         it("", function () {
             mockScope.loadPackets(1, 0);
             backend.flush();
-            initOrLoadAllPacketsTestFn(false, false, false, false, 1, 0);
+            initOrLoadAllPacketsTestFn(false, 1, 0);
         });
     });
 
@@ -226,7 +226,7 @@ describe("Login Controller Test", function () {
         it("", function () {
             mockScope.loadPackets(1, 0);
             backend.flush();
-            initOrLoadAllPacketsTestFn(false, false, false, false, 1, 0);
+            initOrLoadAllPacketsTestFn(false, 1, 0);
         });
     });
 
@@ -240,7 +240,7 @@ describe("Login Controller Test", function () {
         it("", function () {
             mockScope.loadPackets();
             backend.flush();
-            initOrLoadAllPacketsTestFn(true, true, true, true);
+            initOrLoadAllPacketsTestFn(true);
         });
     });
 
@@ -352,8 +352,7 @@ describe("Login Controller Test", function () {
         });
     });
 
-    var initOrLoadAllPacketsTestFn = function (isPacketsEmpty, loadedNoStates, loadedNoComboData, loadedNoCompts,
-                                               packetId, numOfOtherPkts) {
+    var initOrLoadAllPacketsTestFn = function (isEmpty, packetId, numOfOtherPkts) {
         it("Service init performs correctly", function () {
             if (angular.isUndefined(packetId)) {
                 expect(mockExchangeService.init).toHaveBeenCalledWith();
@@ -399,18 +398,18 @@ describe("Login Controller Test", function () {
             isPacketIdUndefined = angular.isUndefined(packetId);
             expect(mockHelperService.isEmpty).toHaveBeenCalledWith(response.packets);
             expect(mockExchangeService.getSelectedPacketId).toHaveBeenCalledWith();
-            expect(mockExchangeService.setLoadedNoPackets).toHaveBeenCalledWith(isPacketsEmpty
+            expect(mockExchangeService.setLoadedNoPackets).toHaveBeenCalledWith(isEmpty
                 && (isPacketIdUndefined || numOfOtherPkts === 0));
-            expect(mockExchangeService.setLoadedNoPackets).not.toHaveBeenCalledWith(!(isPacketsEmpty
+            expect(mockExchangeService.setLoadedNoPackets).not.toHaveBeenCalledWith(!(isEmpty
             && (isPacketIdUndefined || numOfOtherPkts === 0)));
             expect(mockExchangeService.setLoadedNoSelectedPacket).toHaveBeenCalledWith
-            (isPacketsEmpty && !isPacketIdUndefined && packetId === fakeSelectedPktId);
+            (isEmpty && !isPacketIdUndefined && packetId === fakeSelectedPktId);
             expect(mockExchangeService.setLoadedNoSelectedPacket).not.toHaveBeenCalledWith
-            (!(isPacketsEmpty && !isPacketIdUndefined && packetId === fakeSelectedPktId));
+            (!(isEmpty && !isPacketIdUndefined && packetId === fakeSelectedPktId));
             expect(mockExchangeService.setLoadedNoUnSelectedPacket).toHaveBeenCalledWith
-            (isPacketsEmpty && !isPacketIdUndefined && packetId !== fakeSelectedPktId, packetId);
+            (isEmpty && !isPacketIdUndefined && packetId !== fakeSelectedPktId, packetId);
             expect(mockExchangeService.setLoadedNoUnSelectedPacket).not.toHaveBeenCalledWith
-            (!(isPacketsEmpty && !isPacketIdUndefined && packetId !== fakeSelectedPktId, packetId));
+            (!(isEmpty && !isPacketIdUndefined && packetId !== fakeSelectedPktId, packetId));
 
             angular.forEach(response.packets, function (pkt) {
                 var pktId = pkt.id;
@@ -419,29 +418,29 @@ describe("Login Controller Test", function () {
                 expect(mockExchangeService.setMaximalPacketId).toHaveBeenCalledWith(pktId);
                 expect(mockExchangeService.setPacketInitialStateIds).toHaveBeenCalledWith(pkt.stateId, pktId);
             });
-            if (!isPacketsEmpty && (isPacketIdUndefined || response.packets[0].id === fakeSelectedPktId)) {
+            if (!isEmpty && (isPacketIdUndefined || response.packets[0].id === fakeSelectedPktId)) {
                 expect(mockExchangeService.setSelectedPacket).toHaveBeenCalledWith(response.packets[0]);
             }
         });
 
         it("Prepare states performs correctly", function () {
             expect(mockHelperService.isEmpty).toHaveBeenCalledWith(response.states);
-            expect(mockExchangeService.setLoadedNoStates).toHaveBeenCalledWith(loadedNoStates);
-            expect(mockExchangeService.setLoadedNoStates).not.toHaveBeenCalledWith(!loadedNoStates);
+            expect(mockExchangeService.setLoadedNoStates).toHaveBeenCalledWith(isEmpty);
+            expect(mockExchangeService.setLoadedNoStates).not.toHaveBeenCalledWith(!isEmpty);
             expect(mockExchangeService.setAllStates).toHaveBeenCalledWith(response.states);
             expect(mockExchangeService.setAllStateLabels).toHaveBeenCalledWith(response.states, labelLabel_);
         });
 
         it("Prepare ComboData performs correctly", function () {
             expect(mockHelperService.isEmpty).toHaveBeenCalledWith(response.comboData);
-            expect(mockExchangeService.setLoadedNoComboData).toHaveBeenCalledWith(loadedNoComboData);
-            expect(mockExchangeService.setLoadedNoStates).not.toHaveBeenCalledWith(!loadedNoComboData);
+            expect(mockExchangeService.setLoadedNoComboData).toHaveBeenCalledWith(isEmpty);
+            expect(mockExchangeService.setLoadedNoStates).not.toHaveBeenCalledWith(!isEmpty);
             expect(mockExchangeService.setComboDataDefaultSet).toHaveBeenCalledWith(response.comboData);
             expect(mockExchangeService.initializeNewComptCheckedVals).toHaveBeenCalledWith();
         });
 
         it("Prepare ComptSupplInfo performs correctly", function () {
-            if (!loadedNoCompts && !loadedNoComboData && !loadedNoStates) {
+            if (!isEmpty) {
                 var comptSupplInfoLength = response.comptSupplInfo.length;
                 var i = 0;
                 var visitedComptIds = {};
@@ -588,7 +587,6 @@ describe("Login Controller Test", function () {
         response.states = [];
         response.comboData = [];
     };
-
 
     var buildController = function ($controller, $rootScope, $http, isEmptyVal, dataParams, response) {
         spyOn(mockHelperService, 'isEmpty').and.returnValue(isEmptyVal);
