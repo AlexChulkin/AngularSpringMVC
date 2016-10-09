@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.EnumSet;
+import java.util.EnumMap;
 import java.util.List;
 
 import static com.somecode.helper.Helper.getMessage;
@@ -58,61 +58,57 @@ public class PacketAppService {
         return result.setComptSupplInfo(Collections.EMPTY_LIST);
     }
 
-    public EnumSet<PersistError> saveAllChangesToBase(List<Long> comptIdsToDelete,
-                                                      List<Long> packetIdsToDelete,
-                                                      List<ComptParams> comptsToUpdateParamsList,
-                                                      List<PacketParams> packetsToAddParamsList,
-                                                      List<PacketParams> packetsToUpdateParamsList,
-                                                      Long packetId) {
+    public EnumMap<PersistError, Boolean> saveAllChangesToBase(List<Long> comptIdsToDelete,
+                                                               List<Long> packetIdsToDelete,
+                                                               List<ComptParams> comptsToUpdateParamsList,
+                                                               List<PacketParams> packetsToAddParamsList,
+                                                               List<PacketParams> packetsToUpdateParamsList,
+                                                               Long packetId) {
 
         log.debug(packetId != null
                 ? getMessage(PERSIST_GIVEN_PACKET, new Object[]{packetId})
                 : getMessage(PERSIST_ALL_PACKETS, null));
 
-        EnumSet<PersistError> persistErrors = EnumSet.allOf(PersistError.class);
+        EnumMap<PersistError, Boolean> persistErrors = new EnumMap(PersistError.class);
 
         if (!comptIdsToDelete.isEmpty()) {
             packetAppDao.deleteCompts(comptIdsToDelete);
         }
-        persistErrors.remove(PersistError.DELETE_COMPTS);
 
         if (packetId == null && !packetIdsToDelete.isEmpty()) {
             packetAppDao.deletePackets(packetIdsToDelete);
         }
-        persistErrors.remove(PersistError.DELETE_PACKETS);
 
         if (!comptsToUpdateParamsList.isEmpty()) {
             try {
                 packetAppDao.updateCompts(comptsToUpdateParamsList);
-                persistErrors.remove(PersistError.UPDATE_COMPTS);
             } catch (DatabaseException e) {
                 log.error(getMessage(EXCEPTION_MESSAGE, new Object[]{e.getMessage(), e.getStackTrace()}));
+                persistErrors.put(PersistError.UPDATE_COMPTS, true);
             }
-        } else {
-            persistErrors.remove(PersistError.UPDATE_COMPTS);
         }
+        persistErrors.putIfAbsent(PersistError.UPDATE_COMPTS, false);
+
 
         if (!packetsToAddParamsList.isEmpty()) {
             try {
                 packetAppDao.addOrUpdatePackets(packetsToAddParamsList, OperationType.ADD);
-                persistErrors.remove(PersistError.ADD_PACKETS);
             } catch (DatabaseException e) {
                 log.error(getMessage(EXCEPTION_MESSAGE, new Object[]{e.getMessage(), e.getStackTrace()}));
+                persistErrors.put(PersistError.ADD_PACKETS, true);
             }
-        } else {
-            persistErrors.remove(PersistError.ADD_PACKETS);
         }
+        persistErrors.putIfAbsent(PersistError.ADD_PACKETS, false);
 
         if (!packetsToUpdateParamsList.isEmpty()) {
             try {
                 packetAppDao.addOrUpdatePackets(packetsToUpdateParamsList, OperationType.UPDATE);
-                persistErrors.remove(PersistError.UPDATE_PACKETS);
             } catch (DatabaseException e) {
                 log.error(getMessage(EXCEPTION_MESSAGE, new Object[]{e.getMessage(), e.getStackTrace()}));
+                persistErrors.put(PersistError.UPDATE_PACKETS, true);
             }
-        } else {
-            persistErrors.remove(PersistError.UPDATE_PACKETS);
         }
+        persistErrors.put(PersistError.UPDATE_PACKETS, false);
 
         return persistErrors;
     }

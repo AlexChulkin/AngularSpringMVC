@@ -7,23 +7,36 @@ angular.module("packetAdminApp")
     .constant("packetListActiveClass", "btn-primary btn-md")
     .constant("packetListNonActiveClass", "btn-md")
     .constant("updateCompts", "UPDATE_COMPTS")
-    .constant("deleteCompts", "DELETE_COMPTS")
     .constant("updatePackets", "UPDATE_PACKETS")
-    .constant("deletePackets", "DELETE_PACKETS")
     .constant("addPackets", "ADD_PACKETS")
     .constant("saveAllChangesToBaseUrl", "/saveAllChangesToBase")
     .constant("initialPacketIndex", -1)
+    .constant("numOfErrors", 3)
     .constant("errorStatusBadRequest", 400)
     .constant("errorStatusNotFound", 404)
     .constant("narrowPacketCaption", "narrow-packet-selection")
     .constant("widePacketCaption", "wide-packet-selection")
     .constant("adminRole", "ADMIN")
     .constant("role", "role")
+    .constant("updateComptsError", "Error occurred while trying to save data in DB. The COMBO_DATA table" +
+        " is empty. At least one of the following took place: " +
+        "1. The compts adding and/or state change for the existing packets were not persisted; " +
+        "2. Added new pakets together with the new compts inside were not persisted. " +
+        "Try to solve the problem and then re-push the saving button. " +
+        "DON'T RESTORE THE DATA FROM THE BASE! Otherwise you may loose your changes.")
+    .constant("addOrUpdatePacketsErrorPrefix", "Error occurred while trying to save data in DB. " +
+        "The STATES table is empty. The ")
+    .constant("addPacketsErrorRoot", "new")
+    .constant("updatePacketsErrorRoot", "updated")
+    .constant("addOrUpdatePacketsErrorSuffix", " packets were not persisted to the DB. Try to solve the problem and " +
+        "then re-push the saving button. DON'T RESTORE THE DATA FROM THE BASE! Otherwise you may loose your changes.")
     .controller("packetsPanelCtrl", function ($scope, $http, $window, $cookies, exchangeService, helperService,
                                               packetListActiveClass, packetListNonActiveClass, updateCompts,
-                                              deleteCompts, updatePackets, deletePackets, addPackets,
+                                              updatePackets, addPackets, updatePacketsErrorRoot,
                                               saveAllChangesToBaseUrl, errorStatusNotFound, errorStatusBadRequest,
-                                              narrowPacketCaption, widePacketCaption, role, adminRole) {
+                                              narrowPacketCaption, widePacketCaption, role, adminRole,
+                                              updateComptsError, addOrUpdatePacketsErrorPrefix, numOfErrors,
+                                              addOrUpdatePacketsErrorSuffix, addPacketsErrorRoot) {
 
         var packetIdsToDelete;
 
@@ -87,20 +100,21 @@ angular.module("packetAdminApp")
         $scope.saveAllChangesToBase = function (savedPktId) {
             var dataParams = generateDataParamsForSaving(savedPktId);
             var errorMap = generateErrorMap(savedPktId);
+            var numOfErrors_ = numOfErrors;
 
             $http
                 .post(saveAllChangesToBaseUrl, {dataParams: dataParams})
                 .then(
                     function success(data) {
-                        angular.forEach(data, function (el) {
-                            var key = String(el);
-                            if (errorMap[key]) {
-                                delete errorMap[key];
-                                if (key == addPackets || key == updatePackets) {
-                                    alert(generateAddOrUpdatePacketError(key));
+                        angular.forEach(data.data, function (v, k) {
+                            if (v === "true") {
+                                var errorKey = String(k);
+                                delete errorMap[errorKey];
+                                if (errorKey == addPackets || errorKey == updatePackets) {
+                                    window.alert(generateAddOrUpdatePacketError(errorKey));
                                 }
-                                else if (key == updateCompts) {
-                                    alert(generateUpdateComptsError());
+                                else if (errorKey == updateCompts) {
+                                    window.alert(updateComptsError);
                                 }
                             }
                         });
@@ -115,19 +129,14 @@ angular.module("packetAdminApp")
         };
 
         var generateAddOrUpdatePacketError = function (key) {
-            return "Error occurred while trying to save data in DB. The STATES table is empty." +
-            "The " + key == addPackets ? "new" : "updated" + " packets were not persisted " +
-            "to the DB. Try to solve the problem and then re-push the saving button. " +
-            "DON'T RESTORE THE DATA FROM THE BASE! Otherwise you may loose your changes."
-        };
-
-        var generateUpdateComptsError = function () {
-            return "Error occurred while trying to save data in DB. The COMBO_DATA table" +
-                " is empty. At least one of the following took place: " +
-                "1. The compts adding and/or state change for the existing packets were not persisted; " +
-                "2. Added new pakets together with the new compts inside were not persisted. " +
-                "Try to solve the problem and then re-push the saving button. " +
-                "DON'T RESTORE THE DATA FROM THE BASE! Otherwise you may loose your changes."
+            var result = addOrUpdatePacketsErrorPrefix;
+            if (key === addPackets) {
+                result += addPacketsErrorRoot;
+            } else {
+                result += updatePacketsErrorRoot;
+            }
+            result += addOrUpdatePacketsErrorSuffix;
+            return result;
         };
 
         var generateComptParamsListToAddForPackets = function (pktId) {
@@ -221,12 +230,8 @@ angular.module("packetAdminApp")
             var errorMap = {};
 
             errorMap[updateCompts] = true;
-            errorMap[deleteCompts] = true;
             errorMap[updatePackets] = true;
             errorMap[addPackets] = true;
-            if (pktIdIsUndefined) {
-                errorMap[deletePackets] = true;
-            }
 
             return errorMap;
         };
@@ -236,21 +241,30 @@ angular.module("packetAdminApp")
         };
 
         var clearCollectionsForSaving = function (errorMap, savedPktId) {
-            if (updateCompts in errorMap) {
-                exchangeService.deleteComptIdsToUpdate(savedPktId);
-            }
-            if (deleteCompts in errorMap) {
+            if (angular.isUndefined(savedPktId)) {
+                if (updateCompts in errorMap) {
+                    exchangeService.deleteComptIdsToUpdate();
+                }
+                if (updatePackets in errorMap) {
+                    exchangeService.deleteNewComptLabels();
+                }
+                if (addPackets in errorMap) {
+                    exchangeService.deleteNewPackets();
+                }
+                exchangeService.deleteComptIdsToDelete();
+            } else {
+                if (updateCompts in errorMap) {
+                    exchangeService.deleteComptIdsToUpdate(savedPktId);
+                }
+                if (updatePackets in errorMap) {
+                    exchangeService.deleteNewComptLabels(savedPktId);
+                }
+                if (addPackets in errorMap) {
+                    exchangeService.deleteNewPackets(savedPktId);
+                }
                 exchangeService.deleteComptIdsToDelete(savedPktId);
             }
-            if (updatePackets in errorMap) {
-                exchangeService.deleteNewComptLabels(savedPktId);
-            }
-            if (addPackets in errorMap) {
-                exchangeService.deleteNewPackets(savedPktId);
-            }
-            if (deletePackets in errorMap) {
-                clearPacketIdsToDelete();
-            }
+            clearPacketIdsToDelete();
         };
 
         var init = function () {

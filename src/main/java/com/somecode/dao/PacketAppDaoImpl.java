@@ -276,8 +276,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
                 log.error(getMessage(COMPT_UPDATE_NON_EXISTING_COMPT, new Object[]{comptId}));
                 continue;
             }
-            List<Integer> newCheckedIndices;
-            newCheckedIndices = getIndicesFromVals(comptParams.getVals(), comptId, null);
+            List<Integer> newCheckedIndices = getIndicesFromVals(comptParams.getVals(), comptId, null);
             List<DataCompt> dataCompts = compt.getDataCompts();
             for (DataCompt dc : dataCompts) {
                 int stateIndex = (int) (dc.getState().getId() - 1);
@@ -290,9 +289,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
                 }
             }
             Long packetId = compt.getPacket().getId();
-            if (result.get(packetId) == null) {
-                result.put(packetId, new LinkedList<Long>());
-            }
+            result.putIfAbsent(packetId, new LinkedList<Long>());
             result.get(packetId).add(comptId);
         }
         result.forEach((k, v) -> log.debug(getMessage(COMPT_UPDATE_SUCCESS_REPORT, new Object[]{k, v})));
