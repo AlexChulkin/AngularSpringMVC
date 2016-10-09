@@ -37,6 +37,7 @@ angular.module("packetAdminApp")
     var comboDataDefaultSet;
     var selectedComptLabels;
         var selectedPacketIsEmpty;
+        var initialAllCheckedComboData;
 
     var init = function () {
         setComptIdToInd({});
@@ -54,8 +55,8 @@ angular.module("packetAdminApp")
         setComptIdsToUpdate({});
         setAllStates([]);
         setAllStateLabels([]);
-        setAllComboData({});
-        setAllCheckedComboData({});
+        setAllComboData(true, {});
+        setAllCheckedComboData(true, true, {});
         setPacketInitialStateIds({});
         setCompts([]);
         setSelectedPacket(null);
@@ -377,7 +378,7 @@ angular.module("packetAdminApp")
         $rootScope.$broadcast('newComptCheckedVals:update', newComptCheckedVals);
     };
 
-    var setAllComboData = function (value, comptId, stateId) {
+        var setAllComboData = function (broadcast, value, comptId, stateId) {
         if (angular.isUndefined(stateId)) {
             if (angular.isDefined(comptId)) {
                 allComboData[comptId] = value;
@@ -386,15 +387,15 @@ angular.module("packetAdminApp")
             }
         } else {
             allComboData[comptId][stateId] = value;
-            if (stateId == allStates.length) {
+            if (broadcast) {
                 $rootScope.$broadcast('allComboData:update', allComboData);
             }
         }
     };
 
-    var pushToAllComboData = function (value, comptId, stateId, comptSupplInfoIndex, comptSupplInfoLength) {
+        var pushToAllComboData = function (broadcast, value, comptId, stateId) {
         allComboData[comptId][stateId].push(value);
-        if (comptSupplInfoIndex === comptSupplInfoLength - 1) {
+            if (broadcast) {
             $rootScope.$broadcast('allComboData:update', allComboData);
         }
     };
@@ -410,17 +411,31 @@ angular.module("packetAdminApp")
         return allComboData[comptId][stateId];
     };
 
-    var setAllCheckedComboData = function (value, comptId, stateId) {
+        var setAllCheckedComboData = function (broadcast, updInitialVals, value, comptId, stateId) {
         if (angular.isUndefined(stateId)) {
             if (angular.isDefined(comptId)) {
                 allCheckedComboData[comptId] = value;
+                if (updInitialVals) {
+                    initialAllCheckedComboData[comptId] = value;
+                }
             } else {
                 allCheckedComboData = value;
+                if (updInitialVals) {
+                    initialAllCheckedComboData = value;
+                }
             }
         } else {
             allCheckedComboData[comptId][stateId] = value;
+            if (updInitialVals) {
+                initialAllCheckedComboData[comptId][stateId] = value;
+            }
         }
-        $rootScope.$broadcast('allCheckedComboData:update', allCheckedComboData);
+            if (broadcast) {
+                $rootScope.$broadcast('allCheckedComboData:update', allCheckedComboData);
+                if (updInitialVals) {
+                    $rootScope.$broadcast('initialAllCheckedComboData:update', initialAllCheckedComboData);
+                }
+            }
     };
 
     var getAllCheckedComboData = function (comptId, stateId) {
@@ -433,6 +448,11 @@ angular.module("packetAdminApp")
         }
         return allCheckedComboData[comptId][stateId];
     };
+
+        var setInitialAllCheckedComboData = function () {
+            initialAllCheckedComboData = allCheckedComboData;
+            $rootScope.$broadcast('initialAllCheckedComboData:update', initialAllCheckedComboData);
+        };
 
     var setNewPackets = function (value, pktId) {
         if (angular.isDefined(pktId)) {
@@ -697,12 +717,13 @@ angular.module("packetAdminApp")
         pushToComptIdsToDelete: pushToComptIdsToDelete,
         setComptIdsToUpdate: setComptIdsToUpdate,
         getSelectedComptsLength: getSelectedComptsLength,
+        setInitialAllCheckedComboData: setInitialAllCheckedComboData,
         init: init
     };
 });
 
 angular.module("packetAdminApp")
-    .service('helperService', function ($rootScope) {
+    .service('helperService', function () {
 
         var isUndefinedOrNull = function (value) {
             return angular.isUndefined(value) || value === null

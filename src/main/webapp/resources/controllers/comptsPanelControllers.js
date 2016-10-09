@@ -40,6 +40,10 @@ app
             $scope.data.allCheckedComboData = data;
         });
 
+        $scope.$on('initialAllCheckedComboData:update', function (event, data) {
+            $scope.data.initialAllCheckedComboData = data;
+        });
+
         $scope.$on('comboDataDefaultSet:update', function (event, data) {
             $scope.data.comboDataDefaultSet = data;
         });
@@ -79,12 +83,12 @@ app
             exchangeService.setNewComptLabels(exchangeService.getNewComptLabels(pktId) || {},
                 pktId);
             exchangeService.setNewComptLabels(usualLabel, pktId, comptId);
-            exchangeService.setAllComboData({}, comptId);
-            exchangeService.setAllCheckedComboData({}, comptId);
+            exchangeService.setAllComboData(false, {}, comptId);
+            exchangeService.setAllCheckedComboData(true, false, {}, comptId);
             var allStatesLength = exchangeService.getAllStatesLength();
             for (var i = 1; i <= allStatesLength; i++) {
-                exchangeService.setAllComboData($scope.data.comboDataDefaultSet, comptId, i);
-                exchangeService.setAllCheckedComboData($scope.data.newComptCheckedVals[i - 1], comptId, i);
+                exchangeService.setAllComboData(i === allStatesLength, $scope.data.comboDataDefaultSet, comptId);
+                exchangeService.setAllCheckedComboData(true, false, $scope.data.newComptCheckedVals[i - 1], comptId, i);
             }
             $scope.data.newLabel = null;
         };
@@ -112,14 +116,22 @@ app
             }
         };
 
-        $scope.updateComptLocally = function (compt) {
+        $scope.updateComptLocally = function (compt, stateId) {
             var pktId = exchangeService.getSelectedPacketId();
             var comptId = compt.id;
             if (exchangeService.getNewComptLabels(pktId) && exchangeService.getNewComptLabels(pktId, comptId)) {
                 return;
             }
+            if ($scope.data.initialAllCheckedComboData[comptId]
+                && $scope.data.allCheckedComboData[comptId][stateId]
+                === $scope.data.initialAllCheckedComboData[comptId][stateId]) {
+                exchangeService.deleteComptIdsToUpdate(pktId, comptId);
+                return;
+            }
             var comptIdsToUpdate = exchangeService.getComptIdsToUpdate(pktId) || {};
-            exchangeService.setComptIdsToUpdate(comptIdsToUpdate, pktId);
+            if (angular.equals({}, comptIdsToUpdate)) {
+                exchangeService.setComptIdsToUpdate({}, pktId);
+            }
             exchangeService.setComptIdsToUpdate(true, pktId, comptId);
         };
 

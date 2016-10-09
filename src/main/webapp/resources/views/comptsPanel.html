@@ -39,7 +39,7 @@
                                   <select class="standard"
                                           ng-options="el for el in data.allComboData[compt.id][state.id]"
                                           ng-model="data.allCheckedComboData[compt.id][state.id]"
-                                          ng-change="updateComptLocally(compt)">
+                                          ng-change="updateComptLocally(compt, state.id)">
                                   </select>
                             </span>
                         </td>

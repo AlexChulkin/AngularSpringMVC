@@ -52,8 +52,7 @@ angular.module("packetAdminApp")
             exchangeService.setLoadEmpty(false);
         };
 
-        $scope.deletePacketLocally = function (packet) {
-            var pktId = packet.id;
+        $scope.deletePacketLocally = function (pktId) {
             var isPktNew = pktId in $scope.data.newPackets;
             if (!isPktNew) {
                 packetIdsToDelete.push(pktId);
@@ -98,19 +97,10 @@ angular.module("packetAdminApp")
                             if (errorMap[key]) {
                                 delete errorMap[key];
                                 if (key == addPackets || key == updatePackets) {
-                                    alert("Error occurred while trying to save data in DB. The STATES table is empty." +
-                                    "The " + key == addPackets ? "new" : "updated" + " packets were not persisted " +
-                                    "to the DB. Try to solve the problem and then re-push the saving button. " +
-                                    "DON'T RESTORE THE DATA FROM THE BASE! Otherwise you may loose your changes.");
+                                    alert(generateAddOrUpdatePacketError(key));
                                 }
                                 else if (key == updateCompts) {
-                                    alert("Error occurred while trying to save data in DB. The COMBO_DATA table" +
-                                        " is empty. At least one of the following took place: " +
-                                        "1. The compts adding and/or " +
-                                        "state change for the existing packets were not persisted; " +
-                                        "2. Added new pakets together with the new compts inside were not persisted. " +
-                                        "Try to solve the problem and then re-push the saving button. " +
-                                        "DON'T RESTORE THE DATA FROM THE BASE! Otherwise you may loose your changes.");
+                                    alert(generateUpdateComptsError());
                                 }
                             }
                         });
@@ -124,7 +114,23 @@ angular.module("packetAdminApp")
                 );
         };
 
-        var generateComptParamsListForPackets = function (pktId) {
+        var generateAddOrUpdatePacketError = function (key) {
+            return "Error occurred while trying to save data in DB. The STATES table is empty." +
+            "The " + key == addPackets ? "new" : "updated" + " packets were not persisted " +
+            "to the DB. Try to solve the problem and then re-push the saving button. " +
+            "DON'T RESTORE THE DATA FROM THE BASE! Otherwise you may loose your changes."
+        };
+
+        var generateUpdateComptsError = function () {
+            return "Error occurred while trying to save data in DB. The COMBO_DATA table" +
+                " is empty. At least one of the following took place: " +
+                "1. The compts adding and/or state change for the existing packets were not persisted; " +
+                "2. Added new pakets together with the new compts inside were not persisted. " +
+                "Try to solve the problem and then re-push the saving button. " +
+                "DON'T RESTORE THE DATA FROM THE BASE! Otherwise you may loose your changes."
+        };
+
+        var generateComptParamsListToAddForPackets = function (pktId) {
             var result = [];
             angular.forEach(exchangeService.getNewComptLabels(pktId), function (lbl, comptId) {
                 result.push({label: lbl, vals: findCheckedValsForCompt(comptId)});
@@ -163,23 +169,21 @@ angular.module("packetAdminApp")
             for (var pktId in packetsToSave) {
                 var pkt = packetsToSave[pktId];
                 var packetConfig = {};
+                packetConfig.newComptParamsList = generateComptParamsListToAddForPackets(pktId);
                 if (!(pktId in $scope.data.newPackets)) {
                     var updatedComptParamsList = generateComptParamsListToUpdateForPackets(pktId);
                     if (updatedComptParamsList.length > 0) {
                         comptsToUpdateParamsList = comptsToUpdateParamsList.concat(updatedComptParamsList);
                     }
-
                     packetConfig.id = pktId;
                     if (pkt.stateId != exchangeService.getPacketInitialStateIds(pktId)) {
-                        packetConfig.stateId = pkt.stateId;
+                        packetConfig.stateId = String(pkt.stateId);
                     }
-                    packetConfig.newComptParamsList = generateComptParamsListForPackets(pktId);
                     if (packetConfig.stateId || packetConfig.newComptParamsList.length > 0) {
                         packetsToUpdateParamsList.push(packetConfig);
                     }
                 } else {
-                    packetConfig.stateId = pkt.stateId;
-                    packetConfig.newComptParamsList = generateComptParamsListForPackets(pktId);
+                    packetConfig.stateId = String(pkt.stateId);
                     packetsToAddParamsList.push(packetConfig);
                 }
             }

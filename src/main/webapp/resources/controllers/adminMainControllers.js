@@ -28,7 +28,7 @@ angular.module("packetAdminApp")
                         prepareStates(data.states);
                         prepareComboData(data.comboData);
                         if (!loadedNoCompts && !$scope.isComboDataNotLoaded() && !$scope.isStatesNotLoaded()) {
-                            prepareComptsSupplInfo(data.comptSupplInfo);
+                            prepareComptsSupplInfo(data.comptSupplInfo, packetId, isPacketIdUndefined);
                         }
                     },
                     function error() {
@@ -148,31 +148,35 @@ angular.module("packetAdminApp")
             exchangeService.initializeNewComptCheckedVals();
         };
 
-        var prepareComptsSupplInfo = function (comptSupplInfo) {
+        var prepareComptsSupplInfo = function (comptSupplInfo, packetId, isPacketIdUndefined) {
             var comptSupplInfoLength = comptSupplInfo.length;
             var i = 0;
             var visitedComptIds = {};
             angular.forEach(comptSupplInfo, function (item) {
+                var broadcast = i === comptSupplInfoLength - 1;
                 var comptId = item.comptId;
                 var stateId = item.stateId;
                 var label = item.label;
                 var checked = item.checked;
-                if (!exchangeService.getAllComboData(comptId) || !visitedComptIds[comptId]) {
-                    exchangeService.setAllComboData({}, comptId);
+                if (!exchangeService.getAllComboData(comptId) || !(comptId in visitedComptIds)) {
+                    exchangeService.setAllComboData(false, {}, comptId);
                     visitedComptIds[comptId] = true;
                 }
                 if (!exchangeService.getAllComboData(comptId, stateId)) {
-                    exchangeService.setAllComboData([], comptId, stateId);
+                    exchangeService.setAllComboData(false, [], comptId, stateId);
                 }
-                exchangeService.pushToAllComboData(label, comptId, stateId, i, comptSupplInfoLength);
+                exchangeService.pushToAllComboData(broadcast, label, comptId, stateId);
                 if (checked) {
                     if (!exchangeService.getAllCheckedComboData(comptId)) {
-                        exchangeService.setAllCheckedComboData({}, comptId);
+                        exchangeService.setAllCheckedComboData(broadcast, !isPacketIdUndefined, {}, comptId);
                     }
-                    exchangeService.setAllCheckedComboData(label, comptId, stateId);
+                    exchangeService.setAllCheckedComboData(broadcast, !isPacketIdUndefined, label, comptId, stateId);
                 }
                 i++;
             });
+            if (isPacketIdUndefined) {
+                exchangeService.setInitialAllCheckedComboData();
+            }
         };
 
         var init = function () {
