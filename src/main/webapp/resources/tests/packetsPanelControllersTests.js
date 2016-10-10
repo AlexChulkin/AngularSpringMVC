@@ -8,8 +8,8 @@ describe("Packets Panel Controller Test", function () {
         fakeLoadedNoComboDataValue, fakeLoadedNoStatesValue, fakePacketIsAlreadySelectedAtLeastOnceValue,
         fakeComptIdsToUpdate, fakeComptIdsToDelete, fakeAllStates, fakeAllCheckedComboData, fakeNewComptLabels,
         fakeInitialStateId, fakeAllPackets, fakeNewPackets, fakeSavedPktId, fakeDeletedPktId, forbiddenCallTriggered;
-    var response;
-    var errorStatus;
+    var httpResponse;
+    var httpError, errorStatus, errorStatusBadRequest_, errorStatusNotFound_, errorRequestTimeout;
     var role_;
     var saveAllChangesToBaseUrl_;
     var dataParams;
@@ -24,12 +24,17 @@ describe("Packets Panel Controller Test", function () {
 
     beforeEach(inject(function ($httpBackend, $cookies, saveAllChangesToBaseUrl, role, updatePacketsErrorRoot,
                                 addPackets, updatePackets, updateCompts, addOrUpdatePacketsErrorPrefix,
-                                addOrUpdatePacketsErrorSuffix, updateComptsError, addPacketsErrorRoot) {
+                                addOrUpdatePacketsErrorSuffix, updateComptsError, addPacketsErrorRoot,
+                                errorStatusBadRequest, errorStatusNotFound) {
         mockCookies = $cookies;
         backend = $httpBackend;
         saveAllChangesToBaseUrl_ = saveAllChangesToBaseUrl;
         role_ = role;
         adminRole = "ADMIN";
+
+        errorStatusBadRequest_ = errorStatusBadRequest;
+        errorStatusNotFound_ = errorStatusNotFound;
+        errorRequestTimeout = 408;
 
         addPackets_ = addPackets;
         updatePackets_ = updatePackets;
@@ -122,16 +127,17 @@ describe("Packets Panel Controller Test", function () {
         })));
     });
 
-    describe("Ensure that saveAllChangesToBase() w/out args http response is properly elaborated: add Packets error",
+    describe("Ensure that saveAllChangesToBase() with no args http error response is properly elaborated: " +
+        "error status = bad request",
         function () {
             beforeEach(inject(function () {
                 buildSpiesReturnValues_fullStuff();
+                buildHttpError(errorStatusBadRequest_);
                 buildDataParams_fullStuff();
-                buildResponse_error_addPackets();
                 buildSpiesOnMockHelperService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpError);
             }));
 
             it("", (inject(function ($controller, $rootScope, $http) {
@@ -140,14 +146,196 @@ describe("Packets Panel Controller Test", function () {
                 mockScope.deletePacketLocally(fakeDeletedPktId);
                 mockScope.saveAllChangesToBase();
                 backend.flush();
+
+                expect(mockExchangeService.deleteComptIdsToDelete).toHaveBeenCalledWith();
+                expect(mockExchangeService.deleteNewPackets).toHaveBeenCalledWith();
+                expect(mockExchangeService.deleteComptIdsToUpdate).toHaveBeenCalledWith();
+                expect(mockExchangeService.deleteNewComptLabels).toHaveBeenCalledWith();
+
                 dataParams.packetIdsToDelete = [];
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
                 mockScope.saveAllChangesToBase();
                 backend.flush();
+            })));
+        });
+
+    describe("Ensure that saveAllChangesToBase() with no args http error response is properly elaborated: " +
+        "error status = not found",
+        function () {
+            beforeEach(inject(function () {
+                buildSpiesReturnValues_fullStuff();
+                buildHttpError(errorStatusNotFound_);
+                buildDataParams_fullStuff();
+                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockExchangeService();
+                buildSpyOnWindowService();
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpError);
+            }));
+
+            it("", (inject(function ($controller, $rootScope, $http) {
+                buildController($controller, $rootScope, $http);
+                buildMockScopeData();
+                mockScope.deletePacketLocally(fakeDeletedPktId);
+                mockScope.saveAllChangesToBase();
+                backend.flush();
+
                 expect(mockExchangeService.deleteComptIdsToDelete).toHaveBeenCalledWith();
-                expect(window.alert).toHaveBeenCalledWith(addOrUpdatePacketsErrorPrefix_ + addPacketsErrorRoot_
-                    + addOrUpdatePacketsErrorSuffix_);
+                expect(mockExchangeService.deleteNewPackets).toHaveBeenCalledWith();
+                expect(mockExchangeService.deleteComptIdsToUpdate).toHaveBeenCalledWith();
+                expect(mockExchangeService.deleteNewComptLabels).toHaveBeenCalledWith();
+
+                dataParams.packetIdsToDelete = [];
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
+                mockScope.saveAllChangesToBase();
+                backend.flush();
+            })));
+        });
+
+    describe("Ensure that saveAllChangesToBase() with arg = pktId http error response is properly elaborated: " +
+        "error status = bad request",
+        function () {
+            beforeEach(inject(function () {
+                buildSpiesReturnValues_fullStuff();
+                buildHttpError(errorStatusBadRequest_);
+                buildDataParams_fullStuff(fakeSavedPktId);
+                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockExchangeService();
+                buildSpyOnWindowService();
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpError);
+            }));
+
+            it("", (inject(function ($controller, $rootScope, $http) {
+                buildController($controller, $rootScope, $http);
+                buildMockScopeData();
+                mockScope.deletePacketLocally(fakeDeletedPktId);
+                mockScope.saveAllChangesToBase(fakeSavedPktId);
+                backend.flush();
+
+                expect(mockExchangeService.deleteComptIdsToDelete).toHaveBeenCalledWith(fakeSavedPktId);
+                expect(mockExchangeService.deleteNewPackets).toHaveBeenCalledWith(fakeSavedPktId);
+                expect(mockExchangeService.deleteComptIdsToUpdate).toHaveBeenCalledWith(fakeSavedPktId);
+                expect(mockExchangeService.deleteNewComptLabels).toHaveBeenCalledWith(fakeSavedPktId);
+            })));
+        });
+
+    describe("Ensure that saveAllChangesToBase() with arg = pktId http error response is properly elaborated: " +
+        "error status = not found",
+        function () {
+            beforeEach(inject(function () {
+                buildSpiesReturnValues_fullStuff();
+                buildHttpError(errorStatusNotFound_);
+                buildDataParams_fullStuff(fakeSavedPktId);
+                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockExchangeService();
+                buildSpyOnWindowService();
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpError);
+            }));
+
+            it("", (inject(function ($controller, $rootScope, $http) {
+                buildController($controller, $rootScope, $http);
+                buildMockScopeData();
+                mockScope.deletePacketLocally(fakeDeletedPktId);
+                mockScope.saveAllChangesToBase(fakeSavedPktId);
+                backend.flush();
+
+                expect(mockExchangeService.deleteComptIdsToDelete).toHaveBeenCalledWith(fakeSavedPktId);
+                expect(mockExchangeService.deleteNewPackets).toHaveBeenCalledWith(fakeSavedPktId);
+                expect(mockExchangeService.deleteComptIdsToUpdate).toHaveBeenCalledWith(fakeSavedPktId);
+                expect(mockExchangeService.deleteNewComptLabels).toHaveBeenCalledWith(fakeSavedPktId);
+            })));
+        });
+
+    describe("Ensure that saveAllChangesToBase() with no args http error response is properly elaborated: " +
+        "error status = not found",
+        function () {
+            beforeEach(inject(function () {
+                buildSpiesReturnValues_fullStuff();
+                buildHttpError(errorStatusNotFound_);
+                buildDataParams_fullStuff();
+                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockExchangeService();
+                buildSpyOnWindowService();
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpError);
+            }));
+
+            it("", (inject(function ($controller, $rootScope, $http) {
+                buildController($controller, $rootScope, $http);
+                buildMockScopeData();
+                mockScope.deletePacketLocally(fakeDeletedPktId);
+                mockScope.saveAllChangesToBase();
+                backend.flush();
+
+                expect(mockExchangeService.deleteComptIdsToDelete).toHaveBeenCalledWith();
+                expect(mockExchangeService.deleteNewPackets).toHaveBeenCalledWith();
+                expect(mockExchangeService.deleteComptIdsToUpdate).toHaveBeenCalledWith();
+                expect(mockExchangeService.deleteNewComptLabels).toHaveBeenCalledWith();
+
+                dataParams.packetIdsToDelete = [];
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
+                mockScope.saveAllChangesToBase();
+                backend.flush();
+            })));
+        });
+
+    describe("Ensure that saveAllChangesToBase() with no args http error response is properly elaborated: " +
+        "error status = request timeout",
+        function () {
+            beforeEach(inject(function () {
+                buildSpiesReturnValues_fullStuff();
+                buildHttpError(errorRequestTimeout);
+                buildDataParams_fullStuff();
+                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockExchangeService();
+                buildSpyOnWindowService();
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpError);
+            }));
+
+            it("", (inject(function ($controller, $rootScope, $http) {
+                buildController($controller, $rootScope, $http);
+                buildMockScopeData();
+                mockScope.deletePacketLocally(fakeDeletedPktId);
+                mockScope.saveAllChangesToBase();
+                backend.flush();
+
+                expect(mockExchangeService.deleteComptIdsToDelete).not.toHaveBeenCalledWith();
                 expect(mockExchangeService.deleteNewPackets).not.toHaveBeenCalledWith();
+                expect(mockExchangeService.deleteComptIdsToUpdate).not.toHaveBeenCalledWith();
+                expect(mockExchangeService.deleteNewComptLabels).not.toHaveBeenCalledWith();
+
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
+                mockScope.saveAllChangesToBase();
+                backend.flush();
+            })));
+        });
+
+    describe("Ensure that saveAllChangesToBase() with arg = pktId http error response is properly elaborated: " +
+        "error status = request timeout",
+        function () {
+            beforeEach(inject(function () {
+                buildSpiesReturnValues_fullStuff();
+                buildHttpError(errorRequestTimeout);
+                buildDataParams_fullStuff(fakeSavedPktId);
+                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockExchangeService();
+                buildSpyOnWindowService();
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpError);
+            }));
+
+            it("", (inject(function ($controller, $rootScope, $http) {
+                buildController($controller, $rootScope, $http);
+                buildMockScopeData();
+                mockScope.deletePacketLocally(fakeDeletedPktId);
+                mockScope.saveAllChangesToBase(fakeSavedPktId);
+                backend.flush();
+
+                expect(mockExchangeService.deleteComptIdsToDelete).not.toHaveBeenCalledWith(fakeSavedPktId);
+                expect(mockExchangeService.deleteNewPackets).not.toHaveBeenCalledWith(fakeSavedPktId);
+                expect(mockExchangeService.deleteComptIdsToUpdate).not.toHaveBeenCalledWith(fakeSavedPktId);
+                expect(mockExchangeService.deleteNewComptLabels).not.toHaveBeenCalledWith(fakeSavedPktId);
+
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
+                mockScope.saveAllChangesToBase(fakeSavedPktId);
+                backend.flush();
             })));
         });
 
@@ -161,7 +349,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesOnMockHelperService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
             }));
 
             it("", (inject(function ($controller, $rootScope, $http) {
@@ -186,7 +374,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesOnMockHelperService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
             }));
 
             it("", (inject(function ($controller, $rootScope, $http) {
@@ -196,7 +384,7 @@ describe("Packets Panel Controller Test", function () {
                 mockScope.saveAllChangesToBase();
                 backend.flush();
                 dataParams.packetIdsToDelete = [];
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
                 mockScope.saveAllChangesToBase();
                 backend.flush();
                 expect(mockExchangeService.deleteComptIdsToDelete).toHaveBeenCalledWith();
@@ -216,7 +404,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesOnMockHelperService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
             }));
 
             it("", (inject(function ($controller, $rootScope, $http) {
@@ -241,7 +429,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesOnMockHelperService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
             }));
 
             it("", (inject(function ($controller, $rootScope, $http) {
@@ -254,7 +442,7 @@ describe("Packets Panel Controller Test", function () {
                 expect(window.alert).toHaveBeenCalledWith(updateComptsError_);
                 expect(mockExchangeService.deleteComptIdsToUpdate).not.toHaveBeenCalledWith();
                 dataParams.packetIdsToDelete = [];
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
                 mockScope.saveAllChangesToBase();
                 backend.flush();
 
@@ -271,7 +459,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesOnMockHelperService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
             }));
 
             it("", (inject(function ($controller, $rootScope, $http) {
@@ -295,7 +483,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesOnMockHelperService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
             }));
 
             it("", (inject(function ($controller, $rootScope, $http) {
@@ -305,7 +493,7 @@ describe("Packets Panel Controller Test", function () {
                 mockScope.saveAllChangesToBase();
                 backend.flush();
                 dataParams.packetIdsToDelete = [];
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
                 mockScope.saveAllChangesToBase();
                 backend.flush();
                 expect(mockExchangeService.deleteNewPackets).toHaveBeenCalledWith();
@@ -324,7 +512,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesOnMockHelperService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
             }));
 
             it("", (inject(function ($controller, $rootScope, $http) {
@@ -350,7 +538,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesOnMockHelperService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
             }));
 
             it("", (inject(function ($controller, $rootScope, $http) {
@@ -369,7 +557,7 @@ describe("Packets Panel Controller Test", function () {
                 expect(mockExchangeService.deleteNewComptLabels).not.toHaveBeenCalledWith();
                 expect(mockExchangeService.deleteComptIdsToDelete).toHaveBeenCalledWith();
                 dataParams.packetIdsToDelete = [];
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
                 mockScope.saveAllChangesToBase();
                 backend.flush();
             })));
@@ -385,7 +573,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesOnMockHelperService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
             }));
 
             it("", (inject(function ($controller, $rootScope, $http) {
@@ -412,10 +600,41 @@ describe("Packets Panel Controller Test", function () {
             beforeEach(inject(function () {
                 buildSpiesReturnValues_fullStuff();
                 buildDataParams_fullStuff(fakeSavedPktId);
+                buildResponse_allErrors();
+                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockExchangeService();
+                buildSpyOnWindowService();
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
+            }));
+
+            it("", (inject(function ($controller, $rootScope, $http) {
+                buildController($controller, $rootScope, $http);
+                buildMockScopeData();
+                mockScope.deletePacketLocally(fakeDeletedPktId);
+                mockScope.saveAllChangesToBase(fakeSavedPktId);
+                backend.flush();
+                expect(window.alert).toHaveBeenCalledWith(addOrUpdatePacketsErrorPrefix_ + addPacketsErrorRoot_
+                    + addOrUpdatePacketsErrorSuffix_);
+                expect(window.alert).toHaveBeenCalledWith(addOrUpdatePacketsErrorPrefix_ + updatePacketsErrorRoot_
+                    + addOrUpdatePacketsErrorSuffix_);
+                expect(window.alert).toHaveBeenCalledWith(updateComptsError_);
+                expect(mockExchangeService.deleteNewPackets).not.toHaveBeenCalledWith(fakeSavedPktId);
+                expect(mockExchangeService.deleteComptIdsToUpdate).not.toHaveBeenCalledWith(fakeSavedPktId);
+                expect(mockExchangeService.deleteNewComptLabels).not.toHaveBeenCalledWith(fakeSavedPktId);
+                expect(mockExchangeService.deleteComptIdsToDelete).toHaveBeenCalledWith(fakeSavedPktId);
+            })));
+        });
+
+    describe("Ensure that saveAllChangesToBase() with arg = pktId builds the data params properly with full stuff:" +
+        " pkt add/upd/del, compt upd/del",
+        function () {
+            beforeEach(inject(function () {
+                buildSpiesReturnValues_fullStuff();
+                buildDataParams_fullStuff(fakeSavedPktId);
                 buildResponse_success();
                 buildSpiesOnMockHelperService(false);
                 buildSpiesOnMockExchangeService();
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
             }));
 
             it("", (inject(function ($controller, $rootScope, $http) {
@@ -431,7 +650,7 @@ describe("Packets Panel Controller Test", function () {
             })));
         });
 
-    describe("Ensure that saveAllChangesToBase() with arg = pktId builds the data params properly with full stuff:" +
+    describe("Ensure that saveAllChangesToBase() with no args builds the data params properly with full stuff:" +
         " pkt add/upd/del, compt upd/del",
         function () {
             beforeEach(inject(function () {
@@ -440,7 +659,7 @@ describe("Packets Panel Controller Test", function () {
                 buildResponse_success();
                 buildSpiesOnMockHelperService(false);
                 buildSpiesOnMockExchangeService();
-                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
             }));
 
             it("", (inject(function ($controller, $rootScope, $http) {
@@ -460,7 +679,7 @@ describe("Packets Panel Controller Test", function () {
             buildResponse_success();
             buildSpiesOnMockHelperService(true);
             buildSpiesOnMockExchangeService();
-            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
 
         it("", (inject(function ($controller, $rootScope, $http) {
@@ -480,7 +699,7 @@ describe("Packets Panel Controller Test", function () {
             buildResponse_success();
             buildSpiesOnMockHelperService(true);
             buildSpiesOnMockExchangeService();
-            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
 
         it("", (inject(function ($controller, $rootScope, $http) {
@@ -499,7 +718,7 @@ describe("Packets Panel Controller Test", function () {
             buildResponse_success();
             buildSpiesOnMockHelperService(false);
             buildSpiesOnMockExchangeService();
-            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
         it("", inject(function ($controller, $rootScope, $http) {
             buildController($controller, $rootScope, $http);
@@ -518,7 +737,7 @@ describe("Packets Panel Controller Test", function () {
             buildResponse_success();
             buildSpiesOnMockHelperService(false);
             buildSpiesOnMockExchangeService();
-            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
         it("", inject(function ($controller, $rootScope, $http) {
             buildController($controller, $rootScope, $http);
@@ -537,7 +756,7 @@ describe("Packets Panel Controller Test", function () {
             buildResponse_success();
             buildSpiesOnMockHelperService(false);
             buildSpiesOnMockExchangeService();
-            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
         it("", inject(function ($controller, $rootScope, $http) {
             buildController($controller, $rootScope, $http);
@@ -556,7 +775,7 @@ describe("Packets Panel Controller Test", function () {
             buildResponse_success();
             buildSpiesOnMockHelperService(false);
             buildSpiesOnMockExchangeService();
-            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
         it("", inject(function ($controller, $rootScope, $http) {
             buildController($controller, $rootScope, $http);
@@ -575,7 +794,7 @@ describe("Packets Panel Controller Test", function () {
             buildResponse_success();
             buildSpiesOnMockHelperService(false);
             buildSpiesOnMockExchangeService();
-            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
         it("", inject(function ($controller, $rootScope, $http) {
             buildController($controller, $rootScope, $http);
@@ -594,7 +813,7 @@ describe("Packets Panel Controller Test", function () {
             buildResponse_success();
             buildSpiesOnMockHelperService(false);
             buildSpiesOnMockExchangeService();
-            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
         it("", inject(function ($controller, $rootScope, $http) {
             buildController($controller, $rootScope, $http);
@@ -613,7 +832,7 @@ describe("Packets Panel Controller Test", function () {
             buildResponse_success();
             buildSpiesOnMockHelperService(false);
             buildSpiesOnMockExchangeService();
-            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
         it("", inject(function ($controller, $rootScope, $http) {
             buildController($controller, $rootScope, $http);
@@ -631,7 +850,7 @@ describe("Packets Panel Controller Test", function () {
             buildResponse_success();
             buildSpiesOnMockHelperService(false);
             buildSpiesOnMockExchangeService();
-            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
         it("", inject(function ($controller, $rootScope, $http) {
             buildController($controller, $rootScope, $http);
@@ -649,7 +868,7 @@ describe("Packets Panel Controller Test", function () {
             buildResponse_success();
             buildSpiesOnMockHelperService(false);
             buildSpiesOnMockExchangeService();
-            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
         it("", inject(function ($controller, $rootScope, $http) {
             buildController($controller, $rootScope, $http);
@@ -667,7 +886,7 @@ describe("Packets Panel Controller Test", function () {
             buildResponse_success();
             buildSpiesOnMockHelperService(false);
             buildSpiesOnMockExchangeService();
-            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(response);
+            backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
         it("", inject(function ($controller, $rootScope, $http) {
             buildController($controller, $rootScope, $http);
@@ -750,6 +969,10 @@ describe("Packets Panel Controller Test", function () {
         fakeNewPackets = {"3": {id: "3", stateId: "2"}};
     };
 
+    var buildHttpError = function (status) {
+        httpError = status;
+    };
+
     var buildSpiesReturnValues_woutDelCompts = function () {
         fakeComptIdsToDelete = [];
         fakeComptIdsToUpdate = {"3": "true", "4": "true"};
@@ -828,23 +1051,23 @@ describe("Packets Panel Controller Test", function () {
     };
 
     var buildResponse_success = function () {
-        response = {"ADD_PACKETS": "false", "UPDATE_PACKETS": "false", "UPDATE_COMPTS": "false"};
+        httpResponse = {"ADD_PACKETS": "false", "UPDATE_PACKETS": "false", "UPDATE_COMPTS": "false"};
     };
 
     var buildResponse_error_addPackets = function () {
-        response = {"ADD_PACKETS": "true", "UPDATE_PACKETS": "false", "UPDATE_COMPTS": "false"};
+        httpResponse = {"ADD_PACKETS": "true", "UPDATE_PACKETS": "false", "UPDATE_COMPTS": "false"};
     };
 
     var buildResponse_error_updatePackets = function () {
-        response = {"ADD_PACKETS": "false", "UPDATE_PACKETS": "true", "UPDATE_COMPTS": "false"};
+        httpResponse = {"ADD_PACKETS": "false", "UPDATE_PACKETS": "true", "UPDATE_COMPTS": "false"};
     };
 
     var buildResponse_error_updateCompts = function () {
-        response = {"ADD_PACKETS": "false", "UPDATE_PACKETS": "false", "UPDATE_COMPTS": "true"};
+        httpResponse = {"ADD_PACKETS": "false", "UPDATE_PACKETS": "false", "UPDATE_COMPTS": "true"};
     };
 
     var buildResponse_allErrors = function () {
-        response = {'ADD_PACKETS': "true", "UPDATE_PACKETS": "true", "UPDATE_COMPTS": "true"};
+        httpResponse = {'ADD_PACKETS': "true", "UPDATE_PACKETS": "true", "UPDATE_COMPTS": "true"};
     };
 
     var buildDataParams_fullStuff = function (savedPktId) {

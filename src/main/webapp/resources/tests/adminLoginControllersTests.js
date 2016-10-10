@@ -31,6 +31,7 @@ describe("Login Controller Test", function () {
         authUrl_ = authUrl;
         role = "ADMIN";
         backend = $httpBackend;
+        errorStatus = 400;
     }));
 
     beforeEach(angular.mock.inject(function ($controller, $rootScope, $http, $location, $timeout, $cookies,
@@ -148,7 +149,6 @@ describe("Login Controller Test", function () {
         }));
 
         it("Properly elaborates the authentication error", function () {
-            errorStatus = 400;
             backend.expect("POST", authUrl_).respond(errorStatus);
             mockScope.authenticate(username, password);
             backend.flush();

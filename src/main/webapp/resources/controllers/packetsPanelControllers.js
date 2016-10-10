@@ -249,6 +249,7 @@ angular.module("packetAdminApp")
                     exchangeService.deleteNewPackets();
                 }
                 exchangeService.deleteComptIdsToDelete();
+                clearPacketIdsToDelete();
             } else {
                 if (updateCompts in errorMap) {
                     exchangeService.deleteComptIdsToUpdate(savedPktId);
@@ -261,7 +262,6 @@ angular.module("packetAdminApp")
                 }
                 exchangeService.deleteComptIdsToDelete(savedPktId);
             }
-            clearPacketIdsToDelete();
         };
 
         var init = function () {
