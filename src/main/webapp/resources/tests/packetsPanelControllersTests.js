@@ -113,7 +113,7 @@ describe("Packets Panel Controller Test", function () {
         beforeEach(inject(function ($controller, $rootScope, $http) {
             buildController($controller, $rootScope, $http)
         }));
-        it("", (inject(function ($controller, $rootScope, $http) {
+        it("", (inject(function () {
             expect(mockScope.data).not.toBeNull();
             expect(mockScope.data.adminRoleTitle).toBeDefined();
             expect(mockScope.data.adminRoleTitle).toEqual(adminRole);

@@ -84,11 +84,12 @@ app
                 pktId);
             exchangeService.setNewComptLabels(usualLabel, pktId, comptId);
             exchangeService.setAllComboData(false, {}, comptId);
-            exchangeService.setAllCheckedComboData(true, false, {}, comptId);
+            exchangeService.setAllCheckedComboData(false, false, {}, comptId);
             var allStatesLength = exchangeService.getAllStatesLength();
             for (var i = 1; i <= allStatesLength; i++) {
-                exchangeService.setAllComboData(i === allStatesLength, $scope.data.comboDataDefaultSet, comptId);
-                exchangeService.setAllCheckedComboData(true, false, $scope.data.newComptCheckedVals[i - 1], comptId, i);
+                exchangeService.setAllComboData(i === allStatesLength, $scope.data.comboDataDefaultSet, comptId, i);
+                exchangeService.setAllCheckedComboData(i === allStatesLength,
+                    false, $scope.data.newComptCheckedVals[i - 1], comptId, i);
             }
             $scope.data.newLabel = null;
         };
@@ -145,7 +146,6 @@ app
 
         $scope.getError = function (input, errorType) {
             var error = input.$error;
-            var resultMap = {};
             if (angular.isDefined(error)) {
                 if (errorType == "required" && error.required && input.$dirty) {
                     return "You did not enter a label";

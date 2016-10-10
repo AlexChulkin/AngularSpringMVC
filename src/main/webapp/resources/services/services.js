@@ -387,10 +387,10 @@ angular.module("packetAdminApp")
             }
         } else {
             allComboData[comptId][stateId] = value;
+        }
             if (broadcast) {
                 $rootScope.$broadcast('allComboData:update', allComboData);
             }
-        }
     };
 
         var pushToAllComboData = function (broadcast, value, comptId, stateId) {
