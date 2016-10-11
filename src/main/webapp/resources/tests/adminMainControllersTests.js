@@ -6,7 +6,7 @@ describe("Main Controller Test", function () {
     var backend;
     var mockExchangeService, mockHelperService, controller, mockScope;
     var initialPacketIndex_, labelLabel_, loadDataUrl_;
-    var fakeComptsLength, fakeMinimalValue, fakePacketIndValue, fakeSelectedPktId, fakeLoadErrorValue,
+    var fakeComptsLength, fakeMinOrMaxValue, fakePacketIndValue, fakeSelectedPktId, fakeLoadErrorValue,
         fakeLoadedNoComboDataValue, fakeLoadedNoStatesValue, fakePacketIsAlreadySelectedAtLeastOnceValue;
     var response;
     var isPacketIdUndefined;
@@ -22,7 +22,7 @@ describe("Main Controller Test", function () {
         backend = $httpBackend;
         loadDataUrl_ = loadDataUrl;
         fakeComptsLength = 0;
-        fakeMinimalValue = -1;
+        fakeMinOrMaxValue = 0;
         fakePacketIndValue = 0;
         fakeSelectedPktId = 1;
         fakeLoadErrorValue = false;
@@ -131,15 +131,15 @@ describe("Main Controller Test", function () {
         spyOn(mockExchangeService, 'getComptsLength').and.returnValue(fakeComptsLength);
         spyOn(mockExchangeService, 'setComptIdToInd');
         spyOn(mockExchangeService, 'setMaximalComptId');
-        spyOn(mockExchangeService, 'getMaximalComptId').and.returnValue(fakeMinimalValue);
+        spyOn(mockExchangeService, 'getMaximalComptId').and.returnValue(fakeMinOrMaxValue);
         spyOn(mockExchangeService, 'setLoadedNoPackets');
         spyOn(mockExchangeService, 'setLoadedNoSelectedPacket');
         spyOn(mockExchangeService, 'setLoadedNoUnSelectedPacket');
         spyOn(mockExchangeService, 'setAllPackets');
         spyOn(mockExchangeService, 'setMaximalPacketId');
-        spyOn(mockExchangeService, 'getMaximalPacketId').and.returnValue(fakeMinimalValue);
+        spyOn(mockExchangeService, 'getMaximalPacketId').and.returnValue(fakeMinOrMaxValue);
         spyOn(mockExchangeService, 'setMaximalPacketIndex');
-        spyOn(mockExchangeService, 'getMaximalPacketIndex').and.returnValue(fakeMinimalValue);
+        spyOn(mockExchangeService, 'getMaximalPacketIndex').and.returnValue(fakeMinOrMaxValue);
         spyOn(mockExchangeService, 'getSelectedPacketId').and.returnValue(fakeSelectedPktId);
         spyOn(mockExchangeService, 'setSelectedPacket');
         spyOn(mockExchangeService, 'setSelectedPage');
@@ -185,7 +185,7 @@ describe("Main Controller Test", function () {
                 buildController($controller, $rootScope, $http, false, {}, response);
                 backend.flush();
             }));
-            it("", (inject(function ($controller, $rootScope, $http) {
+            it("", (inject(function () {
                 initOrLoadAllPacketsTestFn(false);
             })));
         });
@@ -196,7 +196,7 @@ describe("Main Controller Test", function () {
                 backend.flush();
                 backend.expect("POST", loadDataUrl_, {dataParams: {}}).respond(response);
             }));
-            it("", (inject(function ($controller, $rootScope, $http) {
+            it("", (inject(function () {
                 mockScope.loadPackets();
                 backend.flush();
                 initOrLoadAllPacketsTestFn(false);
@@ -374,7 +374,6 @@ describe("Main Controller Test", function () {
             isPacketIdUndefined = angular.isUndefined(packetId);
             var packetInd = isPacketIdUndefined ? initialPacketIndex_ : fakePacketIndValue;
             var visitedPackets = {};
-            var comptIndices = [0, 1, 0];
             angular.forEach(response.compts, function (compt) {
                 var localPktId = isPacketIdUndefined ? compt.packetId : packetId;
                 var comptId = compt.id;

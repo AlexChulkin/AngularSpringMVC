@@ -4,33 +4,45 @@
 describe("Packets Panel Controller Test", function () {
     var backend;
     var mockExchangeService, mockHelperService, controller, mockScope, mockCookies;
-    var fakeComptsLength, fakeMinimalValue, fakeSelectedPktId, fakeLoadErrorValue,
-        fakeLoadedNoComboDataValue, fakeLoadedNoStatesValue, fakePacketIsAlreadySelectedAtLeastOnceValue,
-        fakeComptIdsToUpdate, fakeComptIdsToDelete, fakeAllStates, fakeAllCheckedComboData, fakeNewComptLabels,
-        fakeInitialStateId, fakeAllPackets, fakeNewPackets, fakeSavedPktId, fakeDeletedPktId, forbiddenCallTriggered;
+    var fakeSelectedPktId, fakeComptIdsToUpdate, fakeComptIdsToDelete, fakeAllStates, fakeNewComptLabels,
+        fakeAllCheckedComboData, fakeInitialStateId, fakeAllPackets, fakeNewPackets, fakeSavedPktId, fakeDeletedPktId,
+        fakeLoadErrorValue, fakeLoadedNoComboDataValue, fakeLoadedNoStatesValue, fakeMinOrMaxValue, fakeNewPktId;
+    var forbiddenCallTriggered;
     var httpResponse;
-    var httpError, errorStatus, errorStatusBadRequest_, errorStatusNotFound_, errorRequestTimeout;
-    var role_;
+    var httpError, errorStatusBadRequest_, errorStatusNotFound_, errorRequestTimeout;
+    var role_, adminRole_;
     var saveAllChangesToBaseUrl_;
     var dataParams;
-    var adminRole;
     var addPackets_, updatePackets_, updateCompts_;
     var addOrUpdatePacketsErrorPrefix_, addOrUpdatePacketsErrorSuffix_, updateComptsError_, addPacketsErrorRoot_,
         updatePacketsErrorRoot_;
+    var packetListActiveClass_, packetListNonActiveClass_, narrowPacketCaption_, widePacketCaption_;
+
+    var mockWindow = {
+        location: {
+            reload: function () {
+            }
+        }
+    };
+
+    beforeEach(angular.mock.module(function ($provide) {
+        $provide.value('$window', mockWindow);
+    }));
 
     beforeEach(function () {
         module("packetAdminApp");
     });
 
-    beforeEach(inject(function ($httpBackend, $cookies, saveAllChangesToBaseUrl, role, updatePacketsErrorRoot,
-                                addPackets, updatePackets, updateCompts, addOrUpdatePacketsErrorPrefix,
-                                addOrUpdatePacketsErrorSuffix, updateComptsError, addPacketsErrorRoot,
-                                errorStatusBadRequest, errorStatusNotFound) {
+    beforeEach(inject(function ($httpBackend, $cookies, saveAllChangesToBaseUrl, role, adminRole, packetListActiveClass,
+                                packetListNonActiveClass, updatePacketsErrorRoot, addPackets, updatePackets,
+                                updateCompts, addOrUpdatePacketsErrorPrefix, addOrUpdatePacketsErrorSuffix,
+                                updateComptsError, addPacketsErrorRoot, errorStatusBadRequest, errorStatusNotFound,
+                                narrowPacketCaption, widePacketCaption) {
         mockCookies = $cookies;
         backend = $httpBackend;
         saveAllChangesToBaseUrl_ = saveAllChangesToBaseUrl;
         role_ = role;
-        adminRole = "ADMIN";
+        adminRole_ = adminRole;
 
         errorStatusBadRequest_ = errorStatusBadRequest;
         errorStatusNotFound_ = errorStatusNotFound;
@@ -46,16 +58,15 @@ describe("Packets Panel Controller Test", function () {
         addPacketsErrorRoot_ = addPacketsErrorRoot;
         updatePacketsErrorRoot_ = updatePacketsErrorRoot;
 
-        fakeComptsLength = 0;
-        fakeMinimalValue = -1;
+        packetListActiveClass_ = packetListActiveClass;
+        packetListNonActiveClass_ = packetListNonActiveClass;
+        narrowPacketCaption_ = narrowPacketCaption;
+        widePacketCaption_ = widePacketCaption;
+
         fakeSelectedPktId = 1;
-        fakeLoadErrorValue = false;
-        fakeLoadedNoComboDataValue = false;
-        fakeLoadedNoStatesValue = false;
-        fakePacketIsAlreadySelectedAtLeastOnceValue = true;
         fakeSavedPktId = 1;
         fakeDeletedPktId = 2;
-
+        fakeNewPktId = 3;
 
         mockHelperService = {
             isEmpty: function () {
@@ -69,23 +80,25 @@ describe("Packets Panel Controller Test", function () {
             },
             setMaximalPacketId: function (value) {
             },
-            getMaximalPacketId: function () {
-            },
             getMaximalPacketIndex: function () {
             },
             setMaximalPacketIndex: function (packetInd) {
             },
             getSelectedPacketId: function () {
             },
+            setSelectedPacketId: function () {
+            },
             setSelectedPacket: function (pkt) {
             },
-            getAllCheckedComboData: function (comptId, stateId) {
+            getLoadedNoStates: function () {
             },
             getLoadedNoComboData: function () {
             },
             getLoadError: function () {
             },
-            getLoadedNoStates: function () {
+            getMaximalPacketId: function () {
+            },
+            getAllCheckedComboData: function (comptId, stateId) {
             },
             deleteComptIdsToDelete: function (packetId) {
             },
@@ -121,10 +134,244 @@ describe("Packets Panel Controller Test", function () {
         it("", (inject(function () {
             expect(mockScope.data).not.toBeNull();
             expect(mockScope.data.adminRoleTitle).toBeDefined();
-            expect(mockScope.data.adminRoleTitle).toEqual(adminRole);
+            expect(mockScope.data.adminRoleTitle).toEqual(adminRole_);
             expect(mockScope.data.isRoleNotAdmin).toBeDefined();
             expect(mockScope.data.isRoleNotAdmin).toEqual(mockCookies.get(role_) !== mockScope.data.adminRoleTitle);
         })));
+    });
+
+    describe('All Packets update listener test', function () {
+        beforeEach(inject(function ($controller, $rootScope, $http) {
+            buildController($controller, $rootScope, $http);
+            buildSpiesReturnValues_fullStuff();
+        }));
+
+        it('', function () {
+            mockScope.$broadcast('allPackets:update', fakeAllPackets);
+            expect(mockScope.data.allPackets).not.toBeNull();
+            expect(mockScope.data.allPackets).toEqual(fakeAllPackets);
+        });
+    });
+
+    describe('New Packets update listener test', function () {
+        beforeEach(inject(function ($controller, $rootScope, $http) {
+            buildController($controller, $rootScope, $http);
+            buildSpiesReturnValues_fullStuff();
+        }));
+
+        it('', function () {
+            mockScope.$broadcast('newPackets:update', fakeNewPackets);
+            expect(mockScope.data.newPackets).not.toBeNull();
+            expect(mockScope.data.newPackets).toEqual(fakeNewPackets);
+        });
+    });
+
+    describe('Add packet locally function test', function () {
+        beforeEach(inject(function ($controller, $rootScope, $http) {
+            buildController($controller, $rootScope, $http);
+            buildSpiesOnMockExchangeService();
+            mockScope.addPacketLocally();
+        }));
+
+        it('', function () {
+            expect(mockExchangeService.getMaximalPacketId).toHaveBeenCalledWith();
+            var fakePktId = fakeMinOrMaxValue + 1;
+            var fakePktIndex = fakeMinOrMaxValue + 1;
+            expect(mockExchangeService.setMaximalPacketId).toHaveBeenCalledWith(fakePktId);
+            expect(mockExchangeService.getMaximalPacketIndex).toHaveBeenCalledWith();
+            expect(mockExchangeService.setMaximalPacketIndex).toHaveBeenCalledWith(fakePktIndex);
+            var fakeNewPkt = {id: fakePktId, stateId: 1};
+            expect(mockExchangeService.setPacketIdToInd).toHaveBeenCalledWith(fakePktIndex, fakePktId);
+            expect(mockExchangeService.setNewPackets).toHaveBeenCalledWith(fakeNewPkt, fakePktId);
+            expect(mockExchangeService.setAllPackets).toHaveBeenCalledWith(fakeNewPkt, fakePktId);
+            expect(mockExchangeService.setLoadEmpty).toHaveBeenCalledWith(false);
+        });
+    });
+
+    describe('Delete packet locally function test delete old and unselected pkt', function () {
+        beforeEach(inject(function ($controller, $rootScope, $http) {
+            buildController($controller, $rootScope, $http);
+            buildSpiesReturnValues_fullStuff();
+            buildSpiesOnMockExchangeService();
+            buildMockScopeData();
+            buildDataParams_fullStuff();
+            mockScope.deletePacketLocally(fakeDeletedPktId);
+        }));
+
+        it('', function () {
+            dataParams.packetIdsToDelete = [fakeDeletedPktId];
+            if (!(fakeDeletedPktId in mockScope.data.newPackets)) {
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
+                mockScope.saveAllChangesToBase();
+                backend.flush();
+            }
+            expect(mockExchangeService.deleteNewComptLabels).toHaveBeenCalledWith(fakeDeletedPktId);
+            expect(mockExchangeService.deleteAllPackets).toHaveBeenCalledWith(fakeDeletedPktId);
+            expect(mockExchangeService.deleteComptIdsToDelete).toHaveBeenCalledWith(fakeDeletedPktId);
+            expect(mockExchangeService.getSelectedPacketId).toHaveBeenCalledWith();
+            if (fakeDeletedPktId === fakeSelectedPktId) {
+                expect(mockExchangeService.setSelectedPacket).toHaveBeenCalledWith(null);
+            } else {
+                expect(mockExchangeService.setSelectedPacket).not.toHaveBeenCalled();
+            }
+        });
+    });
+
+    describe('Delete packet locally function test delete unselected new pkt', function () {
+        beforeEach(inject(function ($controller, $rootScope, $http) {
+            buildController($controller, $rootScope, $http);
+            buildSpiesReturnValues_fullStuff();
+            buildSpiesOnMockExchangeService();
+            buildMockScopeData();
+            buildDataParams_fullStuff();
+            mockScope.deletePacketLocally(fakeNewPktId);
+        }));
+
+        it('', function () {
+            dataParams.packetIdsToDelete = [fakeNewPktId];
+            if (!(fakeNewPktId in mockScope.data.newPackets)) {
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
+                mockScope.saveAllChangesToBase();
+                backend.flush();
+            }
+            expect(mockExchangeService.deleteNewComptLabels).toHaveBeenCalledWith(fakeNewPktId);
+            expect(mockExchangeService.deleteAllPackets).toHaveBeenCalledWith(fakeNewPktId);
+            expect(mockExchangeService.deleteComptIdsToDelete).toHaveBeenCalledWith(fakeNewPktId);
+            expect(mockExchangeService.getSelectedPacketId).toHaveBeenCalledWith();
+            if (fakeDeletedPktId === fakeSelectedPktId) {
+                expect(mockExchangeService.setSelectedPacket).toHaveBeenCalledWith(null);
+            } else {
+                expect(mockExchangeService.setSelectedPacket).not.toHaveBeenCalled();
+            }
+        });
+    });
+
+    describe('Delete packet locally function test delete selected old pkt', function () {
+        beforeEach(inject(function ($controller, $rootScope, $http) {
+            buildController($controller, $rootScope, $http);
+            buildSpiesReturnValues_fullStuff();
+            buildSpiesOnMockExchangeService();
+            buildMockScopeData();
+            buildDataParams_fullStuff();
+            mockScope.deletePacketLocally(fakeSelectedPktId);
+        }));
+
+        it('', function () {
+            dataParams.packetIdsToDelete = [fakeSelectedPktId];
+            if (!(fakeSelectedPktId in mockScope.data.newPackets)) {
+                backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
+                mockScope.saveAllChangesToBase();
+                backend.flush();
+            }
+            expect(mockExchangeService.deleteNewComptLabels).toHaveBeenCalledWith(fakeSelectedPktId);
+            expect(mockExchangeService.deleteAllPackets).toHaveBeenCalledWith(fakeSelectedPktId);
+            expect(mockExchangeService.deleteComptIdsToDelete).toHaveBeenCalledWith(fakeSelectedPktId);
+            expect(mockExchangeService.getSelectedPacketId).toHaveBeenCalledWith();
+            if (fakeSelectedPktId === fakeSelectedPktId) {
+                expect(mockExchangeService.setSelectedPacket).toHaveBeenCalledWith(null);
+            } else {
+                expect(mockExchangeService.setSelectedPacket).not.toHaveBeenCalled();
+            }
+        });
+    });
+
+    describe('Show aggregate buttons function negative test load error', function () {
+        beforeEach(inject(function ($controller, $rootScope, $http) {
+            buildController($controller, $rootScope, $http);
+            buildSpiesReturnValues_loadedData(true, false, false);
+            buildSpiesOnMockExchangeService();
+        }));
+
+        it('', function () {
+            var res = mockScope.showAggregateButtons();
+            expect(res).toEqual((!mockExchangeService.getLoadError()
+            && (mockExchangeService.getLoadedNoComboData() === false)
+            && (mockExchangeService.getLoadedNoStates() === false)));
+            expect(mockExchangeService.getLoadError).toHaveBeenCalledWith();
+            expect(mockExchangeService.getLoadedNoComboData).not.toHaveBeenCalled();
+            expect(mockExchangeService.getLoadedNoStates).not.toHaveBeenCalled();
+        });
+    });
+
+    describe('Show aggregate buttons function  negative test loaded no combodata', function () {
+        beforeEach(inject(function ($controller, $rootScope, $http) {
+            buildController($controller, $rootScope, $http);
+            buildSpiesReturnValues_loadedData(false, true, false);
+            buildSpiesOnMockExchangeService();
+        }));
+
+        it('', function () {
+            var res = mockScope.showAggregateButtons();
+            expect(res).toEqual((!mockExchangeService.getLoadError()
+            && (mockExchangeService.getLoadedNoComboData() === false)
+            && (mockExchangeService.getLoadedNoStates() === false)));
+            expect(mockExchangeService.getLoadError).toHaveBeenCalledWith();
+            expect(mockExchangeService.getLoadedNoComboData).toHaveBeenCalledWith();
+            expect(mockExchangeService.getLoadedNoStates).toHaveBeenCalledWith();
+        });
+    });
+
+    describe('Show aggregate buttons function  negative test loaded no states', function () {
+        beforeEach(inject(function ($controller, $rootScope, $http) {
+            buildController($controller, $rootScope, $http);
+            buildSpiesReturnValues_loadedData(false, false, true);
+            buildSpiesOnMockExchangeService();
+        }));
+
+        it('', function () {
+            var res = mockScope.showAggregateButtons();
+            expect(res).toEqual((!mockExchangeService.getLoadError()
+            && (mockExchangeService.getLoadedNoComboData() === false)
+            && (mockExchangeService.getLoadedNoStates() === false)));
+            expect(mockExchangeService.getLoadError).toHaveBeenCalledWith();
+            expect(mockExchangeService.getLoadedNoComboData).toHaveBeenCalledWith();
+            expect(mockExchangeService.getLoadedNoStates).toHaveBeenCalledWith();
+        });
+    });
+
+    describe('Show aggregate buttons function positive test', function () {
+        beforeEach(inject(function ($controller, $rootScope, $http) {
+            buildController($controller, $rootScope, $http);
+            buildSpiesOnMockExchangeService();
+        }));
+
+        it('', function () {
+            var res = mockScope.showAggregateButtons();
+            expect(res).toEqual((!mockExchangeService.getLoadError()
+            && (mockExchangeService.getLoadedNoComboData() === false)
+            && (mockExchangeService.getLoadedNoStates() === false)));
+            expect(mockExchangeService.getLoadError).toHaveBeenCalledWith();
+            expect(mockExchangeService.getLoadedNoComboData).toHaveBeenCalledWith();
+            expect(mockExchangeService.getLoadedNoStates).toHaveBeenCalledWith();
+        });
+    });
+
+    describe('getPacketClass function test for selected pkt and narrow caption', function () {
+        beforeEach(inject(function ($controller, $rootScope, $http) {
+            buildController($controller, $rootScope, $http);
+            buildSpiesOnMockExchangeService();
+        }));
+
+        it('', function () {
+            var selectedPkt = {id: fakeSelectedPktId};
+            var result = mockScope.getPacketClass(selectedPkt);
+            expect(mockExchangeService.getSelectedPacketId).toHaveBeenCalledWith();
+            expect(result).toEqual(packetListActiveClass_ + " " + narrowPacketCaption_);
+        });
+    });
+
+    describe('getPacketClass function test for unselected pkt and wide caption', function () {
+        beforeEach(inject(function ($controller, $rootScope, $http) {
+            buildController($controller, $rootScope, $http);
+            buildSpiesOnMockExchangeService();
+        }));
+
+        it('', function () {
+            var selectedPkt = {id: fakeSelectedPktId + 10};
+            var result = mockScope.getPacketClass(selectedPkt);
+            expect(mockExchangeService.getSelectedPacketId).toHaveBeenCalledWith();
+            expect(result).toEqual(packetListNonActiveClass_ + " " + widePacketCaption_);
+        });
     });
 
     describe("Ensure that saveAllChangesToBase() with no args http error response is properly elaborated: " +
@@ -932,22 +1179,31 @@ describe("Packets Panel Controller Test", function () {
         }))
     });
 
+    describe('Reload button test', function () {
+        beforeEach(inject(function ($controller, $rootScope, $http) {
+            buildController($controller, $rootScope, $http);
+            spyOn(mockWindow.location, 'reload');
+            mockScope.reloadRoute();
+        }));
+
+        it('', function () {
+            expect(mockWindow.location.reload).toHaveBeenCalledWith();
+        });
+    });
+
     var buildSpiesOnMockExchangeService = function () {
         spyOn(mockExchangeService, 'setPacketIdToInd');
         spyOn(mockExchangeService, 'setAllPackets');
-        spyOn(mockExchangeService, 'getMaximalPacketId').and.returnValue(fakeMinimalValue);
         spyOn(mockExchangeService, 'setMaximalPacketIndex');
-        spyOn(mockExchangeService, 'getMaximalPacketIndex').and.returnValue(fakeMinimalValue);
+        spyOn(mockExchangeService, 'setMaximalPacketId');
         spyOn(mockExchangeService, 'getSelectedPacketId').and.returnValue(fakeSelectedPktId);
+        spyOn(mockExchangeService, 'setSelectedPacketId');
         spyOn(mockExchangeService, 'setSelectedPacket');
         spyOn(mockExchangeService, 'deleteComptIdsToDelete');
         spyOn(mockExchangeService, 'deleteComptIdsToUpdate');
         spyOn(mockExchangeService, 'deleteNewComptLabels');
         spyOn(mockExchangeService, 'deleteNewPackets');
         spyOn(mockExchangeService, 'deleteAllPackets');
-        spyOn(mockExchangeService, 'getLoadError').and.returnValue(fakeLoadErrorValue);
-        spyOn(mockExchangeService, 'getLoadedNoComboData').and.returnValue(fakeLoadedNoComboDataValue);
-        spyOn(mockExchangeService, 'getLoadedNoStates').and.returnValue(fakeLoadedNoStatesValue);
         spyOn(mockExchangeService, 'setLoadEmpty');
         spyOn(mockExchangeService, 'setNewPackets');
         spyOn(mockExchangeService, 'getAllCheckedComboData').and.returnValue(fakeAllCheckedComboData);
@@ -956,6 +1212,11 @@ describe("Packets Panel Controller Test", function () {
         spyOn(mockExchangeService, 'getComptIdsToUpdate').and.returnValue(fakeComptIdsToUpdate);
         spyOn(mockExchangeService, 'getAllStates').and.returnValue(fakeAllStates);
         spyOn(mockExchangeService, 'getNewComptLabels').and.returnValue(fakeNewComptLabels);
+        spyOn(mockExchangeService, 'getLoadError').and.returnValue(fakeLoadErrorValue);
+        spyOn(mockExchangeService, 'getLoadedNoComboData').and.returnValue(fakeLoadedNoComboDataValue);
+        spyOn(mockExchangeService, 'getLoadedNoStates').and.returnValue(fakeLoadedNoStatesValue);
+        spyOn(mockExchangeService, 'getMaximalPacketId').and.returnValue(fakeMinOrMaxValue);
+        spyOn(mockExchangeService, 'getMaximalPacketIndex').and.returnValue(fakeMinOrMaxValue);
     };
 
     var buildSpiesReturnValues_fullStuff = function () {
@@ -967,6 +1228,12 @@ describe("Packets Panel Controller Test", function () {
         fakeInitialStateId = 2;
         fakeAllPackets = {"1": {id: "1", stateId: "1"}, "2": {id: "2", stateId: "2"}, "3": {id: "3", stateId: "2"}};
         fakeNewPackets = {"3": {id: "3", stateId: "2"}};
+    };
+
+    var buildSpiesReturnValues_loadedData = function (loadErrorVal, loadedNoComboDataVal, loadedNoStatesVal) {
+        fakeLoadErrorValue = loadErrorVal;
+        fakeLoadedNoComboDataValue = loadedNoComboDataVal;
+        fakeLoadedNoStatesValue = loadedNoStatesVal;
     };
 
     var buildHttpError = function (status) {
