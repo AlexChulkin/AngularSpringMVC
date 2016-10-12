@@ -8,7 +8,8 @@ describe("Compts Panel Controller Test", function () {
         fakeLoadedNoPackets, fakeLoadedNoSelectedPacket, fakeInitialAllCheckedComboData, fakeComboDataDefaultSet,
         fakeNewComptCheckedVals, fakeSelectedPktIsEmpty, fakeAllCheckedComboData, fakeInitialStateId, fakeAllPackets,
         fakeNewPackets, fakeMinOrMaxValue, fakeNewComptId, fakeLabel, fakeUpperCaseLabel, fakeSelectedComptsLength,
-        fakeAllStatesLength, fakeDeletedCompt, fakeDeletedComptId, fakeDeletedComptLabel, fakeSelectedPktId;
+        fakeAllStatesLength, fakeDeletedCompt, fakeDeletedComptId, fakeDeletedComptLabel, fakeSelectedPktId,
+        fakeStateId;
     var formLabelPattern_;
     var packetListPageCount_;
     var pageListActiveClass_, pageListNonActiveClass_;
@@ -201,7 +202,7 @@ describe("Compts Panel Controller Test", function () {
             expect(res).toBeFalsy();
         });
 
-        it('addComptLocally() proper work test', function () {
+        it('addComptLocally() proper work test with not-null newComptLabels', function () {
             var fakeNewComptLabel = fakeNewComptLabels["5"];
             mockScope.$broadcast('comboDataDefaultSet:update', fakeComboDataDefaultSet);
             mockScope.$broadcast('newComptCheckedVals:update', fakeNewComptCheckedVals);
@@ -235,12 +236,24 @@ describe("Compts Panel Controller Test", function () {
             }
             expect(mockScope.data.newLabel).toBeNull();
         });
+    });
 
-
+    describe('addComptLocally() proper work test with null newComptLabels', function () {
+        it('', function () {
+            var fakeNewComptLabel = fakeNewComptLabels["5"];
+            mockScope.$broadcast('newComptCheckedVals:update', fakeNewComptCheckedVals);
+            buildSpiesReturnValues_NullComptIdsToUpdateAndNewComptLabels();
+            buildSpiesOnMockExchangeService();
+            mockScope.data.newLabel = fakeNewComptLabel;
+            mockScope.addComptLocally();
+            expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith();
+            expect(mockExchangeService.setNewComptLabels).toHaveBeenCalledWith({});
+            expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith(fakeSelectedPktId);
+            expect(mockExchangeService.setNewComptLabels).toHaveBeenCalledWith({}, fakeSelectedPktId);
+        })
     });
 
     describe('deleteComptLocally() test', function () {
-
         it('deleteComptLocally() with not-null compts to update and not-null new compt labels proper work test',
             function () {
                 buildSpiesReturnValues_fullStuff();
@@ -282,10 +295,125 @@ describe("Compts Panel Controller Test", function () {
             expect(mockExchangeService.getComptIdsToUpdate).toHaveBeenCalledWith(fakeSelectedPktId);
             expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith(fakeSelectedPktId);
             expect(mockExchangeService.getComptIdsToDelete).toHaveBeenCalledWith(fakeSelectedPktId);
-            expect(mockExchangeService.setComptIdsToDelete).toHaveBeenCalledWith([],
+            expect(mockExchangeService.setComptIdsToDelete).toHaveBeenCalledWith([], fakeSelectedPktId);
+            expect(mockExchangeService.pushToComptIdsToDelete).toHaveBeenCalledWith(fakeDeletedComptId, 
                 fakeSelectedPktId);
-            expect(mockExchangeService.pushToComptIdsToDelete).toHaveBeenCalledWith(fakeDeletedComptId,
-                fakeSelectedPktId);
+        });
+    });
+
+    describe('updateComptLocally() test', function () {
+        it('updateComptLocally() with not-null compts to update test', function () {
+            buildSpiesReturnValues_fullStuff();
+            buildSpiesOnMockExchangeService();
+            mockScope.updateComptLocally(fakeDeletedCompt, fakeStateId);
+            expect(mockExchangeService.getSelectedPacketId).toHaveBeenCalledWith();
+            expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith(fakeSelectedPktId,
+                fakeDeletedComptId);
+            expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith(fakeSelectedPktId);
+            expect(mockExchangeService.deleteComptIdsToUpdate).not.toHaveBeenCalled();
+            expect(mockExchangeService.getComptIdsToUpdate).not.toHaveBeenCalled();
+        });
+
+        it('updateComptLocally() with null compts to update and null new compt labels and empty initial ' +
+            'checked combo data proper work test', function () {
+            buildSpiesReturnValues_NullComptIdsToUpdateAndNewComptLabels();
+            buildSpiesOnMockExchangeService();
+            buildEmptyInitialAllCheckedComboData();
+            mockScope.updateComptLocally(fakeDeletedCompt, fakeStateId);
+            expect(mockExchangeService.getSelectedPacketId).toHaveBeenCalledWith();
+            expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith(fakeSelectedPktId);
+            expect(mockExchangeService.deleteComptIdsToUpdate).not.toHaveBeenCalled();
+            expect(mockExchangeService.getComptIdsToUpdate).toHaveBeenCalledWith(fakeSelectedPktId);
+            expect(mockExchangeService.setComptIdsToUpdate).toHaveBeenCalledWith({}, fakeSelectedPktId);
+            expect(mockExchangeService.setComptIdsToUpdate).toHaveBeenCalledWith(true, fakeSelectedPktId,
+                fakeDeletedComptId);
+        });
+
+        it('updateComptLocally() with null compts to update and null new compt labels and not empty initial ' +
+            'checked combo data  and not equal initial all checked combo data and checked combo data ' +
+            'proper work test', function () {
+            buildSpiesReturnValues_NullComptIdsToUpdateAndNewComptLabels();
+            buildSpiesOnMockExchangeService();
+            buildNotEmptyInitialAllCheckedComboDataAndNotEqualInitialAllCheckedComboDataAndAllCheckedComboData
+            (fakeDeletedComptId, fakeStateId);
+            mockScope.updateComptLocally(fakeDeletedCompt, fakeStateId);
+            expect(mockExchangeService.getSelectedPacketId).toHaveBeenCalledWith();
+            expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith(fakeSelectedPktId);
+            expect(mockExchangeService.deleteComptIdsToUpdate).not.toHaveBeenCalled();
+            expect(mockExchangeService.getComptIdsToUpdate).toHaveBeenCalledWith(fakeSelectedPktId);
+            expect(mockExchangeService.setComptIdsToUpdate).toHaveBeenCalledWith({}, fakeSelectedPktId);
+            expect(mockExchangeService.setComptIdsToUpdate).toHaveBeenCalledWith(true, fakeSelectedPktId,
+                fakeDeletedComptId);
+        });
+
+        it('updateComptLocally() with null compts to update and null new compt labels and not empty initial ' +
+            'checked combo data  and not equal initial all checked combo data and checked combo data ' +
+            'proper work test', function () {
+            buildSpiesReturnValues_NullComptIdsToUpdateAndNewComptLabels();
+            buildSpiesOnMockExchangeService();
+            buildEqualInitialAllCheckedComboDataAndAllCheckedComboData(fakeDeletedComptId, fakeStateId);
+            mockScope.updateComptLocally(fakeDeletedCompt, fakeStateId);
+            expect(mockExchangeService.getSelectedPacketId).toHaveBeenCalledWith();
+            expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith(fakeSelectedPktId);
+            expect(mockExchangeService.deleteComptIdsToUpdate).toHaveBeenCalledWith
+            (fakeSelectedPktId, fakeDeletedComptId);
+            expect(mockExchangeService.getComptIdsToUpdate).not.toHaveBeenCalled();
+            expect(mockExchangeService.setComptIdsToUpdate).not.toHaveBeenCalled();
+        });
+
+        it('updateComptLocally() with not-null compts to update and null new compt labels and not empty initial ' +
+            'checked combo data  and not equal initial all checked combo data and checked combo data ' +
+            'proper work test', function () {
+            buildSpiesReturnValues_NullNewComptLabels();
+            buildSpiesOnMockExchangeService();
+            buildNotEmptyInitialAllCheckedComboDataAndNotEqualInitialAllCheckedComboDataAndAllCheckedComboData
+            (fakeDeletedComptId, fakeStateId);
+            mockScope.updateComptLocally(fakeDeletedCompt, fakeStateId);
+            expect(mockExchangeService.getSelectedPacketId).toHaveBeenCalledWith();
+            expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith(fakeSelectedPktId);
+            expect(mockExchangeService.deleteComptIdsToUpdate).not.toHaveBeenCalled();
+            expect(mockExchangeService.getComptIdsToUpdate).toHaveBeenCalledWith(fakeSelectedPktId);
+            expect(mockExchangeService.setComptIdsToUpdate).not.toHaveBeenCalledWith({}, fakeSelectedPktId);
+            expect(mockExchangeService.setComptIdsToUpdate).toHaveBeenCalledWith(true, fakeSelectedPktId,
+                fakeDeletedComptId);
+        });
+    });
+
+    describe("getError() test", function () {
+        beforeEach(inject(function ($controller, $rootScope, $http) {
+            buildController($controller, $rootScope, $http);
+        }));
+
+        it('', function () {
+            var required = "required";
+            var maxlength = "maxlength";
+            var blacklist = "blacklist";
+            var pattern = "pattern";
+
+            var input = {};
+            expect(mockScope.getError(input, required)).toBeNull();
+
+            input = {$error: {}};
+            expect(mockScope.getError(input, required)).toBeNull();
+            input = {$error: {required: true}};
+            expect(mockScope.getError(input, required)).toBeNull();
+            input = {$error: {required: true}, $dirty: true};
+            expect(mockScope.getError(input, required)).toBe("You did not enter a label");
+
+            input = {$error: {}};
+            expect(mockScope.getError(input, maxlength)).toBeNull();
+            input = {$error: {maxlength: true}};
+            expect(mockScope.getError(input, maxlength)).toBe("Label is too long");
+
+            input = {$error: {}};
+            expect(mockScope.getError(input, blacklist)).toBeNull();
+            input = {$error: {blacklist: true}};
+            expect(mockScope.getError(input, blacklist)).toBe("Label is not unique");
+
+            input = {$error: {}};
+            expect(mockScope.getError(input, pattern)).toBeNull();
+            input = {$error: {pattern: true}};
+            expect(mockScope.getError(input, pattern)).toBe("Label should contain latin letters, digits, underscore and spaces only");
         });
     });
 
@@ -320,12 +448,17 @@ describe("Compts Panel Controller Test", function () {
         fakeNewComptId = fakeMinOrMaxValue + 1;
         fakeLabel = 'a';
         fakeUpperCaseLabel = 'A';
+        fakeStateId = fakeAllStates[0].id;
     };
 
     var buildSpiesReturnValues_NullComptIdsToUpdateAndNewComptLabels = function () {
         buildSpiesReturnValues_fullStuff();
-        fakeComptIdsToDelete = [1, 2];
         fakeComptIdsToUpdate = null;
+        fakeNewComptLabels = null;
+    };
+
+    var buildSpiesReturnValues_NullNewComptLabels = function () {
+        buildSpiesReturnValues_fullStuff();
         fakeNewComptLabels = null;
     };
 
@@ -335,6 +468,30 @@ describe("Compts Panel Controller Test", function () {
         fakeComptIdsToUpdate = null;
         fakeNewComptLabels = null;
     };
+
+    var buildEmptyInitialAllCheckedComboData = function () {
+        mockScope.data.initialAllCheckedComboData = {};
+    };
+
+    var buildNotEmptyInitialAllCheckedComboDataAndNotEqualInitialAllCheckedComboDataAndAllCheckedComboData =
+        function (comptId, stateId) {
+            mockScope.data.initialAllCheckedComboData = {};
+            mockScope.data.initialAllCheckedComboData[comptId] = fakeInitialAllCheckedComboData;
+            mockScope.data.initialAllCheckedComboData[comptId][stateId] = fakeInitialAllCheckedComboData;
+            mockScope.data.allCheckedComboData = {};
+            mockScope.data.allCheckedComboData[comptId] = {};
+            mockScope.data.allCheckedComboData[comptId][stateId] = {};
+        };
+
+    var buildEqualInitialAllCheckedComboDataAndAllCheckedComboData = function (comptId, stateId) {
+        mockScope.data.initialAllCheckedComboData = {};
+        mockScope.data.initialAllCheckedComboData[comptId] = {};
+        mockScope.data.initialAllCheckedComboData[comptId][stateId] = fakeInitialAllCheckedComboData;
+        mockScope.data.allCheckedComboData = {};
+        mockScope.data.allCheckedComboData[comptId] = {};
+        mockScope.data.allCheckedComboData[comptId][stateId] = fakeInitialAllCheckedComboData;
+    };
+
 
     var buildSpiesOnMockExchangeService = function () {
         spyOn(mockExchangeService, 'getSelectedPacketId').and.returnValue(fakeSelectedPktId);

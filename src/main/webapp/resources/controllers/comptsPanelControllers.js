@@ -152,7 +152,9 @@ app
                 } else if (errorType == "pattern" && error.pattern) {
                     return "Label should contain latin letters, digits, underscore and spaces only";
                 }
+                return null;
             }
+            return null;
         };
 
         var init = function () {
