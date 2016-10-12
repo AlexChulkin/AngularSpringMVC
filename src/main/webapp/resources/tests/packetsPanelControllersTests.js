@@ -4,7 +4,7 @@
 describe("Packets Panel Controller Test", function () {
     var backend;
     var mockExchangeService, mockHelperService, controller, mockScope, mockCookies;
-    var fakeSelectedPktId, fakeComptIdsToUpdate, fakeComptIdsToDelete, fakeAllStates, fakeNewComptLabels,
+    var fakeSelectedPktId, fakeComptIdsToUpdate, fakeAllStates, fakeNewComptLabels,
         fakeAllCheckedComboData, fakeInitialStateId, fakeAllPackets, fakeNewPackets, fakeSavedPktId, fakeDeletedPktId,
         fakeLoadErrorValue, fakeLoadedNoComboDataValue, fakeLoadedNoStatesValue, fakeMinOrMaxValue, fakeNewPktId;
     var forbiddenCallTriggered;
@@ -127,11 +127,12 @@ describe("Packets Panel Controller Test", function () {
         };
     }));
 
-    describe("Init fn", function () {
+    describe("Init fn test", function () {
         beforeEach(inject(function ($controller, $rootScope, $http) {
             buildController($controller, $rootScope, $http)
         }));
         it("", (inject(function () {
+            expect(mockScope.data).toBeDefined();
             expect(mockScope.data).not.toBeNull();
             expect(mockScope.data.adminRoleTitle).toBeDefined();
             expect(mockScope.data.adminRoleTitle).toEqual(adminRole_);

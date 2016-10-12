@@ -588,7 +588,7 @@ angular.module("packetAdminApp")
 
         var setSelectedCompts = function (value) {
             selectedCompts = value;
-        $rootScope.$broadcast('selectedCompts:update', selectedCompts);
+            $rootScope.$broadcast('selectedCompts:update', selectedCompts);
         };
 
         var setSelectedCompt = function (index, value, pageSize) {
