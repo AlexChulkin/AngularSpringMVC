@@ -80,8 +80,7 @@ app
             exchangeService.pushToSelectedCompts(newCompt);
             var pktId = exchangeService.getSelectedPacketId();
             exchangeService.setNewComptLabels(exchangeService.getNewComptLabels() || {});
-            exchangeService.setNewComptLabels(exchangeService.getNewComptLabels(pktId) || {},
-                pktId);
+            exchangeService.setNewComptLabels(exchangeService.getNewComptLabels(pktId) || {}, pktId);
             exchangeService.setNewComptLabels(usualLabel, pktId, comptId);
             exchangeService.setAllComboData(false, {}, comptId);
             exchangeService.setAllCheckedComboData(false, false, {}, comptId);
@@ -105,11 +104,8 @@ app
             if (exchangeService.getComptIdsToUpdate(pktId)) {
                 exchangeService.deleteComptIdsToUpdate(pktId, comptId);
             }
-            if (exchangeService.getNewComptLabels(pktId)
-                && exchangeService.getNewComptLabels(pktId, comptId)) {
-
+            if (exchangeService.getNewComptLabels(pktId) && exchangeService.getNewComptLabels(pktId, comptId)) {
                 exchangeService.deleteNewComptLabels(pktId, comptId);
-                
             } else {
                 var comptIdsToDelete = exchangeService.getComptIdsToDelete(pktId) || [];
                 exchangeService.setComptIdsToDelete(comptIdsToDelete, pktId);
