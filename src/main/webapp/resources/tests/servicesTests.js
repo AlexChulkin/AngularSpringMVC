@@ -1,13 +1,13 @@
 /**
  * Created by alexc_000 on 2016-10-13.
  */
-describe("Exchange Service Test", function () {
+describe("Exchange and Helper Services Test", function () {
 
     beforeEach(function () {
         module("packetAdminApp");
     });
 
-    it("Init() test", function () {
+    it("Exchangeservice Init() test", function () {
         inject(function (exchangeService) {
             exchangeService.init();
             expect(exchangeService.getComptIdToInd()).toEqual({});
@@ -1116,6 +1116,22 @@ describe("Exchange Service Test", function () {
                 });
             });
 
+        describe('Helper service test', function () {
+            it('IsUndefinedOrNull() test', function () {
+                expect(mockHelperService.isUndefinedOrNull(selCompts[0])).toBeFalsy();
+                expect(mockHelperService.isUndefinedOrNull(2)).toBeFalsy();
+                expect(mockHelperService.isUndefinedOrNull(false)).toBeFalsy();
+                expect(mockHelperService.isUndefinedOrNull('text')).toBeFalsy();
+                expect(mockHelperService.isUndefinedOrNull(null)).toBeTruthy();
+                expect(mockHelperService.isUndefinedOrNull(undefined)).toBeTruthy();
+            });
+
+            it('IsUndefinedOrNull() test', function () {
+                expect(mockHelperService.isEmpty(selCompts)).toBeFalsy();
+                expect(mockHelperService.isEmpty([2, 'false'])).toBeFalsy();
+                expect(mockHelperService.isEmpty([])).toBeTruthy();
+            });
+        });
 
         var prepareOldPkt = function () {
             mockExchangeService.setPacketIdToInd(oldPktInd, oldPkt.id);
