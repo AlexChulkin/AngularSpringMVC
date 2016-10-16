@@ -2,7 +2,7 @@
  * Created by alexc_000 on 2016-10-01.
  */
 
-describe("Main Controller Test", function () {
+describe("Admin Main Controller Test", function () {
     var backend;
     var mockExchangeService, mockHelperService, controller, mockScope;
     var initialPacketIndex_, labelLabel_, loadDataUrl_;
@@ -73,7 +73,7 @@ describe("Main Controller Test", function () {
             },
             setSelectedPacket: function (pkt) {
             },
-            setSelectedPage: function (pkt) {
+            setSelectedPage: function (page) {
             },
             setPacketInitialStateIds: function () {
             },
@@ -119,7 +119,7 @@ describe("Main Controller Test", function () {
             },
             deleteNewPackets: function (packetId) {
             },
-            setCompts: function (value, packetInd) {
+            initializeCompts: function (packetInd) {
             },
             getPacketIdToInd: function (pktId) {
             }
@@ -156,7 +156,7 @@ describe("Main Controller Test", function () {
         spyOn(mockExchangeService, 'setAllCheckedComboData');
         spyOn(mockExchangeService, 'setInitialAllCheckedComboData');
         spyOn(mockExchangeService, 'pushToAllComboData');
-        spyOn(mockExchangeService, 'setCompts');
+        spyOn(mockExchangeService, 'initializeCompts');
         spyOn(mockExchangeService, 'getPacketIdToInd').and.returnValue(fakePacketIndValue);
         spyOn(mockExchangeService, 'deleteComptIdsToDelete');
         spyOn(mockExchangeService, 'deleteComptIdsToUpdate');
@@ -367,6 +367,9 @@ describe("Main Controller Test", function () {
                 expect(mockExchangeService.deleteComptIdsToUpdate).toHaveBeenCalledWith(packetId);
                 expect(mockExchangeService.deleteNewComptLabels).toHaveBeenCalledWith(packetId);
                 expect(mockExchangeService.deleteNewPackets).toHaveBeenCalledWith(packetId);
+                expect(mockExchangeService.getPacketIdToInd).toHaveBeenCalledWith(packetId);
+                expect(mockExchangeService.initializeCompts).toHaveBeenCalledWith(fakePacketIndValue);
+                expect(mockExchangeService.setComptLabels).toHaveBeenCalledWith({}, packetId);
             }
         });
 
@@ -380,13 +383,14 @@ describe("Main Controller Test", function () {
                 var label = compt.label.toUpperCase();
                 if (!(localPktId in visitedPackets)) {
                     visitedPackets[localPktId] = true;
-                    expect(mockExchangeService.setComptLabels).toHaveBeenCalledWith({}, localPktId);
+                    // expect(mockExchangeService.setComptLabels).toHaveBeenCalledWith({}, localPktId);
                     if (isPacketIdUndefined) {
-                        expect(mockExchangeService.pushToCompts).toHaveBeenCalledWith([]);
+                        // expect(mockExchangeService.pushToCompts).toHaveBeenCalledWith([]);
                         expect(mockExchangeService.setPacketIdToInd).toHaveBeenCalledWith(++packetInd, localPktId);
-                    } else {
-                        expect(mockExchangeService.setCompts).toHaveBeenCalledWith([], packetInd);
                     }
+                    // else {
+                    //     expect(mockExchangeService.setCompts).toHaveBeenCalledWith([], packetInd);
+                    // }
                 }
                 expect(mockExchangeService.setComptLabels).toHaveBeenCalledWith(true, localPktId, label);
                 expect(mockExchangeService.getComptsLength).toHaveBeenCalledWith(packetInd);
@@ -412,9 +416,9 @@ describe("Main Controller Test", function () {
             expect(mockExchangeService.setLoadedNoSelectedPacket).not.toHaveBeenCalledWith
             (!(isEmpty && !isPacketIdUndefined && packetId === fakeSelectedPktId));
             expect(mockExchangeService.setLoadedNoUnSelectedPacket).toHaveBeenCalledWith
-            (isEmpty && !isPacketIdUndefined && packetId !== fakeSelectedPktId, packetId);
+            ((isEmpty && !isPacketIdUndefined && packetId !== fakeSelectedPktId), packetId);
             expect(mockExchangeService.setLoadedNoUnSelectedPacket).not.toHaveBeenCalledWith
-            (!(isEmpty && !isPacketIdUndefined && packetId !== fakeSelectedPktId, packetId));
+            (!(isEmpty && !isPacketIdUndefined && packetId !== fakeSelectedPktId), packetId);
 
             angular.forEach(response.packets, function (pkt) {
                 var pktId = pkt.id;
@@ -448,37 +452,20 @@ describe("Main Controller Test", function () {
             isPacketIdUndefined = angular.isUndefined(packetId);
             if (!isEmpty) {
                 var comptSupplInfoLength = response.comptSupplInfo.length;
-                var i = 0;
-                var visitedComptIds = {};
+                var counter = 0;
                 angular.forEach(response.comptSupplInfo, function (item) {
-                    var broadcast = i === comptSupplInfoLength - 1;
+                    var broadcast = counter === comptSupplInfoLength - 1;
                     var comptId = item.comptId;
                     var stateId = item.stateId;
                     var label = item.label;
                     var checked = item.checked;
-                    expect(mockExchangeService.getAllComboData).toHaveBeenCalledWith(comptId);
-                    if (!visitedComptIds[comptId]) {
-                        expect(mockExchangeService.setAllComboData).toHaveBeenCalledWith(false, {}, comptId);
-                        visitedComptIds[comptId] = true;
-                    }
-                    expect(mockExchangeService.getAllComboData).toHaveBeenCalledWith(comptId, stateId);
-
-                    if (i % 4 === 0 || i % 4 === 1) {
-                        expect(mockExchangeService.setAllComboData).toHaveBeenCalledWith(false, [], comptId, stateId);
-                    }
-                    expect(mockExchangeService.pushToAllComboData).toHaveBeenCalledWith
-                    (label, comptId, stateId, i, comptSupplInfoLength);
-
+                    expect(mockExchangeService.pushToAllComboData)
+                        .toHaveBeenCalledWith(broadcast, label, comptId, stateId);
                     if (checked) {
-                        expect(mockExchangeService.getAllCheckedComboData).toHaveBeenCalledWith(comptId);
-                        if (i % 4 === 1) {
-                            expect(mockExchangeService.setAllCheckedComboData)
-                                .toHaveBeenCalledWith(broadcast, true, {}, comptId);
-                        }
                         expect(mockExchangeService.setAllCheckedComboData)
                             .toHaveBeenCalledWith(broadcast, true, label, comptId, stateId);
                     }
-                    i++;
+                    counter++;
                 });
                 if (isPacketIdUndefined) {
                     expect(mockExchangeService.setInitialAllCheckedComboData).toHaveBeenCalledWith();

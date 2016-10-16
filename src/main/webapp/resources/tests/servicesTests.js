@@ -424,6 +424,10 @@ describe("Exchange Service Test", function () {
                     expect(mockExchangeService.getComptLabels()).toEqual({});
                     expect(mockExchangeService.getComptLabels(1)).toBeUndefined();
                     expect(mockExchangeService.getComptLabels(2)).toBeUndefined();
+                    mockExchangeService.setComptLabels({}, 2, 'lbl2');
+                    expect(mockExchangeService.getComptLabels()).toEqual({2: {'lbl2': {}}});
+                    expect(mockExchangeService.getComptLabels(2, 'lbl2')).toEqual({});
+                    expect(mockExchangeService.getComptLabels(2)).toEqual({'lbl2': {}});
                 });
             });
 
@@ -459,35 +463,40 @@ describe("Exchange Service Test", function () {
                 });
             });
 
-        describe('getCompts(), pushToCompts(), getComptsLength() and setCompts() test',
+        describe('getCompts(), pushToCompts(), getComptsLength() and initializeCompts() test',
             function () {
                 it('', function () {
                     expect(mockExchangeService.getCompts()).toEqual([]);
                     expect(mockExchangeService.getCompts(0)).toBeUndefined();
-                    mockExchangeService.setCompts(selCompts[0], 0);
-                    expect(mockExchangeService.getCompts(0)).toEqual(selCompts[0]);
+                    mockExchangeService.initializeCompts(0);
+                    expect(mockExchangeService.getCompts(0)).toEqual([]);
                     expect(mockExchangeService.getCompts(1)).toBeUndefined();
-                    expect(mockExchangeService.getCompts()).toEqual([selCompts[0]]);
-                    mockExchangeService.setCompts(selCompts);
-                    expect([mockExchangeService.getCompts(0)]).toEqual([selCompts[0]]);
-                    expect([mockExchangeService.getCompts(1)]).toEqual([selCompts[1]]);
+                    expect(mockExchangeService.getCompts()).toEqual([[]]);
+                    mockExchangeService.initializeCompts(1);
+                    expect(mockExchangeService.getCompts(0)).toEqual([]);
+                    expect(mockExchangeService.getCompts(1)).toEqual([]);
                     expect(mockExchangeService.getCompts(2)).toBeUndefined();
-                    expect(mockExchangeService.getCompts()).toEqual(selCompts);
-                    mockExchangeService.pushToCompts(selCompts, 1);
-                    expect([mockExchangeService.getCompts(1)]).toEqual([selCompts[1]]);
-                    mockExchangeService.setCompts([], 2);
+                    expect(mockExchangeService.getCompts()).toEqual([[], []]);
                     mockExchangeService.pushToCompts(selCompts[0], 2);
+                    expect(mockExchangeService.getCompts()).toEqual([[], [], [selCompts[0]]]);
                     expect(mockExchangeService.getCompts(2)).toEqual([selCompts[0]]);
                     mockExchangeService.pushToCompts(selCompts[1], 2);
+                    expect(mockExchangeService.getCompts()).toEqual([[], [], [selCompts[0], selCompts[1]]]);
                     expect(mockExchangeService.getCompts(2)).toEqual([selCompts[0], selCompts[1]]);
                     expect(mockExchangeService.getComptsLength(2)).toEqual(2);
                     var lengthBeforePush = mockExchangeService.getCompts().length;
                     mockExchangeService.pushToCompts(selCompts);
                     expect(mockExchangeService.getCompts().length).toEqual(lengthBeforePush + 1);
+                    expect(mockExchangeService.getCompts()).toEqual([[], [], [selCompts[0], selCompts[1]], selCompts]);
                     expect(mockExchangeService.getCompts(3)).toEqual(selCompts);
                     expect(mockExchangeService.getComptsLength(3)).toEqual(selCompts.length);
-                    expect(mockExchangeService.getComptsLength(1)).toBeUndefined();
+                    expect(mockExchangeService.getComptsLength(1)).toBe(0);
+                    expect(mockExchangeService.getComptsLength(2)).toBe(2);
                     expect(mockExchangeService.getComptsLength(4)).toBeUndefined();
+                    mockExchangeService.pushToCompts(selCompts[0], 4);
+                    expect(mockExchangeService.getCompts()).toEqual([[], [], [selCompts[0], selCompts[1]], selCompts,
+                        [selCompts[0]]]);
+                    expect(mockExchangeService.getCompts(4)).toEqual([selCompts[0]]);
                 });
             });
 
@@ -625,56 +634,55 @@ describe("Exchange Service Test", function () {
         describe('setAllComboData(), getAllComboData() and pushToAllComboData() test',
             function () {
                 it('', function () {
-                    mockExchangeService.setAllComboData(false, undefined);
+                    mockExchangeService.setAllComboData(false);
                     expect(mockScope.$broadcast).not.toHaveBeenCalled();
-                    expect(mockExchangeService.getAllComboData()).toBeUndefined();
-                    mockExchangeService.pushToAllComboData(true, "cd1", 1, 1);
                     expect(mockExchangeService.getAllComboData()).toBeUndefined();
                     expect(mockScope.$broadcast).not.toHaveBeenCalled();
 
                     mockExchangeService.setAllComboData(false, {});
                     expect(mockScope.$broadcast).not.toHaveBeenCalled();
                     expect(mockExchangeService.getAllComboData()).toEqual({});
-                    mockExchangeService.pushToAllComboData(true, "cd1", 1, 1);
-                    expect(mockExchangeService.getAllComboData()).toEqual({});
-                    expect(mockScope.$broadcast).not.toHaveBeenCalled();
-
-                    mockExchangeService.setAllComboData(false, {1: undefined});
-                    expect(mockScope.$broadcast).not.toHaveBeenCalled();
-                    expect(mockExchangeService.getAllComboData()).toEqual({1: undefined});
-                    mockExchangeService.pushToAllComboData(true, "cd1", 1, 1);
-                    expect(mockExchangeService.getAllComboData()).toEqual({1: undefined});
-                    expect(mockScope.$broadcast).not.toHaveBeenCalled();
-
-                    mockExchangeService.setAllComboData(false, {1: {}});
-                    expect(mockScope.$broadcast).not.toHaveBeenCalled();
-                    expect(mockExchangeService.getAllComboData()).toEqual({1: {}});
-                    mockExchangeService.pushToAllComboData(true, "cd1", 1, 1);
-                    expect(mockExchangeService.getAllComboData()).toEqual({1: {}});
-                    expect(mockScope.$broadcast).not.toHaveBeenCalled();
-
-                    mockExchangeService.setAllComboData(false, {1: {1: undefined}});
-                    expect(mockScope.$broadcast).not.toHaveBeenCalled();
-                    expect(mockExchangeService.getAllComboData()).toEqual({1: {1: undefined}});
-                    mockExchangeService.pushToAllComboData(true, "cd1", 1, 1);
-                    expect(mockExchangeService.getAllComboData()).toEqual({1: {1: undefined}});
-                    expect(mockScope.$broadcast).not.toHaveBeenCalled();
-
-                    mockExchangeService.setAllComboData(false, {1: {1: {}}});
-                    expect(mockScope.$broadcast).not.toHaveBeenCalled();
-                    expect(mockExchangeService.getAllComboData()).toEqual({1: {1: {}}});
-                    mockExchangeService.pushToAllComboData(true, "cd1", 1, 1);
-                    expect(mockExchangeService.getAllComboData()).toEqual({1: {1: {}}});
-                    expect(mockScope.$broadcast).not.toHaveBeenCalled();
-
-                    mockExchangeService.setAllComboData(false, {1: {1: []}});
-                    expect(mockScope.$broadcast).not.toHaveBeenCalled();
-                    expect(mockExchangeService.getAllComboData()).toEqual({1: {1: []}});
                     mockExchangeService.pushToAllComboData(true, "cd1", 1, 1);
                     expect(mockExchangeService.getAllComboData()).toEqual({1: {1: ["cd1"]}});
                     expect(mockScope.$broadcast).toHaveBeenCalledWith('allComboData:update', {1: {1: ["cd1"]}});
+                    expect(mockScope.$broadcast.calls.count()).toEqual(1);
+
+                    mockExchangeService.setAllComboData(false, {1: {}});
+                    expect(mockScope.$broadcast.calls.count()).toEqual(1);
+                    expect(mockExchangeService.getAllComboData()).toEqual({1: {}});
+                    mockExchangeService.pushToAllComboData(true, "cd1", 1, 1);
+                    expect(mockExchangeService.getAllComboData()).toEqual({1: {1: ["cd1"]}});
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith('allComboData:update', {1: {1: ["cd1"]}});
+                    expect(mockScope.$broadcast.calls.count()).toEqual(2);
+
+                    mockExchangeService.setAllComboData(false, {1: {1: ["cd2"]}});
+                    expect(mockScope.$broadcast.calls.count()).toEqual(2);
+                    expect(mockExchangeService.getAllComboData()).toEqual({1: {1: ["cd2"]}});
+                    mockExchangeService.pushToAllComboData(true, "cd1", 1, 1);
+                    expect(mockExchangeService.getAllComboData()).toEqual({1: {1: ["cd2", "cd1"]}});
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith('allComboData:update', {1: {1: ["cd2", "cd1"]}});
+                    expect(mockScope.$broadcast.calls.count()).toEqual(3);
+
+                    mockExchangeService.setAllComboData(false, {1: {2: ["cd2"]}});
+                    expect(mockScope.$broadcast.calls.count()).toEqual(3);
+                    expect(mockExchangeService.getAllComboData()).toEqual({1: {2: ["cd2"]}});
+                    mockExchangeService.pushToAllComboData(true, "cd1", 1, 1);
+                    expect(mockExchangeService.getAllComboData()).toEqual({1: {2: ["cd2"], 1: ["cd1"]}});
+                    expect(mockScope.$broadcast)
+                        .toHaveBeenCalledWith('allComboData:update', {1: {2: ["cd2"], 1: ["cd1"]}});
+                    expect(mockScope.$broadcast.calls.count()).toEqual(4);
+
+                    mockExchangeService.setAllComboData(false, {2: {2: ["cd2"]}});
+                    expect(mockScope.$broadcast.calls.count()).toEqual(4);
+                    expect(mockExchangeService.getAllComboData()).toEqual({2: {2: ["cd2"]}});
+                    mockExchangeService.pushToAllComboData(true, "cd1", 1, 1);
+                    expect(mockExchangeService.getAllComboData()).toEqual({2: {2: ["cd2"]}, 1: {1: ["cd1"]}});
+                    expect(mockScope.$broadcast)
+                        .toHaveBeenCalledWith('allComboData:update', {2: {2: ["cd2"]}, 1: {1: ["cd1"]}});
+                    expect(mockScope.$broadcast.calls.count()).toEqual(5);
 
                     mockExchangeService.setAllComboData(false, {});
+                    expect(mockScope.$broadcast.calls.count()).toEqual(5);
                     expect(mockExchangeService.getAllComboData()).toEqual({});
                     expect(mockExchangeService.getAllComboData(1)).toBeUndefined();
                     var allComboData = {
@@ -691,7 +699,7 @@ describe("Exchange Service Test", function () {
                         1: {1: ["cd1", "cd2"], 2: ["cd1", "cd2"]},
                         2: {1: ["cd1", "cd2"], 2: ["cd2", "cd1"]}
                     };
-                    expect(mockScope.$broadcast.calls.count()).toEqual(2);
+                    expect(mockScope.$broadcast.calls.count()).toEqual(6);
                     expect(mockExchangeService.getAllComboData()).toEqual(allComboData2);
                     expect(mockExchangeService.getAllComboData(1)).toEqual({1: ["cd1", "cd2"], 2: ["cd1", "cd2"]});
                     expect(mockExchangeService.getAllComboData(1, 2)).toEqual(["cd1", "cd2"]);
@@ -699,27 +707,430 @@ describe("Exchange Service Test", function () {
                     mockExchangeService.setAllComboData(true, {1: ["cd2", "cd1"], 2: ["cd1", "cd2"]}, 3);
                     var allComboData3 = {
                         1: {1: ["cd1", "cd2"], 2: ["cd1", "cd2"]},
-                        2: {1: ["cd1", "cd2"], 2: ["cd2", "cd1"]}, 3: {1: ["cd2", "cd1"], 2: ["cd1", "cd2"]}
+                        2: {1: ["cd1", "cd2"], 2: ["cd2", "cd1"]},
+                        3: {1: ["cd2", "cd1"], 2: ["cd1", "cd2"]}
                     };
-                    expect(mockScope.$broadcast.calls.count()).toEqual(3);
-                    expect(mockScope.$broadcast.calls.argsFor(1)).toEqual(['allComboData:update', allComboData3]);
+                    expect(mockScope.$broadcast.calls.count()).toEqual(7);
+                    expect(mockScope.$broadcast.calls.argsFor(6)).toEqual(['allComboData:update', allComboData3]);
                     expect(mockExchangeService.getAllComboData()).toEqual(allComboData3);
                     expect(mockExchangeService.getAllComboData(3)).toEqual({1: ["cd2", "cd1"], 2: ["cd1", "cd2"]});
                     expect(mockExchangeService.getAllComboData(3, 1)).toEqual(["cd2", "cd1"]);
                     expect(mockExchangeService.getAllComboData(3, 2)).toEqual(["cd1", "cd2"]);
+                    mockExchangeService.setAllComboData(false, ["cd1", "cd1"], 4, 1);
+                    var allComboData4 = {
+                        1: {1: ["cd1", "cd2"], 2: ["cd1", "cd2"]},
+                        2: {1: ["cd1", "cd2"], 2: ["cd2", "cd1"]},
+                        3: {1: ["cd2", "cd1"], 2: ["cd1", "cd2"]},
+                        4: {1: ["cd1", "cd1"]}
+                    };
+                    expect(mockScope.$broadcast.calls.count()).toEqual(7);
+                    expect(mockExchangeService.getAllComboData()).toEqual(allComboData4);
+                    expect(mockExchangeService.getAllComboData(4)).toEqual({1: ["cd1", "cd1"]});
+                    expect(mockExchangeService.getAllComboData(4, 1)).toEqual(["cd1", "cd1"]);
+                    expect(mockExchangeService.getAllComboData(4, 2)).toBeUndefined();
                 });
             });
 
+        describe('setAllCheckedComboData() and getAllCheckedComboData() test',
+            function () {
+                it('', function () {
+                    mockExchangeService.setAllCheckedComboData(false, false, {});
+                    expect(mockScope.$broadcast.calls.count()).toEqual(0);
+                    expect(mockExchangeService.getAllCheckedComboData()).toEqual({});
+                    expect(mockExchangeService.getAllCheckedComboData(1)).toBeUndefined();
+                    expect(mockExchangeService.getInitialAllCheckedComboData()).toEqual({});
+
+                    var allCheckedComboData = {
+                        1: {1: "cd1", 2: "cd2"},
+                        2: {1: "cd1", 2: "cd2"}
+                    };
+                    mockExchangeService.setAllCheckedComboData(true, true, allCheckedComboData);
+                    expect(mockScope.$broadcast.calls.count()).toEqual(2);
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith("allCheckedComboData:update",
+                        allCheckedComboData);
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith("initialAllCheckedComboData:update",
+                        allCheckedComboData);
+                    expect(mockExchangeService.getInitialAllCheckedComboData()).toEqual(allCheckedComboData);
+                    expect(mockExchangeService.getAllCheckedComboData()).toEqual(allCheckedComboData);
+                    expect(mockExchangeService.getAllCheckedComboData(1)).toEqual({1: "cd1", 2: "cd2"});
+                    expect(mockExchangeService.getAllCheckedComboData(1, 1)).toEqual("cd1");
+                    var oldAllCheckedComboData = angular.copy(allCheckedComboData);
+                    allCheckedComboData[1][1] = "cd2";
+                    expect(mockExchangeService.getInitialAllCheckedComboData()).toEqual(oldAllCheckedComboData);
+
+                    mockExchangeService.setAllCheckedComboData(false, true, {1: "cd1", 2: "cd1"}, 1);
+                    var allCheckedComboData2 = {
+                        1: {1: "cd1", 2: "cd1"},
+                        2: {1: "cd1", 2: "cd2"}
+                    };
+                    expect(mockScope.$broadcast.calls.count()).toEqual(2);
+                    expect(mockExchangeService.getInitialAllCheckedComboData()).toEqual(allCheckedComboData2);
+                    expect(mockExchangeService.getAllCheckedComboData()).toEqual(allCheckedComboData2);
+                    expect(mockExchangeService.getAllCheckedComboData(1)).toEqual({1: "cd1", 2: "cd1"});
+                    expect(mockExchangeService.getAllCheckedComboData(1, 2)).toEqual("cd1");
+                    expect(mockExchangeService.getAllCheckedComboData(3)).toBeUndefined();
+                    var oldAllCheckedComboData2 = angular.copy(allCheckedComboData2);
+                    allCheckedComboData2[1][1] = "cd2";
+                    expect(mockExchangeService.getInitialAllCheckedComboData()).toEqual(oldAllCheckedComboData2);
+
+                    mockExchangeService.setAllCheckedComboData(true, false, {1: "cd2", 2: "cd1"}, 3);
+                    var allCheckedComboData3 = {
+                        1: {1: "cd1", 2: "cd1"},
+                        2: {1: "cd1", 2: "cd2"},
+                        3: {1: "cd2", 2: "cd1"}
+                    };
+                    expect(mockScope.$broadcast.calls.count()).toEqual(3);
+                    expect(mockScope.$broadcast.calls.argsFor(2)).toEqual(
+                        ['allCheckedComboData:update', allCheckedComboData3]);
+                    expect(mockExchangeService.getAllCheckedComboData()).toEqual(allCheckedComboData3);
+                    expect(mockExchangeService.getAllCheckedComboData(3)).toEqual({1: "cd2", 2: "cd1"});
+                    expect(mockExchangeService.getAllCheckedComboData(3, 1)).toEqual("cd2");
+                    expect(mockExchangeService.getAllCheckedComboData(3, 2)).toEqual("cd1");
+
+                    mockExchangeService.setAllCheckedComboData(true, true, "cd2", 4, 1);
+
+                    var allCheckedComboData4 = {
+                        1: {1: "cd1", 2: "cd1"},
+                        2: {1: "cd1", 2: "cd2"},
+                        3: {1: "cd2", 2: "cd1"},
+                        4: {1: "cd2"}
+                    };
+
+                    var initialAllCheckedComboData4 = {
+                        1: {1: "cd1", 2: "cd1"},
+                        2: {1: "cd1", 2: "cd2"},
+                        4: {1: "cd2"}
+                    };
+
+                    expect(mockScope.$broadcast.calls.count()).toEqual(5);
+
+                    expect(mockScope.$broadcast.calls.argsFor(3)).toEqual(
+                        ['allCheckedComboData:update', allCheckedComboData4]);
+
+                    expect(mockScope.$broadcast.calls.argsFor(4)).toEqual(
+                        ['initialAllCheckedComboData:update', initialAllCheckedComboData4]);
+
+                    expect(mockExchangeService.getInitialAllCheckedComboData()).toEqual(initialAllCheckedComboData4);
+                    expect(mockExchangeService.getAllCheckedComboData()).toEqual(allCheckedComboData4);
+                    expect(mockExchangeService.getAllCheckedComboData(4)).toEqual({1: "cd2"});
+                    expect(mockExchangeService.getAllCheckedComboData(4, 1)).toEqual("cd2");
+                    expect(mockExchangeService.getAllCheckedComboData(4, 2)).toBeUndefined();
+                    var oldInitialAllCheckedComboData4 = angular.copy(initialAllCheckedComboData4);
+                    allCheckedComboData4[4][1] = "cd1";
+                    expect(mockExchangeService.getInitialAllCheckedComboData()).toEqual(oldInitialAllCheckedComboData4);
+                });
+            });
+
+        describe('setInitialAllCheckedComboData() and getInitialAllCheckedComboData() test',
+            function () {
+                it('', function () {
+                    var allCheckedComboData = {
+                        1: {1: "cd1", 2: "cd1"},
+                        2: {1: "cd1", 2: "cd2"},
+                        3: {1: "cd2", 2: "cd1"}
+                    };
+                    mockExchangeService.setInitialAllCheckedComboData();
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith("initialAllCheckedComboData:update",
+                        {});
+                    expect(mockExchangeService.getInitialAllCheckedComboData()).toEqual({});
+
+                    mockExchangeService.setAllCheckedComboData(false, false, allCheckedComboData);
+                    mockExchangeService.setInitialAllCheckedComboData();
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith("initialAllCheckedComboData:update",
+                        allCheckedComboData);
+                    expect(mockExchangeService.getInitialAllCheckedComboData()).toEqual(allCheckedComboData);
+
+                    mockExchangeService.setAllCheckedComboData(true, false, undefined);
+                    mockExchangeService.setInitialAllCheckedComboData();
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith("initialAllCheckedComboData:update",
+                        undefined);
+                    expect(mockExchangeService.getInitialAllCheckedComboData()).toBeUndefined();
+
+                    mockExchangeService.setAllCheckedComboData(false, true, allCheckedComboData);
+                    mockExchangeService.setInitialAllCheckedComboData();
+                    expect(mockScope.$broadcast.calls.count()).toEqual(5);
+                    expect(mockScope.$broadcast.calls.argsFor(4)).toEqual(
+                        ['initialAllCheckedComboData:update', allCheckedComboData]);
+                    expect(mockExchangeService.getInitialAllCheckedComboData()).toEqual(allCheckedComboData);
+
+                    var allCheckedComboData2 = {
+                        1: {1: "cd1", 2: "cd1"},
+                        2: {1: "cd1", 2: "cd2"}
+                    };
+
+                    mockExchangeService.setAllCheckedComboData(true, true, allCheckedComboData2);
+                    mockExchangeService.setInitialAllCheckedComboData();
+                    expect(mockScope.$broadcast.calls.count()).toEqual(8);
+                    expect(mockScope.$broadcast.calls.argsFor(7)).toEqual(
+                        ['initialAllCheckedComboData:update', allCheckedComboData2]);
+                    expect(mockExchangeService.getInitialAllCheckedComboData()).toEqual(allCheckedComboData2);
+
+                });
+            });
+
+        describe('setNewPackets(), getNewPackets() and deleteNewPackets() test',
+            function () {
+                it('', function () {
+                    expect(mockExchangeService.getNewPackets()).toEqual({});
+                    expect(mockExchangeService.getNewPackets(1)).toBeUndefined();
+                    mockExchangeService.setNewPackets(selPkt, 1);
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith('newPackets:update', {1: selPkt});
+                    expect(mockExchangeService.getNewPackets()).toEqual({1: selPkt});
+                    mockExchangeService.deleteNewPackets(2);
+                    expect(mockExchangeService.getNewPackets()).toEqual({1: selPkt});
+                    expect(mockScope.$broadcast.calls.count()).toEqual(1);
+                    mockExchangeService.deleteNewPackets(1);
+                    expect(mockExchangeService.getNewPackets()).toEqual({});
+                    expect(mockScope.$broadcast.calls.count()).toEqual(1);
+                    mockExchangeService.deleteNewPackets(1);
+                    expect(mockScope.$broadcast.calls.count()).toEqual(1);
+                    mockExchangeService.setNewPackets({1: selPkt, 2: oldPkt});
+                    expect(mockScope.$broadcast.calls.count()).toEqual(2);
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith('newPackets:update', {1: selPkt, 2: oldPkt});
+                });
+            });
+
+        describe('getNewComptLabels(), setNewComptLabels() and deleteNewComptLabels() test',
+            function () {
+                it('', function () {
+                    expect(mockExchangeService.getNewComptLabels()).toEqual({true: {}, false: {}});
+                    mockExchangeService.setNewPackets({1: selPkt, 2: oldPkt});
+                    expect(mockExchangeService.getNewComptLabels(1)).toBeUndefined();
+                    expect(mockExchangeService.getNewComptLabels(2)).toBeUndefined();
+                    mockExchangeService.setNewComptLabels({}, 1);
+                    expect(mockExchangeService.getNewComptLabels()).toEqual({true: {1: {}}, false: {}});
+                    expect(mockExchangeService.getNewComptLabels(1)).toEqual({});
+                    expect(mockExchangeService.getNewComptLabels(2)).toBeUndefined();
+                    mockExchangeService.setNewComptLabels('lbl1', 1, 1);
+                    expect(mockExchangeService.getNewComptLabels()).toEqual({true: {1: {1: 'lbl1'}}, false: {}});
+                    expect(mockExchangeService.getNewComptLabels(1, 1)).toEqual('lbl1');
+                    expect(mockExchangeService.getNewComptLabels(1, 2)).toBeUndefined();
+                    expect(mockExchangeService.getNewComptLabels(1)).toEqual({1: 'lbl1'});
+                    expect(mockExchangeService.getNewComptLabels(2)).toBeUndefined();
+                    mockExchangeService.setNewComptLabels({}, 3);
+                    expect(mockExchangeService.getNewComptLabels()).toEqual({true: {1: {1: 'lbl1'}}, false: {3: {}}});
+                    expect(mockExchangeService.getNewComptLabels(1)).toEqual({1: 'lbl1'});
+                    expect(mockExchangeService.getNewComptLabels(3)).toEqual({});
+                    expect(mockExchangeService.getNewComptLabels(2)).toBeUndefined();
+                    mockExchangeService.setNewComptLabels('lbl3', 3, 3);
+                    expect(mockExchangeService.getNewComptLabels()).toEqual({
+                        true: {1: {1: 'lbl1'}},
+                        false: {3: {3: 'lbl3'}}
+                    });
+                    expect(mockExchangeService.getNewComptLabels(3, 3)).toEqual('lbl3');
+                    expect(mockExchangeService.getNewComptLabels(3)).toEqual({3: 'lbl3'});
+                    mockExchangeService.setNewComptLabels({}, 2);
+                    expect(mockExchangeService.getNewComptLabels()).toEqual({
+                        true: {1: {1: 'lbl1'}, 2: {}},
+                        false: {3: {3: 'lbl3'}}
+                    });
+                    expect(mockExchangeService.getNewComptLabels(2)).toEqual({});
+                    mockExchangeService.deleteNewComptLabels(1, 1);
+                    expect(mockExchangeService.getNewComptLabels()).toEqual({
+                        true: {1: {}, 2: {}},
+                        false: {3: {3: 'lbl3'}}
+                    });
+                    expect(mockExchangeService.getNewComptLabels(1)).toEqual({});
+                    mockExchangeService.deleteNewComptLabels(1, 1);
+                    expect(mockExchangeService.getNewComptLabels()).toEqual({
+                        true: {1: {}, 2: {}},
+                        false: {3: {3: 'lbl3'}}
+                    });
+                    expect(mockExchangeService.getNewComptLabels(1)).toEqual({});
+                    mockExchangeService.deleteNewComptLabels(1);
+                    expect(mockExchangeService.getNewComptLabels()).toEqual({true: {2: {}}, false: {3: {3: 'lbl3'}}});
+                    expect(mockExchangeService.getNewComptLabels(1)).toBeUndefined();
+                    mockExchangeService.deleteNewComptLabels(3, 4);
+                    expect(mockExchangeService.getNewComptLabels()).toEqual({true: {2: {}}, false: {3: {3: 'lbl3'}}});
+                    mockExchangeService.deleteNewComptLabels(3, 3);
+                    expect(mockExchangeService.getNewComptLabels()).toEqual({true: {2: {}}, false: {3: {}}});
+                    expect(mockExchangeService.getNewComptLabels(3)).toEqual({});
+                    mockExchangeService.deleteNewComptLabels(3);
+                    expect(mockExchangeService.getNewComptLabels()).toEqual({true: {2: {}}, false: {}});
+                    expect(mockExchangeService.getNewComptLabels(3)).toBeUndefined();
+                    mockExchangeService.deleteNewComptLabels();
+                    expect(mockExchangeService.getNewComptLabels()).toEqual({true: {}, false: {}});
+                    expect(mockExchangeService.getNewComptLabels(2)).toBeUndefined();
+                    mockExchangeService.setNewComptLabels('lbl1', 1, 1);
+                    expect(mockExchangeService.getNewComptLabels()).toEqual({true: {1: {1: 'lbl1'}}, false: {}});
+                    expect(mockExchangeService.getNewComptLabels(1, 1)).toEqual('lbl1');
+                    expect(mockExchangeService.getNewComptLabels(1)).toEqual({1: 'lbl1'});
+                });
+            });
+
+        describe('setComptIdsToDelete(), getComptIdsToDelete(), pushToComptIdsToDelete() and deleteComptIdsToDelete() test',
+            function () {
+                it('', function () {
+                    expect(mockExchangeService.getComptIdsToDelete()).toEqual({});
+                    expect(mockExchangeService.getComptIdsToDelete(1)).toBeUndefined();
+                    mockExchangeService.setComptIdsToDelete(selCompts[0], 1);
+                    expect(mockExchangeService.getComptIdsToDelete()).toEqual({1: selCompts[0]});
+                    mockExchangeService.deleteComptIdsToDelete(2);
+                    expect(mockExchangeService.getComptIdsToDelete()).toEqual({1: selCompts[0]});
+                    mockExchangeService.deleteComptIdsToDelete(1);
+                    expect(mockExchangeService.getComptIdsToDelete()).toEqual({});
+                    mockExchangeService.deleteComptIdsToDelete(1);
+                    mockExchangeService.setComptIdsToDelete({1: selCompts[0], 2: [oldCompts[1]], 3: []});
+                    expect(mockExchangeService.getComptIdsToDelete()).toEqual({
+                        1: selCompts[0],
+                        2: [oldCompts[1]], 3: []
+                    });
+                    expect(mockExchangeService.getComptIdsToDelete(1)).toEqual(selCompts[0]);
+                    expect(mockExchangeService.getComptIdsToDelete(2)).toEqual([oldCompts[1]]);
+                    expect(mockExchangeService.getComptIdsToDelete(3)).toEqual([]);
+                    mockExchangeService.pushToComptIdsToDelete(oldCompts[0], 2);
+                    expect(mockExchangeService.getComptIdsToDelete()).toEqual({
+                        1: selCompts[0],
+                        2: [oldCompts[1], oldCompts[0]], 3: []
+                    });
+                    mockExchangeService.deleteComptIdsToDelete();
+                    expect(mockExchangeService.getComptIdsToDelete()).toEqual({});
+                    mockExchangeService.pushToComptIdsToDelete(selCompts[1], 1);
+                    expect(mockExchangeService.getComptIdsToDelete()).toEqual({1: [selCompts[1]]});
+                });
+            });
+
+        describe('deleteComptIdsToUpdate(), getComptIdsToUpdate(), setComptIdsToUpdate()', function () {
+            it('', function () {
+                expect(mockExchangeService.getComptIdsToUpdate()).toEqual({});
+                expect(mockExchangeService.getComptIdsToUpdate(1)).toBeUndefined();
+                expect(mockExchangeService.getComptIdsToUpdate(2)).toBeUndefined();
+                mockExchangeService.setComptIdsToUpdate({}, 1);
+                expect(mockExchangeService.getComptIdsToUpdate()).toEqual({1: {}});
+                expect(mockExchangeService.getComptIdsToUpdate(1)).toEqual({});
+                expect(mockExchangeService.getComptIdsToUpdate(2)).toBeUndefined();
+                mockExchangeService.setComptIdsToUpdate(true, 1, 1);
+                expect(mockExchangeService.getComptIdsToUpdate()).toEqual({1: {1: true}});
+                expect(mockExchangeService.getComptIdsToUpdate(1)).toEqual({1: true});
+                expect(mockExchangeService.getComptIdsToUpdate(2)).toBeUndefined();
+                mockExchangeService.setComptIdsToUpdate(true, 2, 2);
+                expect(mockExchangeService.getComptIdsToUpdate()).toEqual({1: {1: true}, 2: {2: true}});
+                expect(mockExchangeService.getComptIdsToUpdate(1)).toEqual({1: true});
+                expect(mockExchangeService.getComptIdsToUpdate(2)).toEqual({2: true});
+                //error 500 while saving
+                // updatepacket btn does not becomes active after the single packet saving
+                mockExchangeService.deleteComptIdsToUpdate(1, 1);
+                expect(mockExchangeService.getComptIdsToUpdate()).toEqual({1: {}, 2: {2: true}});
+                mockExchangeService.deleteComptIdsToUpdate(2);
+                expect(mockExchangeService.getComptIdsToUpdate()).toEqual({1: {}});
+                mockExchangeService.deleteComptIdsToUpdate(2);
+                expect(mockExchangeService.getComptIdsToUpdate()).toEqual({1: {}});
+                mockExchangeService.deleteComptIdsToUpdate();
+                expect(mockExchangeService.getComptIdsToUpdate()).toEqual({});
+                mockExchangeService.setComptIdsToUpdate({1: {2: true}, 4: {2: true}});
+                expect(mockExchangeService.getComptIdsToUpdate()).toEqual({1: {2: true}, 4: {2: true}});
+                expect(mockExchangeService.getComptIdsToUpdate(1)).toEqual({2: true});
+                expect(mockExchangeService.getComptIdsToUpdate(4)).toEqual({2: true});
+            });
+        });
+
+        describe('deleteSelectedComptLabels(), setSelectedComptLabels(), getSelectedPacketIsEmpty()' +
+            ' and getSelectedComptLabels() test',
+            function () {
+                it('', function () {
+                    mockExchangeService.setSelectedComptLabels({});
+                    expect(mockExchangeService.getSelectedComptLabels('lbl1')).toBeUndefined();
+                    expect(mockExchangeService.getSelectedComptLabels()).toEqual({});
+                    expect(mockExchangeService.getSelectedPacketIsEmpty()).toBeTruthy();
+                    mockExchangeService.setSelectedComptLabels(true, 'lbl1');
+                    expect(mockExchangeService.getSelectedComptLabels('lbl1')).toBeTruthy();
+                    expect(mockExchangeService.getSelectedComptLabels('lbl2')).toBeUndefined();
+                    expect(mockExchangeService.getSelectedComptLabels()).toEqual({'lbl1': true});
+                    expect(mockExchangeService.getSelectedPacketIsEmpty()).toBeFalsy();
+                    mockExchangeService.setSelectedComptLabels(true, 'lbl2');
+                    expect(mockExchangeService.getSelectedComptLabels('lbl2')).toBeTruthy();
+                    expect(mockExchangeService.getSelectedComptLabels()).toEqual({'lbl1': true, 'lbl2': true});
+                    expect(mockExchangeService.getSelectedPacketIsEmpty()).toBeFalsy();
+                    mockExchangeService.deleteSelectedComptLabels('lbl2');
+                    expect(mockExchangeService.getSelectedComptLabels('lbl2')).toBeUndefined();
+                    expect(mockExchangeService.getSelectedPacketIsEmpty()).toBeFalsy();
+                    expect(mockExchangeService.getSelectedComptLabels()).toEqual({'lbl1': true});
+                    mockExchangeService.deleteSelectedComptLabels('lbl3');
+                    expect(mockExchangeService.getSelectedPacketIsEmpty()).toBeFalsy();
+                    expect(mockExchangeService.getSelectedComptLabels()).toEqual({'lbl1': true});
+                    mockExchangeService.deleteSelectedComptLabels('lbl1');
+                    expect(mockExchangeService.getSelectedComptLabels()).toEqual({});
+                    expect(mockExchangeService.getSelectedPacketIsEmpty()).toBeTruthy();
+                });
+            });
+
+        describe('setSelectedCompts(), getSelectedCompts(), getSelectedComptsLength()' +
+            ' and pushToSelectedCompts() test',
+            function () {
+                it('', function () {
+                    mockExchangeService.setSelectedCompts([]);
+                    expect(mockExchangeService.getSelectedCompts()).toEqual([]);
+                    expect(mockExchangeService.getSelectedComptsLength()).toEqual(0);
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith("selectedCompts:update", []);
+                    mockExchangeService.pushToSelectedCompts(selCompts[0]);
+                    expect(mockExchangeService.getSelectedComptsLength()).toEqual(1);
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith("selectedCompts:update", [selCompts[0]]);
+                    mockExchangeService.setSelectedCompts(selCompts);
+                    expect(mockExchangeService.getSelectedCompts()).toEqual(selCompts);
+                    expect(mockExchangeService.getSelectedComptsLength()).toEqual(2);
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith("selectedCompts:update", selCompts);
+                    mockExchangeService.pushToSelectedCompts(selCompts[1]);
+                    expect(mockExchangeService.getSelectedCompts()).toEqual([selCompts[0], selCompts[1], selCompts[1]]);
+                    expect(mockExchangeService.getSelectedComptsLength()).toEqual(3);
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith("selectedCompts:update",
+                        mockExchangeService.getSelectedCompts());
+
+                });
+            });
+
+        describe('getNumberOfNotNullSelectedCompts(), getSelectedComptsLength() test',
+            function () {
+                it('', function () {
+                    var selectedCompts = [];
+                    selectedCompts.push(selCompts[0]);
+                    selectedCompts.push(selCompts[1]);
+                    selectedCompts.push(oldCompts[0]);
+                    selectedCompts.push(oldCompts[1]);
+
+                    mockExchangeService.setSelectedCompts(selectedCompts);
+                    mockExchangeService.setSelectedPage(1);
+                    mockExchangeService.setSelectedPacketIsEmpty(false);
+                    mockExchangeService.setSelectedCompt(2, 4);
+                    expect(mockExchangeService.getSelectedPacketIsEmpty()).toBeFalsy();
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith("selectedCompts:update",
+                        mockExchangeService.getSelectedCompts());
+
+                    mockExchangeService.setSelectedPage(2);
+                    mockExchangeService.setSelectedPacketIsEmpty(false);
+                    mockExchangeService.setSelectedCompt(2, 4);
+                    expect(mockExchangeService.getSelectedPage()).toBe(2);
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith("selectedCompts:update",
+                        mockExchangeService.getSelectedCompts());
+
+                    mockExchangeService.setSelectedPage(1);
+                    mockExchangeService.setSelectedPacketIsEmpty(false);
+                    mockExchangeService.setSelectedCompt(2, 3);
+                    expect(mockExchangeService.getSelectedPacketIsEmpty()).toBeTruthy();
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith("selectedCompts:update",
+                        mockExchangeService.getSelectedCompts());
+
+                    mockExchangeService.setSelectedPage(2);
+                    mockExchangeService.setSelectedPacketIsEmpty(false);
+                    mockExchangeService.setSelectedCompt(2, 3);
+                    expect(mockExchangeService.getSelectedPage()).toBe(1);
+                    expect(mockScope.$broadcast).toHaveBeenCalledWith("selectedCompts:update",
+                        mockExchangeService.getSelectedCompts());
+                });
+            });
+
+
         var prepareOldPkt = function () {
             mockExchangeService.setPacketIdToInd(oldPktInd, oldPkt.id);
-            mockExchangeService.setCompts(oldCompts, oldPktInd);
+            mockExchangeService.pushToCompts(oldCompts[0], oldPktInd);
+            mockExchangeService.pushToCompts(oldCompts[1], oldPktInd);
             mockExchangeService.setComptLabels(oldComptLabels, oldPkt.id);
             mockExchangeService.setSelectedPacket(oldPkt);
         };
 
         var prepareSelPkt = function () {
             mockExchangeService.setPacketIdToInd(selPktInd, selPkt.id);
-            mockExchangeService.setCompts(selCompts, selPktInd);
+            mockExchangeService.pushToCompts(selCompts[0], selPktInd);
+            mockExchangeService.pushToCompts(selCompts[1], selPktInd);
             mockExchangeService.setComptLabels(selComptLabels, selPkt.id);
         };
 

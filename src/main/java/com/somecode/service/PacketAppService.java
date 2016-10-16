@@ -48,9 +48,7 @@ public class PacketAppService {
         result.setPackets(packetAppDao.loadPackets(packetId))
                 .setCompts(packetAppDao.loadCompts(packetId));
 
-        if (!result.getCompts().isEmpty()
-                && !result.getStates().isEmpty()
-                && !result.getComboData().isEmpty()) {
+        if (!result.getCompts().isEmpty() && !result.getStates().isEmpty() && !result.getComboData().isEmpty()) {
             result.setComptSupplInfo(packetAppDao.loadComptsSupplInfo(packetId));
             return result;
         }

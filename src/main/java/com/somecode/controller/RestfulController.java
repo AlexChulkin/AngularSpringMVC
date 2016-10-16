@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.EnumSet;
+import java.util.EnumMap;
 
 import static com.somecode.helper.Helper.getMessage;
 
@@ -60,7 +60,7 @@ public class RestfulController {
     }
 
     @RequestMapping(value = SAVE_ALL_CHANGES_MAPPING, method = RequestMethod.POST)
-    public EnumSet<PersistError> saveAllChangesToBase(@RequestBody RequestObj requestObj) throws Exception {
+    public EnumMap<PersistError, Boolean> saveAllChangesToBase(@RequestBody RequestObj requestObj) throws Exception {
         log.debug(getMessage("restful.saveAllChangesToBase", null));
         DataParams params = requestObj.getDataParams();
         return packetAppService.saveAllChangesToBase(params.getComptIdsToDelete(),

@@ -207,26 +207,21 @@ describe("Compts Panel Controller Test", function () {
             mockScope.$broadcast('comboDataDefaultSet:update', fakeComboDataDefaultSet);
             mockScope.$broadcast('newComptCheckedVals:update', fakeNewComptCheckedVals);
             mockScope.data.newLabel = fakeNewComptLabel;
-            var res = mockScope.addComptLocally();
+            var fakeNewComptId = fakeMinOrMaxValue + 1;
+            var fakeNewCompt = {id: fakeNewComptId, label: fakeNewComptLabel};
+
+            mockScope.addComptLocally();
+
             expect(mockExchangeService.getMaximalComptId).toHaveBeenCalledWith();
             expect(mockExchangeService.setMaximalComptId).toHaveBeenCalledWith(fakeNewComptId);
             expect(mockExchangeService.setSelectedComptLabels).toHaveBeenCalledWith(true,
                 fakeNewComptLabel.toUpperCase());
             expect(mockExchangeService.getSelectedComptsLength).toHaveBeenCalledWith();
             expect(mockExchangeService.setComptIdToInd).toHaveBeenCalledWith(fakeSelectedComptsLength, fakeNewComptId);
-            expect(mockExchangeService.pushToSelectedCompts).toHaveBeenCalledWith({
-                id: fakeNewComptId,
-                label: fakeNewComptLabel
-            });
+            expect(mockExchangeService.pushToSelectedCompts).toHaveBeenCalledWith(fakeNewCompt);
             expect(mockExchangeService.getSelectedPacketId).toHaveBeenCalledWith();
-            expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith();
-            expect(mockExchangeService.setNewComptLabels).toHaveBeenCalledWith(fakeNewComptLabels);
-            expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith(fakeSelectedPktId);
-            expect(mockExchangeService.setNewComptLabels).toHaveBeenCalledWith(fakeNewComptLabels, fakeSelectedPktId);
             expect(mockExchangeService.setNewComptLabels).toHaveBeenCalledWith(fakeNewComptLabels["5"],
                 fakeSelectedPktId, fakeNewComptId);
-            expect(mockExchangeService.setAllComboData).toHaveBeenCalledWith(false, {}, fakeNewComptId);
-            expect(mockExchangeService.setAllCheckedComboData).toHaveBeenCalledWith(false, false, {}, fakeNewComptId);
             expect(mockExchangeService.getAllStatesLength).toHaveBeenCalledWith();
             for (var i = 1; i <= fakeAllStatesLength; i++) {
                 expect(mockExchangeService.setAllComboData).toHaveBeenCalledWith(i === fakeAllStatesLength,
@@ -236,21 +231,6 @@ describe("Compts Panel Controller Test", function () {
             }
             expect(mockScope.data.newLabel).toBeNull();
         });
-    });
-
-    describe('addComptLocally() proper work test with null newComptLabels', function () {
-        it('', function () {
-            var fakeNewComptLabel = fakeNewComptLabels["5"];
-            mockScope.$broadcast('newComptCheckedVals:update', fakeNewComptCheckedVals);
-            buildSpiesReturnValues_NullComptIdsToUpdateAndNewComptLabels();
-            buildSpiesOnMockExchangeService();
-            mockScope.data.newLabel = fakeNewComptLabel;
-            mockScope.addComptLocally();
-            expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith();
-            expect(mockExchangeService.setNewComptLabels).toHaveBeenCalledWith({});
-            expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith(fakeSelectedPktId);
-            expect(mockExchangeService.setNewComptLabels).toHaveBeenCalledWith({}, fakeSelectedPktId);
-        })
     });
 
     describe('deleteComptLocally() test', function () {
@@ -263,8 +243,8 @@ describe("Compts Panel Controller Test", function () {
                 expect(mockExchangeService.deleteSelectedComptLabels).toHaveBeenCalledWith(
                     fakeDeletedComptLabel.toUpperCase());
                 expect(mockExchangeService.getComptIdToInd).toHaveBeenCalledWith(fakeDeletedComptId);
-                expect(mockExchangeService.setSelectedCompt).toHaveBeenCalledWith(fakeMinOrMaxValue, null,
-                    mockScope.data.pageSize);
+                expect(mockExchangeService.setSelectedCompt)
+                    .toHaveBeenCalledWith(fakeMinOrMaxValue, mockScope.data.pageSize);
                 expect(mockExchangeService.getComptIdsToUpdate).toHaveBeenCalledWith(fakeSelectedPkt.id);
                 expect(mockExchangeService.deleteComptIdsToUpdate).toHaveBeenCalledWith(fakeSelectedPkt.id,
                     fakeDeletedComptId);
@@ -281,22 +261,18 @@ describe("Compts Panel Controller Test", function () {
             mockScope.deleteComptLocally(fakeDeletedCompt);
             expect(mockExchangeService.getComptIdsToUpdate).toHaveBeenCalledWith(fakeSelectedPktId);
             expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith(fakeSelectedPktId);
-            expect(mockExchangeService.getComptIdsToDelete).toHaveBeenCalledWith(fakeSelectedPktId);
-            expect(mockExchangeService.setComptIdsToDelete).toHaveBeenCalledWith(fakeComptIdsToDelete,
-                fakeSelectedPktId);
             expect(mockExchangeService.pushToComptIdsToDelete).toHaveBeenCalledWith(fakeDeletedComptId,
                 fakeSelectedPktId);
         });
 
-        it('deleteComptLocally() with null compts to update and null new compt labels proper work test', function () {
+        it('deleteComptLocally() with null compts to update, null compts to delete' +
+            ' and null new compt labels proper work test', function () {
             buildSpiesReturnValues_NullComptIdsToUpdateAndNewComptLabelsAndComptsToDelete();
             buildSpiesOnMockExchangeService();
             mockScope.deleteComptLocally(fakeDeletedCompt);
             expect(mockExchangeService.getComptIdsToUpdate).toHaveBeenCalledWith(fakeSelectedPktId);
             expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith(fakeSelectedPktId);
-            expect(mockExchangeService.getComptIdsToDelete).toHaveBeenCalledWith(fakeSelectedPktId);
-            expect(mockExchangeService.setComptIdsToDelete).toHaveBeenCalledWith([], fakeSelectedPktId);
-            expect(mockExchangeService.pushToComptIdsToDelete).toHaveBeenCalledWith(fakeDeletedComptId, 
+            expect(mockExchangeService.pushToComptIdsToDelete).toHaveBeenCalledWith(fakeDeletedComptId,
                 fakeSelectedPktId);
         });
     });
@@ -323,8 +299,6 @@ describe("Compts Panel Controller Test", function () {
             expect(mockExchangeService.getSelectedPacketId).toHaveBeenCalledWith();
             expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith(fakeSelectedPktId);
             expect(mockExchangeService.deleteComptIdsToUpdate).not.toHaveBeenCalled();
-            expect(mockExchangeService.getComptIdsToUpdate).toHaveBeenCalledWith(fakeSelectedPktId);
-            expect(mockExchangeService.setComptIdsToUpdate).toHaveBeenCalledWith({}, fakeSelectedPktId);
             expect(mockExchangeService.setComptIdsToUpdate).toHaveBeenCalledWith(true, fakeSelectedPktId,
                 fakeDeletedComptId);
         });
@@ -340,8 +314,6 @@ describe("Compts Panel Controller Test", function () {
             expect(mockExchangeService.getSelectedPacketId).toHaveBeenCalledWith();
             expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith(fakeSelectedPktId);
             expect(mockExchangeService.deleteComptIdsToUpdate).not.toHaveBeenCalled();
-            expect(mockExchangeService.getComptIdsToUpdate).toHaveBeenCalledWith(fakeSelectedPktId);
-            expect(mockExchangeService.setComptIdsToUpdate).toHaveBeenCalledWith({}, fakeSelectedPktId);
             expect(mockExchangeService.setComptIdsToUpdate).toHaveBeenCalledWith(true, fakeSelectedPktId,
                 fakeDeletedComptId);
         });
@@ -372,7 +344,6 @@ describe("Compts Panel Controller Test", function () {
             expect(mockExchangeService.getSelectedPacketId).toHaveBeenCalledWith();
             expect(mockExchangeService.getNewComptLabels).toHaveBeenCalledWith(fakeSelectedPktId);
             expect(mockExchangeService.deleteComptIdsToUpdate).not.toHaveBeenCalled();
-            expect(mockExchangeService.getComptIdsToUpdate).toHaveBeenCalledWith(fakeSelectedPktId);
             expect(mockExchangeService.setComptIdsToUpdate).not.toHaveBeenCalledWith({}, fakeSelectedPktId);
             expect(mockExchangeService.setComptIdsToUpdate).toHaveBeenCalledWith(true, fakeSelectedPktId,
                 fakeDeletedComptId);
@@ -491,7 +462,6 @@ describe("Compts Panel Controller Test", function () {
         mockScope.data.allCheckedComboData[comptId] = {};
         mockScope.data.allCheckedComboData[comptId][stateId] = fakeInitialAllCheckedComboData;
     };
-
 
     var buildSpiesOnMockExchangeService = function () {
         spyOn(mockExchangeService, 'getSelectedPacketId').and.returnValue(fakeSelectedPktId);
