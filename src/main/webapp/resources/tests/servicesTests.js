@@ -1007,8 +1007,6 @@ describe("Exchange Service Test", function () {
                 expect(mockExchangeService.getComptIdsToUpdate()).toEqual({1: {1: true}, 2: {2: true}});
                 expect(mockExchangeService.getComptIdsToUpdate(1)).toEqual({1: true});
                 expect(mockExchangeService.getComptIdsToUpdate(2)).toEqual({2: true});
-                //error 500 while saving
-                // updatepacket btn does not becomes active after the single packet saving
                 mockExchangeService.deleteComptIdsToUpdate(1, 1);
                 expect(mockExchangeService.getComptIdsToUpdate()).toEqual({1: {}, 2: {2: true}});
                 mockExchangeService.deleteComptIdsToUpdate(2);

@@ -1222,7 +1222,7 @@ describe("Packets Panel Controller Test", function () {
 
     var buildSpiesReturnValues_fullStuff = function () {
         fakeComptIdsToDelete = [1, 2];
-        fakeComptIdsToUpdate = {"3": "true", "4": "true"};
+        fakeComptIdsToUpdate = {"3": true, "4": true};
         fakeAllStates = [{id: "1", label: "state1"}, {id: "2", label: "state2"}];
         fakeAllCheckedComboData = "cd1";
         fakeNewComptLabels = {"5": "lbl5", "6": "lbl6"};
@@ -1243,7 +1243,7 @@ describe("Packets Panel Controller Test", function () {
 
     var buildSpiesReturnValues_woutDelCompts = function () {
         fakeComptIdsToDelete = [];
-        fakeComptIdsToUpdate = {"3": "true", "4": "true"};
+        fakeComptIdsToUpdate = {"3": true, "4": true};
         fakeAllStates = [{id: "1", label: "state1"}, {id: "2", label: "state2"}];
         fakeAllCheckedComboData = "cd1";
         fakeNewComptLabels = {"5": "lbl5", "6": "lbl6"};
@@ -1265,7 +1265,7 @@ describe("Packets Panel Controller Test", function () {
 
     var buildSpiesReturnValues_woutAddPktsAndAddCompts = function () {
         fakeComptIdsToDelete = [1, 2];
-        fakeComptIdsToUpdate = {"3": "true", "4": "true"};
+        fakeComptIdsToUpdate = {"3": true, "4": true};
         fakeAllStates = [{id: 1, label: "state1"}, {id: 2, label: "state2"}];
         fakeAllCheckedComboData = "cd1";
         fakeNewComptLabels = {};
@@ -1276,7 +1276,7 @@ describe("Packets Panel Controller Test", function () {
 
     var buildSpiesReturnValues_woutUpdPktState = function () {
         fakeComptIdsToDelete = [1, 2];
-        fakeComptIdsToUpdate = {"3": "true", "4": "true"};
+        fakeComptIdsToUpdate = {"3": true, "4": true};
         fakeAllStates = [{id: 1, label: "state1"}, {id: 2, label: "state2"}];
         fakeAllCheckedComboData = "cd1";
         fakeNewComptLabels = {"5": "lbl5", "6": "lbl6"};
@@ -1298,7 +1298,7 @@ describe("Packets Panel Controller Test", function () {
 
     var buildSpiesReturnValues_woutDelPkts = function () {
         fakeComptIdsToDelete = [1, 2];
-        fakeComptIdsToUpdate = {"3": "true", "4": "true"};
+        fakeComptIdsToUpdate = {"3": true, "4": true};
         fakeAllStates = [{id: 1, label: "state1"}, {id: 2, label: "state2"}];
         fakeAllCheckedComboData = "cd1";
         fakeNewComptLabels = {"5": "lbl5", "6": "lbl6"};
@@ -1319,23 +1319,23 @@ describe("Packets Panel Controller Test", function () {
     };
 
     var buildResponse_success = function () {
-        httpResponse = {"ADD_PACKETS": "false", "UPDATE_PACKETS": "false", "UPDATE_COMPTS": "false"};
+        httpResponse = {"ADD_PACKETS": false, "UPDATE_PACKETS": false, "UPDATE_COMPTS": false};
     };
 
     var buildResponse_error_addPackets = function () {
-        httpResponse = {"ADD_PACKETS": "true", "UPDATE_PACKETS": "false", "UPDATE_COMPTS": "false"};
+        httpResponse = {"ADD_PACKETS": true, "UPDATE_PACKETS": false, "UPDATE_COMPTS": false};
     };
 
     var buildResponse_error_updatePackets = function () {
-        httpResponse = {"ADD_PACKETS": "false", "UPDATE_PACKETS": "true", "UPDATE_COMPTS": "false"};
+        httpResponse = {"ADD_PACKETS": false, "UPDATE_PACKETS": true, "UPDATE_COMPTS": false};
     };
 
     var buildResponse_error_updateCompts = function () {
-        httpResponse = {"ADD_PACKETS": "false", "UPDATE_PACKETS": "false", "UPDATE_COMPTS": "true"};
+        httpResponse = {"ADD_PACKETS": false, "UPDATE_PACKETS": false, "UPDATE_COMPTS": true};
     };
 
     var buildResponse_allErrors = function () {
-        httpResponse = {'ADD_PACKETS': "true", "UPDATE_PACKETS": "true", "UPDATE_COMPTS": "true"};
+        httpResponse = {'ADD_PACKETS': true, "UPDATE_PACKETS": true, "UPDATE_COMPTS": true};
     };
 
     var buildDataParams_fullStuff = function (savedPktId) {

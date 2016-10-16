@@ -106,7 +106,7 @@ angular.module("packetAdminApp")
                 .then(
                     function success(data) {
                         angular.forEach(data.data, function (v, k) {
-                            if (v === "true") {
+                            if (v === true) {
                                 var errorKey = String(k);
                                 delete errorMap[errorKey];
                                 if (errorKey == addPackets || errorKey == updatePackets) {

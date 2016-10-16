@@ -1,6 +1,9 @@
 package com.somecode.controller;
 
-import com.somecode.domain.*;
+import com.somecode.domain.Data;
+import com.somecode.domain.DataParams;
+import com.somecode.domain.RequestObj;
+import com.somecode.domain.Role;
 import com.somecode.service.PacketAppService;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.EnumMap;
+import java.util.Map;
 
 import static com.somecode.helper.Helper.getMessage;
 
@@ -60,7 +63,7 @@ public class RestfulController {
     }
 
     @RequestMapping(value = SAVE_ALL_CHANGES_MAPPING, method = RequestMethod.POST)
-    public EnumMap<PersistError, Boolean> saveAllChangesToBase(@RequestBody RequestObj requestObj) throws Exception {
+    public Map<String, Boolean> saveAllChangesToBase(@RequestBody RequestObj requestObj) throws Exception {
         log.debug(getMessage("restful.saveAllChangesToBase", null));
         DataParams params = requestObj.getDataParams();
         return packetAppService.saveAllChangesToBase(params.getComptIdsToDelete(),
