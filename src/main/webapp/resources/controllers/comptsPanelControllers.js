@@ -119,7 +119,6 @@ app
                 exchangeService.deleteComptIdsToUpdate(pktId, comptId);
                 return;
             }
-            // var comptIdsToUpdate = exchangeService.getComptIdsToUpdate(pktId) || {};
             exchangeService.setComptIdsToUpdate(true, pktId, comptId);
         };
 
