@@ -6,7 +6,7 @@ package com.somecode.domain;
 
 import static com.somecode.helper.Helper.getMessage;
 
-public class ComptInfo {
+public class ComptInfo implements EntityProtoType {
     private final static String STRING_VERSION = "comptInfo.toString";
 
     private long id;
@@ -19,8 +19,12 @@ public class ComptInfo {
         this.packetId = compt.getPacket().getId();
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getLabel() {

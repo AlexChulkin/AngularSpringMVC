@@ -6,7 +6,7 @@ package com.somecode.domain;
 
 import static com.somecode.helper.Helper.getMessage;
 
-public class ComptSupplInfo {
+public class ComptSupplInfo implements EntityProtoType {
 
     private static final String CHECKED_STRING_VERSION = "comptSupplInfo.checked.toString";
     private static final String UNCHECKED_STRING_VERSION = "comptSupplInfo.unchecked.toString";
@@ -15,6 +15,7 @@ public class ComptSupplInfo {
     private Long stateId;
     private String label;
     private boolean checked;
+    private Long id;
 
     public ComptSupplInfo(Long comptId, Long stateId, String label, boolean checked) {
         this.comptId = comptId;
@@ -23,15 +24,21 @@ public class ComptSupplInfo {
         this.checked = checked;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Long getComptId() {
         return comptId;
     }
 
-
     public Long getStateId() {
         return stateId;
     }
-
 
     public String getLabel() {
         return label;

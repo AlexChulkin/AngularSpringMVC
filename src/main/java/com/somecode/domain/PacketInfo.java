@@ -6,7 +6,7 @@ import static com.somecode.helper.Helper.getMessage;
  */
 
 
-public class PacketInfo {
+public class PacketInfo implements EntityProtoType {
     private static final String STRING_VERSION = "packetInfo.toString";
 
     private Long id;
@@ -19,6 +19,10 @@ public class PacketInfo {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getStateId() {

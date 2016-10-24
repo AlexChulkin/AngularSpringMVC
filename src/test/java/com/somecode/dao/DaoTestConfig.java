@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
@@ -21,6 +22,7 @@ import java.util.Properties;
 @ComponentScan(basePackages = {"com.somecode"})
 @Log4j
 public class DaoTestConfig extends PersistenceJPAConfig {
+    private final static String MESSAGES_BASENAME = "classpath:messages";
 
     @Override
     @PostConstruct
@@ -40,6 +42,14 @@ public class DaoTestConfig extends PersistenceJPAConfig {
                 .setType(EmbeddedDatabaseType.H2)
                 .addScript("classpath:META-INF/config/test/test-schema.sql")
                 .build();
+    }
+
+
+    @Bean
+    public ReloadableResourceBundleMessageSource messageSource() {
+        ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
+        source.setBasename(MESSAGES_BASENAME);
+        return source;
     }
 
     @Bean(name = "databaseTester")

@@ -39,19 +39,27 @@ public class PacketAppService {
                 : getMessage(LOAD_DATA_FOR_GIVEN_PACKET, new Object[]{packetId}));
 
         Data result = new Data();
+        List<State> states;
+
         try {
-            result.setStates(packetAppDao.loadAllStates());
+            states = packetAppDao.loadAllStates();
         } catch (DatabaseException e) {
-            result.setStates(Collections.EMPTY_LIST);
-        }
-        try {
-            result.setComboData(packetAppDao.loadAllComboData());
-        } catch (DatabaseException e) {
-            result.setComboData(Collections.EMPTY_LIST);
+            states = Collections.EMPTY_LIST;
         }
 
-        result.setPackets(packetAppDao.loadPackets(packetId))
-                .setCompts(packetAppDao.loadCompts(packetId));
+        result.setStates(states);
+
+        List<ComboData> comboDatas;
+
+        try {
+            comboDatas = packetAppDao.loadAllComboData();
+        } catch (DatabaseException e) {
+            comboDatas = Collections.EMPTY_LIST;
+        }
+
+        result.setComboData(comboDatas);
+
+        result.setPackets(packetAppDao.loadPackets(packetId)).setCompts(packetAppDao.loadCompts(packetId));
 
         if (!result.getCompts().isEmpty() && !result.getStates().isEmpty() && !result.getComboData().isEmpty()) {
             result.setComptSupplInfo(packetAppDao.loadComptsSupplInfo(packetId));
@@ -110,7 +118,7 @@ public class PacketAppService {
                 persistErrors.put(UPDATE_PACKETS, true);
             }
         }
-        persistErrors.put(UPDATE_PACKETS, false);
+        persistErrors.putIfAbsent(UPDATE_PACKETS, false);
 
         return persistErrors;
     }
