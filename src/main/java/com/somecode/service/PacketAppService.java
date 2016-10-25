@@ -44,7 +44,7 @@ public class PacketAppService {
         try {
             states = packetAppDao.loadAllStates();
         } catch (DatabaseException e) {
-            states = Collections.EMPTY_LIST;
+            states = Collections.emptyList();
         }
 
         result.setStates(states);
@@ -54,7 +54,7 @@ public class PacketAppService {
         try {
             comboDatas = packetAppDao.loadAllComboData();
         } catch (DatabaseException e) {
-            comboDatas = Collections.EMPTY_LIST;
+            comboDatas = Collections.emptyList();
         }
 
         result.setComboData(comboDatas);
@@ -66,7 +66,7 @@ public class PacketAppService {
             return result;
         }
 
-        return result.setComptSupplInfo(Collections.EMPTY_LIST);
+        return result.setComptSupplInfo(Collections.emptyList());
     }
 
     public Map<String, Boolean> saveAllChangesToBase(List<Long> comptIdsToDelete,

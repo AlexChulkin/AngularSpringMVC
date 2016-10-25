@@ -94,12 +94,12 @@ public class PacketAppServiceTest {
 
     private void testLoadDataWithParams(Long packetId, boolean emptyStates, boolean emptyComboDatas,
                                         boolean emptyPackets, boolean emptyCompts) throws DatabaseException {
-        List<ComboData> test_comboDatas = emptyComboDatas ? Collections.EMPTY_LIST : buildEntityList(ComboData.class);
-        List<State> test_states = emptyStates ? Collections.EMPTY_LIST : buildEntityList(State.class);
-        List<ComptInfo> test_comptsInfo = emptyCompts ? Collections.EMPTY_LIST : buildEntityList(ComptInfo.class);
-        List<PacketInfo> test_packetsInfo = emptyPackets ? Collections.EMPTY_LIST : buildEntityList(PacketInfo.class);
+        List<ComboData> test_comboDatas = emptyComboDatas ? Collections.emptyList() : buildEntityList(ComboData.class);
+        List<State> test_states = emptyStates ? Collections.emptyList() : buildEntityList(State.class);
+        List<ComptInfo> test_comptsInfo = emptyCompts ? Collections.emptyList() : buildEntityList(ComptInfo.class);
+        List<PacketInfo> test_packetsInfo = emptyPackets ? Collections.emptyList() : buildEntityList(PacketInfo.class);
         List<ComptSupplInfo> test_comptSupplInfo = (emptyComboDatas || emptyStates || emptyCompts)
-                ? Collections.EMPTY_LIST : buildEntityList(ComptSupplInfo.class);
+                ? Collections.emptyList() : buildEntityList(ComptSupplInfo.class);
 
         if (emptyStates) {
             doThrow(new DatabaseException()).when(dao).loadAllStates();
