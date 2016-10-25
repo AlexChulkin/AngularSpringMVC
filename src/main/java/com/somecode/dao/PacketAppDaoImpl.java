@@ -53,8 +53,8 @@ public class PacketAppDaoImpl implements PacketAppDao {
     private static final String COMPTS_DELETE_SUCCESS_REPORT = "packetAppDao.comptsDelete.successReport";
     private static final String PACKETS_DELETE_NON_EXISTING_IDS = "packetAppDao.packetsDelete.nonExistingIds";
     private static final String PACKETS_DELETE_SUCCESS_REPORT = "packetAppDao.packetsDelete.successReport";
-    private static final String PACKET_ADD_OR_UPDATE_NOT_EXISTING_PACKET =
-            "packetAppDao.packetAddOrUpdate.notExistingPacket";
+    private static final String PACKET_UPDATE_NOT_EXISTING_PACKET =
+            "packetAppDao.packetUpdate.notExistingPacket";
     private static final String PACKET_ADDING_ADD_COMPTS = "packetAppDao.packetAddOrUpdate.addPacket.addCompts";
     private static final String PACKET_UPDATE_ADD_COMPTS = "packetAppDao.packetAddOrUpdate.updatePacket.addCompts";
     private static final String PACKET_ADDING_SUCCESS_REPORT = "packetAppDao.packetAddOrUpdate.addPacket.successReport";
@@ -76,8 +76,9 @@ public class PacketAppDaoImpl implements PacketAppDao {
             = "packetAppDao.packetAddOrUpdate.addPacket.setState.nullState";
     private static final String PACKET_UPDATE_STATE_UPDATE_NOT_DIFFERENT_NEW_STATE
             = "packetAppDao.packetAddOrUpdate.updatePacket.updateState.notDifferentNewState";
-    private static final String PACKET_ADDING_STATE_SET_NOT_DIFFERENT_NEW_STATE
-            = "packetAppDao.packetAddOrUpdate.addPacket.setState.notDifferentNewState";
+    private static final String USER_DATA_LOAD_SUCCESS = "packetAppDao.userDataLoad.success";
+    private static final String USER_DATA_LOAD_ERROR = "packetAppDao.userDataLoad.error";
+
 
     private List<ComboData> allComboData = Collections.emptyList();
     private List<State> allStates = Collections.emptyList();
@@ -114,9 +115,11 @@ public class PacketAppDaoImpl implements PacketAppDao {
         if (!users.isEmpty()) {
             User user = users.get(0);
             if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                log.info(getMessage(USER_DATA_LOAD_SUCCESS, new Object[]{username}));
                 return user.getRole();
             }
         }
+        log.error(getMessage(USER_DATA_LOAD_ERROR, new Object[]{username}));
         return null;
     }
 
@@ -343,8 +346,9 @@ public class PacketAppDaoImpl implements PacketAppDao {
 
         if (comptsSize != idsToDelete.size()) {
             Set<Long> idsToDeleteSet = new HashSet<>(idsToDelete);
+            idsToDeleteSet.removeAll(result);
             log.error(getMessage(COMPTS_DELETE_NON_EXISTING_COMPTS,
-                    new Object[]{idsToDeleteSet.removeAll(result)}));
+                    new Object[]{idsToDeleteSet}));
         }
 
         return result;
@@ -398,7 +402,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
                 long packetId = packetParams.getId();
                 packet = loadPacket(packetId);
                 if (packet == null) {
-                    log.error(getMessage(PACKET_ADD_OR_UPDATE_NOT_EXISTING_PACKET, new Object[]{packetId}));
+                    log.error(getMessage(PACKET_UPDATE_NOT_EXISTING_PACKET, new Object[]{packetId}));
                     continue;
                 }
             }
@@ -421,9 +425,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
         }
         packetRepository.save(packets);
         em.flush();
-        packets.forEach(pkt -> {
-            log.info(generateSavePacketReport(pkt, operationType));
-        });
+        packets.forEach(pkt -> log.info(generateSavePacketReport(pkt, operationType)));
     }
 
     private String generateSavePacketReport(Packet pkt, OperationType operationType) {
@@ -442,8 +444,8 @@ public class PacketAppDaoImpl implements PacketAppDao {
         String report = "";
         Long packetId = packet.getId();
         if (stateId == null) {
-            return setDefaultState(operationType, PacketAddingOrUpdateError.NULL_NEW_STATE_ID, packet, stateId);
-        } else if (packet.getState() != null && packet.getState().getId() == stateId) {
+            return setDefaultState(operationType, PacketDaoError.NULL_NEW_STATE_ID, packet, stateId);
+        } else if (packet.getState() != null && packet.getState().getId().equals(stateId)) {
             report = getMessage(PACKET_UPDATE_STATE_UPDATE_NOT_DIFFERENT_NEW_STATE, new Object[]{stateId});
             log.error(report);
             return false;
@@ -461,13 +463,13 @@ public class PacketAppDaoImpl implements PacketAppDao {
             log.info(report);
             return true;
         } else {
-            return setDefaultState(operationType, PacketAddingOrUpdateError.NOT_EXISTING_STATE_ID, packet, stateId);
+            return setDefaultState(operationType, PacketDaoError.NOT_EXISTING_STATE_ID, packet, stateId);
         }
     }
 
-    private boolean setDefaultState(OperationType operationType, PacketAddingOrUpdateError error, Packet packet,
+    private boolean setDefaultState(OperationType operationType, PacketDaoError error, Packet packet,
                                     Long stateId) {
-        if (operationType == OperationType.UPDATE && error == PacketAddingOrUpdateError.NULL_NEW_STATE_ID) {
+        if (operationType == OperationType.UPDATE && error == PacketDaoError.NULL_NEW_STATE_ID) {
             return false;
         }
 
@@ -475,10 +477,10 @@ public class PacketAppDaoImpl implements PacketAppDao {
         if (operationType == OperationType.ADD) {
             State defaultState = allStates.get(DEFAULT_STATE_INDEX);
             packet.setState(defaultState);
-            if (error == PacketAddingOrUpdateError.NOT_EXISTING_STATE_ID) {
+            if (error == PacketDaoError.NOT_EXISTING_STATE_ID) {
                 report = getMessage(PACKET_ADDING_STATE_SET_NOT_EXISTING_STATE,
                         new Object[]{stateId, defaultState.toString()});
-            } else if (error == PacketAddingOrUpdateError.NULL_NEW_STATE_ID) {
+            } else if (error == PacketDaoError.NULL_NEW_STATE_ID) {
                 report = getMessage(PACKET_ADDING_STATE_SET_NULL_STATE,
                         new Object[]{defaultState.toString()});
             }
