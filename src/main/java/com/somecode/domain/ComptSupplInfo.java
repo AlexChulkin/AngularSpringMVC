@@ -4,7 +4,7 @@ package com.somecode.domain;
  * Created by alexc_000 on 2016-07-16.
  */
 
-import static com.somecode.helper.Helper.getMessage;
+import static com.somecode.utils.Utils.getMessage;
 
 public class ComptSupplInfo implements EntityProtoType {
 
@@ -16,6 +16,9 @@ public class ComptSupplInfo implements EntityProtoType {
     private String label;
     private boolean checked;
     private Long id;
+
+    public ComptSupplInfo() {
+    }
 
     public ComptSupplInfo(Long comptId, Long stateId, String label, boolean checked) {
         this.comptId = comptId;

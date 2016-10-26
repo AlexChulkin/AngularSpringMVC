@@ -7,7 +7,6 @@ import com.somecode.domain.Role;
 import com.somecode.service.PacketAppService;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.Map;
 
-import static com.somecode.helper.Helper.getMessage;
+import static com.somecode.utils.Utils.getMessage;
 
 
 @Controller
@@ -32,10 +31,9 @@ public class RestfulController {
     private final static String SAVE_ALL_CHANGES_MAPPING = "/saveAllChangesToBase";
     private final static String LOAD_DATA_FOR_ALL_PACKETS = "restful.loadDataForAllPackets";
     private final static String LOAD_DATA_FOR_GIVEN_PACKET = "restful.loadDataForGivenPacket";
+    private final static String SAVE_ALL_CHANGES_TO_BASE = "restful.saveAllChangesToBase";
     @Autowired
     private PacketAppService packetAppService;
-    @Autowired
-    private ApplicationContext context;
 
     @RequestMapping({HOME_MAPPING, ""})
     public String home(){
@@ -64,7 +62,7 @@ public class RestfulController {
 
     @RequestMapping(value = SAVE_ALL_CHANGES_MAPPING, method = RequestMethod.POST)
     public Map<String, Boolean> saveAllChangesToBase(@RequestBody RequestObj requestObj) throws Exception {
-        log.debug(getMessage("restful.saveAllChangesToBase", null));
+        log.debug(getMessage(SAVE_ALL_CHANGES_TO_BASE, null));
         DataParams params = requestObj.getDataParams();
         return packetAppService.saveAllChangesToBase(params.getComptIdsToDelete(),
                 params.getPacketIdsToDelete(),

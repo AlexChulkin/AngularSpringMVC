@@ -6,7 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import static com.somecode.helper.Helper.getMessage;
+import static com.somecode.utils.Utils.getMessage;
 
 /**
  * Created by alexc_000 on 2016-09-06.

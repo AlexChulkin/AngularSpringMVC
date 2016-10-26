@@ -44,7 +44,6 @@ public class DaoTestConfig extends PersistenceJPAConfig {
                 .build();
     }
 
-
     @Bean
     public ReloadableResourceBundleMessageSource messageSource() {
         ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();

@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.somecode.domain.*;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -18,7 +17,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.somecode.helper.Helper.getMessage;
+import static com.somecode.utils.Utils.getMessage;
 
 @Service
 @Repository
@@ -85,14 +84,13 @@ public class PacketAppDaoImpl implements PacketAppDao {
 
     private Map<String, Integer> mapComboLabelsToIndices;
 
+    private String emptyStateTableExceptionMessage;
+    private String emptyCombodataTableExceptionMessage;
     private StackTraceElement[] emptyStateTableExceptionStackTrace;
     private StackTraceElement[] emptyCombodataTableExceptionStackTrace;
 
     @PersistenceContext
     private EntityManager em;
-
-    @Autowired
-    private ApplicationContext context;
 
     @Autowired
     private ComboDataRepository comboDataRepository;
@@ -176,11 +174,15 @@ public class PacketAppDaoImpl implements PacketAppDao {
 
     private DatabaseException logDBErrorAndReturnDBTableException(EmptyDBTableException cause) {
         if (cause.getClass().equals(EmptyStateTableException.class)) {
+            emptyStateTableExceptionMessage = cause.getMessage();
             emptyStateTableExceptionStackTrace = cause.getStackTrace();
-            log.error(getMessage(STATE_TABLE_IS_EMPTY, new Object[]{emptyStateTableExceptionStackTrace}));
+            log.error(getMessage(STATE_TABLE_IS_EMPTY, new Object[]{emptyStateTableExceptionMessage,
+                    emptyStateTableExceptionStackTrace}));
         } else if (cause.getClass().equals(EmptyComboDataTableException.class)) {
+            emptyCombodataTableExceptionMessage = cause.getMessage();
             emptyCombodataTableExceptionStackTrace = cause.getStackTrace();
-            log.error(getMessage(COMBODATA_TABLE_IS_EMPTY, new Object[]{emptyCombodataTableExceptionStackTrace}));
+            log.error(getMessage(COMBODATA_TABLE_IS_EMPTY, new Object[]{emptyCombodataTableExceptionMessage,
+                    emptyCombodataTableExceptionStackTrace}));
         }
         DatabaseException exc = new DatabaseException();
         exc.initCause(cause);

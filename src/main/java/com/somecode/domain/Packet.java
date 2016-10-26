@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.somecode.helper.Helper.getMessage;
+import static com.somecode.utils.Utils.getMessage;
 @Entity
 public class Packet implements EntityType {
     private static final String ID_COLUMN = "PACKET_ID";

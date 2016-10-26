@@ -1,6 +1,6 @@
 package com.somecode.domain;
 
-import static com.somecode.helper.Helper.getMessage;
+import static com.somecode.utils.Utils.getMessage;
 /**
  * Created by alexc_000 on 2016-07-16.
  */
@@ -11,6 +11,9 @@ public class PacketInfo implements EntityProtoType {
 
     private Long id;
     private Long stateId;
+
+    public PacketInfo() {
+    }
 
     public PacketInfo(Packet packet) {
         this.id = packet.getId();

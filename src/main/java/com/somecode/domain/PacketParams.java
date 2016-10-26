@@ -2,12 +2,12 @@ package com.somecode.domain;
 
 import java.util.List;
 
-import static com.somecode.helper.Helper.getMessage;
+import static com.somecode.utils.Utils.getMessage;
 
 /**
  * Created by alexc_000 on 2016-08-13.
  */
-public class PacketParams {
+public class PacketParams implements SelfSettingEntityPrototype {
     private static final String STRING_VERSION = "packetParams.toString";
     private Long id;
     private Long stateId;

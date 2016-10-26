@@ -5093,11 +5093,11 @@
     }
 
 // if any other type of options value besides an Object value is
-// passed into the $animate.method() animation then this helper code
+// passed into the $animate.method() animation then this utils code
 // will be run which will ignore it. While this patch is not the
 // greatest solution to this, a lot of existing plugins depend on
 // $animate to either call the callback (< 1.2) or return a promise
-// that can be changed. This helper function ensures that the options
+// that can be changed. This utils function ensures that the options
 // are wiped clean incase a callback function is provided.
     function prepareAnimateOptions(options) {
         return isObject(options)
@@ -16945,7 +16945,7 @@
                  expect(parent.salutation).toEqual('Hello');
                  * ```
                  *
-                 * When interacting with `Scope` in tests, additional helper methods are available on the
+                 * When interacting with `Scope` in tests, additional utils methods are available on the
                  * instances of `Scope` type. See {@link ngMock.$rootScope.Scope ngMock Scope} for additional
                  * details.
                  *
@@ -28346,7 +28346,7 @@
     };
 
 
-// helper methods
+// utils methods
     function addSetValidityMethod(context) {
         var ctrl = context.ctrl,
             $element = context.$element,

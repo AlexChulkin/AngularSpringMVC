@@ -2,17 +2,15 @@ package com.somecode.dao;
 
 import com.google.common.collect.Lists;
 import com.somecode.domain.*;
-import com.somecode.helper.Helper;
-import lombok.extern.log4j.Log4j;
+import com.somecode.utils.TestUtils;
+import com.somecode.utils.Utils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.annotation.DirtiesContext;
@@ -34,11 +32,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@PrepareForTest(Helper.class)
 @ContextConfiguration(classes = {DaoTestConfig.class})
 @TestExecutionListeners({AbstractDbunitTransactionalJUnit4SpringContextTests.DbunitTestExecutionListener.class})
 @ActiveProfiles("test")
-@Log4j
 public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringContextTests {
     private static final String DEFAULT_COMPT_LABEL_PREFIX = "compt_label_";
     private static final String DEFAULT_COMBO_LABEL_PREFIX = "combo_label_";
@@ -110,6 +106,8 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
     private static final String STATE_TABLE_IS_EMPTY = "STATE_TABLE_IS_EMPTY";
     private static final String EMPTY_STATE_TABLE_EXCEPTION_STACKTRACE = "emptyStateTableExceptionStackTrace";
     private static final String EMPTY_COMBODATA_TABLE_EXCEPTION_STACKTRACE = "emptyCombodataTableExceptionStackTrace";
+    private static final String EMPTY_STATE_TABLE_EXCEPTION_MESSAGE = "emptyStateTableExceptionMessage";
+    private static final String EMPTY_COMBODATA_TABLE_EXCEPTION_MESSAGE = "emptyCombodataTableExceptionMessage";
     private static final String ALL_PACKETS_LOADED_MESSAGE = "ALL_PACKETS_LOADED_MESSAGE";
     private static final String PACKET_NOT_LOADED = "PACKET_NOT_LOADED";
     private static final String NO_PACKETS_LOADED = "NO_PACKETS_LOADED";
@@ -145,11 +143,11 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
     @PersistenceContext
     private EntityManager em;
 
-    private TestAppender testAppender;
+    private TestUtils.TestAppender testAppender;
 
     @Before
     public void doBeforeEachTest() {
-        testAppender = new TestAppender();
+        testAppender = TestUtils.getTestAppender();
         Logger root = Logger.getRootLogger();
         root.addAppender(testAppender);
         root.setLevel(Level.INFO);
@@ -180,7 +178,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
 
         final int testLogSize = testAppender.getLog().size();
         final LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
-        assertEquals(Helper.getMessage(testLoadDataForGivenPacket, new Object[]{packetId, result}),
+        assertEquals(Utils.getMessage(testLoadDataForGivenPacket, new Object[]{packetId, result}),
                 loggingEvent.getMessage());
         assertEquals(Level.INFO, loggingEvent.getLevel());
 
@@ -200,7 +198,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         assertEquals(expectedResultSize, result.size());
         final int testLogSize = testAppender.getLog().size();
         final LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
-        assertEquals(Helper.getMessage(testLoadDataForGivenPacket, new Object[]{packetId, result}),
+        assertEquals(Utils.getMessage(testLoadDataForGivenPacket, new Object[]{packetId, result}),
                 loggingEvent.getMessage());
         assertEquals(Level.INFO, loggingEvent.getLevel());
     }
@@ -229,7 +227,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                 );
         final int testLogSize = testAppender.getLog().size();
         final LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
-        assertEquals(Helper.getMessage(testLoadDataForAllPackets, new Object[]{result}),
+        assertEquals(Utils.getMessage(testLoadDataForAllPackets, new Object[]{result}),
                 loggingEvent.getMessage());
         assertEquals(Level.INFO, loggingEvent.getLevel());
     }
@@ -247,7 +245,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         assertEquals(expectedResultLength, result.size());
         final int testLogSize = testAppender.getLog().size();
         final LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
-        assertEquals(Helper.getMessage(testLoadDataForAllPackets, new Object[]{result}),
+        assertEquals(Utils.getMessage(testLoadDataForAllPackets, new Object[]{result}),
                 loggingEvent.getMessage());
         assertEquals(Level.INFO, loggingEvent.getLevel());
     }
@@ -284,7 +282,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         assertEquals(expectedResultSize, result.size());
         final int testLogSize = testAppender.getLog().size();
         final LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
-        assertEquals(Helper.getMessage(testLoadDataForAllSupplInfo, new Object[]{result}),
+        assertEquals(Utils.getMessage(testLoadDataForAllSupplInfo, new Object[]{result}),
                 loggingEvent.getMessage());
         assertEquals(Level.INFO, loggingEvent.getLevel());
     }
@@ -324,7 +322,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         final List<String> testAllStates = (List<String>) ReflectionTestUtils.getField(packetAppDao, ALL_STATES);
         final int testLogSize = testAppender.getLog().size();
         final LoggingEvent statesLoggingEvent = testAppender.getLog().get(testLogSize - 1);
-        assertEquals(Helper.getMessage(testAllStatesLoaded, new Object[]{testAllStates}),
+        assertEquals(Utils.getMessage(testAllStatesLoaded, new Object[]{testAllStates}),
                 statesLoggingEvent.getMessage());
         assertEquals(Level.INFO, statesLoggingEvent.getLevel());
         assertEquals(expectedResultLength, result.size());
@@ -365,7 +363,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         final int testLogSize = testAppender.getLog().size();
         final LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
         assertEquals(
-                Helper.getMessage(testAllPacketsLoaded,
+                Utils.getMessage(testAllPacketsLoaded,
                         new Object[]{result.stream().map(PacketInfo::getId).collect(Collectors.toList())}),
                 loggingEvent.getMessage()
         );
@@ -386,7 +384,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         assertEquals(expectedResultSize, result.size());
         int testLogSize = testAppender.getLog().size();
         final LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
-        assertEquals(Helper.getMessage(testPacketNotFound, new Object[]{packetId}),
+        assertEquals(Utils.getMessage(testPacketNotFound, new Object[]{packetId}),
                 loggingEvent.getMessage()
         );
     }
@@ -414,7 +412,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         final int testLogSize = testAppender.getLog().size();
         final LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
         assertEquals(
-                Helper.getMessage(testAllPacketsLoadedMessage,
+                Utils.getMessage(testAllPacketsLoadedMessage,
                         new Object[]{result.stream().map(PacketInfo::getId).collect(Collectors.toList())}),
                 loggingEvent.getMessage()
         );
@@ -434,7 +432,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         int testLogSize = testAppender.getLog().size();
         LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
         assertEquals(
-                Helper.getMessage(testNoPacketsFound, null),
+                Utils.getMessage(testNoPacketsFound, null),
                 loggingEvent.getMessage()
         );
         assertEquals(Level.ERROR, loggingEvent.getLevel());
@@ -468,7 +466,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         final int arrayLength = comptIds.length;
         IntStream.range(0, arrayLength).boxed().forEach(i -> {
             assertEquals(
-                    Helper.getMessage(testComptUpdateDataComptUpdate, new Object[]{comptIds[i], dataComptIds[i]}),
+                    Utils.getMessage(testComptUpdateDataComptUpdate, new Object[]{comptIds[i], dataComptIds[i]}),
                     testAppender.getLog().get(testLogSize - 2 - (arrayLength - i - 1)).getMessage()
             );
             assertEquals(Level.INFO, testAppender.getLog().get(testLogSize - 2 - (arrayLength - i - 1)).getLevel());
@@ -477,7 +475,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         List<Long> comptIdsForPacketIds = Arrays.asList(1L, 2L);
         LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
         assertEquals(
-                Helper.getMessage(testComptUpdateSuccessReport, new Object[]{packetId, comptIdsForPacketIds}),
+                Utils.getMessage(testComptUpdateSuccessReport, new Object[]{packetId, comptIdsForPacketIds}),
                 loggingEvent.getMessage()
         );
         assertEquals(Level.INFO, loggingEvent.getLevel());
@@ -510,7 +508,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         int testLogSize = testAppender.getLog().size();
         LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
         assertEquals(
-                Helper.getMessage(testComptUpdateNonExistingCompt, new Object[]{firstComptIdToUpdate}),
+                Utils.getMessage(testComptUpdateNonExistingCompt, new Object[]{firstComptIdToUpdate}),
                 loggingEvent.getMessage()
         );
         assertEquals(Level.ERROR, loggingEvent.getLevel());
@@ -656,7 +654,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         assertEquals(expectedLogSize, testLogSize);
         LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
         assertEquals(
-                Helper.getMessage(testPacketsDeleteSuccessReport, new Object[]{idsToDelete}),
+                Utils.getMessage(testPacketsDeleteSuccessReport, new Object[]{idsToDelete}),
                 loggingEvent.getMessage()
         );
         assertEquals(Level.INFO, loggingEvent.getLevel());
@@ -682,7 +680,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         assertEquals(expectedLogSize, testLogSize);
         LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
         assertEquals(
-                Helper.getMessage(testPacketsDeleteNonExistingIds, new Object[]{idsToDelete}),
+                Utils.getMessage(testPacketsDeleteNonExistingIds, new Object[]{idsToDelete}),
                 loggingEvent.getMessage()
         );
         assertEquals(Level.ERROR, loggingEvent.getLevel());
@@ -1064,11 +1062,11 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         final List<String> testAllComboData
                 = (List<String>) ReflectionTestUtils.getField(packetAppDao, ALL_COMBODATA);
         final LoggingEvent mapComboDataLoggingEvent = testAppender.getLog().get(testLogSize - 1);
-        assertEquals(Helper.getMessage(testMapCombodataLabelsToIndicesMessage,
+        assertEquals(Utils.getMessage(testMapCombodataLabelsToIndicesMessage,
                 new Object[]{testMapCombodataLabelsToIndices}), mapComboDataLoggingEvent.getMessage());
         assertEquals(Level.INFO, mapComboDataLoggingEvent.getLevel());
         final LoggingEvent comboDataLoadingEvent = testAppender.getLog().get(testLogSize - 2);
-        assertEquals(Helper.getMessage(testAllComboDataLoadedMessage,
+        assertEquals(Utils.getMessage(testAllComboDataLoadedMessage,
                 new Object[]{testAllComboData}), comboDataLoadingEvent.getMessage());
         assertEquals(Level.INFO, comboDataLoadingEvent.getLevel());
     }
@@ -1100,7 +1098,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                 );
         final int testLogSize = testAppender.getLog().size();
         final LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
-        assertEquals(Helper.getMessage(testLoadDataForAllSupplInfo, new Object[]{result}),
+        assertEquals(Utils.getMessage(testLoadDataForAllSupplInfo, new Object[]{result}),
                 loggingEvent.getMessage());
         assertEquals(Level.INFO, loggingEvent.getLevel());
     }
@@ -1218,19 +1216,24 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
 
     private DatabaseException testEmptyTableCase(DatabaseException exc) {
         StackTraceElement[] testEmptyTableExceptionStackTrace = null;
+        String testEmptyTableExceptionMessage = null;
         String testCombodataTableIsEmpty = null;
         if (exc.getCause().getClass().equals(EmptyComboDataTableException.class)) {
             testEmptyTableExceptionStackTrace = (StackTraceElement[]) ReflectionTestUtils.getField(packetAppDao,
                     EMPTY_COMBODATA_TABLE_EXCEPTION_STACKTRACE);
+            testEmptyTableExceptionMessage = (String) ReflectionTestUtils.getField(packetAppDao,
+                    EMPTY_COMBODATA_TABLE_EXCEPTION_MESSAGE);
             testCombodataTableIsEmpty = (String) ReflectionTestUtils.getField(packetAppDao, COMBODATA_TABLE_IS_EMPTY);
         } else if (exc.getCause().getClass().equals(EmptyStateTableException.class)) {
             testEmptyTableExceptionStackTrace = (StackTraceElement[]) ReflectionTestUtils.getField(packetAppDao,
                     EMPTY_STATE_TABLE_EXCEPTION_STACKTRACE);
+            testEmptyTableExceptionMessage = (String) ReflectionTestUtils.getField(packetAppDao,
+                    EMPTY_STATE_TABLE_EXCEPTION_MESSAGE);
             testCombodataTableIsEmpty = (String) ReflectionTestUtils.getField(packetAppDao, STATE_TABLE_IS_EMPTY);
         }
         int testLogSize = testAppender.getLog().size();
         LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
-        assertEquals(Helper.getMessage(testCombodataTableIsEmpty, new Object[]{testEmptyTableExceptionStackTrace}),
+        assertEquals(Utils.getMessage(testCombodataTableIsEmpty, new Object[]{testEmptyTableExceptionStackTrace}),
                 loggingEvent.getMessage());
         assertEquals(Level.ERROR, loggingEvent.getLevel());
         return exc;
@@ -1256,7 +1259,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                 = testAppender.getLog().get(testLogSize - (expectedNumOfLogEventsLeft--));
         Set<Long> idsToDeleteSet = new HashSet<>(idsToDelete);
         idsToDeleteSet.removeAll(fakeIds);
-        assertEquals(Helper.getMessage(testComptsDeleteSuccessReport, new Object[]{idsToDeleteSet}),
+        assertEquals(Utils.getMessage(testComptsDeleteSuccessReport, new Object[]{idsToDeleteSet}),
                 successLoggingEvent.getMessage());
         assertEquals(Level.INFO, successLoggingEvent.getLevel());
 
@@ -1265,7 +1268,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                     = (String) ReflectionTestUtils.getField(packetAppDao, COMPTS_DELETE_NON_EXISTING_COMPTS);
             final LoggingEvent someOfIdsExistLoggingEvent
                     = testAppender.getLog().get(testLogSize - (expectedNumOfLogEventsLeft--));
-            assertEquals(Helper.getMessage(testSomeOfComptIdsExist, new Object[]{fakeIds}),
+            assertEquals(Utils.getMessage(testSomeOfComptIdsExist, new Object[]{fakeIds}),
                     someOfIdsExistLoggingEvent.getMessage());
             assertEquals(Level.ERROR, someOfIdsExistLoggingEvent.getLevel());
         }
@@ -1290,7 +1293,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                 = (String) ReflectionTestUtils.getField(packetAppDao, errorMessage);
         final LoggingEvent testErrorLogEvent
                 = testAppender.getLog().get(logSize - (expectedNumOfLogEventsLeft--));
-        assertEquals(Helper.getMessage(testError, new Object[]{errorParam}),
+        assertEquals(Utils.getMessage(testError, new Object[]{errorParam}),
                 testErrorLogEvent.getMessage());
         assertEquals(logLevel, testErrorLogEvent.getLevel());
     }
@@ -1330,7 +1333,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                 = (String) ReflectionTestUtils.getField(packetAppDao, ALL_STATES_LOADED_MESSAGE);
         final List<String> testAllStates = (List<String>) ReflectionTestUtils.getField(packetAppDao, ALL_STATES);
         final LoggingEvent statesLoggingEvent = testAppender.getLog().get(testLogSize - (expectedNumOfLogEventsLeft--));
-        assertEquals(Helper.getMessage(testAllStatesLoadedMessage, new Object[]{testAllStates}),
+        assertEquals(Utils.getMessage(testAllStatesLoadedMessage, new Object[]{testAllStates}),
                 statesLoggingEvent.getMessage());
         assertEquals(Level.INFO, statesLoggingEvent.getLevel());
 
@@ -1340,7 +1343,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                 = (List<String>) ReflectionTestUtils.getField(packetAppDao, ALL_COMBODATA);
         final LoggingEvent comboDataLoadingEvent
                 = testAppender.getLog().get(testLogSize - (expectedNumOfLogEventsLeft--));
-        assertEquals(Helper.getMessage(testAllComboDataLoadedMessage,
+        assertEquals(Utils.getMessage(testAllComboDataLoadedMessage,
                 new Object[]{testAllComboData}), comboDataLoadingEvent.getMessage());
         assertEquals(Level.INFO, comboDataLoadingEvent.getLevel());
 
@@ -1350,7 +1353,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                 = (String) ReflectionTestUtils.getField(packetAppDao, MAP_COMBODATA_LABELS_TO_INDICES_MESSAGE);
         final LoggingEvent mapComboDataLoggingEvent
                 = testAppender.getLog().get(testLogSize - (expectedNumOfLogEventsLeft--));
-        assertEquals(Helper.getMessage(testMapCombodataLabelsToIndicesMessage,
+        assertEquals(Utils.getMessage(testMapCombodataLabelsToIndicesMessage,
                 new Object[]{testMapCombodataLabelsToIndices}), mapComboDataLoggingEvent.getMessage());
         assertEquals(Level.INFO, mapComboDataLoggingEvent.getLevel());
 
@@ -1365,7 +1368,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                     = (String) ReflectionTestUtils.getField(packetAppDao, PACKET_UPDATE_NOT_EXISTING_PACKET);
             LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - (expectedNumOfLogEventsLeft--));
             assertEquals(
-                    Helper.getMessage(testPacketUpdateNotExistingPacket,
+                    Utils.getMessage(testPacketUpdateNotExistingPacket,
                             new Object[]{secondPacketIdIfExists == null
                                     ? expectedPersistedNewOrUpdatedPacketId : secondPacketIdIfExists}),
                     loggingEvent.getMessage()
@@ -1389,7 +1392,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
             }
             LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - (expectedNumOfLogEventsLeft--));
             assertEquals(
-                    Helper.getMessage(testNotDifferentNewState, new Object[]{packetStateId}),
+                    Utils.getMessage(testNotDifferentNewState, new Object[]{packetStateId}),
                     loggingEvent.getMessage()
             );
             assertEquals(Level.ERROR, loggingEvent.getLevel());
@@ -1403,7 +1406,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                         PACKET_UPDATE_STATE_UPDATE_NOT_EXISTING_STATE
                 );
                 assertEquals(
-                        Helper.getMessage(testNotExistingNewState, new Object[]{packetStateId}),
+                        Utils.getMessage(testNotExistingNewState, new Object[]{packetStateId}),
                         loggingEvent.getMessage()
                 );
                 assertEquals(Level.ERROR, loggingEvent.getLevel());
@@ -1416,7 +1419,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                         PACKET_ADDING_STATE_SET_NOT_EXISTING_STATE
                 );
                 assertEquals(
-                        Helper.getMessage(testNotExistingNewState,
+                        Utils.getMessage(testNotExistingNewState,
                                 new Object[]{packetStateId,
                                         defaultPacketState.toString()}),
                         loggingEvent.getMessage()
@@ -1445,7 +1448,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                 testNullNewState
                         = (String) ReflectionTestUtils.getField(packetAppDao, PACKET_ADDING_STATE_SET_NULL_STATE);
                 assertEquals(
-                        Helper.getMessage(testNullNewState,
+                        Utils.getMessage(testNullNewState,
                                 new Object[]{defaultPacketState}),
                         nullStateLoggingEvent.getMessage()
                 );
@@ -1474,7 +1477,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                 testStateUpdateSuccessReport
                         = (String) ReflectionTestUtils.getField(packetAppDao, PACKET_ADDING_STATE_SET_SUCCESS_REPORT);
             }
-            assertEquals(Helper.getMessage(testStateUpdateSuccessReport,
+            assertEquals(Utils.getMessage(testStateUpdateSuccessReport,
                     new Object[]{expectedNewOrUpdatedPacketIdBeforeBeingPersisted,
                             packetStateId}),
                     stateUpdateLoggingEvent.getMessage());
@@ -1539,7 +1542,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                 messageArgs = new Object[]{unpersistedComptsList};
             }
             assertEquals(
-                    Helper.getMessage(testPacketAddingOrUpdateAddCompts, messageArgs),
+                    Utils.getMessage(testPacketAddingOrUpdateAddCompts, messageArgs),
                     addComptsLoggingEvent.getMessage()
             );
             assertEquals(Level.INFO, addComptsLoggingEvent.getLevel());
@@ -1578,7 +1581,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                     = (String) ReflectionTestUtils.getField(packetAppDao, PACKET_UPDATE_SUCCESS_REPORT);
         }
         assertEquals(
-                Helper.getMessage(testPacketAddingOrUpdateSuccessReport,
+                Utils.getMessage(testPacketAddingOrUpdateSuccessReport,
                         new Object[]{packet}),
                 persistPacketLoggingEvent.getMessage()
         );
@@ -1610,7 +1613,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         String testPacketAddingOrUpdateSuccessReport
                 = (String) ReflectionTestUtils.getField(packetAppDao, PACKET_ADDING_SUCCESS_REPORT);
         assertEquals(
-                Helper.getMessage(testPacketAddingOrUpdateSuccessReport,
+                Utils.getMessage(testPacketAddingOrUpdateSuccessReport,
                         new Object[]{packet}),
                 persistPacketLoggingEvent.getMessage()
         );
@@ -1629,27 +1632,5 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         fiveElsLogErrorsSet.add(PacketDaoError.NONE);
         fiveElsLogErrorsSet.add(PacketDaoError.NOT_EXISTING_ONE_OF_PACKET_IDS);
         return fiveElsLogErrorsSet;
-    }
-
-    private class TestAppender extends AppenderSkeleton {
-        private final List<LoggingEvent> log = new ArrayList<>();
-
-        @Override
-        public boolean requiresLayout() {
-            return false;
-        }
-
-        @Override
-        protected void append(final LoggingEvent loggingEvent) {
-            log.add(loggingEvent);
-        }
-
-        @Override
-        public void close() {
-        }
-
-        List<LoggingEvent> getLog() {
-            return log;
-        }
     }
 }

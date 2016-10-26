@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.util.Properties;
 
-import static com.somecode.helper.Helper.getMessage;
+import static com.somecode.utils.Utils.getMessage;
 
 
 @Configuration

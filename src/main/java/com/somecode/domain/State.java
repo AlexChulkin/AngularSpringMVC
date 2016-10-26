@@ -3,7 +3,7 @@ package com.somecode.domain;
 
 import javax.persistence.*;
 
-import static com.somecode.helper.Helper.getMessage;
+import static com.somecode.utils.Utils.getMessage;
 
 /**
  * Created by achulkin on 03.06.14.

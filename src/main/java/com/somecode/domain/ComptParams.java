@@ -2,23 +2,23 @@ package com.somecode.domain;
 
 import java.util.List;
 
-import static com.somecode.helper.Helper.getMessage;
+import static com.somecode.utils.Utils.getMessage;
 
 /**
  * Created by alexc_000 on 2016-07-22.
  */
-public class ComptParams {
+public class ComptParams implements SelfSettingEntityPrototype {
     private static final String STRING_VERSION = "comptParams.toString";
 
     private List<String> vals;
     private String label;
-    private long id;
+    private Long id;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public ComptParams setId(long id) {
+    public ComptParams setId(Long id) {
         this.id = id;
         return this;
     }

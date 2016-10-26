@@ -1,4 +1,4 @@
-package com.somecode.helper;
+package com.somecode.utils;
 
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -11,7 +11,7 @@ import java.util.Locale;
  * Created by alexc_000 on 2016-09-21.
  */
 @Service
-public class Helper implements ApplicationContextAware {
+public class Utils implements ApplicationContextAware {
     private static ApplicationContext ctx;
     private static Locale EN_LOCALE = Locale.ENGLISH;
 
@@ -21,6 +21,6 @@ public class Helper implements ApplicationContextAware {
 
     @Override
     public void setApplicationContext(ApplicationContext ctx) throws BeansException {
-        Helper.ctx = ctx;
+        Utils.ctx = ctx;
     }
 }

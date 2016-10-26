@@ -1,6 +1,6 @@
 package com.somecode.config;
 
-import com.somecode.helper.Helper;
+import com.somecode.utils.Utils;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.web.servlet.ViewResolver;
@@ -51,7 +51,7 @@ public class Config extends WebMvcConfigurerAdapter {
     }
 
     @Bean
-    public Helper helper() {
-        return new Helper();
+    public Utils helper() {
+        return new Utils();
     }
 }
