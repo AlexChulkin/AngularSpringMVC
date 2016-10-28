@@ -1319,19 +1319,19 @@ describe("Packets Panel Controller Test", function () {
     };
 
     var buildResponse_success = function () {
-        httpResponse = {"ADD_PACKETS": false, "UPDATE_PACKETS": false, "UPDATE_COMPTS": false};
+        httpResponse = {};
     };
 
     var buildResponse_error_addPackets = function () {
-        httpResponse = {"ADD_PACKETS": true, "UPDATE_PACKETS": false, "UPDATE_COMPTS": false};
+        httpResponse = {"ADD_PACKETS": true};
     };
 
     var buildResponse_error_updatePackets = function () {
-        httpResponse = {"ADD_PACKETS": false, "UPDATE_PACKETS": true, "UPDATE_COMPTS": false};
+        httpResponse = {"UPDATE_PACKETS": true};
     };
 
     var buildResponse_error_updateCompts = function () {
-        httpResponse = {"ADD_PACKETS": false, "UPDATE_PACKETS": false, "UPDATE_COMPTS": true};
+        httpResponse = {"UPDATE_COMPTS": true};
     };
 
     var buildResponse_allErrors = function () {

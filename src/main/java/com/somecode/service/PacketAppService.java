@@ -3,6 +3,7 @@ package com.somecode.service;
 import com.somecode.dao.PacketAppDao;
 import com.somecode.domain.*;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,15 +21,17 @@ public class PacketAppService {
     private static final String LOAD_DATA_FOR_GIVEN_PACKET = "packetAppService.loadDataForGivenPacket";
     private static final String PERSIST_ALL_PACKETS = "packetAppService.persistDataForAllPackets";
     private static final String PERSIST_GIVEN_PACKET = "packetAppService.persistDataForGivenPacket";
-    private static final String EXCEPTION_MESSAGE = "packetAppService.exceptionMessage";
+    private static final String UPDATE_COMPTS_EXCEPTION_REPORT = "packetAppService.updateCompts.exceptionReport";
+    private static final String UPDATE_PACKETS_EXCEPTION_REPORT = "packetAppService.updatePackets.exceptionReport";
+    private static final String ADD_PACKETS_EXCEPTION_REPORT = "packetAppService.addPackets.exceptionReport";
 
     private static final String UPDATE_COMPTS = "UPDATE_COMPTS";
     private static final String UPDATE_PACKETS = "UPDATE_PACKETS";
     private static final String ADD_PACKETS = "ADD_PACKETS";
 
-    private StackTraceElement[] updateComptsExceptionStackTrace;
-    private StackTraceElement[] updatePacketsExceptionStackTrace;
-    private StackTraceElement[] addPacketsExceptionStackTrace;
+    private String updateComptsExceptionStackTrace;
+    private String updatePacketsExceptionStackTrace;
+    private String addPacketsExceptionStackTrace;
     private String updateComptsExceptionMessage;
     private String updatePacketsExceptionMessage;
     private String addPacketsExceptionMessage;
@@ -42,7 +45,7 @@ public class PacketAppService {
     }
 
     public Data loadData(Long packetId) {
-        log.debug(packetId == null
+        log.info(packetId == null
                 ? getMessage(LOAD_DATA_FOR_ALL_PACKETS, null)
                 : getMessage(LOAD_DATA_FOR_GIVEN_PACKET, new Object[]{packetId}));
 
@@ -84,7 +87,7 @@ public class PacketAppService {
                                                      List<PacketParams> packetsToUpdateParamsList,
                                                      Long packetId) {
 
-        log.debug(packetId != null
+        log.info(packetId != null
                 ? getMessage(PERSIST_GIVEN_PACKET, new Object[]{packetId})
                 : getMessage(PERSIST_ALL_PACKETS, null));
 
@@ -103,39 +106,36 @@ public class PacketAppService {
                 packetAppDao.updateCompts(comptsToUpdateParamsList);
             } catch (DatabaseException e) {
                 updateComptsExceptionMessage = e.getMessage();
-                updateComptsExceptionStackTrace = e.getStackTrace();
-                log.error(getMessage(EXCEPTION_MESSAGE, new Object[]{updateComptsExceptionMessage,
-                        updateComptsExceptionStackTrace}));
+                updateComptsExceptionStackTrace = ExceptionUtils.getStackTrace(e);
+                log.error(getMessage(UPDATE_COMPTS_EXCEPTION_REPORT, new Object[]{updateComptsExceptionMessage,
+                                                                                  updateComptsExceptionStackTrace}));
                 persistErrors.put(UPDATE_COMPTS, true);
             }
         }
-        persistErrors.putIfAbsent(UPDATE_COMPTS, false);
 
         if (!packetsToAddParamsList.isEmpty()) {
             try {
                 packetAppDao.addOrUpdatePackets(packetsToAddParamsList, OperationType.ADD);
             } catch (DatabaseException e) {
                 addPacketsExceptionMessage = e.getMessage();
-                addPacketsExceptionStackTrace = e.getStackTrace();
-                log.error(getMessage(EXCEPTION_MESSAGE, new Object[]{addPacketsExceptionMessage,
-                        addPacketsExceptionStackTrace}));
+                addPacketsExceptionStackTrace = ExceptionUtils.getStackTrace(e);
+                log.error(getMessage(ADD_PACKETS_EXCEPTION_REPORT, new Object[]{addPacketsExceptionMessage,
+                                                                                addPacketsExceptionStackTrace}));
                 persistErrors.put(ADD_PACKETS, true);
             }
         }
-        persistErrors.putIfAbsent(ADD_PACKETS, false);
 
         if (!packetsToUpdateParamsList.isEmpty()) {
             try {
                 packetAppDao.addOrUpdatePackets(packetsToUpdateParamsList, OperationType.UPDATE);
             } catch (DatabaseException e) {
                 updatePacketsExceptionMessage = e.getMessage();
-                updatePacketsExceptionStackTrace = e.getStackTrace();
-                log.error(getMessage(EXCEPTION_MESSAGE, new Object[]{updatePacketsExceptionMessage,
-                        updatePacketsExceptionStackTrace}));
+                updatePacketsExceptionStackTrace = ExceptionUtils.getStackTrace(e);
+                log.error(getMessage(UPDATE_PACKETS_EXCEPTION_REPORT, new Object[]{updatePacketsExceptionMessage,
+                                                                    updatePacketsExceptionStackTrace}));
                 persistErrors.put(UPDATE_PACKETS, true);
             }
         }
-        persistErrors.putIfAbsent(UPDATE_PACKETS, false);
 
         return persistErrors;
     }

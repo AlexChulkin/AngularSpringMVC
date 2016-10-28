@@ -106,15 +106,13 @@ angular.module("packetAdminApp")
                 .then(
                     function success(data) {
                         angular.forEach(data.data, function (v, k) {
-                            if (v === true) {
-                                var errorKey = String(k);
-                                delete errorMap[errorKey];
-                                if (errorKey == addPackets || errorKey == updatePackets) {
-                                    window.alert(generateAddOrUpdatePacketError(errorKey));
-                                }
-                                else if (errorKey == updateCompts) {
-                                    window.alert(updateComptsError);
-                                }
+                            var errorKey = String(k);
+                            delete errorMap[errorKey];
+                            if (errorKey == addPackets || errorKey == updatePackets) {
+                                window.alert(generateAddOrUpdatePacketError(errorKey));
+                            }
+                            else if (errorKey == updateCompts) {
+                                window.alert(updateComptsError);
                             }
                         });
                         clearCollectionsForSaving(errorMap, savedPktId);

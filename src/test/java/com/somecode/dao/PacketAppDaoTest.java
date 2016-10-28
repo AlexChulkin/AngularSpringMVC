@@ -1215,17 +1215,17 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
     }
 
     private DatabaseException testEmptyTableCase(DatabaseException exc) {
-        StackTraceElement[] testEmptyTableExceptionStackTrace = null;
+        String testEmptyTableExceptionStackTrace = null;
         String testEmptyTableExceptionMessage = null;
         String testCombodataTableIsEmpty = null;
         if (exc.getCause().getClass().equals(EmptyComboDataTableException.class)) {
-            testEmptyTableExceptionStackTrace = (StackTraceElement[]) ReflectionTestUtils.getField(packetAppDao,
+            testEmptyTableExceptionStackTrace = (String) ReflectionTestUtils.getField(packetAppDao,
                     EMPTY_COMBODATA_TABLE_EXCEPTION_STACKTRACE);
             testEmptyTableExceptionMessage = (String) ReflectionTestUtils.getField(packetAppDao,
                     EMPTY_COMBODATA_TABLE_EXCEPTION_MESSAGE);
             testCombodataTableIsEmpty = (String) ReflectionTestUtils.getField(packetAppDao, COMBODATA_TABLE_IS_EMPTY);
         } else if (exc.getCause().getClass().equals(EmptyStateTableException.class)) {
-            testEmptyTableExceptionStackTrace = (StackTraceElement[]) ReflectionTestUtils.getField(packetAppDao,
+            testEmptyTableExceptionStackTrace = (String) ReflectionTestUtils.getField(packetAppDao,
                     EMPTY_STATE_TABLE_EXCEPTION_STACKTRACE);
             testEmptyTableExceptionMessage = (String) ReflectionTestUtils.getField(packetAppDao,
                     EMPTY_STATE_TABLE_EXCEPTION_MESSAGE);
@@ -1233,8 +1233,11 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         }
         int testLogSize = testAppender.getLog().size();
         LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
-        assertEquals(Utils.getMessage(testCombodataTableIsEmpty, new Object[]{testEmptyTableExceptionStackTrace}),
-                loggingEvent.getMessage());
+        assertEquals(Utils.getMessage(testCombodataTableIsEmpty,
+                                        new Object[]{testEmptyTableExceptionMessage,
+                                                     testEmptyTableExceptionStackTrace.toString()}),
+                     loggingEvent.getMessage()
+        );
         assertEquals(Level.ERROR, loggingEvent.getLevel());
         return exc;
     }

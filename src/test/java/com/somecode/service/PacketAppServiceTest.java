@@ -21,9 +21,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -40,15 +42,24 @@ public class PacketAppServiceTest {
     private static final String TEST_LOAD_DATA_FOR_ALL_PACKETS = "LOAD_DATA_FOR_ALL_PACKETS";
     private static final String PERSIST_GIVEN_PACKET = "PERSIST_GIVEN_PACKET";
     private static final String PERSIST_ALL_PACKETS = "PERSIST_ALL_PACKETS";
-    private static final String EXCEPTION_MESSAGE = "EXCEPTION_MESSAGE";
     private static final String ADD_PACKETS_EXCEPTION_STACKTRACE = "addPacketsExceptionStackTrace";
     private static final String UPDATE_PACKETS_EXCEPTION_STACKTRACE = "updatePacketsExceptionStackTrace";
     private static final String UPDATE_COMPTS_EXCEPTION_STACKTRACE = "updateComptsExceptionStackTrace";
+    private static final String ADD_PACKETS_EXCEPTION_REPORT = "ADD_PACKETS_EXCEPTION_REPORT";
+    private static final String UPDATE_COMPTS_EXCEPTION_REPORT = "UPDATE_COMPTS_EXCEPTION_REPORT";
+    private static final String UPDATE_PACKETS_EXCEPTION_REPORT = "UPDATE_PACKETS_EXCEPTION_REPORT";
     private static final String ADD_PACKETS_EXCEPTION_MESSAGE = "addPacketsExceptionMessage";
     private static final String UPDATE_COMPTS_EXCEPTION_MESSAGE = "updateComptsExceptionMessage";
-    private static final String UPDATE_PACKETS_EXCEPTION_MESSAGE = "updatePacketsExceptionMessage"
+    private static final String UPDATE_PACKETS_EXCEPTION_MESSAGE = "updatePacketsExceptionMessage";
+    private static final String UPDATE_COMPTS = "UPDATE_COMPTS";
+    private static final String UPDATE_PACKETS = "UPDATE_PACKETS";
+    private static final String ADD_PACKETS = "ADD_PACKETS";
 
     private TestUtils.TestAppender testAppender;
+
+    private Long testPacketId = 1L;
+
+    private int currentLogIndex = 0;
 
     @Autowired
     private PacketAppService service;
@@ -61,7 +72,7 @@ public class PacketAppServiceTest {
         testAppender = TestUtils.getTestAppender();
         Logger root = Logger.getRootLogger();
         root.addAppender(testAppender);
-        root.setLevel(Level.DEBUG);
+        root.setLevel(Level.INFO);
     }
 
     @Test
@@ -172,7 +183,7 @@ public class PacketAppServiceTest {
         assertEquals(Utils.getMessage(testLoadData,
                 packetId == null ? null : new Object[]{packetId}),
                 loggingEvent.getMessage());
-        assertEquals(Level.DEBUG, loggingEvent.getLevel());
+        assertEquals(Level.INFO, loggingEvent.getLevel());
 
         if (!emptyComboDatas) {
             checkEntities(result.getComboData());
@@ -267,19 +278,136 @@ public class PacketAppServiceTest {
         return result;
     }
 
+    @Test
+    public void testSaveAllChanges1() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, false, false, false, false, false, null);
+    }
+
+    @Test
+    public void testSaveAllChanges2() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, false, false, false, false, false, testPacketId);
+    }
+
+    @Test
+    public void testSaveAllChanges3() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(true, false, false, false, false, false, false, null);
+    }
+
+    @Test
+    public void testSaveAllChanges4() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(true, false, false, false, false, false, false, testPacketId);
+    }
+
+    @Test
+    public void testSaveAllChanges5() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, true, false, false, false, false, false, null);
+    }
+
+    @Test
+    public void testSaveAllChanges6() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, true, false, false, false, false, false, testPacketId);
+    }
+
+    @Test
+    public void testSaveAllChanges7() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, true, false, false, false, false, null);
+    }
+
+    @Test
+    public void testSaveAllChanges8() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, true, false, false, false, false, testPacketId);
+    }
+
+    @Test
+    public void testSaveAllChanges9() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, true, false, false, false, true, null);
+    }
+
+    @Test
+    public void testSaveAllChanges10() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, true, false, false, false, true, testPacketId);
+    }
+
+    @Test
+    public void testSaveAllChanges11() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, false, true, false, false, true, null);
+    }
+
+    @Test
+    public void testSaveAllChanges12() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, false, true, false, false, true, testPacketId);
+    }
+
+    @Test
+    public void testSaveAllChanges13() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, false, true, false, true, false, null);
+    }
+
+    @Test
+    public void testSaveAllChanges14() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, false, true, false, true, false, testPacketId);
+    }
+
+    @Test
+    public void testSaveAllChanges15() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, false, true, false, true, true, null);
+    }
+
+    @Test
+    public void testSaveAllChanges16() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, false, true, false, true, true, testPacketId);
+    }
+
+    @Test
+    public void testSaveAllChanges17() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, false, false, true, false, false, null);
+    }
+
+    @Test
+    public void testSaveAllChanges18() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, false, false, true, false, false, testPacketId);
+    }
+
+    @Test
+    public void testSaveAllChanges19() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, false, false, true, true, false, null);
+    }
+
+    @Test
+    public void testSaveAllChanges20() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, false, false, true, true, false, testPacketId);
+    }
+
+    @Test
+    public void testSaveAllChanges21() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, false, false, true, false, true, null);
+    }
+
+    @Test
+    public void testSaveAllChanges22() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, false, false, true, false, true, testPacketId);
+    }
+
+    @Test
+    public void testSaveAllChanges23() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, false, false, true, true, true, null);
+    }
+
+    @Test
+    public void testSaveAllChanges24() throws DatabaseException {
+        testSaveAllChangesToBaseWithParams(false, false, false, false, true, true, true, testPacketId);
+    }
 
     private void testSaveAllChangesToBaseWithParams(boolean comptIdsToDeleteIsEmpty, boolean packetIdsToDeleteIsEmpty,
                                                     boolean comptsToUpdateParamsListIsEmpty,
                                                     boolean packetsToAddParamsListIsEmpty,
                                                     boolean packetsToUpdateParamsListIsEmpty, boolean statesIsEmpty,
-                                                    boolean comboDatasIsEmpty, boolean comptsToUpdateExceptionIsThrown,
-                                                    boolean packetsToAddExceptionIsThrown,
-                                                    boolean packetsToUpdateExceptioIsThrown, Long packetId)
+                                                    boolean comboDatasIsEmpty, Long packetId)
             throws DatabaseException {
 
-        List<ComboData> test_comboDatas = comboDatasIsEmpty ? Collections.emptyList()
-                : buildEntityList(ComboData.class);
-        List<State> test_states = statesIsEmpty ? Collections.emptyList() : buildEntityList(State.class);
+//        List<ComboData> test_comboDatas = comboDatasIsEmpty ? Collections.emptyList()
+//                                                            : buildEntityList(ComboData.class);
+//        List<State> test_states = statesIsEmpty ? Collections.emptyList() : buildEntityList(State.class);
 
         List<Long> test_comptIdsToDelete = comptIdsToDeleteIsEmpty ? Collections.emptyList() : generateIdsList();
         List<Long> test_packetIdsToDelete = packetIdsToDeleteIsEmpty ? Collections.emptyList() : generateIdsList();
@@ -293,32 +421,48 @@ public class PacketAppServiceTest {
                 = comptsToUpdateParamsListIsEmpty ? Collections.emptyList()
                 : buildSelfSettingEntityList(ComptParams.class);
 
-        doNothing().when(dao).deleteCompts(anyListOf(Long.class));
-        doNothing().when(dao).deletePackets(anyListOf(Long.class));
-        doNothing().when(dao).updateCompts(anyListOf(ComptParams.class));
-        doNothing().when(dao).addOrUpdatePackets(anyListOf(PacketParams.class), any(OperationType.class));
+        doReturn(Collections.emptyList()).when(dao).deleteCompts(anyListOf(Long.class));
+        doReturn(Collections.emptyList()).when(dao).deletePackets(anyListOf(Long.class));
 
-
-        if (statesIsEmpty) {
-            doThrow(new DatabaseException()).when(dao).loadAllStates();
+        if (statesIsEmpty || comboDatasIsEmpty) {
+            doThrow(new DatabaseException()).when(dao).addOrUpdatePackets(anyListOf(PacketParams.class), any(OperationType.class));
         } else {
-            doReturn(test_states).when(dao).loadAllStates();
+            doNothing().when(dao).addOrUpdatePackets(anyListOf(PacketParams.class), any(OperationType.class));
         }
 
         if (comboDatasIsEmpty) {
-            doThrow(new DatabaseException()).when(dao).loadAllComboData();
+            doThrow(new DatabaseException()).when(dao).updateCompts(anyListOf(ComptParams.class));
         } else {
-            doReturn(test_comboDatas).when(dao).loadAllComboData();
+            doReturn(Collections.emptyMap()).when(dao).updateCompts(anyListOf(ComptParams.class));
+        }
+
+        int testLogSize = 1;
+        if (!comptsToUpdateParamsListIsEmpty && comboDatasIsEmpty) {
+            testLogSize++;
+        }
+        if (comboDatasIsEmpty || statesIsEmpty) {
+            if (!packetsToAddParamsListIsEmpty) {
+                testLogSize++;
+            }
+            if (!packetsToUpdateParamsListIsEmpty) {
+                testLogSize++;
+            }
         }
 
         final String testSaveAllChanges
                 = (String) ReflectionTestUtils.getField(service, packetId == null ? PERSIST_ALL_PACKETS
-                : PERSIST_GIVEN_PACKET);
+                                                                                  : PERSIST_GIVEN_PACKET);
 
-        Data result = service.loadData(packetId);
+        Map<String, Boolean> result = service.saveAllChangesToBase(test_comptIdsToDelete, test_packetIdsToDelete,
+                test_comptsToUpdateParamsList, test_packetsToAddParamsList, test_packetsToUpdateParamsList, packetId);
 
-        final int testLogSize = 1;
         assertEquals(testLogSize, testAppender.getLog().size());
+
+        final LoggingEvent loggingEvent = testAppender.getLog().get(currentLogIndex++);
+        assertEquals(Utils.getMessage(testSaveAllChanges, packetId == null ? null : new Object[]{packetId}),
+                     loggingEvent.getMessage());
+        assertEquals(Level.INFO, loggingEvent.getLevel());
+
 
         if (!comptIdsToDeleteIsEmpty) {
             verify(dao, times(1)).deleteCompts(test_comptIdsToDelete);
@@ -333,23 +477,50 @@ public class PacketAppServiceTest {
         }
 
         if (!comptsToUpdateParamsListIsEmpty) {
-            if (!comptsToUpdateExceptionIsThrown) {
-                verify(dao, times(1)).updateCompts(test_comptsToUpdateParamsList);
-            } else {
-                verify(dao, never()).updateCompts(test_comptsToUpdateParamsList);
-                final String testComptsUpdateExceptionReport
-                        = (String) ReflectionTestUtils.getField(service, EXCEPTION_MESSAGE);
-                final String testComptsUpdateExceptionStackTrace
-                        = (String) ReflectionTestUtils.getField(service, UPDATE_COMPTS_EXCEPTION_STACKTRACE);
-                final String testComptsUpdateExceptionMessage
-                        = (String) ReflectionTestUtils.getField(service, UPDATE_COMPTS_EXCEPTION_MESSAGE);
-                final LoggingEvent comptsUpdateErrorLoggingEvent = testAppender.getLog().get(testLogSize - 1);
-                assertEquals(Utils.getMessage(testComptsUpdateExceptionReport,
-                        new Object[]{testComptsUpdateExceptionMessage, testComptsUpdateExceptionMessage}),
-                        comptsUpdateErrorLoggingEvent.getMessage());
-                assertEquals(Level.ERROR, comptsUpdateErrorLoggingEvent.getLevel());
+            final String testUpdateCompts = (String) ReflectionTestUtils.getField(service, UPDATE_COMPTS);
+            verify(dao, times(1)).updateCompts(test_comptsToUpdateParamsList);
+            if (comboDatasIsEmpty) {
+                assertTrue(result.containsKey(testUpdateCompts));
+                assertTrue(result.get(testUpdateCompts));
+                logErrorReport(UPDATE_COMPTS_EXCEPTION_REPORT, UPDATE_COMPTS_EXCEPTION_MESSAGE,
+                               UPDATE_COMPTS_EXCEPTION_STACKTRACE);
+            }
+        }
+
+        if (!packetsToAddParamsListIsEmpty) {
+            final String testAddPackets = (String) ReflectionTestUtils.getField(service, ADD_PACKETS);
+            verify(dao, times(1)).addOrUpdatePackets(test_packetsToAddParamsList, OperationType.ADD);
+            if (comboDatasIsEmpty || statesIsEmpty) {
+                assertTrue(result.containsKey(testAddPackets));
+                assertTrue(result.get(testAddPackets));
+                logErrorReport(ADD_PACKETS_EXCEPTION_REPORT, ADD_PACKETS_EXCEPTION_MESSAGE,
+                        ADD_PACKETS_EXCEPTION_STACKTRACE);
+            }
+        }
+
+        if (!packetsToUpdateParamsListIsEmpty) {
+            final String testUpdatePackets = (String) ReflectionTestUtils.getField(service, UPDATE_PACKETS);
+            verify(dao, times(1)).addOrUpdatePackets(test_packetsToUpdateParamsList, OperationType.UPDATE);
+            if (comboDatasIsEmpty || statesIsEmpty) {
+                assertTrue(result.containsKey(testUpdatePackets));
+                assertTrue(result.get(testUpdatePackets));
+                logErrorReport(UPDATE_PACKETS_EXCEPTION_REPORT, UPDATE_PACKETS_EXCEPTION_MESSAGE,
+                        UPDATE_PACKETS_EXCEPTION_STACKTRACE);
             }
         }
     }
 
+    private void logErrorReport (String exceptionReportVar, String exceptionMessageVar,
+                                 String exceptionStackTraceVar) {
+        final String exceptionReport
+                = (String) ReflectionTestUtils.getField(service, exceptionReportVar);
+        final String exceptionStackTrace
+                = (String) ReflectionTestUtils.getField(service, exceptionStackTraceVar);
+        final String exceptionMessage
+                = (String) ReflectionTestUtils.getField(service, exceptionMessageVar);
+        final LoggingEvent loggingEvent = testAppender.getLog().get(currentLogIndex++);
+        assertEquals(Utils.getMessage(exceptionReport, new Object[]{exceptionMessage, exceptionStackTrace}),
+                     loggingEvent.getMessage());
+        assertEquals(Level.ERROR, loggingEvent.getLevel());
+    }
 }

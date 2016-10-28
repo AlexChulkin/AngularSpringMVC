@@ -3,6 +3,7 @@ package com.somecode.dao;
 import com.google.common.collect.Lists;
 import com.somecode.domain.*;
 import lombok.extern.log4j.Log4j;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -86,8 +87,8 @@ public class PacketAppDaoImpl implements PacketAppDao {
 
     private String emptyStateTableExceptionMessage;
     private String emptyCombodataTableExceptionMessage;
-    private StackTraceElement[] emptyStateTableExceptionStackTrace;
-    private StackTraceElement[] emptyCombodataTableExceptionStackTrace;
+    private String emptyStateTableExceptionStackTrace;
+    private String emptyCombodataTableExceptionStackTrace;
 
     @PersistenceContext
     private EntityManager em;
@@ -175,12 +176,12 @@ public class PacketAppDaoImpl implements PacketAppDao {
     private DatabaseException logDBErrorAndReturnDBTableException(EmptyDBTableException cause) {
         if (cause.getClass().equals(EmptyStateTableException.class)) {
             emptyStateTableExceptionMessage = cause.getMessage();
-            emptyStateTableExceptionStackTrace = cause.getStackTrace();
+            emptyStateTableExceptionStackTrace = ExceptionUtils.getStackTrace(cause);
             log.error(getMessage(STATE_TABLE_IS_EMPTY, new Object[]{emptyStateTableExceptionMessage,
                     emptyStateTableExceptionStackTrace}));
         } else if (cause.getClass().equals(EmptyComboDataTableException.class)) {
             emptyCombodataTableExceptionMessage = cause.getMessage();
-            emptyCombodataTableExceptionStackTrace = cause.getStackTrace();
+            emptyCombodataTableExceptionStackTrace = ExceptionUtils.getStackTrace(cause);
             log.error(getMessage(COMBODATA_TABLE_IS_EMPTY, new Object[]{emptyCombodataTableExceptionMessage,
                     emptyCombodataTableExceptionStackTrace}));
         }
