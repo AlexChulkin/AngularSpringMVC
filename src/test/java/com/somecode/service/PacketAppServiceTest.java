@@ -59,16 +59,18 @@ public class PacketAppServiceTest {
 
     private Long testPacketId = 1L;
 
-    private int currentLogIndex = 0;
+    private int currentLogIndex;
 
     @Autowired
     private PacketAppService service;
 
-    private PacketAppDao dao = mock(PacketAppDao.class);
+    private PacketAppDao mockDao;
 
     @Before
     public void beforeEachTest() {
-        ReflectionTestUtils.setField(service, "packetAppDao", dao);
+        currentLogIndex = 0;
+        mockDao = mock(PacketAppDao.class);
+        ReflectionTestUtils.setField(service, "packetAppDao", mockDao);
         testAppender = TestUtils.getTestAppender();
         Logger root = Logger.getRootLogger();
         root.addAppender(testAppender);
@@ -80,10 +82,10 @@ public class PacketAppServiceTest {
         String test_username = "username";
         String test_password = "password";
         Role test_role = Role.ADMIN;
-        when(dao.getUserRole(test_username, test_password)).thenReturn(test_role);
+        when(mockDao.getUserRole(test_username, test_password)).thenReturn(test_role);
 
         assertEquals(test_role, service.getUserRole(test_username, test_password));
-        verify(dao, Mockito.times(1)).getUserRole(test_username, test_password);
+        verify(mockDao, Mockito.times(1)).getUserRole(test_username, test_password);
     }
 
     @Test
@@ -156,20 +158,20 @@ public class PacketAppServiceTest {
                 ? Collections.emptyList() : buildEntityList(ComptSupplInfo.class);
 
         if (emptyStates) {
-            doThrow(new DatabaseException()).when(dao).loadAllStates();
+            doThrow(new DatabaseException()).when(mockDao).loadAllStates();
         } else {
-            doReturn(test_states).when(dao).loadAllStates();
+            doReturn(test_states).when(mockDao).loadAllStates();
         }
 
         if (emptyComboDatas) {
-            doThrow(new DatabaseException()).when(dao).loadAllComboData();
+            doThrow(new DatabaseException()).when(mockDao).loadAllComboData();
         } else {
-            doReturn(test_comboDatas).when(dao).loadAllComboData();
+            doReturn(test_comboDatas).when(mockDao).loadAllComboData();
         }
 
-        doReturn(test_comptsInfo).when(dao).loadCompts(packetId);
-        doReturn(test_packetsInfo).when(dao).loadPackets(packetId);
-        doReturn(test_comptSupplInfo).when(dao).loadComptsSupplInfo(packetId);
+        doReturn(test_comptsInfo).when(mockDao).loadCompts(packetId);
+        doReturn(test_packetsInfo).when(mockDao).loadPackets(packetId);
+        doReturn(test_comptSupplInfo).when(mockDao).loadComptsSupplInfo(packetId);
 
         final String testLoadData
                 = (String) ReflectionTestUtils.getField(service, packetId == null ? TEST_LOAD_DATA_FOR_ALL_PACKETS
@@ -405,10 +407,6 @@ public class PacketAppServiceTest {
                                                     boolean comboDatasIsEmpty, Long packetId)
             throws DatabaseException {
 
-//        List<ComboData> test_comboDatas = comboDatasIsEmpty ? Collections.emptyList()
-//                                                            : buildEntityList(ComboData.class);
-//        List<State> test_states = statesIsEmpty ? Collections.emptyList() : buildEntityList(State.class);
-
         List<Long> test_comptIdsToDelete = comptIdsToDeleteIsEmpty ? Collections.emptyList() : generateIdsList();
         List<Long> test_packetIdsToDelete = packetIdsToDeleteIsEmpty ? Collections.emptyList() : generateIdsList();
         List<PacketParams> test_packetsToAddParamsList
@@ -421,19 +419,19 @@ public class PacketAppServiceTest {
                 = comptsToUpdateParamsListIsEmpty ? Collections.emptyList()
                 : buildSelfSettingEntityList(ComptParams.class);
 
-        doReturn(Collections.emptyList()).when(dao).deleteCompts(anyListOf(Long.class));
-        doReturn(Collections.emptyList()).when(dao).deletePackets(anyListOf(Long.class));
+        doReturn(Collections.emptyList()).when(mockDao).deleteCompts(anyListOf(Long.class));
+        doReturn(Collections.emptyList()).when(mockDao).deletePackets(anyListOf(Long.class));
 
         if (statesIsEmpty || comboDatasIsEmpty) {
-            doThrow(new DatabaseException()).when(dao).addOrUpdatePackets(anyListOf(PacketParams.class), any(OperationType.class));
+            doThrow(new DatabaseException()).when(mockDao).addOrUpdatePackets(anyListOf(PacketParams.class), any(OperationType.class));
         } else {
-            doNothing().when(dao).addOrUpdatePackets(anyListOf(PacketParams.class), any(OperationType.class));
+            doNothing().when(mockDao).addOrUpdatePackets(anyListOf(PacketParams.class), any(OperationType.class));
         }
 
         if (comboDatasIsEmpty) {
-            doThrow(new DatabaseException()).when(dao).updateCompts(anyListOf(ComptParams.class));
+            doThrow(new DatabaseException()).when(mockDao).updateCompts(anyListOf(ComptParams.class));
         } else {
-            doReturn(Collections.emptyMap()).when(dao).updateCompts(anyListOf(ComptParams.class));
+            doReturn(Collections.emptyMap()).when(mockDao).updateCompts(anyListOf(ComptParams.class));
         }
 
         int testLogSize = 1;
@@ -465,20 +463,20 @@ public class PacketAppServiceTest {
 
 
         if (!comptIdsToDeleteIsEmpty) {
-            verify(dao, times(1)).deleteCompts(test_comptIdsToDelete);
+            verify(mockDao, times(1)).deleteCompts(test_comptIdsToDelete);
         } else {
-            verify(dao, never()).deleteCompts(any());
+            verify(mockDao, never()).deleteCompts(any());
         }
 
         if (packetId == null && !packetIdsToDeleteIsEmpty) {
-            verify(dao, times(1)).deletePackets(test_packetIdsToDelete);
+            verify(mockDao, times(1)).deletePackets(test_packetIdsToDelete);
         } else {
-            verify(dao, never()).deletePackets(any());
+            verify(mockDao, never()).deletePackets(any());
         }
 
         if (!comptsToUpdateParamsListIsEmpty) {
             final String testUpdateCompts = (String) ReflectionTestUtils.getField(service, UPDATE_COMPTS);
-            verify(dao, times(1)).updateCompts(test_comptsToUpdateParamsList);
+            verify(mockDao, times(1)).updateCompts(test_comptsToUpdateParamsList);
             if (comboDatasIsEmpty) {
                 assertTrue(result.containsKey(testUpdateCompts));
                 assertTrue(result.get(testUpdateCompts));
@@ -489,7 +487,7 @@ public class PacketAppServiceTest {
 
         if (!packetsToAddParamsListIsEmpty) {
             final String testAddPackets = (String) ReflectionTestUtils.getField(service, ADD_PACKETS);
-            verify(dao, times(1)).addOrUpdatePackets(test_packetsToAddParamsList, OperationType.ADD);
+            verify(mockDao, times(1)).addOrUpdatePackets(test_packetsToAddParamsList, OperationType.ADD);
             if (comboDatasIsEmpty || statesIsEmpty) {
                 assertTrue(result.containsKey(testAddPackets));
                 assertTrue(result.get(testAddPackets));
@@ -500,7 +498,7 @@ public class PacketAppServiceTest {
 
         if (!packetsToUpdateParamsListIsEmpty) {
             final String testUpdatePackets = (String) ReflectionTestUtils.getField(service, UPDATE_PACKETS);
-            verify(dao, times(1)).addOrUpdatePackets(test_packetsToUpdateParamsList, OperationType.UPDATE);
+            verify(mockDao, times(1)).addOrUpdatePackets(test_packetsToUpdateParamsList, OperationType.UPDATE);
             if (comboDatasIsEmpty || statesIsEmpty) {
                 assertTrue(result.containsKey(testUpdatePackets));
                 assertTrue(result.get(testUpdatePackets));

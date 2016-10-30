@@ -492,7 +492,7 @@ describe("Exchange and Helper Services Test", function () {
                     expect(mockExchangeService.getComptsLength(3)).toEqual(selCompts.length);
                     expect(mockExchangeService.getComptsLength(1)).toBe(0);
                     expect(mockExchangeService.getComptsLength(2)).toBe(2);
-                    expect(mockExchangeService.getComptsLength(4)).toBeUndefined();
+                    expect(mockExchangeService.getComptsLength(4)).toBe(0);
                     mockExchangeService.pushToCompts(selCompts[0], 4);
                     expect(mockExchangeService.getCompts()).toEqual([[], [], [selCompts[0], selCompts[1]], selCompts,
                         [selCompts[0]]]);
@@ -962,7 +962,7 @@ describe("Exchange and Helper Services Test", function () {
             function () {
                 it('', function () {
                     expect(mockExchangeService.getComptIdsToDelete()).toEqual({});
-                    expect(mockExchangeService.getComptIdsToDelete(1)).toBeUndefined();
+                    expect(mockExchangeService.getComptIdsToDelete(1)).toEqual([]);
                     mockExchangeService.setComptIdsToDelete(selCompts[0], 1);
                     expect(mockExchangeService.getComptIdsToDelete()).toEqual({1: selCompts[0]});
                     mockExchangeService.deleteComptIdsToDelete(2);

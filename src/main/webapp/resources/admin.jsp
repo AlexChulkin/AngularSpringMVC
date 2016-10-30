@@ -15,7 +15,7 @@
     <script src="resources/ngmodules/angular-cookies.js"></script>
     <link href="resources/css/bootstrap.css" rel="stylesheet"/>
     <link href="resources/css/bootstrap-theme.css" rel="stylesheet"/>
-    <link href="resources/css/home-styles.css" rel="stylesheet"/>
+    <link href="resources/css/styles.css" rel="stylesheet"/>
     <script type="application/javascript" src="resources/adminScript.js"></script>
     <script type="application/javascript" src="resources/controllers/adminLoginControllers.js"></script>
     <script type="application/javascript" src="resources/controllers/adminMainControllers.js"></script>

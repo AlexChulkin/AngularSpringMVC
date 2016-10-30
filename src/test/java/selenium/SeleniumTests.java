@@ -1,5 +1,7 @@
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+package selenium;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -15,19 +17,19 @@ import java.util.stream.IntStream;
 
 import static org.junit.Assert.*;
 
-public class MyTestIT {
+public class SeleniumTests {
 
     private static WebDriver webDriver;
 
-    @BeforeClass
-    public static void init() {
+    @Before
+    public void beforeEachTest() {
         System.setProperty("webdriver.chrome.driver", "E:\\Java\\ChromeDriver\\chromedriver.exe");
         webDriver = new ChromeDriver();
         webDriver.get("http://localhost:8084");
     }
 
-    @AfterClass
-    public static void finish(){
+    @After
+    public void afterEachTest(){
         if (webDriver != null) {
             webDriver.close();
         }

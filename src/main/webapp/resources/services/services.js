@@ -307,7 +307,8 @@ angular.module("packetAdminApp")
     var getComptsLength = function (packetInd) {
         if (angular.isDefined(packetInd) && angular.isArray(compts[packetInd])) {
             return compts[packetInd].length;
-        }
+        } 
+        return 0;
     };
 
     var setAllPackets = function (value, pktId) {
@@ -595,7 +596,10 @@ angular.module("packetAdminApp")
 
     var getComptIdsToDelete = function (pktId) {
         if (angular.isDefined(pktId)) {
-            return comptIdsToDelete[pktId];
+            if (pktId in comptIdsToDelete) {
+                return comptIdsToDelete[pktId];
+            }
+            return [];
         }
         return comptIdsToDelete;
     };

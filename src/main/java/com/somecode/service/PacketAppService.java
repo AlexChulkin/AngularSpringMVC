@@ -18,9 +18,9 @@ import static com.somecode.utils.Utils.getMessage;
 @Log4j
 public class PacketAppService {
     private static final String LOAD_DATA_FOR_ALL_PACKETS = "packetAppService.loadDataForAllPackets";
-    private static final String LOAD_DATA_FOR_GIVEN_PACKET = "packetAppService.loadDataForGivenPacket";
+    private static final String LOAD_DATA_FOR_SPECIFIC_PACKET = "packetAppService.loadDataForSpecificPacket";
     private static final String PERSIST_ALL_PACKETS = "packetAppService.persistDataForAllPackets";
-    private static final String PERSIST_GIVEN_PACKET = "packetAppService.persistDataForGivenPacket";
+    private static final String PERSIST_SPECIFIC_PACKET = "packetAppService.persistDataForSpecificPacket";
     private static final String UPDATE_COMPTS_EXCEPTION_REPORT = "packetAppService.updateCompts.exceptionReport";
     private static final String UPDATE_PACKETS_EXCEPTION_REPORT = "packetAppService.updatePackets.exceptionReport";
     private static final String ADD_PACKETS_EXCEPTION_REPORT = "packetAppService.addPackets.exceptionReport";
@@ -47,7 +47,7 @@ public class PacketAppService {
     public Data loadData(Long packetId) {
         log.info(packetId == null
                 ? getMessage(LOAD_DATA_FOR_ALL_PACKETS, null)
-                : getMessage(LOAD_DATA_FOR_GIVEN_PACKET, new Object[]{packetId}));
+                : getMessage(LOAD_DATA_FOR_SPECIFIC_PACKET, new Object[]{packetId}));
 
         Data result = new Data();
         List<State> states;
@@ -88,7 +88,7 @@ public class PacketAppService {
                                                      Long packetId) {
 
         log.info(packetId != null
-                ? getMessage(PERSIST_GIVEN_PACKET, new Object[]{packetId})
+                ? getMessage(PERSIST_SPECIFIC_PACKET, new Object[]{packetId})
                 : getMessage(PERSIST_ALL_PACKETS, null));
 
         Map<String, Boolean> persistErrors = new HashMap<>();

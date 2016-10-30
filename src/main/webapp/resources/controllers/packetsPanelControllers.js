@@ -104,8 +104,8 @@ angular.module("packetAdminApp")
             $http
                 .post(saveAllChangesToBaseUrl, {dataParams: dataParams})
                 .then(
-                    function success(data) {
-                        angular.forEach(data.data, function (v, k) {
+                    function success(result) {
+                        angular.forEach(result.data, function (v, k) {
                             var errorKey = String(k);
                             delete errorMap[errorKey];
                             if (errorKey == addPackets || errorKey == updatePackets) {
@@ -173,7 +173,6 @@ angular.module("packetAdminApp")
             }
 
             angular.forEach(packetsToSave, function (pkt, pktId) {
-                // var pkt = packetsToSave[pktId];
                 var packetConfig = {};
                 packetConfig.newComptParamsList = generateComptParamsListToAddForPackets(pktId);
                 if (!(pktId in $scope.data.newPackets)) {
