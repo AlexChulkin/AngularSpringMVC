@@ -104,7 +104,7 @@ public class DataCompt implements EntityType {
 
     @Override
     public String toString() {
-        return getMessage(STRING_VERSION, new Object[]{id, checked, compt, state, comboData});
+        return getMessage(STRING_VERSION, new Object[]{id, checked, compt.getId(), state.getId(), comboData.getId()});
     }
 
 }

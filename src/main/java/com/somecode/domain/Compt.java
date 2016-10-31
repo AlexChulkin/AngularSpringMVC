@@ -102,6 +102,6 @@ public class Compt implements EntityType {
 
     @Override
     public String toString() {
-        return getMessage(STRING_VERSION, new Object[]{id, label, packet});
+        return getMessage(STRING_VERSION, new Object[]{id, label, packet.getId()});
     }
 }
