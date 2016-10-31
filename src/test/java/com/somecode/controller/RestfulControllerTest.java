@@ -45,7 +45,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DaoTestConfig.class})
 @WebAppConfiguration
-
 @ActiveProfiles("test")
 public class RestfulControllerTest {
 
@@ -64,16 +63,22 @@ public class RestfulControllerTest {
     private static final String USER_PASSWORD = "USER_PASSWORD";
     private static final String ADMIN_USERNAME = "ADMIN_USERNAME";
     private static final String ADMIN_PASSWORD = "ADMIN_PASSWORD";
-    private static Gson GSON = new Gson();
+    private static final String PACKET_APP_SERVICE = "packetAppService";
+
+    private Gson GSON = new Gson();
+
     @Autowired
-    RestfulController controller;
-    @Autowired
-    PacketAppService serviceMock;
-    private TestUtils.TestAppender testAppender;
+    private RestfulController controller;
+
+    private PacketAppService serviceMock;
+
     @Autowired
     private WebApplicationContext context;
 
     private MockMvc mockMvc;
+
+    private Logger root = Logger.getRootLogger();
+    private TestUtils.TestAppender testAppender;
 
     @Before
     public void beforeEach() {
@@ -82,11 +87,9 @@ public class RestfulControllerTest {
                     .build();
 
         serviceMock = mock(PacketAppService.class);
-        ReflectionTestUtils.setField(controller, "packetAppService", serviceMock);
-
+        ReflectionTestUtils.setField(controller, PACKET_APP_SERVICE, serviceMock);
 
         testAppender = TestUtils.getTestAppender();
-        Logger root = Logger.getRootLogger();
         root.addAppender(testAppender);
         root.setLevel(Level.DEBUG);
     }

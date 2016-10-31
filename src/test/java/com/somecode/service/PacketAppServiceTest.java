@@ -38,9 +38,9 @@ public class PacketAppServiceTest {
 
     private static final int TEST_LIST_SIZE = 2;
 
-    private static final String TEST_LOAD_DATA_FOR_GIVEN_PACKET = "LOAD_DATA_FOR_GIVEN_PACKET";
+    private static final String TEST_LOAD_DATA_FOR_SPECIFIC_PACKET = "LOAD_DATA_FOR_SPECIFIC_PACKET";
     private static final String TEST_LOAD_DATA_FOR_ALL_PACKETS = "LOAD_DATA_FOR_ALL_PACKETS";
-    private static final String PERSIST_GIVEN_PACKET = "PERSIST_GIVEN_PACKET";
+    private static final String PERSIST_SPECIFIC_PACKET = "PERSIST_SPECIFIC_PACKET";
     private static final String PERSIST_ALL_PACKETS = "PERSIST_ALL_PACKETS";
     private static final String ADD_PACKETS_EXCEPTION_STACKTRACE = "addPacketsExceptionStackTrace";
     private static final String UPDATE_PACKETS_EXCEPTION_STACKTRACE = "updatePacketsExceptionStackTrace";
@@ -55,6 +55,7 @@ public class PacketAppServiceTest {
     private static final String UPDATE_PACKETS = "UPDATE_PACKETS";
     private static final String ADD_PACKETS = "ADD_PACKETS";
 
+    private Logger root = Logger.getRootLogger();
     private TestUtils.TestAppender testAppender;
 
     private Long testPacketId = 1L;
@@ -72,7 +73,6 @@ public class PacketAppServiceTest {
         mockDao = mock(PacketAppDao.class);
         ReflectionTestUtils.setField(service, "packetAppDao", mockDao);
         testAppender = TestUtils.getTestAppender();
-        Logger root = Logger.getRootLogger();
         root.addAppender(testAppender);
         root.setLevel(Level.INFO);
     }
@@ -146,138 +146,6 @@ public class PacketAppServiceTest {
     @Test
     public void testLoadDataOnePacketAllDataEmpty() throws DatabaseException {
         testLoadDataWithParams(1L, true, true, true, true);
-    }
-
-    private void testLoadDataWithParams(Long packetId, boolean emptyStates, boolean emptyComboDatas,
-                                        boolean emptyPackets, boolean emptyCompts) throws DatabaseException {
-        List<ComboData> test_comboDatas = emptyComboDatas ? Collections.emptyList() : buildEntityList(ComboData.class);
-        List<State> test_states = emptyStates ? Collections.emptyList() : buildEntityList(State.class);
-        List<ComptInfo> test_comptsInfo = emptyCompts ? Collections.emptyList() : buildEntityList(ComptInfo.class);
-        List<PacketInfo> test_packetsInfo = emptyPackets ? Collections.emptyList() : buildEntityList(PacketInfo.class);
-        List<ComptSupplInfo> test_comptSupplInfo = (emptyComboDatas || emptyStates || emptyCompts)
-                ? Collections.emptyList() : buildEntityList(ComptSupplInfo.class);
-
-        if (emptyStates) {
-            doThrow(new DatabaseException()).when(mockDao).loadAllStates();
-        } else {
-            doReturn(test_states).when(mockDao).loadAllStates();
-        }
-
-        if (emptyComboDatas) {
-            doThrow(new DatabaseException()).when(mockDao).loadAllComboData();
-        } else {
-            doReturn(test_comboDatas).when(mockDao).loadAllComboData();
-        }
-
-        doReturn(test_comptsInfo).when(mockDao).loadCompts(packetId);
-        doReturn(test_packetsInfo).when(mockDao).loadPackets(packetId);
-        doReturn(test_comptSupplInfo).when(mockDao).loadComptsSupplInfo(packetId);
-
-        final String testLoadData
-                = (String) ReflectionTestUtils.getField(service, packetId == null ? TEST_LOAD_DATA_FOR_ALL_PACKETS
-                : TEST_LOAD_DATA_FOR_GIVEN_PACKET);
-        Data result = service.loadData(packetId);
-
-        final int testLogSize = 1;
-        assertEquals(testLogSize, testAppender.getLog().size());
-
-        final LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
-        assertEquals(Utils.getMessage(testLoadData,
-                packetId == null ? null : new Object[]{packetId}),
-                loggingEvent.getMessage());
-        assertEquals(Level.INFO, loggingEvent.getLevel());
-
-        if (!emptyComboDatas) {
-            checkEntities(result.getComboData());
-        }
-        if (!emptyStates) {
-            checkEntities(result.getStates());
-        }
-        if (!emptyCompts) {
-            checkEntities(result.getCompts());
-        }
-        if (!emptyPackets) {
-            checkEntities(result.getPackets());
-        }
-        if (!emptyComboDatas && !emptyStates && !emptyCompts) {
-            checkEntities(result.getComptSupplInfo());
-        }
-    }
-
-    private <T extends EntityProtoType> T instantiateEntity(Class<T> entityClass) {
-        T entity;
-        try {
-            entity = entityClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            entity = null;
-        }
-        return entity;
-    }
-
-    private <T extends EntityProtoType> List<T> buildEntityList(Class<T> entityClass) {
-        List<T> result = new ArrayList<>();
-        IntStream.rangeClosed(1, TEST_LIST_SIZE)
-                .boxed()
-                .forEach(i ->
-                        {
-                            T entity = instantiateEntity(entityClass);
-                            entity.setId((long) i);
-                            result.add(entity);
-                        }
-                );
-        return result;
-    }
-
-    private <T extends EntityProtoType> void checkEntities(List<T> entities) {
-        assertEquals(TEST_LIST_SIZE, entities.size());
-        IntStream.range(0, TEST_LIST_SIZE)
-                .boxed()
-                .forEach(i ->
-                        {
-                            assertEquals(Long.valueOf(i + 1), entities.get(i).getId());
-                        }
-                );
-    }
-
-    private <T extends SelfSettingEntityPrototype> T selfSettingInstantiateEntity(Class<T> entityClass) {
-        T entity;
-        try {
-            entity = entityClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            entity = null;
-        }
-        return entity;
-    }
-
-    private <T extends SelfSettingEntityPrototype> List<T> buildSelfSettingEntityList(Class<T> entityClass) {
-        List<T> result = new ArrayList<>();
-        IntStream.rangeClosed(1, TEST_LIST_SIZE)
-                .boxed()
-                .forEach(i ->
-                        {
-                            T entity = selfSettingInstantiateEntity(entityClass);
-                            entity.setId((long) i);
-                            result.add(entity);
-                        }
-                );
-        return result;
-    }
-
-    private <T extends SelfSettingEntityPrototype> void checkSelfSettingEntities(List<T> entities) {
-        assertEquals(TEST_LIST_SIZE, entities.size());
-        IntStream.range(0, TEST_LIST_SIZE)
-                .boxed()
-                .forEach(i ->
-                        {
-                            assertEquals(Long.valueOf(i + 1), entities.get(i).getId());
-                        }
-                );
-    }
-
-    private List<Long> generateIdsList() {
-        List<Long> result = new ArrayList<>();
-        IntStream.rangeClosed(1, TEST_LIST_SIZE).boxed().forEach(i -> result.add(Long.valueOf(i)));
-        return result;
     }
 
     @Test
@@ -449,7 +317,7 @@ public class PacketAppServiceTest {
 
         final String testSaveAllChanges
                 = (String) ReflectionTestUtils.getField(service, packetId == null ? PERSIST_ALL_PACKETS
-                                                                                  : PERSIST_GIVEN_PACKET);
+                                                                                  : PERSIST_SPECIFIC_PACKET);
 
         Map<String, Boolean> result = service.saveAllChangesToBase(test_comptIdsToDelete, test_packetIdsToDelete,
                 test_comptsToUpdateParamsList, test_packetsToAddParamsList, test_packetsToUpdateParamsList, packetId);
@@ -520,5 +388,137 @@ public class PacketAppServiceTest {
         assertEquals(Utils.getMessage(exceptionReport, new Object[]{exceptionMessage, exceptionStackTrace}),
                      loggingEvent.getMessage());
         assertEquals(Level.ERROR, loggingEvent.getLevel());
+    }
+
+    private void testLoadDataWithParams(Long packetId, boolean emptyStates, boolean emptyComboDatas,
+                                        boolean emptyPackets, boolean emptyCompts) throws DatabaseException {
+        List<ComboData> test_comboDatas = emptyComboDatas ? Collections.emptyList() : buildEntityList(ComboData.class);
+        List<State> test_states = emptyStates ? Collections.emptyList() : buildEntityList(State.class);
+        List<ComptInfo> test_comptsInfo = emptyCompts ? Collections.emptyList() : buildEntityList(ComptInfo.class);
+        List<PacketInfo> test_packetsInfo = emptyPackets ? Collections.emptyList() : buildEntityList(PacketInfo.class);
+        List<ComptSupplInfo> test_comptSupplInfo = (emptyComboDatas || emptyStates || emptyCompts)
+                ? Collections.emptyList() : buildEntityList(ComptSupplInfo.class);
+
+        if (emptyStates) {
+            doThrow(new DatabaseException()).when(mockDao).loadAllStates();
+        } else {
+            doReturn(test_states).when(mockDao).loadAllStates();
+        }
+
+        if (emptyComboDatas) {
+            doThrow(new DatabaseException()).when(mockDao).loadAllComboData();
+        } else {
+            doReturn(test_comboDatas).when(mockDao).loadAllComboData();
+        }
+
+        doReturn(test_comptsInfo).when(mockDao).loadCompts(packetId);
+        doReturn(test_packetsInfo).when(mockDao).loadPackets(packetId);
+        doReturn(test_comptSupplInfo).when(mockDao).loadComptsSupplInfo(packetId);
+
+        final String testLoadData
+                = (String) ReflectionTestUtils.getField(service, packetId == null ? TEST_LOAD_DATA_FOR_ALL_PACKETS
+                : TEST_LOAD_DATA_FOR_SPECIFIC_PACKET);
+        Data result = service.loadData(packetId);
+
+        final int testLogSize = 1;
+        assertEquals(testLogSize, testAppender.getLog().size());
+
+        final LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
+        assertEquals(Utils.getMessage(testLoadData,
+                packetId == null ? null : new Object[]{packetId}),
+                loggingEvent.getMessage());
+        assertEquals(Level.INFO, loggingEvent.getLevel());
+
+        if (!emptyComboDatas) {
+            checkEntities(result.getComboData());
+        }
+        if (!emptyStates) {
+            checkEntities(result.getStates());
+        }
+        if (!emptyCompts) {
+            checkEntities(result.getCompts());
+        }
+        if (!emptyPackets) {
+            checkEntities(result.getPackets());
+        }
+        if (!emptyComboDatas && !emptyStates && !emptyCompts) {
+            checkEntities(result.getComptSupplInfo());
+        }
+    }
+
+    private <T extends EntityProtoType> T instantiateEntity(Class<T> entityClass) {
+        T entity;
+        try {
+            entity = entityClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            entity = null;
+        }
+        return entity;
+    }
+
+    private <T extends EntityProtoType> List<T> buildEntityList(Class<T> entityClass) {
+        List<T> result = new ArrayList<>();
+        IntStream.rangeClosed(1, TEST_LIST_SIZE)
+                .boxed()
+                .forEach(i ->
+                        {
+                            T entity = instantiateEntity(entityClass);
+                            entity.setId((long) i);
+                            result.add(entity);
+                        }
+                );
+        return result;
+    }
+
+    private <T extends EntityProtoType> void checkEntities(List<T> entities) {
+        assertEquals(TEST_LIST_SIZE, entities.size());
+        IntStream.range(0, TEST_LIST_SIZE)
+                .boxed()
+                .forEach(i ->
+                        {
+                            assertEquals(Long.valueOf(i + 1), entities.get(i).getId());
+                        }
+                );
+    }
+
+    private <T extends SelfSettingEntityPrototype> T selfSettingInstantiateEntity(Class<T> entityClass) {
+        T entity;
+        try {
+            entity = entityClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            entity = null;
+        }
+        return entity;
+    }
+
+    private <T extends SelfSettingEntityPrototype> List<T> buildSelfSettingEntityList(Class<T> entityClass) {
+        List<T> result = new ArrayList<>();
+        IntStream.rangeClosed(1, TEST_LIST_SIZE)
+                .boxed()
+                .forEach(i ->
+                        {
+                            T entity = selfSettingInstantiateEntity(entityClass);
+                            entity.setId((long) i);
+                            result.add(entity);
+                        }
+                );
+        return result;
+    }
+
+    private <T extends SelfSettingEntityPrototype> void checkSelfSettingEntities(List<T> entities) {
+        assertEquals(TEST_LIST_SIZE, entities.size());
+        IntStream.range(0, TEST_LIST_SIZE)
+                .boxed()
+                .forEach(i ->
+                        {
+                            assertEquals(Long.valueOf(i + 1), entities.get(i).getId());
+                        }
+                );
+    }
+
+    private List<Long> generateIdsList() {
+        List<Long> result = new ArrayList<>();
+        IntStream.rangeClosed(1, TEST_LIST_SIZE).boxed().forEach(i -> result.add(Long.valueOf(i)));
+        return result;
     }
 }

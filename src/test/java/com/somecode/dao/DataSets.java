@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-@interface DataSets {
+public @interface DataSets {
     String before() default "";
     String after() default "";
 }

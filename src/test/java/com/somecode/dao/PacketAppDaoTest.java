@@ -91,8 +91,8 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
     private static final String TEST_DELETE_COMPTS_AFTER_POSITIVE_FILENAME =
             "/com/somecode/dao/testDeleteCompts_after_positive.xls";
     private static final String TEST_GET_USER_ROLE_FILENAME = "/com/somecode/dao/testGetUserRole.xls";
-    private static final String ALL_COMPTS_FROM_GIVEN_PACKET_LOADED_MESSAGE
-            = "ALL_COMPTS_FROM_GIVEN_PACKET_LOADED_MESSAGE";
+    private static final String ALL_COMPTS_FROM_SPECIFIC_PACKET_LOADED_MESSAGE
+            = "ALL_COMPTS_FROM_SPECIFIC_PACKET_LOADED_MESSAGE";
     private static final String ALL_COMPTS_FROM_ALL_PACKETS_LOADED_MESSAGE
             = "ALL_COMPTS_FROM_ALL_PACKETS_LOADED_MESSAGE";
     private static final String ALL_COMPTSSUPPLINFO_LOADED = "ALL_COMPTSSUPPLINFO_LOADED";
@@ -143,12 +143,12 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
     @PersistenceContext
     private EntityManager em;
 
+    private Logger root = Logger.getRootLogger();
     private TestUtils.TestAppender testAppender;
 
     @Before
     public void doBeforeEachTest() {
         testAppender = TestUtils.getTestAppender();
-        Logger root = Logger.getRootLogger();
         root.addAppender(testAppender);
         root.setLevel(Level.INFO);
     }
@@ -161,8 +161,8 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         final String labelPrefix = DEFAULT_COMPT_LABEL_PREFIX;
         final int expectedResultLength = 2;
         final List<String> expectedComptsLabelsList = generateDiverseLabelsList(labelPrefix, expectedResultLength);
-        final String testLoadDataForGivenPacket
-                = (String) ReflectionTestUtils.getField(packetAppDao, ALL_COMPTS_FROM_GIVEN_PACKET_LOADED_MESSAGE);
+        final String testLoadDataForSpecificPacket
+                = (String) ReflectionTestUtils.getField(packetAppDao, ALL_COMPTS_FROM_SPECIFIC_PACKET_LOADED_MESSAGE);
 
         final List<ComptInfo> result = packetAppDao.loadCompts(packetId);
 
@@ -178,7 +178,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
 
         final int testLogSize = testAppender.getLog().size();
         final LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
-        assertEquals(Utils.getMessage(testLoadDataForGivenPacket, new Object[]{packetId, result}),
+        assertEquals(Utils.getMessage(testLoadDataForSpecificPacket, new Object[]{packetId, result}),
                 loggingEvent.getMessage());
         assertEquals(Level.INFO, loggingEvent.getLevel());
 
@@ -190,15 +190,15 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
     public void testLoadCompts_onePacket_negative() throws Exception {
         final Long packetId = 3L;
         final int expectedResultSize = 0;
-        final String testLoadDataForGivenPacket
-                = (String) ReflectionTestUtils.getField(packetAppDao, ALL_COMPTS_FROM_GIVEN_PACKET_LOADED_MESSAGE);
+        final String testLoadDataForSpecificPacket
+                = (String) ReflectionTestUtils.getField(packetAppDao, ALL_COMPTS_FROM_SPECIFIC_PACKET_LOADED_MESSAGE);
 
         final List<ComptInfo> result = packetAppDao.loadCompts(packetId);
 
         assertEquals(expectedResultSize, result.size());
         final int testLogSize = testAppender.getLog().size();
         final LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
-        assertEquals(Utils.getMessage(testLoadDataForGivenPacket, new Object[]{packetId, result}),
+        assertEquals(Utils.getMessage(testLoadDataForSpecificPacket, new Object[]{packetId, result}),
                 loggingEvent.getMessage());
         assertEquals(Level.INFO, loggingEvent.getLevel());
     }

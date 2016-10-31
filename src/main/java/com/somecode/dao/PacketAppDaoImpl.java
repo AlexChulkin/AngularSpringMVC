@@ -35,7 +35,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
     private static final String ALL_STATES_LOADED_MESSAGE = "packetAppDao.allStatesLoadedMessage";
     private static final String ALL_COMBODATA_LOADED_MESSAGE = "packetAppDao.allComboDataLoadedMessage";
     private static final String ALL_COMPTS_FROM_ALL_PACKETS_LOADED_MESSAGE = "packetAppDao.allComptsFromAllPacketsLoadedMessage";
-    private static final String ALL_COMPTS_FROM_GIVEN_PACKET_LOADED_MESSAGE = "packetAppDao.allComptsFromGivenPacketLoadedMessage";
+    private static final String ALL_COMPTS_FROM_SPECIFIC_PACKET_LOADED_MESSAGE = "packetAppDao.allComptsFromSpecificPacketLoadedMessage";
     private static final String NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT =
             "packetAppDao.nonExistingComboDataLabelErrorReport";
     private static final String NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_COMPT_UPDATE =
@@ -254,7 +254,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
             result = listOfCompts;
         }
         log.info(packetId != null
-                ? getMessage(ALL_COMPTS_FROM_GIVEN_PACKET_LOADED_MESSAGE, new Object[]{packetId, result})
+                ? getMessage(ALL_COMPTS_FROM_SPECIFIC_PACKET_LOADED_MESSAGE, new Object[]{packetId, result})
                 : getMessage(ALL_COMPTS_FROM_ALL_PACKETS_LOADED_MESSAGE, new Object[]{result})
         );
         return result;
@@ -506,7 +506,6 @@ public class PacketAppDaoImpl implements PacketAppDao {
             allComboDataIndeces = getIndicesFromVals(comptParams.getVals(), null, packet.getId());
             Compt newCompt = new Compt();
             newCompt.setLabel(comptParams.getLabel());
-//            newCompt.setPacket(packet);
             packet.addCompt(newCompt);
 
             int numOfStates = allStates.size();

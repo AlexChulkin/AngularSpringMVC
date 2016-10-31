@@ -51,7 +51,7 @@ public abstract class AbstractDbunitTransactionalJUnit4SpringContextTests
     }
 
 
-    static class DbunitTestExecutionListener extends AbstractTestExecutionListener {
+    public static class DbunitTestExecutionListener extends AbstractTestExecutionListener {
 
         private IDatabaseTester databaseTester;
         private DataFileLoader xlsDataFileLoader;

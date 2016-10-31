@@ -1,9 +1,7 @@
 package com.somecode.aspects;
 
-import com.somecode.dao.PacketAppDaoImpl;
-import org.apache.log4j.Logger;
+import lombok.extern.log4j.Log4j;
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -16,27 +14,18 @@ import static com.somecode.utils.Utils.getMessage;
  */
 @Aspect
 @Component
+@Log4j
 public class LoggingAspect {
-    private static final Logger log = Logger.getLogger(PacketAppDaoImpl.class);
-    private static final String BEFORE_DAO_LOGGING = "loggingAspect.beforeDaoLogging";
     private static final String BEFORE_LOGGING = "loggingAspect.beforeLogging";
     private static final String AFTER_LOGGING = "loggingAspect.afterLogging";
 
-    @Pointcut("execution(* com.somecode.dao.PacketAppDao*.load*(..)) " +
-            "|| execution(* com.somecode.dao.PacketAppDao*.delete*(..)) " +
-            "|| execution(* com.somecode.dao.PacketAppDao*.update*(..)) " +
-            "|| execution(* com.somecode.dao.PacketAppDao*.add*(..)) " +
-            "|| execution(* com.somecode.dao.PacketAppDao*.getUser*(..)) ")
+    @Pointcut("execution(public * com.somecode.dao.PacketAppDao*.*(..)) " )
     public void basicDaoMethods() {
     }
 
     @Around("basicDaoMethods()")
     public Object daoLoggingAroundAdvice(ProceedingJoinPoint pjp) throws Throwable {
-        Signature signature = pjp.getSignature();
-        log.debug(getMessage(BEFORE_DAO_LOGGING, new Object[]{pjp.getSignature().getName(), pjp.getArgs()}));
-        Object retVal = pjp.proceed();
-        log.debug(getMessage(AFTER_LOGGING, new Object[]{ClassType.DAO.toString(), pjp.getSignature().getName()}));
-        return retVal;
+        return universalLoggingAroundAdvice(ClassType.DAO, pjp);
     }
 
     @Pointcut("execution(* com.somecode.controller..*.*(..))")
@@ -45,12 +34,7 @@ public class LoggingAspect {
 
     @Around("allControllerMethods()")
     public Object controllerLoggingAroundAdvice(ProceedingJoinPoint pjp) throws Throwable {
-        log.debug(getMessage(BEFORE_LOGGING,
-                new Object[]{ClassType.CONTROLLER.toString(), pjp.getSignature().getName()}));
-        Object retVal = pjp.proceed();
-        log.debug(getMessage(AFTER_LOGGING,
-                new Object[]{ClassType.CONTROLLER.toString(), pjp.getSignature().getName()}));
-        return retVal;
+        return universalLoggingAroundAdvice(ClassType.CONTROLLER, pjp);
     }
 
     @Pointcut("execution(* com.somecode.service..*.*(..))")
@@ -59,11 +43,15 @@ public class LoggingAspect {
 
     @Around("allServiceMethods()")
     public Object serviceLoggingAroundAdvice(ProceedingJoinPoint pjp) throws Throwable {
-        log.debug(getMessage(BEFORE_LOGGING,
-                new Object[]{ClassType.SERVICE.toString(), pjp.getSignature().getName()}));
+        return universalLoggingAroundAdvice(ClassType.SERVICE, pjp);
+    }
+
+    private Object universalLoggingAroundAdvice(ClassType classType, ProceedingJoinPoint pjp) throws Throwable {
+        String moduleName = classType.toString();
+        String signature = pjp.getSignature().toString();
+        log.debug(getMessage(BEFORE_LOGGING, new Object[]{moduleName, signature}));
         Object retVal = pjp.proceed();
-        log.debug(getMessage(AFTER_LOGGING,
-                new Object[]{ClassType.SERVICE.toString(), pjp.getSignature().getName()}));
+        log.debug(getMessage(AFTER_LOGGING, new Object[]{moduleName, signature}));
         return retVal;
     }
 }
