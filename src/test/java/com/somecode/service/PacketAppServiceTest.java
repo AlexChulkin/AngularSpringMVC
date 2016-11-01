@@ -268,30 +268,35 @@ public class PacketAppServiceTest {
         testSaveAllChangesToBaseWithParams(false, false, false, false, true, true, true, testPacketId);
     }
 
-    private void testSaveAllChangesToBaseWithParams(boolean comptIdsToDeleteIsEmpty, boolean packetIdsToDeleteIsEmpty,
+    private void testSaveAllChangesToBaseWithParams(boolean comptIdsToDeleteIsEmpty,
+                                                    boolean packetIdsToDeleteIsEmpty,
                                                     boolean comptsToUpdateParamsListIsEmpty,
                                                     boolean packetsToAddParamsListIsEmpty,
-                                                    boolean packetsToUpdateParamsListIsEmpty, boolean statesIsEmpty,
-                                                    boolean comboDatasIsEmpty, Long packetId)
-            throws DatabaseException {
+                                                    boolean packetsToUpdateParamsListIsEmpty,
+                                                    boolean statesIsEmpty,
+                                                    boolean comboDatasIsEmpty, Long packetId) throws DatabaseException {
 
         List<Long> test_comptIdsToDelete = comptIdsToDeleteIsEmpty ? Collections.emptyList() : generateIdsList();
         List<Long> test_packetIdsToDelete = packetIdsToDeleteIsEmpty ? Collections.emptyList() : generateIdsList();
         List<PacketParams> test_packetsToAddParamsList
-                = packetsToAddParamsListIsEmpty ? Collections.emptyList()
+                = packetsToAddParamsListIsEmpty
+                ? Collections.emptyList()
                 : buildSelfSettingEntityList(PacketParams.class);
         List<PacketParams> test_packetsToUpdateParamsList
-                = packetsToUpdateParamsListIsEmpty ? Collections.emptyList()
+                = packetsToUpdateParamsListIsEmpty
+                ? Collections.emptyList()
                 : buildSelfSettingEntityList(PacketParams.class);
         List<ComptParams> test_comptsToUpdateParamsList
-                = comptsToUpdateParamsListIsEmpty ? Collections.emptyList()
+                = comptsToUpdateParamsListIsEmpty
+                ? Collections.emptyList()
                 : buildSelfSettingEntityList(ComptParams.class);
 
         doReturn(Collections.emptyList()).when(mockDao).deleteCompts(anyListOf(Long.class));
         doReturn(Collections.emptyList()).when(mockDao).deletePackets(anyListOf(Long.class));
 
         if (statesIsEmpty || comboDatasIsEmpty) {
-            doThrow(new DatabaseException()).when(mockDao).addOrUpdatePackets(anyListOf(PacketParams.class), any(OperationType.class));
+            doThrow(new DatabaseException()).when(mockDao).addOrUpdatePackets(anyListOf(PacketParams.class),
+                    any(OperationType.class));
         } else {
             doNothing().when(mockDao).addOrUpdatePackets(anyListOf(PacketParams.class), any(OperationType.class));
         }
@@ -397,7 +402,8 @@ public class PacketAppServiceTest {
         List<ComptInfo> test_comptsInfo = emptyCompts ? Collections.emptyList() : buildEntityList(ComptInfo.class);
         List<PacketInfo> test_packetsInfo = emptyPackets ? Collections.emptyList() : buildEntityList(PacketInfo.class);
         List<ComptSupplInfo> test_comptSupplInfo = (emptyComboDatas || emptyStates || emptyCompts)
-                ? Collections.emptyList() : buildEntityList(ComptSupplInfo.class);
+                ? Collections.emptyList()
+                : buildEntityList(ComptSupplInfo.class);
 
         if (emptyStates) {
             doThrow(new DatabaseException()).when(mockDao).loadAllStates();
@@ -416,7 +422,8 @@ public class PacketAppServiceTest {
         doReturn(test_comptSupplInfo).when(mockDao).loadComptsSupplInfo(packetId);
 
         final String testLoadData
-                = (String) ReflectionTestUtils.getField(service, packetId == null ? TEST_LOAD_DATA_FOR_ALL_PACKETS
+                = (String) ReflectionTestUtils.getField(service, packetId == null
+                ? TEST_LOAD_DATA_FOR_ALL_PACKETS
                 : TEST_LOAD_DATA_FOR_SPECIFIC_PACKET);
         Data result = service.loadData(packetId);
 
@@ -424,8 +431,7 @@ public class PacketAppServiceTest {
         assertEquals(testLogSize, testAppender.getLog().size());
 
         final LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
-        assertEquals(Utils.getMessage(testLoadData,
-                packetId == null ? null : new Object[]{packetId}),
+        assertEquals(Utils.getMessage(testLoadData, packetId == null ? null : new Object[]{packetId}),
                 loggingEvent.getMessage());
         assertEquals(Level.INFO, loggingEvent.getLevel());
 
@@ -465,8 +471,7 @@ public class PacketAppServiceTest {
                             T entity = instantiateEntity(entityClass);
                             entity.setId((long) i);
                             result.add(entity);
-                        }
-                );
+                        });
         return result;
     }
 
@@ -474,11 +479,7 @@ public class PacketAppServiceTest {
         assertEquals(TEST_LIST_SIZE, entities.size());
         IntStream.range(0, TEST_LIST_SIZE)
                 .boxed()
-                .forEach(i ->
-                        {
-                            assertEquals(Long.valueOf(i + 1), entities.get(i).getId());
-                        }
-                );
+                .forEach(i -> assertEquals(Long.valueOf(i + 1), entities.get(i).getId()));
     }
 
     private <T extends SelfSettingEntityPrototype> T selfSettingInstantiateEntity(Class<T> entityClass) {
@@ -500,20 +501,8 @@ public class PacketAppServiceTest {
                             T entity = selfSettingInstantiateEntity(entityClass);
                             entity.setId((long) i);
                             result.add(entity);
-                        }
-                );
+                        });
         return result;
-    }
-
-    private <T extends SelfSettingEntityPrototype> void checkSelfSettingEntities(List<T> entities) {
-        assertEquals(TEST_LIST_SIZE, entities.size());
-        IntStream.range(0, TEST_LIST_SIZE)
-                .boxed()
-                .forEach(i ->
-                        {
-                            assertEquals(Long.valueOf(i + 1), entities.get(i).getId());
-                        }
-                );
     }
 
     private List<Long> generateIdsList() {

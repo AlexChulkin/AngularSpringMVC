@@ -11,6 +11,7 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
 import org.springframework.test.context.transaction.AfterTransaction;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Created by alexc_000 on 2016-08-02.
@@ -20,19 +21,22 @@ public abstract class AbstractDbunitTransactionalJUnit4SpringContextTests
         extends AbstractTransactionalJUnit4SpringContextTests {
 
     /**
-     * Тестировщик DBUnit
+     * DBUnit Tester
      */
     private IDatabaseTester databaseTester;
 
     /**
-     * Имя файла с ожидаемым набором данных
+     * The name of file containing the expected data
      */
     private String afterDatasetFileName;
 
+    /**
+     * The XLS file loader
+     */
     private DataFileLoader xlsDataFileLoader;
 
     /**
-     * Метод, выполняющийся по окончании транзакции тестового метода: сверка данных
+     * Method executing the "before" and "after" data comparison
      */
     @AfterTransaction
     public void assertAfterTransaction() throws Exception {
@@ -87,9 +91,11 @@ public abstract class AbstractDbunitTransactionalJUnit4SpringContextTests
             if (!beforeDatasetEmpty) {
                 IDataSet dataSet = xlsDataFileLoader.load(beforeDatasetName);
                 databaseTester = getImplementingBeanFromContext(testContext, IDatabaseTester.class);
-                databaseTester.setDataSet(dataSet);
-                databaseTester.onSetup();
-                testInstance.databaseTester = databaseTester;
+                if (Optional.ofNullable(dataSet).isPresent()) {
+                    databaseTester.setDataSet(dataSet);
+                    databaseTester.onSetup();
+                    testInstance.databaseTester = databaseTester;
+                }
             }
         }
 

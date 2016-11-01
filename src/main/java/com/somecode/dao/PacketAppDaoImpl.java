@@ -34,8 +34,10 @@ public class PacketAppDaoImpl implements PacketAppDao {
     private static final String ALL_COMPTSSUPPLINFO_LOADED = "packetAppDao.allComptsSupplInfoLoadedMessage";
     private static final String ALL_STATES_LOADED_MESSAGE = "packetAppDao.allStatesLoadedMessage";
     private static final String ALL_COMBODATA_LOADED_MESSAGE = "packetAppDao.allComboDataLoadedMessage";
-    private static final String ALL_COMPTS_FROM_ALL_PACKETS_LOADED_MESSAGE = "packetAppDao.allComptsFromAllPacketsLoadedMessage";
-    private static final String ALL_COMPTS_FROM_SPECIFIC_PACKET_LOADED_MESSAGE = "packetAppDao.allComptsFromSpecificPacketLoadedMessage";
+    private static final String ALL_COMPTS_FROM_ALL_PACKETS_LOADED_MESSAGE
+            = "packetAppDao.allComptsFromAllPacketsLoadedMessage";
+    private static final String ALL_COMPTS_FROM_SPECIFIC_PACKET_LOADED_MESSAGE
+            = "packetAppDao.allComptsFromSpecificPacketLoadedMessage";
     private static final String NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT =
             "packetAppDao.nonExistingComboDataLabelErrorReport";
     private static final String NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_COMPT_UPDATE =
@@ -447,7 +449,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
         String report = "";
         Long packetId = packet.getId();
         if (stateId == null) {
-            return setDefaultState(operationType, PacketDaoError.NULL_NEW_STATE_ID, packet, stateId);
+            return setDefaultState(operationType, PacketDaoError.NULL_NEW_STATE_ID, packet, null);
         } else if (packet.getState() != null && packet.getState().getId().equals(stateId)) {
             report = getMessage(PACKET_UPDATE_STATE_UPDATE_NOT_DIFFERENT_NEW_STATE, new Object[]{stateId});
             log.error(report);

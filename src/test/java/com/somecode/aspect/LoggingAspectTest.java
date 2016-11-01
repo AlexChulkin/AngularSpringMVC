@@ -273,9 +273,8 @@ public class LoggingAspectTest extends AbstractDbunitTransactionalJUnit4SpringCo
         sb.append(DOT);
         sb.append(method.getName());
         sb.append(OPENING_BRACKET);
-        String parameterTypeNames = Arrays.asList(method.getParameterTypes()).stream()
-                                                                             .map(Class::getSimpleName)
-                                                                             .collect(Collectors.joining(","));
+        String parameterTypeNames = Arrays.asList(method.getParameterTypes()).stream().map(Class::getSimpleName)
+                .collect(Collectors.joining(","));
         sb.append(parameterTypeNames);
         sb.append(CLOSING_BRACKET);
         return sb.toString();
@@ -284,13 +283,13 @@ public class LoggingAspectTest extends AbstractDbunitTransactionalJUnit4SpringCo
     private void testMethod (ClassType classType, String methodName) {
         final LoggingEvent loggingEventBefore = testAppender.getLog().get(0);
         final String testBeforeLogging = (String) ReflectionTestUtils.getField(loggingAspect, BEFORE_LOGGING);
-        assertEquals(Utils.getMessage(testBeforeLogging,
-                new Object[] {classType.toString(), methodName}), loggingEventBefore.getMessage());
+        assertEquals(Utils.getMessage(testBeforeLogging, new Object[]{classType.toString(), methodName}),
+                loggingEventBefore.getMessage());
         assertEquals(Level.DEBUG, loggingEventBefore.getLevel());
         final LoggingEvent loggingEventAfter = testAppender.getLog().get(testAppender.getLog().size() - 1);
         final String testAfterLogging = (String) ReflectionTestUtils.getField(loggingAspect, AFTER_LOGGING);
-        assertEquals(Utils.getMessage(testAfterLogging,
-                new Object[] {classType.toString(), methodName}), loggingEventAfter.getMessage());
+        assertEquals(Utils.getMessage(testAfterLogging, new Object[]{classType.toString(), methodName}),
+                loggingEventAfter.getMessage());
         assertEquals(Level.DEBUG, loggingEventAfter.getLevel());
     }
 

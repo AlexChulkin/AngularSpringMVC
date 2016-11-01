@@ -19,20 +19,20 @@ import static org.junit.Assert.assertEquals;
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class UtilsTest {
-    public static final Long COMPT_ID = 1L;
-    public static final Long DATA_COMPT_ID = 5L;
-    public static final Long STATE_ID = 2L;
-    public static final Long COMBO_DATA_ID = 4L;
-    public static final Long PACKET_ID = 3L;
-    public static final String COMPT_LABEL = "COMPT_LABEL_1";
-    public static final boolean CHECKED = true;
-    public static final String LOAD_DATA_FOR_ALL_PACKETS_PATTERN = "packetAppService.loadDataForAllPackets";
-    public static final String LOAD_DATA_FOR_ALL_PACKETS_FULL_MSG = "Load data for all packets";
-    public static final String COMPT_UPDATE_NON_EXISTING_COMPT_PATTERN = "packetAppDao.comptUpdate.nonExistingCompt";
-    public static final String COMPT_UPDATE_NON_EXISTING_COMPT_FULL_MSG = "The compt with id = 1 does not exist";
-    public static final String COMPT_UPDATE_DATACOMPT_UPDATE_PATTERN
+    private static final Long COMPT_ID = 1L;
+    private static final Long DATA_COMPT_ID = 5L;
+    private static final Long STATE_ID = 2L;
+    private static final Long COMBO_DATA_ID = 4L;
+    private static final Long PACKET_ID = 3L;
+    private static final String COMPT_LABEL = "COMPT_LABEL_1";
+    private static final boolean CHECKED = true;
+    private static final String LOAD_DATA_FOR_ALL_PACKETS_PATTERN = "packetAppService.loadDataForAllPackets";
+    private static final String LOAD_DATA_FOR_ALL_PACKETS_FULL_MSG = "Load data for all packets";
+    private static final String COMPT_UPDATE_NON_EXISTING_COMPT_PATTERN = "packetAppDao.comptUpdate.nonExistingCompt";
+    private static final String COMPT_UPDATE_NON_EXISTING_COMPT_FULL_MSG = "The compt with id = 1 does not exist";
+    private static final String COMPT_UPDATE_DATACOMPT_UPDATE_PATTERN
             = "packetAppDao.comptUpdate.dataComptUpdate.successReport";
-    public static final String COMPT_UPDATE_DATACOMPT_UPDATE_FULL_MSG
+    private static final String COMPT_UPDATE_DATACOMPT_UPDATE_FULL_MSG
             = "Compt#1 update: DataCompt updated widh id = 5";
     private final static String COMPT_TO_STRING_PATTERN = "compt.toString";
     private final static String COMPT_TO_STRING_FULL_MSG = "Component with id: 1 and label: COMPT_LABEL_1 and packet#3";
@@ -60,8 +60,7 @@ public class UtilsTest {
     @Test
     public void testGetMessageWithThreeElements() {
         assertEquals(COMPT_TO_STRING_FULL_MSG,
-                     getMessage(COMPT_TO_STRING_PATTERN,
-                                new Object[]{COMPT_ID, COMPT_LABEL, PACKET_ID}));
+                getMessage(COMPT_TO_STRING_PATTERN, new Object[]{COMPT_ID, COMPT_LABEL, PACKET_ID}));
 
     }
 

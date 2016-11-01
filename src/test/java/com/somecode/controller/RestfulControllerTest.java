@@ -163,8 +163,9 @@ public class RestfulControllerTest {
     }
 
     private void getUserRoleTestSetUp(String testUserName, String testPassword,  Role serviceMockReturnRole) {
-        doReturn(serviceMockReturnRole).when(serviceMock).getUserRole(testUserName != null ? testUserName : anyString(),
-                                                                      testPassword != null ? testPassword : anyString());
+        doReturn(serviceMockReturnRole).when(serviceMock)
+                .getUserRole(testUserName != null ? testUserName : anyString(),
+                        testPassword != null ? testPassword : anyString());
     }
 
     private void testControllerGetUserRoleMethod(String testUserName, String testPassword, Role serviceMockReturnRole)
@@ -179,7 +180,7 @@ public class RestfulControllerTest {
         String requestObjJson = GSON.toJson(requestObj);
 
         final String requestURI = (String) ReflectionTestUtils.getField(controller, USER_LOGIN_MAPPING);
-        MvcResult mvcResult  = mockMvc.perform(post(requestURI)
+        MvcResult mvcResult = mockMvc.perform(post(requestURI)
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(requestObjJson))
                 .andExpect(status().isOk())
@@ -204,13 +205,13 @@ public class RestfulControllerTest {
         }
 
         List<ComptParams> testComptsToUpdateParamsList = new ArrayList<>();
-        IntStream.rangeClosed(1, 2).boxed().forEach(id ->
-                testComptsToUpdateParamsList.add(new ComptParams().setId(Long.valueOf(id))));
+        IntStream.rangeClosed(1, 2)
+                .boxed().forEach(id -> testComptsToUpdateParamsList.add(new ComptParams().setId(Long.valueOf(id))));
 
         List<PacketParams> testPacketsToAddParamsList = new ArrayList<>();
         if (testPacketId == null) {
-            IntStream.rangeClosed(3, 4).boxed().forEach(id ->
-                    testPacketsToAddParamsList.add(new PacketParams().setId(Long.valueOf(id))));
+            IntStream.rangeClosed(3, 4)
+                    .boxed().forEach(id -> testPacketsToAddParamsList.add(new PacketParams().setId(Long.valueOf(id))));
         }
 
         List<PacketParams> testPacketsToUpdateParamsList = new ArrayList<>();
@@ -218,16 +219,17 @@ public class RestfulControllerTest {
         if (testPacketId == null) {
             upperPacketToUpdateId = 2;
         }
-        IntStream.rangeClosed(1, upperPacketToUpdateId).boxed().forEach(id ->
-                testPacketsToUpdateParamsList.add(new PacketParams().setId(Long.valueOf(id))));
+        IntStream.rangeClosed(1, upperPacketToUpdateId)
+                .boxed().forEach(id -> testPacketsToUpdateParamsList.add(new PacketParams().setId(Long.valueOf(id))));
 
         Map<String, Boolean> resultMap = new HashMap<>();
         String serviceMockMethodForNotNullPacketId = ADD_PACKETS;
         if (testPacketId != null) {
             resultMap.put(serviceMockMethodForNotNullPacketId, true);
         }
-        doReturn(resultMap).when(serviceMock).saveAllChangesToBase(anyListOf(Long.class),
-                anyListOf(Long.class), anyListOf(ComptParams.class), anyListOf(PacketParams.class),
+        doReturn(resultMap).when(serviceMock).saveAllChangesToBase(anyListOf(Long.class), anyListOf(Long.class),
+                anyListOf(ComptParams.class),
+                anyListOf(PacketParams.class),
                 anyListOf(PacketParams.class), any(Long.class));
 
         DataParams dataParams = new DataParams();
@@ -242,17 +244,16 @@ public class RestfulControllerTest {
 
         String requestObjJson = GSON.toJson(requestObj);
         final String requestURI = (String) ReflectionTestUtils.getField(controller, SAVE_ALL_CHANGES_MAPPING);
-        MvcResult mvcResult
-                = mockMvc.perform(post(requestURI).contentType(MediaType.APPLICATION_JSON_UTF8)
-                    .content(requestObjJson)).andExpect(status().isOk()).andReturn();
+        MvcResult mvcResult = mockMvc.perform(post(requestURI).contentType(MediaType.APPLICATION_JSON_UTF8)
+                .content(requestObjJson)).andExpect(status().isOk()).andReturn();
         
         String responseObjJson = GSON.toJson(Collections.emptyMap());
         assertEquals(responseObjJson.substring(1, responseObjJson.length()-1),
-                     mvcResult.getResponse().getContentAsString()
-        );
+                mvcResult.getResponse().getContentAsString());
 
         verify(serviceMock, times(1)).saveAllChangesToBase(anyListOf(Long.TYPE), anyListOf(Long.TYPE),
-                anyListOf(ComptParams.class), anyListOf(PacketParams.class), anyListOf(PacketParams.class), anyLong());
+                anyListOf(ComptParams.class), anyListOf(PacketParams.class),
+                anyListOf(PacketParams.class), anyLong());
 
         int testLogSize = 1;
 
@@ -268,7 +269,7 @@ public class RestfulControllerTest {
         assertEquals(Level.DEBUG, loggingEvent.getLevel());
 
         String result = controller.saveAllChangesToBase(requestObjJson);
-        Map<String, Boolean> fromJsonData = GSON.fromJson(result, Map.class);
+        Map<String, Boolean> fromJsonData = (Map<String, Boolean>) GSON.fromJson(result, Map.class);
         assertEquals(fromJsonData.size(), resultMap.size());
         if (testPacketId != null) {
             assertTrue(fromJsonData.get(serviceMockMethodForNotNullPacketId));
@@ -339,10 +340,10 @@ public class RestfulControllerTest {
         final LoggingEvent loggingEvent = testAppender.getLog().get(0);
         final String testSaveAllChangesToBase
                 = (String) ReflectionTestUtils.getField(controller, testPacketId == null
-                                                                                ? LOAD_DATA_FOR_ALL_PACKETS
-                                                                                : LOAD_DATA_FOR_SPECIFIC_PACKET);
+                ? LOAD_DATA_FOR_ALL_PACKETS
+                : LOAD_DATA_FOR_SPECIFIC_PACKET);
         assertEquals(Utils.getMessage(testSaveAllChangesToBase,
-                new Object[] {testPacketId}), loggingEvent.getMessage());
+                new Object[]{testPacketId}), loggingEvent.getMessage());
         assertEquals(Level.DEBUG, loggingEvent.getLevel());
 
         String result = controller.loadData(requestObjJson);
