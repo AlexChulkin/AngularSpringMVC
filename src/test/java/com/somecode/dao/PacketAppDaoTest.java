@@ -2,7 +2,7 @@ package com.somecode.dao;
 
 import com.google.common.collect.Lists;
 import com.somecode.domain.*;
-import com.somecode.utils.TestUtils;
+import com.somecode.utils.TestLogAppender;
 import com.somecode.utils.Utils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.log4j.Level;
@@ -143,11 +143,11 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
     private EntityManager em;
 
     private Logger root = Logger.getRootLogger();
-    private TestUtils.TestAppender testAppender;
+    private TestLogAppender testAppender;
 
     @Before
     public void doBeforeEachTest() {
-        testAppender = TestUtils.getTestAppender();
+        testAppender = new TestLogAppender();
         root.addAppender(testAppender);
         root.setLevel(Level.INFO);
     }

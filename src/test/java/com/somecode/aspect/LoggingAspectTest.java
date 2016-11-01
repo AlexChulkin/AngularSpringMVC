@@ -13,7 +13,7 @@ import com.somecode.domain.OperationType;
 import com.somecode.domain.RequestObj;
 import com.somecode.domain.SecurityParams;
 import com.somecode.service.PacketAppService;
-import com.somecode.utils.TestUtils;
+import com.somecode.utils.TestLogAppender;
 import com.somecode.utils.Utils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -81,7 +81,7 @@ public class LoggingAspectTest extends AbstractDbunitTransactionalJUnit4SpringCo
     private Gson GSON = new Gson();
 
     private Logger root = Logger.getRootLogger();
-    private TestUtils.TestAppender testAppender;
+    private TestLogAppender testAppender;
 
     @Autowired
     private LoggingAspect loggingAspect;
@@ -113,7 +113,7 @@ public class LoggingAspectTest extends AbstractDbunitTransactionalJUnit4SpringCo
 
     @Before
     public void resetLogAppender() {
-        testAppender = TestUtils.getTestAppender();
+        testAppender = new TestLogAppender();
         root.addAppender(testAppender);
         root.setLevel(Level.DEBUG);
     }

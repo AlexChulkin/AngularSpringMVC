@@ -36,7 +36,6 @@ public class PacketAppService {
     private String updatePacketsExceptionMessage;
     private String addPacketsExceptionMessage;
 
-
     @Autowired
     private PacketAppDao packetAppDao;
 
@@ -132,7 +131,7 @@ public class PacketAppService {
                 updatePacketsExceptionMessage = e.getMessage();
                 updatePacketsExceptionStackTrace = ExceptionUtils.getStackTrace(e);
                 log.error(getMessage(UPDATE_PACKETS_EXCEPTION_REPORT, new Object[]{updatePacketsExceptionMessage,
-                                                                    updatePacketsExceptionStackTrace}));
+                        updatePacketsExceptionStackTrace}));
                 persistErrors.put(UPDATE_PACKETS, true);
             }
         }

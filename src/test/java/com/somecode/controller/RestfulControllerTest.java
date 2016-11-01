@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.somecode.dao.DaoTestConfig;
 import com.somecode.domain.*;
 import com.somecode.service.PacketAppService;
-import com.somecode.utils.TestUtils;
+import com.somecode.utils.TestLogAppender;
 import com.somecode.utils.Utils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -78,7 +78,7 @@ public class RestfulControllerTest {
     private MockMvc mockMvc;
 
     private Logger root = Logger.getRootLogger();
-    private TestUtils.TestAppender testAppender;
+    private TestLogAppender testAppender;
 
     @Before
     public void beforeEach() {
@@ -89,7 +89,7 @@ public class RestfulControllerTest {
         serviceMock = mock(PacketAppService.class);
         ReflectionTestUtils.setField(controller, PACKET_APP_SERVICE, serviceMock);
 
-        testAppender = TestUtils.getTestAppender();
+        testAppender = new TestLogAppender();
         root.addAppender(testAppender);
         root.setLevel(Level.DEBUG);
     }

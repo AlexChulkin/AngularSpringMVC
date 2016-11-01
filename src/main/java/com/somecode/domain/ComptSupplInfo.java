@@ -57,7 +57,6 @@ public class ComptSupplInfo implements EntityProtoType {
 
     @Override
     public String toString() {
-
         return getMessage(checked ? CHECKED_STRING_VERSION : UNCHECKED_STRING_VERSION,
                 new Object[]{comptId, label, stateId});
     }

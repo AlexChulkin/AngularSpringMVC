@@ -3,7 +3,7 @@ package com.somecode.service;
 import com.somecode.dao.DaoTestConfig;
 import com.somecode.dao.PacketAppDao;
 import com.somecode.domain.*;
-import com.somecode.utils.TestUtils;
+import com.somecode.utils.TestLogAppender;
 import com.somecode.utils.Utils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -56,7 +56,7 @@ public class PacketAppServiceTest {
     private static final String ADD_PACKETS = "ADD_PACKETS";
 
     private Logger root = Logger.getRootLogger();
-    private TestUtils.TestAppender testAppender;
+    private TestLogAppender testAppender;
 
     private Long testPacketId = 1L;
 
@@ -72,7 +72,7 @@ public class PacketAppServiceTest {
         currentLogIndex = 0;
         mockDao = mock(PacketAppDao.class);
         ReflectionTestUtils.setField(service, "packetAppDao", mockDao);
-        testAppender = TestUtils.getTestAppender();
+        testAppender = new TestLogAppender();
         root.addAppender(testAppender);
         root.setLevel(Level.INFO);
     }

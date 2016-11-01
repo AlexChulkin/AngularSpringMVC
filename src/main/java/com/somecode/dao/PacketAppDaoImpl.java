@@ -38,38 +38,38 @@ public class PacketAppDaoImpl implements PacketAppDao {
             = "packetAppDao.allComptsFromAllPacketsLoadedMessage";
     private static final String ALL_COMPTS_FROM_SPECIFIC_PACKET_LOADED_MESSAGE
             = "packetAppDao.allComptsFromSpecificPacketLoadedMessage";
-    private static final String NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT =
-            "packetAppDao.nonExistingComboDataLabelErrorReport";
-    private static final String NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_COMPT_UPDATE =
-            "packetAppDao.nonExistingComboDataLabelErrorReport.comptUpdate";
-    private static final String NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_ADD_NEW_COMPTS_TO_PERSISTED_PACKET =
-            "packetAppDao.nonExistingComboDataLabelErrorReport.addNewComptsToPersistedPacket";
-    private static final String NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_ADD_NEW_COMPTS_TO_UNPERSISTED_PACKET =
-            "packetAppDao.nonExistingComboDataLabelErrorReport.addNewComptsToUnpersistedPacket";
+    private static final String NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT
+            = "packetAppDao.nonExistingComboDataLabelErrorReport";
+    private static final String NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_COMPT_UPDATE
+            = "packetAppDao.nonExistingComboDataLabelErrorReport.comptUpdate";
+    private static final String NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_ADD_NEW_COMPTS_TO_PERSISTED_PACKET
+            = "packetAppDao.nonExistingComboDataLabelErrorReport.addNewComptsToPersistedPacket";
+    private static final String NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_ADD_NEW_COMPTS_TO_UNPERSISTED_PACKET
+            = "packetAppDao.nonExistingComboDataLabelErrorReport.addNewComptsToUnpersistedPacket";
     private static final String MAP_COMBODATA_LABELS_TO_INDICES_MESSAGE = "packetAppDao.allComboDataLabelsToIndicesMap";
     private static final String COMPT_UPDATE_NON_EXISTING_COMPT = "packetAppDao.comptUpdate.nonExistingCompt";
-    private static final String COMPT_UPDATE_DATACOMPT_UPDATE =
-            "packetAppDao.comptUpdate.dataComptUpdate.successReport";
+    private static final String COMPT_UPDATE_DATACOMPT_UPDATE
+            = "packetAppDao.comptUpdate.dataComptUpdate.successReport";
     private static final String COMPT_UPDATE_SUCCESS_REPORT = "packetAppDao.comptUpdate.successReport";
     private static final String COMPTS_DELETE_NON_EXISTING_COMPTS = "packetAppDao.comptsDelete.nonExistingCompts";
     private static final String COMPTS_DELETE_SUCCESS_REPORT = "packetAppDao.comptsDelete.successReport";
     private static final String PACKETS_DELETE_NON_EXISTING_IDS = "packetAppDao.packetsDelete.nonExistingIds";
     private static final String PACKETS_DELETE_SUCCESS_REPORT = "packetAppDao.packetsDelete.successReport";
-    private static final String PACKET_UPDATE_NOT_EXISTING_PACKET =
-            "packetAppDao.packetUpdate.notExistingPacket";
+    private static final String PACKET_UPDATE_NOT_EXISTING_PACKET
+            = "packetAppDao.packetUpdate.notExistingPacket";
     private static final String PACKET_ADDING_ADD_COMPTS = "packetAppDao.packetAddOrUpdate.addPacket.addCompts";
     private static final String PACKET_UPDATE_ADD_COMPTS = "packetAppDao.packetAddOrUpdate.updatePacket.addCompts";
     private static final String PACKET_ADDING_SUCCESS_REPORT = "packetAppDao.packetAddOrUpdate.addPacket.successReport";
-    private static final String PACKET_UPDATE_SUCCESS_REPORT =
-            "packetAppDao.packetAddOrUpdate.updatePacket.successReport";
-    private static final String PACKET_UPDATE_STATE_UPDATE_SUCCESS_REPORT =
-            "packetAppDao.packetAddOrUpdate.updatePacket.updateState.successReport";
-    private static final String PACKET_ADDING_STATE_SET_SUCCESS_REPORT =
-            "packetAppDao.packetAddOrUpdate.addPacket.setState.successReport";
-    private static final String PACKET_UPDATE_STATE_UPDATE_NOT_EXISTING_STATE =
-            "packetAppDao.packetAddOrUpdate.updatePacket.updateState.notExistingState";
-    private static final String PACKET_ADDING_STATE_SET_NOT_EXISTING_STATE =
-            "packetAppDao.packetAddOrUpdate.addPacket.setState.notExistingState";
+    private static final String PACKET_UPDATE_SUCCESS_REPORT
+            = "packetAppDao.packetAddOrUpdate.updatePacket.successReport";
+    private static final String PACKET_UPDATE_STATE_UPDATE_SUCCESS_REPORT
+            = "packetAppDao.packetAddOrUpdate.updatePacket.updateState.successReport";
+    private static final String PACKET_ADDING_STATE_SET_SUCCESS_REPORT
+            = "packetAppDao.packetAddOrUpdate.addPacket.setState.successReport";
+    private static final String PACKET_UPDATE_STATE_UPDATE_NOT_EXISTING_STATE
+            = "packetAppDao.packetAddOrUpdate.updatePacket.updateState.notExistingState";
+    private static final String PACKET_ADDING_STATE_SET_NOT_EXISTING_STATE
+            = "packetAppDao.packetAddOrUpdate.addPacket.setState.notExistingState";
     private static final String STATE_TABLE_IS_EMPTY = "packetAppDao.statesTableIsEmpty";
     private static final String COMBODATA_TABLE_IS_EMPTY = "packetAppDao.comboDataTableIsEmpty";
     private static final String PACKET_NOT_LOADED = "packetAppDao.packetNotLoaded";
@@ -80,7 +80,6 @@ public class PacketAppDaoImpl implements PacketAppDao {
             = "packetAppDao.packetAddOrUpdate.updatePacket.updateState.notDifferentNewState";
     private static final String USER_DATA_LOAD_SUCCESS = "packetAppDao.userDataLoad.success";
     private static final String USER_DATA_LOAD_ERROR = "packetAppDao.userDataLoad.error";
-
 
     private List<ComboData> allComboData = Collections.emptyList();
     private List<State> allStates = Collections.emptyList();
@@ -179,13 +178,14 @@ public class PacketAppDaoImpl implements PacketAppDao {
         if (cause.getClass().equals(EmptyStateTableException.class)) {
             emptyStateTableExceptionMessage = cause.getMessage();
             emptyStateTableExceptionStackTrace = ExceptionUtils.getStackTrace(cause);
-            log.error(getMessage(STATE_TABLE_IS_EMPTY, new Object[]{emptyStateTableExceptionMessage,
-                    emptyStateTableExceptionStackTrace}));
+            log.error(getMessage(STATE_TABLE_IS_EMPTY,
+                    new Object[]{emptyStateTableExceptionMessage, emptyStateTableExceptionStackTrace}));
         } else if (cause.getClass().equals(EmptyComboDataTableException.class)) {
             emptyCombodataTableExceptionMessage = cause.getMessage();
             emptyCombodataTableExceptionStackTrace = ExceptionUtils.getStackTrace(cause);
-            log.error(getMessage(COMBODATA_TABLE_IS_EMPTY, new Object[]{emptyCombodataTableExceptionMessage,
-                    emptyCombodataTableExceptionStackTrace}));
+            log.error(getMessage(COMBODATA_TABLE_IS_EMPTY,
+                    new Object[]{emptyCombodataTableExceptionMessage,
+                            emptyCombodataTableExceptionStackTrace}));
         }
         DatabaseException exc = new DatabaseException();
         exc.initCause(cause);
@@ -290,8 +290,8 @@ public class PacketAppDaoImpl implements PacketAppDao {
                             new Object[]{packetId})).append(errorReport).toString();
         } else {
             errorReport = sb.append(
-                    getMessage(NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_ADD_NEW_COMPTS_TO_UNPERSISTED_PACKET,
-                            null)).append(errorReport).toString();
+                    getMessage(NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_ADD_NEW_COMPTS_TO_UNPERSISTED_PACKET, null))
+                    .append(errorReport).toString();
         }
         return errorReport;
     }
@@ -486,8 +486,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
                 report = getMessage(PACKET_ADDING_STATE_SET_NOT_EXISTING_STATE,
                         new Object[]{stateId, defaultState.toString()});
             } else if (error == PacketDaoError.NULL_NEW_STATE_ID) {
-                report = getMessage(PACKET_ADDING_STATE_SET_NULL_STATE,
-                        new Object[]{defaultState.toString()});
+                report = getMessage(PACKET_ADDING_STATE_SET_NULL_STATE, new Object[]{defaultState.toString()});
             }
             log.info(report);
             return true;

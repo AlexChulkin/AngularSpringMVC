@@ -5,6 +5,5 @@ package com.somecode.domain;
  */
 public interface EntityProtoType {
     Long getId();
-
     void setId(Long id);
 }

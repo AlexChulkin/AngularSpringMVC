@@ -47,8 +47,7 @@ public class RestfulController {
     public String getUserRole(@RequestBody String request) {
         RequestObj requestObj = GSON.fromJson(request, RequestObj.class);
         String result = GSON.toJson(packetAppService.getUserRole(requestObj.getSecurityParams().getUsername(),
-                requestObj.getSecurityParams().getPassword()
-        ));
+                requestObj.getSecurityParams().getPassword()));
         return result;
     }
 

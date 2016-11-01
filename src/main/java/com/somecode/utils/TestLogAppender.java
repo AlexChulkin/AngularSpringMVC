@@ -9,12 +9,7 @@ import java.util.List;
 /**
  * Created by alexc_000 on 2016-10-25.
  */
-public class TestUtils {
-    public static TestAppender getTestAppender() {
-        return new TestAppender();
-    }
-
-    public static class TestAppender extends AppenderSkeleton {
+public class TestLogAppender extends AppenderSkeleton {
         private final List<LoggingEvent> log = new ArrayList<>();
 
         @Override
@@ -34,5 +29,4 @@ public class TestUtils {
         public List<LoggingEvent> getLog() {
             return log;
         }
-    }
 }
