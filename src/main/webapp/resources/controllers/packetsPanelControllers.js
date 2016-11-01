@@ -14,8 +14,9 @@ angular.module("packetAdminApp")
     .constant("numOfErrors", 3)
     .constant("errorStatusBadRequest", 400)
     .constant("errorStatusNotFound", 404)
-    .constant("narrowPacketCaption", "narrow-packet-selection")
-    .constant("widePacketCaption", "wide-packet-selection")
+    .constant("narrowPacketCaption", "narrow-packet-caption")
+    .constant("widePacketCaption", "wide-packet-caption")
+    .constant("superWidePacketCaption", "super-wide-packet-caption")
     .constant("adminRole", "ADMIN")
     .constant("role", "role")
     .constant("updateComptsError", "Error occurred while trying to save data in DB. The COMBO_DATA table" +
@@ -34,8 +35,8 @@ angular.module("packetAdminApp")
                                               packetListActiveClass, packetListNonActiveClass, updateCompts,
                                               updatePackets, addPackets, updatePacketsErrorRoot,
                                               saveAllChangesToBaseUrl, errorStatusNotFound, errorStatusBadRequest,
-                                              narrowPacketCaption, widePacketCaption, role, adminRole,
-                                              updateComptsError, addOrUpdatePacketsErrorPrefix, numOfErrors,
+                                              narrowPacketCaption, widePacketCaption, superWidePacketCaption, role,
+                                              adminRole, updateComptsError, addOrUpdatePacketsErrorPrefix, numOfErrors,
                                               addOrUpdatePacketsErrorSuffix, addPacketsErrorRoot) {
 
         var packetIdsToDelete;
@@ -91,8 +92,10 @@ angular.module("packetAdminApp")
 
             if (pktId < 10) {
                 result += narrowPacketCaption;
-            } else {
+            } else if (pktId < 100) {
                 result += widePacketCaption;
+            } else {
+                result += superWidePacketCaption;
             }
             return result;
         };

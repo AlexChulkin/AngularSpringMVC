@@ -51,13 +51,17 @@ form > div {
     padding: 6px 12px;
 }
 
-.narrow-packet-selection {
+.narrow-packet-caption {
     padding: 5px 10px;
     margin-bottom: 3px;
 }
 
-.wide-packet-selection {
+.wide-packet-caption {
     padding: 5px 2px 5px 10px;
+}
+
+.super-wide-packet-caption {
+    padding: 5px 2px;
 }
 
 .aggregate-button {

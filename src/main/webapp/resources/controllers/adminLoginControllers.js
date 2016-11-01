@@ -22,13 +22,15 @@ angular.module("packetAdminApp")
                 securityParams: securityParams
             }).success(function (role) {
                 if (role) {
+                    $scope.data.authorizationIsInProcess = true;
                     timeoutLogoutPromise = $timeout(timeoutLogoutFn, timeoutLogoutDelay);
+                    $location.path(mainUrl);
                     $cookies.put("username", username);
                     $cookies.put("role", role);
                     $scope.data.role = role;
                     $scope.data.username = username;
                     $scope.data.authenticationError = null;
-                    $location.path(mainUrl);
+                    $scope.data.authorizationIsInProcess = false;
                 } else {
                     setAuthenticationError({status: "username and/or password are incorrect"});
                 }
@@ -41,7 +43,7 @@ angular.module("packetAdminApp")
         };
 
         $scope.isUserAuthorized = function () {
-            return !helperService.isUndefinedOrNull($scope.data.role);
+            return !helperService.isUndefinedOrNull($scope.data.role) && !$scope.data.authorizationIsInProcess;
         };
 
         $scope.logout = function () {
@@ -83,6 +85,7 @@ angular.module("packetAdminApp")
             $scope.data = {};
             $scope.data.username = $cookies.get("username");
             $scope.data.role = $cookies.get("role");
+            $scope.data.authorizationIsInProcess = false;
         };
 
         init();

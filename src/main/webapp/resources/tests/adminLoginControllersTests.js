@@ -91,8 +91,11 @@ describe("Login Controller Test", function () {
         });
 
         it("isUserAuthorized() performs correctly", function () {
-            expect(mockScope.isUserAuthorized()).toBeTruthy();
+            mockScope.data.authorizationIsInProcess = true;
+            expect(mockScope.isUserAuthorized()).toBeFalsy();
             expect(mockHelperService.isUndefinedOrNull).toHaveBeenCalledWith(mockScope.data.role);
+            mockScope.data.authorizationIsInProcess = false;
+            expect(mockScope.isUserAuthorized()).toBeTruthy();
         });
 
         it("Login page redirect performs correctly", function () {

@@ -20,7 +20,6 @@ import java.util.stream.IntStream;
 import static org.junit.Assert.*;
 
 public class SeleniumTests {
-
     private static WebDriver webDriver;
 
     @Before
@@ -33,15 +32,15 @@ public class SeleniumTests {
     @After
     public void afterEachTest(){
         Optional.ofNullable(webDriver).ifPresent(
-                wd -> wd.close()
+                WebDriver::close
         );
     }
 
     @Test
     public void testLoginPositiveAndLogout() throws InterruptedException {
-        testLoginPageBeforeLoggingIn();
+        checkLoginPageBeforeLoggingIn();
         performLogin(Role.ADMIN);
-        testLogout();
+        checkLogout();
     }
 
     @Test
@@ -121,9 +120,11 @@ public class SeleniumTests {
         assertTrue("Compt adding button is not enabled", addComptBtnEl.isEnabled());
 
         List<WebElement> newComptValsSelects = webDriver.findElements(By.cssSelector("div#newComptVals>select"));
-        newComptValsSelects.stream().forEach(sel -> {
-            assertEquals("Default new compt val is improper", "VERY_WEAK", (new Select(sel)).getFirstSelectedOption().getText());
-        });
+        newComptValsSelects.stream().forEach(sel ->
+                assertEquals("Default new compt val is improper", "VERY_WEAK",
+                        (new Select(sel)).getFirstSelectedOption().getText()
+                )
+        );
         newComptLabelEl.sendKeys(weirdButProperLabel);
         addComptBtnEl.click();
         TimeUnit.MILLISECONDS.sleep(500);
@@ -269,7 +270,7 @@ public class SeleniumTests {
         saveAllBtn.click();
         reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
         reloadAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(300);
+        TimeUnit.MILLISECONDS.sleep(500);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons qtity is != 1", 1, paginationBtns.size());
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
@@ -291,10 +292,11 @@ public class SeleniumTests {
         List<WebElement> reloadBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(3)"));
         assertEquals("reload pkt buttons qtity is != 1", 1, reloadBtns.size());
         reloadBtns.get(0).click();
-        TimeUnit.MILLISECONDS.sleep(50);
+        TimeUnit.MILLISECONDS.sleep(500);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons qtity is != 2", 2, paginationBtns.size());
         paginationBtns.get(1).click();
+        TimeUnit.MILLISECONDS.sleep(500);
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
         assertTrue("More or less than 1 compt in the second page", deleteComptBtns.size() == 1);
         reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
@@ -319,7 +321,7 @@ public class SeleniumTests {
         assertTrue("More or less than 10 compts in the first page", deleteComptBtns.size() == 10);
         reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
         reloadAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(50);
+        TimeUnit.MILLISECONDS.sleep(500);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons qtity is != 1", 1, paginationBtns.size());
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
@@ -340,14 +342,14 @@ public class SeleniumTests {
         reloadBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(3)"));
         assertEquals("reload pkt buttons qtity is != 1", 1, reloadBtns.size());
         reloadBtns.get(0).click();
-        TimeUnit.MILLISECONDS.sleep(50);
+        TimeUnit.MILLISECONDS.sleep(500);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons qtity is != 1", 1, paginationBtns.size());
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
         assertTrue("More or less than 10 compts in the first page", deleteComptBtns.size() == 10);
         reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
         reloadAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(100);
+        TimeUnit.MILLISECONDS.sleep(500);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons qtity is != 1", 1, paginationBtns.size());
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
@@ -461,14 +463,17 @@ public class SeleniumTests {
         saveBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(2)"));
         assertEquals("save pkt buttons qtity is != 1", 1, saveBtns.size());
         saveBtns.get(0).click();
+        TimeUnit.MILLISECONDS.sleep(500);
 
         reloadBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(3)"));
         assertEquals("reload pkt buttons qtity is != 1", 1, reloadBtns.size());
         reloadBtns.get(0).click();
+        TimeUnit.MILLISECONDS.sleep(500);
 
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons qtity is != 2", 2, paginationBtns.size());
         paginationBtns.get(1).click();
+        TimeUnit.MILLISECONDS.sleep(500);
 
         comptsSpans2 = webDriver.findElements(By.cssSelector("td>span"));
 
@@ -527,10 +532,8 @@ public class SeleniumTests {
         WebElement addPktBtn = webDriver.findElement(By.id("addPacketBtn"));
         addPktBtn.click();
         TimeUnit.MILLISECONDS.sleep(500);
-        WebElement saveBtn = webDriver.findElement(By.cssSelector("div.packet-buttons-div>a:nth-child(4)"));
-        assertNull(saveBtn.getAttribute("disabled"));
-        WebElement delBtn = webDriver.findElement(By.cssSelector("div.packet-buttons-div>a:nth-child(4)"));
-        assertNull(delBtn.getAttribute("disabled"));
+        WebElement saveBtn = webDriver.findElement(By.cssSelector("div.packet-buttons-div>a:nth-child(2)"));
+        assertEquals("true", saveBtn.getAttribute("disabled"));
     }
 
     @Test
@@ -538,7 +541,7 @@ public class SeleniumTests {
         performLogin(Role.ADMIN);
         removeAllPackets();
         WebElement addPktBtn = webDriver.findElement(By.id("addPacketBtn"));
-        final int numOfPkts = 20;
+        final int numOfPkts = 100;
         for (int i = 0; i < numOfPkts; i++) {
             addPktBtn.click();
         }
@@ -608,7 +611,7 @@ public class SeleniumTests {
 
     }
 
-    private void testLoginPageBeforeLoggingIn() throws InterruptedException {
+    private void checkLoginPageBeforeLoggingIn() throws InterruptedException {
         String title = webDriver.getTitle();
         assertEquals("Title is improper", "Packet App Administration", title);
         assertEquals("Login URL is improper", "http://localhost:8084/" + "#/login", webDriver.getCurrentUrl());
@@ -634,14 +637,15 @@ public class SeleniumTests {
         for (WebElement btn : pktBtns) {
             btn.click();
         }
+        TimeUnit.MILLISECONDS.sleep(500);
         checkComptsPanel(true, false, false, false);
     }
 
-    private void testLogout() throws InterruptedException {
+    private void checkLogout() throws InterruptedException {
         WebElement logoutBtn = webDriver.findElement(By.cssSelector("#logoutBtn"));
         logoutBtn.click();
         TimeUnit.MILLISECONDS.sleep(500);
-        testLoginPageBeforeLoggingIn();
+        checkLoginPageBeforeLoggingIn();
     }
 
     private void checkComptsPanel(boolean noPackets, boolean noPktSelected, boolean isSelectedPktEmpty, 
@@ -714,9 +718,11 @@ public class SeleniumTests {
         String result = "ng-binding btn-md";
 
         if (pktId < 10) {
-            result += " narrow-packet-selection";
+            result += " narrow-packet-caption";
+        } else if (pktId < 100) {
+            result += " wide-packet-caption";
         } else {
-            result += " wide-packet-selection";
+            result += " super-wide-packet-caption";
         }
 
         if (selected) {
