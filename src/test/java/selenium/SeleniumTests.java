@@ -1,5 +1,6 @@
 package selenium;
 
+import com.somecode.domain.Role;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,6 +13,7 @@ import org.openqa.selenium.support.ui.Select;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
@@ -30,33 +32,16 @@ public class SeleniumTests {
 
     @After
     public void afterEachTest(){
-        if (webDriver != null) {
-            webDriver.close();
-        }
+        Optional.ofNullable(webDriver).ifPresent(
+                wd -> wd.close()
+        );
     }
 
     @Test
-    public void testLoginPositive() throws InterruptedException {
-        String title = webDriver.getTitle();
-        assertEquals("Title is improper", "Packet App Administration", title);
-        assertEquals("Login URL is improper", "http://localhost:8084/" + "#/login", webDriver.getCurrentUrl());
-
-        WebElement authError = webDriver.findElement(By.id("authError"));
-        assertNotNull("Authentication error web element is not found", authError);
-        assertFalse("Authentication error web element is visible", authError.isDisplayed());
-        assertEquals("Authentication error web element has improper css class", "alert alert-danger ng-binding ng-hide", authError.getAttribute("class"));
-
-        WebElement loginInfo = webDriver.findElement(By.id("loginInfo"));
-        assertNotNull("Login info web element is not found", loginInfo);
-        assertTrue("Login info web element is not visible", loginInfo.isDisplayed());
-        assertEquals("Login info web element has improper css class", "alert alert-info", loginInfo.getAttribute("class"));
-
-        WebElement timeout = webDriver.findElement(By.id("timeout"));
-        assertNotNull("Timeout web element is not found", timeout);
-        assertFalse("Timeout web element is visible", timeout.isDisplayed());
-        assertEquals("Timeout web element has improper css class", "alert alert-warning ng-hide", timeout.getAttribute("class"));
-
-        performLogin();
+    public void testLoginPositiveAndLogout() throws InterruptedException {
+        testLoginPageBeforeLoggingIn();
+        performLogin(Role.ADMIN);
+        testLogout();
     }
 
     @Test
@@ -78,18 +63,26 @@ public class SeleniumTests {
     }
 
     @Test
-    public void testAddCompts() throws InterruptedException {
-        performLogin();
+    public void testComptsPanel() throws InterruptedException {
+        performLogin(Role.ADMIN);
+        List<WebElement> pktBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a"));
+        boolean atLeastOnePktIsLoaded = !pktBtns.isEmpty();
 
-        removeAllPackets();
-        checkRightColumn(true, true, true);
+        if (atLeastOnePktIsLoaded){
+            removeAllPackets();
+        }
+
+        WebElement saveAllBtn = webDriver.findElement(By.id("saveAllBtn"));
+        saveAllBtn.click();
+
+        checkComptsPanel(true, true, true, atLeastOnePktIsLoaded);
 
         WebElement addPktBtn = webDriver.findElement(By.id("addPacketBtn"));
         addPktBtn.click();
-        checkRightColumn(false, true, true);
+        checkComptsPanel(false, true, true, atLeastOnePktIsLoaded);
         WebElement selectBtn = webDriver.findElement(By.cssSelector("div.packet-buttons-div>a:nth-child(1)"));
         selectBtn.click();
-        checkRightColumn(false, false, true);
+        checkComptsPanel(false, false, true, true);
 
         WebElement addComptBtnEl = webDriver.findElement(By.cssSelector("#addComptBtn"));
 
@@ -131,14 +124,14 @@ public class SeleniumTests {
         newComptValsSelects.stream().forEach(sel -> {
             assertEquals("Default new compt val is improper", "VERY_WEAK", (new Select(sel)).getFirstSelectedOption().getText());
         });
-        addComptBtnEl.click();
-
         newComptLabelEl.sendKeys(weirdButProperLabel);
+        addComptBtnEl.click();
+        TimeUnit.MILLISECONDS.sleep(500);
         WebElement blacklistDiv = webDriver.findElement(By.cssSelector("#blacklist"));
         assertFalse("Compt adding button is enabled for already used label", addComptBtnEl.isEnabled());
         assertNotNull("Error 'Label is not unique' is not shown", blacklistDiv);
 
-        checkRightColumn(false, false, false);
+        checkComptsPanel(false, false, false, true);
 
         List<WebElement> radioBtns = webDriver.findElements(By.cssSelector("input[type]"));
         int radioBtnsSize = radioBtns.size();
@@ -149,10 +142,10 @@ public class SeleniumTests {
         IntStream.range(0, radioBtnsSize).boxed().forEach(i -> {
             WebElement radioBtn = radioBtns.get(i);
             if (i != 0) {
-                assertFalse("Radio button is  selected", radioBtn.isSelected());
+                assertFalse("Improper radio button is selected", radioBtn.isSelected());
                 radioBtn.click();
             } else {
-                assertTrue("Radio button is not selected", radioBtn.isSelected());
+                assertTrue("Proper radio button is not selected", radioBtn.isSelected());
             }
             for (int j = 0; j < radioBtnsSize; j++) {
                 WebElement ngHideSpan = comptsSpans.get(j * 2);
@@ -168,11 +161,11 @@ public class SeleniumTests {
                 }
             }
         });
-        List<WebElement> deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        List <WebElement> deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
         assertFalse("delete Compt btn does not exist", deleteComptBtns.isEmpty());
         assertTrue("More than one 'delete Compt' buttons", deleteComptBtns.size() == 1);
         deleteComptBtns.get(0).click();
-        checkRightColumn(false, false, true);
+        checkComptsPanel(false, false, true, true);
         List<WebElement> paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertTrue("pagination buttons do exist", paginationBtns.isEmpty());
 
@@ -182,7 +175,7 @@ public class SeleniumTests {
             assertTrue("Compt adding button is not enabled", addComptBtnEl.isEnabled());
             addComptBtnEl.click();
             paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
-            if (i < 11) {
+            if (i < numOfComptsToAdd) {
                 assertTrue("More or less than one pagination button", paginationBtns.size() == 1);
             } else {
                 assertTrue("More or less than two pagination buttons", paginationBtns.size() == 2);
@@ -196,11 +189,353 @@ public class SeleniumTests {
         deleteComptBtns.get(0).click();
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertTrue("More or less than one pagination button", paginationBtns.size() == 1);
+        List<WebElement> inputSelects = webDriver.findElements(By.cssSelector(".special"));
+        Select inputSelect1 = new Select(inputSelects.get(0));
+        String[] textForSelect = new String[3];
+        textForSelect[0] = "STRONG";
+        inputSelect1.selectByVisibleText(textForSelect[0]);
+        Select inputSelect2 = new Select(inputSelects.get(1));
+        textForSelect[1] = "MODERATE";
+        textForSelect[2] = "VERY_WEAK";
+        inputSelect2.selectByVisibleText(textForSelect[1]);
+        newComptLabelEl.sendKeys("newInputSelectVals");
+        addComptBtnEl.click();
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 2", 2, paginationBtns.size());
+
+        paginationBtns.get(1).click();
+
+        List<WebElement> comptsSpans2 = webDriver.findElements(By.cssSelector("td>span"));
+        assertEquals("Improper number of compts and spans was added after clicking the 'addComptBtn'", radioBtnsSize * 2, comptsSpans2.size());
+
+        for (int j = 0; j < radioBtnsSize; j++) {
+            WebElement ngHideSpan = comptsSpans2.get(j * 2);
+            WebElement ngShowSpan = comptsSpans2.get(j * 2 + 1);
+            if (j != 2) {
+                assertTrue("'ng-hide' span is not visible", ngHideSpan.isDisplayed());
+                assertEquals("improper span text", textForSelect[j], ngHideSpan.getText());
+                assertFalse("'ng-show' span is visible", ngShowSpan.isDisplayed());
+            } else {
+                assertNotNull("'ng-hide' span hasn't got the corresponding attr", ngHideSpan.getAttribute("ng-hide"));
+                assertFalse("'ng-hide' span is visible", ngHideSpan.isDisplayed());
+                assertNotNull("'ng-show' span hasn't got the corresponding attr", ngShowSpan.getAttribute("ng-show"));
+                assertTrue("'ng-show' span is not visible", ngShowSpan.isDisplayed());
+                Select spanSelect = new Select(ngShowSpan.findElement(By.cssSelector(".standard")));
+                assertEquals("Default new compt val is improper", textForSelect[j], spanSelect.getFirstSelectedOption().getText());
+            }
+        }
+
+        saveAllBtn.click();
+
+        WebElement reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
+        reloadAllBtn.click();
+        TimeUnit.MILLISECONDS.sleep(500);
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than ten compts on the first(full) page", deleteComptBtns.size() == 10);
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 2", 2, paginationBtns.size());
+        paginationBtns.get(1).click();
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than one compt on the second page", deleteComptBtns.size() == 1);
+
+        newComptLabelEl = webDriver.findElement(By.cssSelector("#newComptLabel"));
+        newComptLabelEl.sendKeys("thisNewComptWontBeSaved");
+        addComptBtnEl = webDriver.findElement(By.cssSelector("#addComptBtn"));
+        addComptBtnEl.click();
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than 2 compts on the second page", deleteComptBtns.size() == 2);
+
+        reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
+        reloadAllBtn.click();
+        TimeUnit.MILLISECONDS.sleep(300);
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 2", 2, paginationBtns.size());
+        paginationBtns.get(1).click();
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than one compt on the second page", deleteComptBtns.size() == 1);
+
+        deleteComptBtns.get(0).click();
+        reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
+        reloadAllBtn.click();
+        TimeUnit.MILLISECONDS.sleep(300);
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 2", 2, paginationBtns.size());
+        paginationBtns.get(1).click();
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than one compt on the second page", deleteComptBtns.size() == 1);
+
+        deleteComptBtns.get(0).click();
+        saveAllBtn = webDriver.findElement(By.id("saveAllBtn"));
+        saveAllBtn.click();
+        reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
+        reloadAllBtn.click();
+        TimeUnit.MILLISECONDS.sleep(300);
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 1", 1, paginationBtns.size());
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than ten compt on the first page", deleteComptBtns.size() == 10);
+
+        newComptLabelEl = webDriver.findElement(By.cssSelector("#newComptLabel"));
+        newComptLabelEl.sendKeys("thisNewComptWillBeSaved");
+        addComptBtnEl = webDriver.findElement(By.cssSelector("#addComptBtn"));
+        addComptBtnEl.click();
+        TimeUnit.MILLISECONDS.sleep(50);
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 2", 2, paginationBtns.size());
+        paginationBtns.get(1).click();
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than 1 compt in the second page", deleteComptBtns.size() == 1);
+        List<WebElement> saveBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(2)"));
+        assertEquals("save pkt buttons qtity is != 1", 1, saveBtns.size());
+        saveBtns.get(0).click();
+        List<WebElement> reloadBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(3)"));
+        assertEquals("reload pkt buttons qtity is != 1", 1, reloadBtns.size());
+        reloadBtns.get(0).click();
+        TimeUnit.MILLISECONDS.sleep(50);
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 2", 2, paginationBtns.size());
+        paginationBtns.get(1).click();
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than 1 compt in the second page", deleteComptBtns.size() == 1);
+        reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
+        reloadAllBtn.click();
+        TimeUnit.MILLISECONDS.sleep(500);
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 2", 2, paginationBtns.size());
+        paginationBtns.get(1).click();
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than 1 compt in the second page", deleteComptBtns.size() == 1);
+        deleteComptBtns.get(0).click();
+        saveBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(2)"));
+        assertEquals("save pkt buttons qtity is != 1", 1, saveBtns.size());
+        saveBtns.get(0).click();
+        reloadBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(3)"));
+        assertEquals("reload pkt buttons qtity is != 1", 1, reloadBtns.size());
+        reloadBtns.get(0).click();
+        TimeUnit.MILLISECONDS.sleep(50);
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 1", 1, paginationBtns.size());
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than 10 compts in the first page", deleteComptBtns.size() == 10);
+        reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
+        reloadAllBtn.click();
+        TimeUnit.MILLISECONDS.sleep(50);
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 1", 1, paginationBtns.size());
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than 10 compts in the first page", deleteComptBtns.size() == 10);
+
+        newComptLabelEl = webDriver.findElement(By.cssSelector("#newComptLabel"));
+        newComptLabelEl.sendKeys("thisNewComptWontBeSavedAgain");
+        addComptBtnEl = webDriver.findElement(By.cssSelector("#addComptBtn"));
+        addComptBtnEl.click();
+        TimeUnit.MILLISECONDS.sleep(50);
+
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 2", 2, paginationBtns.size());
+        paginationBtns.get(1).click();
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than 1 compt in the second page", deleteComptBtns.size() == 1);
+
+        reloadBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(3)"));
+        assertEquals("reload pkt buttons qtity is != 1", 1, reloadBtns.size());
+        reloadBtns.get(0).click();
+        TimeUnit.MILLISECONDS.sleep(50);
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 1", 1, paginationBtns.size());
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than 10 compts in the first page", deleteComptBtns.size() == 10);
+        reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
+        reloadAllBtn.click();
+        TimeUnit.MILLISECONDS.sleep(100);
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 1", 1, paginationBtns.size());
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than 10 compts in the first page", deleteComptBtns.size() == 10);
+
+        deleteComptBtns.get(9).click();
+        TimeUnit.MILLISECONDS.sleep(500);
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than 9 compts in the first page", deleteComptBtns.size() == 9);
+
+        reloadBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(3)"));
+        assertEquals("reload pkt buttons qtity is != 1", 1, reloadBtns.size());
+        reloadBtns.get(0).click();
+        TimeUnit.MILLISECONDS.sleep(500);
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 1", 1, paginationBtns.size());
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than 10 compts in the first page", deleteComptBtns.size() == 10);
+        reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
+        reloadAllBtn.click();
+        TimeUnit.MILLISECONDS.sleep(500);
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 1", 1, paginationBtns.size());
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than 10 compts in the first page", deleteComptBtns.size() == 10);
+
+        newComptLabelEl = webDriver.findElement(By.cssSelector("#newComptLabel"));
+        newComptLabelEl.sendKeys("thisNewComptWontBeSavedAgain");
+        addComptBtnEl = webDriver.findElement(By.cssSelector("#addComptBtn"));
+        addComptBtnEl.click();
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 2", 2, paginationBtns.size());
+        paginationBtns.get(1).click();
+        deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
+        assertTrue("More or less than 1 compt in the second page", deleteComptBtns.size() == 1);
+
+        inputSelects = webDriver.findElements(By.cssSelector(".special"));
+
+        inputSelect1 = new Select(inputSelects.get(0));
+        textForSelect[0] = inputSelect1.getFirstSelectedOption().getText();
+        inputSelect2 = new Select(inputSelects.get(1));
+        textForSelect[1] = inputSelect2.getFirstSelectedOption().getText();
+        Select inputSelect3 = new Select(inputSelects.get(2));
+        textForSelect[2] = inputSelect3.getFirstSelectedOption().getText();
+        assertEquals("The new compt select #1 has changed", "VERY_WEAK", textForSelect[0]);
+        assertEquals("The new compt select #2 has changed", "VERY_WEAK", textForSelect[1]);
+        assertEquals("The new compt select #3 has changed", "VERY_WEAK", textForSelect[2]);
+
+        saveBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(2)"));
+        assertEquals("save pkt buttons qtity is != 1", 1, saveBtns.size());
+        saveBtns.get(0).click();
+
+        comptsSpans2 = webDriver.findElements(By.cssSelector("td>span"));
+        WebElement ngShowSpan = comptsSpans2.get(5);
+        Select spanSelect = new Select(ngShowSpan.findElement(By.cssSelector(".standard")));
+        String newSelectVal = "VERY_STRONG";
+        spanSelect.selectByVisibleText(newSelectVal);
+
+        reloadBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(3)"));
+        assertEquals("reload pkt buttons qtity is != 1", 1, reloadBtns.size());
+        reloadBtns.get(0).click();
+
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 2", 2, paginationBtns.size());
+        paginationBtns.get(1).click();
+
+        comptsSpans2 = webDriver.findElements(By.cssSelector("td>span"));
+
+        for (int j = 0; j < radioBtnsSize; j++) {
+            WebElement ngHideSpan = comptsSpans2.get(j * 2);
+            ngShowSpan = comptsSpans2.get(j * 2 + 1);
+            if (j != 2) {
+                assertEquals("improper span text", textForSelect[j], ngHideSpan.getText());
+            } else {
+                spanSelect = new Select(ngShowSpan.findElement(By.cssSelector(".standard")));
+                assertEquals("Default new compt val is improper", textForSelect[j], spanSelect.getFirstSelectedOption().getText());
+            }
+        }
+
+        comptsSpans2 = webDriver.findElements(By.cssSelector("td>span"));
+        ngShowSpan = comptsSpans2.get(5);
+        spanSelect = new Select(ngShowSpan.findElement(By.cssSelector(".standard")));
+        spanSelect.selectByVisibleText(newSelectVal);
+
+        reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
+        reloadAllBtn.click();
+        TimeUnit.MILLISECONDS.sleep(500);
+
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 2", 2, paginationBtns.size());
+        paginationBtns.get(1).click();
+        TimeUnit.MILLISECONDS.sleep(500);
+
+        comptsSpans2 = webDriver.findElements(By.cssSelector("td>span"));
+        for (int j = 0; j < radioBtnsSize; j++) {
+            if (j != 2) {
+                WebElement ngHideSpan = comptsSpans2.get(j * 2);
+                assertEquals("improper span text", textForSelect[j], ngHideSpan.getText());
+            } else {
+                ngShowSpan = comptsSpans2.get(j * 2 + 1);
+                spanSelect = new Select(ngShowSpan.findElement(By.cssSelector(".standard")));
+                assertEquals("Default new compt val is improper", textForSelect[j], spanSelect.getFirstSelectedOption().getText());
+            }
+        }
+
+        comptsSpans2 = webDriver.findElements(By.cssSelector("td>span"));
+        ngShowSpan = comptsSpans2.get(5);
+        spanSelect = new Select(ngShowSpan.findElement(By.cssSelector(".standard")));
+        spanSelect.selectByVisibleText(newSelectVal);
+
+        saveBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(2)"));
+        assertEquals("save pkt buttons qtity is != 1", 1, saveBtns.size());
+        saveBtns.get(0).click();
+
+        reloadBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(3)"));
+        assertEquals("reload pkt buttons qtity is != 1", 1, reloadBtns.size());
+        reloadBtns.get(0).click();
+
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 2", 2, paginationBtns.size());
+        paginationBtns.get(1).click();
+
+        comptsSpans2 = webDriver.findElements(By.cssSelector("td>span"));
+
+        for (int j = 0; j < radioBtnsSize - 1; j++) {
+            WebElement ngHideSpan = comptsSpans2.get(j * 2);
+            assertEquals("improper span text", textForSelect[j], ngHideSpan.getText());
+        }
+
+        ngShowSpan = comptsSpans2.get(5);
+        spanSelect = new Select(ngShowSpan.findElement(By.cssSelector(".standard")));
+
+        assertEquals("Default new compt val is improper", newSelectVal, spanSelect.getFirstSelectedOption().getText());
+
+        comptsSpans2 = webDriver.findElements(By.cssSelector("td>span"));
+        ngShowSpan = comptsSpans2.get(5);
+        spanSelect = new Select(ngShowSpan.findElement(By.cssSelector(".standard")));
+        String newSelectVal2 = "ADEQUATE";
+        spanSelect.selectByVisibleText(newSelectVal2);
+
+        saveAllBtn = webDriver.findElement(By.id("saveAllBtn"));
+        saveAllBtn.click();
+        TimeUnit.MILLISECONDS.sleep(500);
+        reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
+        reloadAllBtn.click();
+        TimeUnit.MILLISECONDS.sleep(500);
+
+        paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
+        assertEquals("pagination buttons qtity is != 2", 2, paginationBtns.size());
+        paginationBtns.get(1).click();
+
+        comptsSpans2 = webDriver.findElements(By.cssSelector("td>span"));
+        for (int j = 0; j < radioBtnsSize - 1; j++) {
+            WebElement ngHideSpan = comptsSpans2.get(j * 2);
+            assertEquals("improper span text", textForSelect[j], ngHideSpan.getText());
+        }
+        ngShowSpan = comptsSpans2.get(5);
+        spanSelect = new Select(ngShowSpan.findElement(By.cssSelector(".standard")));
+        assertEquals("Default new compt val is improper", newSelectVal2, spanSelect.getFirstSelectedOption().getText());
+    }
+
+    @Test
+    public void testUsersLimitedRights() throws InterruptedException {
+        performLogin(Role.USER);
+        List<WebElement> pktBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a"));
+        boolean atLeastOnePktIsLoaded = !pktBtns.isEmpty();
+
+        if (atLeastOnePktIsLoaded){
+            removeAllPackets();
+        }
+
+        WebElement saveAllBtn = webDriver.findElement(By.id("saveAllBtn"));
+        assertEquals("true", saveAllBtn.getAttribute("disabled"));
+
+        checkComptsPanel(true, true, true, atLeastOnePktIsLoaded);
+
+        WebElement addPktBtn = webDriver.findElement(By.id("addPacketBtn"));
+        addPktBtn.click();
+        TimeUnit.MILLISECONDS.sleep(500);
+        WebElement saveBtn = webDriver.findElement(By.cssSelector("div.packet-buttons-div>a:nth-child(4)"));
+        assertNull(saveBtn.getAttribute("disabled"));
+        WebElement delBtn = webDriver.findElement(By.cssSelector("div.packet-buttons-div>a:nth-child(4)"));
+        assertNull(delBtn.getAttribute("disabled"));
     }
 
     @Test
     public void testPacketsPanel() throws InterruptedException {
-        performLogin();
+        performLogin(Role.ADMIN);
         removeAllPackets();
         WebElement addPktBtn = webDriver.findElement(By.id("addPacketBtn"));
         final int numOfPkts = 20;
@@ -235,9 +570,11 @@ public class SeleniumTests {
         int pktBtnsSize = pktBtns.size();
         pktBtns.get(0).click();
         assertEquals("Number of new packet buttons is improper", pktBtnsSize, numOfPkts * 4);
-        IntStream.range(0, pktBtnsSize).boxed().forEach(i -> {
+        for (int i = 0; i < pktBtnsSize; i++) {
             int num = i % 4;
             WebElement btn = pktBtns.get(i);
+            assertTrue(btn.isDisplayed());
+            assertFalse(btn.isSelected());
             switch (num) {
                 case 0:
                     String lbl = btn.getText();
@@ -248,12 +585,48 @@ public class SeleniumTests {
                         assertEquals(pktBtnCssClassesMap.get(num), getPacketCssClass(i == 0, pktId), btn.getAttribute("class"));
                     }
                     break;
-                default:
+                case 2:
+                    assertEquals("true",btn.getAttribute("disabled"));
+                    pktBtns.get(i-1).click();
+                    TimeUnit.MILLISECONDS.sleep(50);
+                    assertNull(btn.getAttribute("disabled"));
+                    assertFalse(btn.isSelected());
+                    assertEquals(pktBtnsImproperLblsMessagesMap.get(num), pktBtnsMap.get(num), btn.getText());
+                    assertEquals(pktBtnsImproperCssClassesMessages.get(num), pktBtnCssClassesMap.get(num), btn.getAttribute("class"));
+                    break;
+                case 1: case 3:
+                    assertNull(btn.getAttribute("disabled"));
+                    assertFalse(btn.isSelected());
                     assertEquals(pktBtnsImproperLblsMessagesMap.get(num), pktBtnsMap.get(num), btn.getText());
                     assertEquals(pktBtnsImproperCssClassesMessages.get(num), pktBtnCssClassesMap.get(num), btn.getAttribute("class"));
                     break;
             }
-        });
+        }
+        removeAllPackets();
+        WebElement saveAllBtn = webDriver.findElement(By.id("saveAllBtn"));
+        saveAllBtn.click();
+
+    }
+
+    private void testLoginPageBeforeLoggingIn() throws InterruptedException {
+        String title = webDriver.getTitle();
+        assertEquals("Title is improper", "Packet App Administration", title);
+        assertEquals("Login URL is improper", "http://localhost:8084/" + "#/login", webDriver.getCurrentUrl());
+
+        WebElement authError = webDriver.findElement(By.id("authError"));
+        assertNotNull("Authentication error web element is not found", authError);
+        assertFalse("Authentication error web element is visible", authError.isDisplayed());
+        assertEquals("Authentication error web element has improper css class", "alert alert-danger ng-binding ng-hide", authError.getAttribute("class"));
+
+        WebElement loginInfo = webDriver.findElement(By.id("loginInfo"));
+        assertNotNull("Login info web element is not found", loginInfo);
+        assertTrue("Login info web element is not visible", loginInfo.isDisplayed());
+        assertEquals("Login info web element has improper css class", "alert alert-info", loginInfo.getAttribute("class"));
+
+        WebElement timeout = webDriver.findElement(By.id("timeout"));
+        assertNotNull("Timeout web element is not found", timeout);
+        assertFalse("Timeout web element is visible", timeout.isDisplayed());
+        assertEquals("Timeout web element has improper css class", "alert alert-warning ng-hide", timeout.getAttribute("class"));
     }
 
     private void removeAllPackets() throws InterruptedException {
@@ -261,10 +634,18 @@ public class SeleniumTests {
         for (WebElement btn : pktBtns) {
             btn.click();
         }
-        checkRightColumn(true, false, false);
+        checkComptsPanel(true, false, false, false);
     }
 
-    private void checkRightColumn(boolean noPackets, boolean noPktSelected, boolean isSelectedPktEmpty) {
+    private void testLogout() throws InterruptedException {
+        WebElement logoutBtn = webDriver.findElement(By.cssSelector("#logoutBtn"));
+        logoutBtn.click();
+        TimeUnit.MILLISECONDS.sleep(500);
+        testLoginPageBeforeLoggingIn();
+    }
+
+    private void checkComptsPanel(boolean noPackets, boolean noPktSelected, boolean isSelectedPktEmpty, 
+                                  boolean isPktAlreadySelectedAtLeastOnce) {
         WebElement noPacketsEl = webDriver.findElement(By.cssSelector("#noPackets"));
         assertNotNull("'Not loaded packets info' div is not existing", noPacketsEl);
         if (noPackets) {
@@ -283,7 +664,7 @@ public class SeleniumTests {
 
         WebElement noPktSelectedDiv = webDriver.findElement(By.cssSelector("#noPktSelected"));
         assertNotNull("'No packet selected' div is not existing", noPktSelectedDiv);
-        if (!noPackets && noPktSelected) {
+        if (!noPackets && noPktSelected && isPktAlreadySelectedAtLeastOnce) {
             assertTrue("'No packet selected' div is not visible", noPktSelectedDiv.isDisplayed());
         } else {
             assertFalse("'No packet selected' div is visible", noPktSelectedDiv.isDisplayed());
@@ -305,14 +686,14 @@ public class SeleniumTests {
         }
     }
 
-    private void performLogin() throws InterruptedException {
+    private void performLogin(Role role) throws InterruptedException {
         WebElement usernameInput = webDriver.findElement(By.cssSelector("#username"));
         assertNotNull("Username input is not found", usernameInput);
-        usernameInput.sendKeys("ADMIN");
+        usernameInput.sendKeys(role == Role.ADMIN ? "ADMIN" : "USER");
 
         WebElement passwdInput = webDriver.findElement(By.cssSelector("#password"));
         assertNotNull("Password input is not found", passwdInput);
-        passwdInput.sendKeys("ADMIN");
+        passwdInput.sendKeys(role == Role.ADMIN ? "ADMIN" : "USER");
 
         WebElement loginBtn = webDriver.findElement(By.cssSelector("#loginBtn"));
         assertNotNull("Login button is not found", loginBtn);
@@ -323,6 +704,10 @@ public class SeleniumTests {
 
         String title = webDriver.getTitle();//check title
         assertEquals("Title is improper", "Packet App Administration", title);
+
+        WebElement greetingsDiv = webDriver.findElement(By.cssSelector("#greetings"));
+        String adminGreetings = role == Role.ADMIN ? "Hello, ADMIN" : "Hello, USER";
+        assertEquals(adminGreetings, greetingsDiv.getText());
     }
 
     private String getPacketCssClass(boolean selected, int pktId) {

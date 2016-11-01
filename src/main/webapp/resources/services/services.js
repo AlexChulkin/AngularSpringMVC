@@ -28,7 +28,7 @@ angular.module("packetAdminApp")
     var selectedPacketId;
     var selectedPacket;
     var selectedPage;
-        var loadedNoPackets;
+    var loadedNoPackets;
     var loadedNoPacket;
     var maximalComptId;
     var packetIsAlreadySelectedAtLeastOnce;
@@ -199,12 +199,12 @@ angular.module("packetAdminApp")
         }
     };
 
-        var setLoadedNoPackets = function (value) {
-            loadedNoPackets = value;
+    var setLoadedNoPackets = function (value) {
+        loadedNoPackets = value;
     };
 
-        var getLoadedNoPackets = function () {
-            return loadedNoPackets;
+    var getLoadedNoPackets = function () {
+        return loadedNoPackets;
     };
 
     var setMaximalComptId = function (value) {

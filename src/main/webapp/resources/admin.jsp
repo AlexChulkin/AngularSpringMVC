@@ -30,10 +30,10 @@
 <div class="navbar navbar-inverse">
     <span class="navbar-brand">THE PACKETS AND THEIR COMPONENTS</span>
     <div class="navbar-right" ng-show="isUserAuthorized()">
-        <div class="navbar-text" ng-cloak>
+        <div id="greetings" class="navbar-text" ng-cloak>
             Hello, {{data.username}}
         </div>
-        <button ng-click="logout()" class="btn btn-default navbar-btn">Logout</button>
+        <button id="logoutBtn" ng-click="logout()" class="btn btn-default navbar-btn">Logout</button>
     </div>
 </div>
 <ng-view/>
