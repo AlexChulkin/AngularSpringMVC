@@ -55,7 +55,10 @@ public class SeleniumTests {
         loginBtn.click();
         TimeUnit.MILLISECONDS.sleep(500);
 
-        assertEquals("Unsuccessful authentication URL is improper", "http://localhost:8084/" + "#/login", webDriver.getCurrentUrl());
+        assertEquals("Unsuccessful authentication URL is improper",
+                "http://localhost:8084/" + "#/login",
+                webDriver.getCurrentUrl()
+        );
         WebElement authError = webDriver.findElement(By.cssSelector("#authError"));
         assertNotNull("Authentication error web element is not found", authError);
         assertTrue("Authentication error web element is not visible", authError.isDisplayed());
@@ -138,7 +141,10 @@ public class SeleniumTests {
         int radioBtnsSize = radioBtns.size();
         assertEquals("Radio buttons quantity is improper", 3, radioBtnsSize);
         List<WebElement> comptsSpans = webDriver.findElements(By.cssSelector("td>span"));
-        assertEquals("Improper number of compts and spans was added after clicking the 'addComptBtn'", radioBtnsSize * 2, comptsSpans.size());
+        assertEquals("Improper number of compts and spans was added after clicking the 'addComptBtn'",
+                radioBtnsSize * 2,
+                comptsSpans.size()
+        );
 
         IntStream.range(0, radioBtnsSize).boxed().forEach(i -> {
             WebElement radioBtn = radioBtns.get(i);
@@ -155,9 +161,13 @@ public class SeleniumTests {
                     assertTrue("'ng-hide' span is not visible", ngHideSpan.isDisplayed());
                     assertFalse("'ng-show' span is visible", ngShowSpan.isDisplayed());
                 } else {
-                    assertNotNull("'ng-hide' span hasn't got the corresponding attr", ngHideSpan.getAttribute("ng-hide"));
+                    assertNotNull("'ng-hide' span hasn't got the corresponding attr",
+                            ngHideSpan.getAttribute("ng-hide")
+                    );
                     assertFalse("'ng-hide' span is visible", ngHideSpan.isDisplayed());
-                    assertNotNull("'ng-show' span hasn't got the corresponding attr", ngShowSpan.getAttribute("ng-show"));
+                    assertNotNull("'ng-show' span hasn't got the corresponding attr",
+                            ngShowSpan.getAttribute("ng-show")
+                    );
                     assertTrue("'ng-show' span is not visible", ngShowSpan.isDisplayed());
                 }
             }
@@ -207,7 +217,10 @@ public class SeleniumTests {
         paginationBtns.get(1).click();
 
         List<WebElement> comptsSpans2 = webDriver.findElements(By.cssSelector("td>span"));
-        assertEquals("Improper number of compts and spans was added after clicking the 'addComptBtn'", radioBtnsSize * 2, comptsSpans2.size());
+        assertEquals("Improper number of compts and spans was added after clicking the 'addComptBtn'",
+                radioBtnsSize * 2,
+                comptsSpans2.size()
+        );
 
         for (int j = 0; j < radioBtnsSize; j++) {
             WebElement ngHideSpan = comptsSpans2.get(j * 2);
@@ -222,7 +235,10 @@ public class SeleniumTests {
                 assertNotNull("'ng-show' span hasn't got the corresponding attr", ngShowSpan.getAttribute("ng-show"));
                 assertTrue("'ng-show' span is not visible", ngShowSpan.isDisplayed());
                 Select spanSelect = new Select(ngShowSpan.findElement(By.cssSelector(".standard")));
-                assertEquals("Default new compt val is improper", textForSelect[j], spanSelect.getFirstSelectedOption().getText());
+                assertEquals("Default new compt val is improper",
+                        textForSelect[j],
+                        spanSelect.getFirstSelectedOption().getText()
+                );
             }
         }
 
@@ -425,7 +441,10 @@ public class SeleniumTests {
                 assertEquals("improper span text", textForSelect[j], ngHideSpan.getText());
             } else {
                 spanSelect = new Select(ngShowSpan.findElement(By.cssSelector(".standard")));
-                assertEquals("Default new compt val is improper", textForSelect[j], spanSelect.getFirstSelectedOption().getText());
+                assertEquals("Default new compt val is improper",
+                        textForSelect[j],
+                        spanSelect.getFirstSelectedOption().getText()
+                );
             }
         }
 
@@ -451,7 +470,10 @@ public class SeleniumTests {
             } else {
                 ngShowSpan = comptsSpans2.get(j * 2 + 1);
                 spanSelect = new Select(ngShowSpan.findElement(By.cssSelector(".standard")));
-                assertEquals("Default new compt val is improper", textForSelect[j], spanSelect.getFirstSelectedOption().getText());
+                assertEquals("Default new compt val is improper",
+                        textForSelect[j],
+                        spanSelect.getFirstSelectedOption().getText()
+                );
             }
         }
 
@@ -582,10 +604,15 @@ public class SeleniumTests {
                 case 0:
                     String lbl = btn.getText();
                     String prefix = pktBtnsMap.get(num);
-                    assertTrue(pktBtnsImproperLblsMessagesMap.get(num), lbl.startsWith(prefix) && prefix.length() < lbl.length());
+                    assertTrue(pktBtnsImproperLblsMessagesMap.get(num),
+                            lbl.startsWith(prefix) && prefix.length() < lbl.length()
+                    );
                     int pktId = getPktId(lbl);
                     if (pktId != -1) {
-                        assertEquals(pktBtnCssClassesMap.get(num), getPacketCssClass(i == 0, pktId), btn.getAttribute("class"));
+                        assertEquals(pktBtnCssClassesMap.get(num),
+                                getPacketCssClass(i == 0, pktId),
+                                btn.getAttribute("class")
+                        );
                     }
                     break;
                 case 2:
@@ -595,13 +622,19 @@ public class SeleniumTests {
                     assertNull(btn.getAttribute("disabled"));
                     assertFalse(btn.isSelected());
                     assertEquals(pktBtnsImproperLblsMessagesMap.get(num), pktBtnsMap.get(num), btn.getText());
-                    assertEquals(pktBtnsImproperCssClassesMessages.get(num), pktBtnCssClassesMap.get(num), btn.getAttribute("class"));
+                    assertEquals(pktBtnsImproperCssClassesMessages.get(num),
+                            pktBtnCssClassesMap.get(num),
+                            btn.getAttribute("class")
+                    );
                     break;
                 case 1: case 3:
                     assertNull(btn.getAttribute("disabled"));
                     assertFalse(btn.isSelected());
                     assertEquals(pktBtnsImproperLblsMessagesMap.get(num), pktBtnsMap.get(num), btn.getText());
-                    assertEquals(pktBtnsImproperCssClassesMessages.get(num), pktBtnCssClassesMap.get(num), btn.getAttribute("class"));
+                    assertEquals(pktBtnsImproperCssClassesMessages.get(num),
+                            pktBtnCssClassesMap.get(num),
+                            btn.getAttribute("class")
+                    );
                     break;
             }
         }
@@ -619,17 +652,26 @@ public class SeleniumTests {
         WebElement authError = webDriver.findElement(By.id("authError"));
         assertNotNull("Authentication error web element is not found", authError);
         assertFalse("Authentication error web element is visible", authError.isDisplayed());
-        assertEquals("Authentication error web element has improper css class", "alert alert-danger ng-binding ng-hide", authError.getAttribute("class"));
+        assertEquals("Authentication error web element has improper css class",
+                "alert alert-danger ng-binding ng-hide",
+                authError.getAttribute("class")
+        );
 
         WebElement loginInfo = webDriver.findElement(By.id("loginInfo"));
         assertNotNull("Login info web element is not found", loginInfo);
         assertTrue("Login info web element is not visible", loginInfo.isDisplayed());
-        assertEquals("Login info web element has improper css class", "alert alert-info", loginInfo.getAttribute("class"));
+        assertEquals("Login info web element has improper css class",
+                "alert alert-info",
+                loginInfo.getAttribute("class")
+        );
 
         WebElement timeout = webDriver.findElement(By.id("timeout"));
         assertNotNull("Timeout web element is not found", timeout);
         assertFalse("Timeout web element is visible", timeout.isDisplayed());
-        assertEquals("Timeout web element has improper css class", "alert alert-warning ng-hide", timeout.getAttribute("class"));
+        assertEquals("Timeout web element has improper css class",
+                "alert alert-warning ng-hide",
+                timeout.getAttribute("class")
+        );
     }
 
     private void removeAllPackets() throws InterruptedException {
@@ -704,7 +746,10 @@ public class SeleniumTests {
         loginBtn.click();
         TimeUnit.MILLISECONDS.sleep(500);
 
-        assertEquals("Successful authentication URL is improper", "http://localhost:8084/" + "#/main", webDriver.getCurrentUrl());
+        assertEquals("Successful authentication URL is improper",
+                "http://localhost:8084/" + "#/main",
+                webDriver.getCurrentUrl()
+        );
 
         String title = webDriver.getTitle();//check title
         assertEquals("Title is improper", "Packet App Administration", title);
