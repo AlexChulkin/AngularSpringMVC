@@ -1,3 +1,8 @@
+
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.config;
 
 import com.somecode.utils.Utils;
@@ -13,6 +18,9 @@ import org.springframework.web.servlet.view.UrlBasedViewResolver;
 
 import java.util.Locale;
 
+/**
+ * The main config class.
+ */
 @Profile("dev")
 @Configuration
 @EnableWebMvc
@@ -20,15 +28,32 @@ import java.util.Locale;
 @Import(PersistenceJPAConfig.class)
 @EnableAspectJAutoProxy
 public class Config extends WebMvcConfigurerAdapter {
+    /**
+     * The resources handler mapping value
+     */
     private final static String RESOURCE_HANDLER = "/resources/**";
+    /**
+     * The resources locations mapping value
+     */
     private final static String RESOURCE_LOCATIONS = "/resources/";
+    /** The messages source filename value */
     private final static String MESSAGES_BASENAME = "classpath:messages";
 
+    /**
+     * Adds the resources handler to the config.
+     *
+     * @param registry the {@code ResourceHandlerRegistry} instance.
+     */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler(RESOURCE_HANDLER).addResourceLocations(RESOURCE_LOCATIONS);
     }
 
+    /**
+     * Returns the message source bean.
+     *
+     * @return the message source bean with the messages source set.
+     */
     @Bean
     public ReloadableResourceBundleMessageSource messageSource() {
         ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
@@ -36,6 +61,11 @@ public class Config extends WebMvcConfigurerAdapter {
         return source;
     }
 
+    /**
+     * Returns the session locale resolver bean with the english default locale set.
+     *
+     * @return the session locale resolver bean.
+     */
     @Bean
     public SessionLocaleResolver sessionLocaleResolver() {
         SessionLocaleResolver resolver = new SessionLocaleResolver();
@@ -43,6 +73,11 @@ public class Config extends WebMvcConfigurerAdapter {
         return resolver;
     }
 
+    /**
+     * Returns the view resolver bean with set JSTL view.
+     *
+     * @return the view resolver class instance.
+     */
     @Bean
     public ViewResolver viewResolver(){
         UrlBasedViewResolver urlBasedViewResolver = new UrlBasedViewResolver();
@@ -50,8 +85,13 @@ public class Config extends WebMvcConfigurerAdapter {
         return urlBasedViewResolver;
     }
 
+    /**
+     * Returns the utils bean.
+     *
+     * @return the utils class instance.
+     */
     @Bean
-    public Utils helper() {
+    public Utils utils() {
         return new Utils();
     }
 }

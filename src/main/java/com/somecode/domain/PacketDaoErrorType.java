@@ -1,9 +1,13 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 /**
  * Created by alexc_000 on 2016-10-23.
  */
-public enum PacketDaoError {
+public enum PacketDaoErrorType {
     NONE,
     NOT_EXISTING_THE_ONLY_PACKET_ID,
     NOT_EXISTING_ONE_OF_PACKET_IDS,

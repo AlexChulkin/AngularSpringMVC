@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.dao;
 
 import com.google.common.collect.Lists;
@@ -531,7 +535,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         packetAppDao.addOrUpdatePackets(packetParamsList, OperationType.ADD);
         em.flush();
 
-        testAddOrUpdatePackets(PacketDaoError.NONE, OperationType.ADD, expectedNewOrUpdatedPacketIdBeforeBeingPersisted,
+        testAddOrUpdatePackets(PacketDaoErrorType.NONE, OperationType.ADD, expectedNewOrUpdatedPacketIdBeforeBeingPersisted,
                 packetStateId, comptLabelPrefix, comboDataLabelPrefix, numOfComptsToAddInsideAddedPacket,
                 numOfStates, numOfComboDatas, expectedFirstNewComptId,
                 expectedPersistedNewOrUpdatedPacketId, secondPacketId);
@@ -565,7 +569,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         packetAppDao.addOrUpdatePackets(packetParamsList, OperationType.ADD);
         em.flush();
 
-        testAddOrUpdatePackets(PacketDaoError.NONE, OperationType.ADD, expectedNewOrUpdatedPacketIdBeforeBeingPersisted,
+        testAddOrUpdatePackets(PacketDaoErrorType.NONE, OperationType.ADD, expectedNewOrUpdatedPacketIdBeforeBeingPersisted,
                 packetStateId, comptLabelPrefix, comboDataLabelPrefix, numOfComptsToAddInsideAddedPacket,
                 numOfStates, numOfComboDatas, expectedFirstNewComptId, unusedNewPacketId,
                 secondPacketId);
@@ -593,7 +597,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         packetAppDao.addOrUpdatePackets(packetParamsList, OperationType.ADD);
         em.flush();
 
-        testAddOrUpdatePackets(PacketDaoError.NULL_NEW_STATE_ID, OperationType.ADD, null, newStateId, comptLabelPrefix,
+        testAddOrUpdatePackets(PacketDaoErrorType.NULL_NEW_STATE_ID, OperationType.ADD, null, newStateId, comptLabelPrefix,
                 comboDataLabelPrefix, numOfCompts, numOfStates, numOfComboDatas, comptId,
                 expectedNewPacketId, secondPacketId);
     }
@@ -620,7 +624,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         packetAppDao.addOrUpdatePackets(packetParamsList, OperationType.ADD);
         em.flush();
 
-        testAddOrUpdatePackets(PacketDaoError.NOT_EXISTING_STATE_ID, OperationType.ADD,
+        testAddOrUpdatePackets(PacketDaoErrorType.NOT_EXISTING_STATE_ID, OperationType.ADD,
                 expectedNewPacketIdBeforeBeingPersisted, newStateId, comptLabelPrefix,
                 comboDataLabelPrefix, numOfCompts, numOfStates, numOfComboDatas, comptId,
                 expectedPersistedNewPacketId, secondPacketId);
@@ -694,7 +698,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         packetAppDao.addOrUpdatePackets(packetParamsList, OperationType.UPDATE);
         em.flush();
 
-        testAddOrUpdatePackets(PacketDaoError.NONE, OperationType.UPDATE,
+        testAddOrUpdatePackets(PacketDaoErrorType.NONE, OperationType.UPDATE,
                 expectedNewOrUpdatedPacketIdBeforeBeingPersisted, newStateId, comptLabelPrefix,
                 comboDataLabelPrefix, numOfComptsToAddInsideAddedPacket, numOfStates, numOfComboDatas,
                 null, expectedPersistedUpdatedPacketId, secondPacketId);
@@ -720,7 +724,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         packetAppDao.addOrUpdatePackets(packetParamsList, OperationType.UPDATE);
         em.flush();
 
-        testAddOrUpdatePackets(PacketDaoError.NOT_EXISTING_THE_ONLY_PACKET_ID, OperationType.UPDATE, packetId,
+        testAddOrUpdatePackets(PacketDaoErrorType.NOT_EXISTING_THE_ONLY_PACKET_ID, OperationType.UPDATE, packetId,
                 newStateId, comptLabelPrefix, comboDataLabelPrefix, numOfCompts, numOfStates,
                 numOfComboDatas, comptId, packetId, secondPacketId);
     }
@@ -745,7 +749,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         packetAppDao.addOrUpdatePackets(packetParamsList, OperationType.UPDATE);
         em.flush();
 
-        testAddOrUpdatePackets(PacketDaoError.NOT_DIFFERENT_NEW_STATE_ID, OperationType.UPDATE, packetId, newStateId,
+        testAddOrUpdatePackets(PacketDaoErrorType.NOT_DIFFERENT_NEW_STATE_ID, OperationType.UPDATE, packetId, newStateId,
                 comptLabelPrefix, comboDataLabelPrefix, numOfCompts, numOfStates, numOfComboDatas,
                 comptId, packetId, secondPacketId);
     }
@@ -770,7 +774,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         packetAppDao.addOrUpdatePackets(packetParamsList, OperationType.UPDATE);
         em.flush();
 
-        testAddOrUpdatePackets(PacketDaoError.NOT_EXISTING_STATE_ID, OperationType.UPDATE, packetId, newStateId,
+        testAddOrUpdatePackets(PacketDaoErrorType.NOT_EXISTING_STATE_ID, OperationType.UPDATE, packetId, newStateId,
                 comptLabelPrefix, comboDataLabelPrefix, numOfCompts, numOfStates, numOfComboDatas,
                 comptId, packetId, secondPacketId);
 
@@ -796,7 +800,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         packetAppDao.addOrUpdatePackets(packetParamsList, OperationType.UPDATE);
         em.flush();
 
-        testAddOrUpdatePackets(PacketDaoError.NULL_NEW_STATE_ID, OperationType.UPDATE, packetId, newStateId,
+        testAddOrUpdatePackets(PacketDaoErrorType.NULL_NEW_STATE_ID, OperationType.UPDATE, packetId, newStateId,
                 comptLabelPrefix, comboDataLabelPrefix, numOfCompts, numOfStates, numOfComboDatas,
                 comptId, packetId, secondPacketId);
     }
@@ -830,7 +834,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         packetAppDao.addOrUpdatePackets(packetParamsList, OperationType.UPDATE);
         em.flush();
 
-        testAddOrUpdatePackets(PacketDaoError.NONE, OperationType.UPDATE, packetId, stateId, comptLabelPrefix,
+        testAddOrUpdatePackets(PacketDaoErrorType.NONE, OperationType.UPDATE, packetId, stateId, comptLabelPrefix,
                 comboDataLabelPrefix, numOfComptsToAdd, numOfStates, numOfComboDatas, firstNewComptId,
                 packetId, secondPacketId);
     }
@@ -876,7 +880,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         packetAppDao.addOrUpdatePackets(packetParamsList, OperationType.UPDATE);
         em.flush();
 
-        testAddOrUpdatePackets(PacketDaoError.NOT_EXISTING_ONE_OF_PACKET_IDS, OperationType.UPDATE, updatedPacketId,
+        testAddOrUpdatePackets(PacketDaoErrorType.NOT_EXISTING_ONE_OF_PACKET_IDS, OperationType.UPDATE, updatedPacketId,
                 updatedPacketNewStateId, comptLabelPrefix, comboDataLabelPrefix,
                 numOfComptsToAddInsideProperlyUpdatedPacket, numOfStates, numOfComboDatas,
                 expectedFirstNewComptId, updatedPacketId, newPacketId);
@@ -917,7 +921,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         packetAppDao.addOrUpdatePackets(packetParamsList, OperationType.UPDATE);
         em.flush();
 
-        testAddOrUpdatePackets(PacketDaoError.NONE, OperationType.ADD, packetId, stateId, comptLabelPrefix,
+        testAddOrUpdatePackets(PacketDaoErrorType.NONE, OperationType.ADD, packetId, stateId, comptLabelPrefix,
                 comboDataLabelPrefix, numOfComptsToAdd, numOfStates, numOfComboDatas,
                 expectedFirstNewComptId, unusedNewPacketId, secondPacketId);
     }
@@ -936,7 +940,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         packetAppDao.deleteCompts(comptIdsToDelete);
         em.flush();
 
-        testDeleteCompts(PacketDaoError.NONE, comptIdsToDelete, fakeIdsSet);
+        testDeleteCompts(PacketDaoErrorType.NONE, comptIdsToDelete, fakeIdsSet);
     }
 
     @DataSets(before = TEST_DELETE_COMPTS_BEFORE_FILENAME,
@@ -954,7 +958,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         packetAppDao.deleteCompts(comptIdsToDelete);
         em.flush();
 
-        testDeleteCompts(PacketDaoError.NONE_OF_THE_COMPT_IDS_EXIST, comptIdsToDelete, fakeIdsSet);
+        testDeleteCompts(PacketDaoErrorType.NONE_OF_THE_COMPT_IDS_EXIST, comptIdsToDelete, fakeIdsSet);
 
     }
 
@@ -974,7 +978,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         packetAppDao.deleteCompts(comptIdsToDelete);
         em.flush();
 
-        testDeleteCompts(PacketDaoError.SOME_OF_THE_COMPT_IDS_EXIST, comptIdsToDelete, fakeIdsSet);
+        testDeleteCompts(PacketDaoErrorType.SOME_OF_THE_COMPT_IDS_EXIST, comptIdsToDelete, fakeIdsSet);
     }
 
     @DataSets(before = TEST_GET_USER_ROLE_FILENAME)
@@ -988,7 +992,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
 
         assertEquals(expectedRole, packetAppDao.getUserRole(username, password));
 
-        testGetUserRole(PacketDaoError.NONE, username);
+        testGetUserRole(PacketDaoErrorType.NONE, username);
     }
 
     @DataSets(before = TEST_GET_USER_ROLE_FILENAME)
@@ -1001,7 +1005,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
 
         assertNull(packetAppDao.getUserRole(username, password));
 
-        testGetUserRole(PacketDaoError.AUTHENTICATION_ERROR, username);
+        testGetUserRole(PacketDaoErrorType.AUTHENTICATION_ERROR, username);
     }
 
     @DataSets(before = TEST_GET_USER_ROLE_FILENAME)
@@ -1014,7 +1018,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
 
         assertNull(packetAppDao.getUserRole(username, password));
 
-        testGetUserRole(PacketDaoError.AUTHENTICATION_ERROR, username);
+        testGetUserRole(PacketDaoErrorType.AUTHENTICATION_ERROR, username);
     }
 
     private void loadAndCheckComboData(final Integer expectedResultLength, final String expectedComboDataLabelPrefix)
@@ -1211,15 +1215,15 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         return exc;
     }
 
-    private void testDeleteCompts(PacketDaoError error, List<Long> idsToDelete, Set<Long> fakeIds) {
+    private void testDeleteCompts(PacketDaoErrorType error, List<Long> idsToDelete, Set<Long> fakeIds) {
         final int testLogSize = testAppender.getLog().size();
         int expectedNumOfLogEventsLeft = 1;
 
-        if (error == PacketDaoError.SOME_OF_THE_COMPT_IDS_EXIST) {
+        if (error == PacketDaoErrorType.SOME_OF_THE_COMPT_IDS_EXIST) {
             expectedNumOfLogEventsLeft = 2;
         }
 
-        if (error == PacketDaoError.NONE_OF_THE_COMPT_IDS_EXIST) {
+        if (error == PacketDaoErrorType.NONE_OF_THE_COMPT_IDS_EXIST) {
             testLoggingMessage(COMPTS_DELETE_NON_EXISTING_COMPTS, testLogSize, expectedNumOfLogEventsLeft, idsToDelete,
                     Level.ERROR);
             return;
@@ -1236,7 +1240,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                 successLoggingEvent.getMessage());
         assertEquals(Level.INFO, successLoggingEvent.getLevel());
 
-        if (error == PacketDaoError.SOME_OF_THE_COMPT_IDS_EXIST) {
+        if (error == PacketDaoErrorType.SOME_OF_THE_COMPT_IDS_EXIST) {
             final String testSomeOfComptIdsExist
                     = (String) ReflectionTestUtils.getField(packetAppDao, COMPTS_DELETE_NON_EXISTING_COMPTS);
             final LoggingEvent someOfIdsExistLoggingEvent
@@ -1248,11 +1252,11 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         }
     }
 
-    private void testGetUserRole(PacketDaoError error, String username) {
+    private void testGetUserRole(PacketDaoErrorType error, String username) {
         final int testLogSize = testAppender.getLog().size();
         int expectedNumOfLogEventsLeft = 1;
 
-        if (error == PacketDaoError.AUTHENTICATION_ERROR) {
+        if (error == PacketDaoErrorType.AUTHENTICATION_ERROR) {
             testLoggingMessage(USER_DATA_LOAD_ERROR, testLogSize, expectedNumOfLogEventsLeft, username, Level.ERROR);
             return;
         }
@@ -1269,7 +1273,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         assertEquals(logLevel, testErrorLogEvent.getLevel());
     }
 
-    private void testAddOrUpdatePackets(PacketDaoError error, OperationType operationType,
+    private void testAddOrUpdatePackets(PacketDaoErrorType error, OperationType operationType,
                                         Long expectedNewOrUpdatedPacketIdBeforeBeingPersisted,
                                         Long packetStateId, String comptLabelPrefix, String comboDataLabelPrefix,
                                         int numOfComptsToAddInsideAddedPacket, int numOfStates, int numOfComboDatas,
@@ -1278,12 +1282,12 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         final int testLogSize = testAppender.getLog().size();
 
         int expectedNumOfLogEventsLeft = 6;
-        EnumSet<PacketDaoError> fiveElsLogErrorsSet = buildFiveLogErrorsSet();
-        EnumSet<PacketDaoError> sixElsLogErrorsSet = buildSixLogErrorsSet();
+        EnumSet<PacketDaoErrorType> fiveElsLogErrorsSet = buildFiveLogErrorsSet();
+        EnumSet<PacketDaoErrorType> sixElsLogErrorsSet = buildSixLogErrorsSet();
         if (fiveElsLogErrorsSet.contains(error) && operationType == OperationType.ADD) {
             expectedNumOfLogEventsLeft = 5;
         } else if (operationType == OperationType.UPDATE
-                && (error == PacketDaoError.NULL_NEW_STATE_ID || packetStateId == null)) {
+                && (error == PacketDaoErrorType.NULL_NEW_STATE_ID || packetStateId == null)) {
             if (numOfComptsToAddInsideAddedPacket == 0) {
                 expectedNumOfLogEventsLeft = 3;
             } else {
@@ -1294,7 +1298,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         } else if (operationType == OperationType.ADD && numOfComptsToAddInsideAddedPacket > 1
                 || operationType == OperationType.UPDATE
                 && numOfComptsToAddInsideAddedPacket == 0
-                && error != PacketDaoError.NOT_EXISTING_ONE_OF_PACKET_IDS) {
+                && error != PacketDaoErrorType.NOT_EXISTING_ONE_OF_PACKET_IDS) {
             expectedNumOfLogEventsLeft = 5;
         }
 
@@ -1329,13 +1333,13 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         assertEquals(Level.INFO, mapComboDataLoggingEvent.getLevel());
 
         if (operationType == OperationType.UPDATE
-                && (error == PacketDaoError.NULL_NEW_STATE_ID || packetStateId == null)
+                && (error == PacketDaoErrorType.NULL_NEW_STATE_ID || packetStateId == null)
                 && (numOfComptsToAddInsideAddedPacket == 0)) {
             return;
         }
 
-        if (error == PacketDaoError.NOT_EXISTING_THE_ONLY_PACKET_ID
-                || error == PacketDaoError.NOT_EXISTING_ONE_OF_PACKET_IDS) {
+        if (error == PacketDaoErrorType.NOT_EXISTING_THE_ONLY_PACKET_ID
+                || error == PacketDaoErrorType.NOT_EXISTING_ONE_OF_PACKET_IDS) {
             final String testPacketUpdateNotExistingPacket
                     = (String) ReflectionTestUtils.getField(packetAppDao, PACKET_UPDATE_NOT_EXISTING_PACKET);
             LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - (expectedNumOfLogEventsLeft--));
@@ -1350,7 +1354,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
             if (numOfComptsToAddInsideAddedPacket == 0) {
                 return;
             }
-        } else if (error == PacketDaoError.NOT_DIFFERENT_NEW_STATE_ID) {
+        } else if (error == PacketDaoErrorType.NOT_DIFFERENT_NEW_STATE_ID) {
             String testNotDifferentNewState = null;
             if (operationType == OperationType.UPDATE) {
                 testNotDifferentNewState
@@ -1366,7 +1370,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                     loggingEvent.getMessage());
             assertEquals(Level.ERROR, loggingEvent.getLevel());
             return;
-        } else if (error == PacketDaoError.NOT_EXISTING_STATE_ID) {
+        } else if (error == PacketDaoErrorType.NOT_EXISTING_STATE_ID) {
             LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - (expectedNumOfLogEventsLeft--));
             String testNotExistingNewState;
             if (operationType == OperationType.UPDATE) {
@@ -1396,7 +1400,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                                 DEFAULT_STATE_LABEL_PREFIX));
             }
             return;
-        } else if (error == PacketDaoError.NULL_NEW_STATE_ID) {
+        } else if (error == PacketDaoErrorType.NULL_NEW_STATE_ID) {
             String testNullNewState;
             State defaultPacketState = new State();
             defaultPacketState.setId(1L);
@@ -1568,17 +1572,17 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         assertEquals(Level.INFO, persistPacketLoggingEvent.getLevel());
     }
 
-    private EnumSet<PacketDaoError> buildFiveLogErrorsSet() {
-        EnumSet<PacketDaoError> fiveElsLogErrorsSet = EnumSet.noneOf(PacketDaoError.class);
-        fiveElsLogErrorsSet.add(PacketDaoError.NULL_NEW_STATE_ID);
-        fiveElsLogErrorsSet.add(PacketDaoError.NOT_EXISTING_STATE_ID);
+    private EnumSet<PacketDaoErrorType> buildFiveLogErrorsSet() {
+        EnumSet<PacketDaoErrorType> fiveElsLogErrorsSet = EnumSet.noneOf(PacketDaoErrorType.class);
+        fiveElsLogErrorsSet.add(PacketDaoErrorType.NULL_NEW_STATE_ID);
+        fiveElsLogErrorsSet.add(PacketDaoErrorType.NOT_EXISTING_STATE_ID);
         return fiveElsLogErrorsSet;
     }
 
-    private EnumSet<PacketDaoError> buildSixLogErrorsSet() {
-        EnumSet<PacketDaoError> fiveElsLogErrorsSet = EnumSet.noneOf(PacketDaoError.class);
-        fiveElsLogErrorsSet.add(PacketDaoError.NONE);
-        fiveElsLogErrorsSet.add(PacketDaoError.NOT_EXISTING_ONE_OF_PACKET_IDS);
+    private EnumSet<PacketDaoErrorType> buildSixLogErrorsSet() {
+        EnumSet<PacketDaoErrorType> fiveElsLogErrorsSet = EnumSet.noneOf(PacketDaoErrorType.class);
+        fiveElsLogErrorsSet.add(PacketDaoErrorType.NONE);
+        fiveElsLogErrorsSet.add(PacketDaoErrorType.NOT_EXISTING_ONE_OF_PACKET_IDS);
         return fiveElsLogErrorsSet;
     }
 }

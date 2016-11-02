@@ -1,8 +1,24 @@
+
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.aspects;
 
-/**
- * Created by alexc_000 on 2016-09-24.
+/*
+ * Enum showing what module is chosen to implement AOP or test: service, restful controller or dao.
  */
 public enum ClassType {
-    SERVICE, CONTROLLER, DAO
+    /**
+     * Service constant
+     */
+    SERVICE,
+    /**
+     * Restful controller constant
+     */
+    CONTROLLER,
+    /**
+     * DAO constant
+     */
+    DAO
 }
