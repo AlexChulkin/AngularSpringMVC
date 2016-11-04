@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.dao;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +18,8 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Created by alexc_000 on 2016-08-02.
+ * The intermediate superclass of the {@link PacketAppDaoTest}
+ * that interweaves the After-Transaction method and execution listener into the test class.
  */
 
 public abstract class AbstractDbunitTransactionalJUnit4SpringContextTests
@@ -36,7 +41,8 @@ public abstract class AbstractDbunitTransactionalJUnit4SpringContextTests
     private DataFileLoader xlsDataFileLoader;
 
     /**
-     * Method executing the "before" and "after" data comparison
+     * Method executing the after-transaction data comparison
+     * (see the "after" parameter of the {@literal DataSets} annotation.
      */
     @AfterTransaction
     public void assertAfterTransaction() throws Exception {
@@ -54,23 +60,38 @@ public abstract class AbstractDbunitTransactionalJUnit4SpringContextTests
         databaseTester.onTearDown();
     }
 
-
+    /**
+     * The test execution listener for the {@link PacketAppDaoTest}.
+     */
     public static class DbunitTestExecutionListener extends AbstractTestExecutionListener {
 
+        /**
+         * The database tester
+         */
         private IDatabaseTester databaseTester;
+        /**
+         * The data file loader
+         */
         private DataFileLoader xlsDataFileLoader;
 
+        /**
+         * Runs after each test method.
+         *
+         * @param testCtx the test context
+         */
         @Override
-        public void afterTestMethod(TestContext testCtx) throws Exception {
-
-
+        public void afterTestMethod(TestContext testCtx) {
         }
 
+        /**
+         * Runs before each test method.
+         * @param testContext the test context.
+         */
         @Override
         public void beforeTestMethod(TestContext testContext) throws Exception {
             DataSets dataSetAnnotation = testContext.getTestMethod().getAnnotation(DataSets.class);
 
-            if (dataSetAnnotation == null) {
+            if (!Optional.ofNullable(dataSetAnnotation).isPresent()) {
                 return;
             }
 
@@ -81,7 +102,6 @@ public abstract class AbstractDbunitTransactionalJUnit4SpringContextTests
 
             boolean afterDatasetEmpty = StringUtils.isEmpty(testInstance.afterDatasetFileName);
             boolean beforeDatasetEmpty = StringUtils.isEmpty(beforeDatasetName);
-
 
             if (!(afterDatasetEmpty && beforeDatasetEmpty)) {
                 xlsDataFileLoader = getImplementingBeanFromContext(testContext, DataFileLoader.class);
@@ -99,6 +119,17 @@ public abstract class AbstractDbunitTransactionalJUnit4SpringContextTests
             }
         }
 
+        /**
+         * Gets the bean implementing the given class {@param <T>} from the context.
+         *
+         * @param testCtx the test context.
+         * @param tClass the Class class.
+         * @param <T> the bean class generic parameter.
+         * @return the first bean of the given class.
+         * @throws IllegalStateException if an error
+         *         occurs while retrieving the application context of the test context.
+         * @throws org.springframework.beans.BeansException if a bean of given class could not be created
+         */
         private <T> T getImplementingBeanFromContext(TestContext testCtx, Class<T> tClass) throws Exception {
             Map<String, T> implementations = testCtx.getApplicationContext().getBeansOfType(tClass);
             for (T t : implementations.values()) {

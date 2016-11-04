@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.service;
 
 import com.somecode.dao.PacketAppDao;
@@ -7,16 +11,20 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.somecode.utils.Utils.getMessage;
 
-@Service("comptService")
+/**
+ * The service connecting the restful controller and dao.
+ */
+
+@Service("packetAppService")
 @Log4j
 public class PacketAppService {
+    /**
+     * The source messages
+     */
     private static final String LOAD_DATA_FOR_ALL_PACKETS = "packetAppService.loadDataForAllPackets";
     private static final String LOAD_DATA_FOR_SPECIFIC_PACKET = "packetAppService.loadDataForSpecificPacket";
     private static final String PERSIST_ALL_PACKETS = "packetAppService.persistDataForAllPackets";
@@ -25,10 +33,16 @@ public class PacketAppService {
     private static final String UPDATE_PACKETS_EXCEPTION_REPORT = "packetAppService.updatePackets.exceptionReport";
     private static final String ADD_PACKETS_EXCEPTION_REPORT = "packetAppService.addPackets.exceptionReport";
 
+    /**
+     * The String constants
+     */
     private static final String UPDATE_COMPTS = "UPDATE_COMPTS";
     private static final String UPDATE_PACKETS = "UPDATE_PACKETS";
     private static final String ADD_PACKETS = "ADD_PACKETS";
 
+    /**
+     * The exceptions' stack trace and message info, used for the testing
+     */
     private String updateComptsExceptionStackTrace;
     private String updatePacketsExceptionStackTrace;
     private String addPacketsExceptionStackTrace;
@@ -36,17 +50,31 @@ public class PacketAppService {
     private String updatePacketsExceptionMessage;
     private String addPacketsExceptionMessage;
 
+    /** The dao injected */
     @Autowired
     private PacketAppDao packetAppDao;
 
+    /**
+     * Returns the result of dao  {@link com.somecode.dao #getUserRole(String, String)} method.
+     *
+     * @param username the user name input.
+     * @param password the user password input.
+     * @return role correspondent to the parameters.
+     */
     public Role getUserRole(String username, String password) {
         return packetAppDao.getUserRole(username, password);
     }
 
+    /**
+     * Loads the data from the back-end to the front-end.
+     * @param packetId the {@link Packet} id that is to be loaded or null if all the packets are to be loaded.
+     * @return the {@link Data} instance containing {@link Packet}s, {@link Compt}s, {@link State}s and
+     *         {@link ComboData}s together with the {@link ComptSupplInfo}s.
+     */
     public Data loadData(Long packetId) {
-        log.info(packetId == null
-                ? getMessage(LOAD_DATA_FOR_ALL_PACKETS, null)
-                : getMessage(LOAD_DATA_FOR_SPECIFIC_PACKET, new Object[]{packetId}));
+        log.info(Optional.ofNullable(packetId).isPresent()
+                ? getMessage(LOAD_DATA_FOR_SPECIFIC_PACKET, new Object[]{packetId})
+                : getMessage(LOAD_DATA_FOR_ALL_PACKETS, null));
 
         Data result = new Data();
         List<State> states;
@@ -79,6 +107,22 @@ public class PacketAppService {
         return result.setComptSupplInfo(Collections.emptyList());
     }
 
+    /**
+     *
+     * @param comptIdsToDelete list of the {@link Compt} ids that are to be saved.
+     * @param packetIdsToDelete list of the {@link Packet} ids that are to be saved. Has no meaning if the
+     *                          {@param packetId} is not null.
+     * @param comptsToUpdateParamsList list of the {@link ComptParams} representing the new {@link Compt}s that
+     *                                 are to be saved.
+     * @param packetsToAddParamsList list of the {@link PacketParams} representing the new {@link Packet}s that
+     *                                 are to be saved.
+     * @param packetsToUpdateParamsList list of the {@link PacketParams} representing the updated {@link Packet}s
+     *                                  that are to be saved.
+     * @param packetId the {@link Packet} id that is to be saved or null if all the {@link Packet}s are to be
+     *                 saved.
+     * @return the error map. Empty if no errors occurred. Contains special constants for the cases when either
+     *         the {@link Compt}s update or {@link Packet} update or {@link Packet} adding caused errors.
+     */
     public Map<String, Boolean> saveAllChangesToBase(List<Long> comptIdsToDelete,
                                                      List<Long> packetIdsToDelete,
                                                      List<ComptParams> comptsToUpdateParamsList,
@@ -86,7 +130,7 @@ public class PacketAppService {
                                                      List<PacketParams> packetsToUpdateParamsList,
                                                      Long packetId) {
 
-        log.info(packetId != null
+        log.info(Optional.ofNullable(packetId).isPresent()
                 ? getMessage(PERSIST_SPECIFIC_PACKET, new Object[]{packetId})
                 : getMessage(PERSIST_ALL_PACKETS, null));
 
@@ -96,7 +140,7 @@ public class PacketAppService {
             packetAppDao.deleteCompts(comptIdsToDelete);
         }
 
-        if (packetId == null && !packetIdsToDelete.isEmpty()) {
+        if (!Optional.ofNullable(packetId).isPresent() && !packetIdsToDelete.isEmpty()) {
             packetAppDao.deletePackets(packetIdsToDelete);
         }
 

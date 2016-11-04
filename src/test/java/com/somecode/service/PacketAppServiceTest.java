@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.service;
 
 import com.somecode.dao.DaoTestConfig;
@@ -29,44 +33,64 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
- * Created by alexc_000 on 2016-10-18.
+ * The fairly self-explanatory service test class.
  */
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DaoTestConfig.class})
 @ActiveProfiles("test")
 public class PacketAppServiceTest {
 
+    /**
+     * The local constants
+     */
     private static final int TEST_LIST_SIZE = 2;
+    private static final Long TEST_PACKET_ID = 1L;
 
+    /**
+     * The service variables
+     */
+    private static final String ADD_PACKETS_EXCEPTION_STACKTRACE = "addPacketsExceptionStackTrace";
+    private static final String UPDATE_PACKETS_EXCEPTION_STACKTRACE = "updatePacketsExceptionStackTrace";
+    private static final String UPDATE_COMPTS_EXCEPTION_STACKTRACE = "updateComptsExceptionStackTrace";
+    private static final String ADD_PACKETS_EXCEPTION_MESSAGE = "addPacketsExceptionMessage";
+    private static final String UPDATE_COMPTS_EXCEPTION_MESSAGE = "updateComptsExceptionMessage";
+    private static final String UPDATE_PACKETS_EXCEPTION_MESSAGE = "updatePacketsExceptionMessage";
+
+    /**
+     * The message source constants
+     */
     private static final String TEST_LOAD_DATA_FOR_SPECIFIC_PACKET = "LOAD_DATA_FOR_SPECIFIC_PACKET";
     private static final String TEST_LOAD_DATA_FOR_ALL_PACKETS = "LOAD_DATA_FOR_ALL_PACKETS";
     private static final String PERSIST_SPECIFIC_PACKET = "PERSIST_SPECIFIC_PACKET";
     private static final String PERSIST_ALL_PACKETS = "PERSIST_ALL_PACKETS";
-    private static final String ADD_PACKETS_EXCEPTION_STACKTRACE = "addPacketsExceptionStackTrace";
-    private static final String UPDATE_PACKETS_EXCEPTION_STACKTRACE = "updatePacketsExceptionStackTrace";
-    private static final String UPDATE_COMPTS_EXCEPTION_STACKTRACE = "updateComptsExceptionStackTrace";
     private static final String ADD_PACKETS_EXCEPTION_REPORT = "ADD_PACKETS_EXCEPTION_REPORT";
     private static final String UPDATE_COMPTS_EXCEPTION_REPORT = "UPDATE_COMPTS_EXCEPTION_REPORT";
     private static final String UPDATE_PACKETS_EXCEPTION_REPORT = "UPDATE_PACKETS_EXCEPTION_REPORT";
-    private static final String ADD_PACKETS_EXCEPTION_MESSAGE = "addPacketsExceptionMessage";
-    private static final String UPDATE_COMPTS_EXCEPTION_MESSAGE = "updateComptsExceptionMessage";
-    private static final String UPDATE_PACKETS_EXCEPTION_MESSAGE = "updatePacketsExceptionMessage";
     private static final String UPDATE_COMPTS = "UPDATE_COMPTS";
     private static final String UPDATE_PACKETS = "UPDATE_PACKETS";
     private static final String ADD_PACKETS = "ADD_PACKETS";
 
+    /**
+     * Root logger used for log testing
+     */
     private Logger root = Logger.getRootLogger();
+    /** Test Log appender logger used for log testing */
     private TestLogAppender testAppender;
 
-    private Long testPacketId = 1L;
-
+    /** The current log index variable used for log testing */
     private int currentLogIndex;
 
+    /** The injected service */
     @Autowired
     private PacketAppService service;
 
+    /** The dao mock */
     private PacketAppDao mockDao;
 
+    /**
+     * Runs before each test, resets the current log index, log appender and dao mock in the initial state.
+     */
     @Before
     public void beforeEachTest() {
         currentLogIndex = 0;
@@ -155,7 +179,7 @@ public class PacketAppServiceTest {
 
     @Test
     public void testSaveAllChanges2() throws DatabaseException {
-        testSaveAllChangesToBaseWithParams(false, false, false, false, false, false, false, testPacketId);
+        testSaveAllChangesToBaseWithParams(false, false, false, false, false, false, false, TEST_PACKET_ID);
     }
 
     @Test
@@ -165,7 +189,7 @@ public class PacketAppServiceTest {
 
     @Test
     public void testSaveAllChanges4() throws DatabaseException {
-        testSaveAllChangesToBaseWithParams(true, false, false, false, false, false, false, testPacketId);
+        testSaveAllChangesToBaseWithParams(true, false, false, false, false, false, false, TEST_PACKET_ID);
     }
 
     @Test
@@ -175,7 +199,7 @@ public class PacketAppServiceTest {
 
     @Test
     public void testSaveAllChanges6() throws DatabaseException {
-        testSaveAllChangesToBaseWithParams(false, true, false, false, false, false, false, testPacketId);
+        testSaveAllChangesToBaseWithParams(false, true, false, false, false, false, false, TEST_PACKET_ID);
     }
 
     @Test
@@ -185,7 +209,7 @@ public class PacketAppServiceTest {
 
     @Test
     public void testSaveAllChanges8() throws DatabaseException {
-        testSaveAllChangesToBaseWithParams(false, false, true, false, false, false, false, testPacketId);
+        testSaveAllChangesToBaseWithParams(false, false, true, false, false, false, false, TEST_PACKET_ID);
     }
 
     @Test
@@ -195,7 +219,7 @@ public class PacketAppServiceTest {
 
     @Test
     public void testSaveAllChanges10() throws DatabaseException {
-        testSaveAllChangesToBaseWithParams(false, false, true, false, false, false, true, testPacketId);
+        testSaveAllChangesToBaseWithParams(false, false, true, false, false, false, true, TEST_PACKET_ID);
     }
 
     @Test
@@ -205,7 +229,7 @@ public class PacketAppServiceTest {
 
     @Test
     public void testSaveAllChanges12() throws DatabaseException {
-        testSaveAllChangesToBaseWithParams(false, false, false, true, false, false, true, testPacketId);
+        testSaveAllChangesToBaseWithParams(false, false, false, true, false, false, true, TEST_PACKET_ID);
     }
 
     @Test
@@ -215,7 +239,7 @@ public class PacketAppServiceTest {
 
     @Test
     public void testSaveAllChanges14() throws DatabaseException {
-        testSaveAllChangesToBaseWithParams(false, false, false, true, false, true, false, testPacketId);
+        testSaveAllChangesToBaseWithParams(false, false, false, true, false, true, false, TEST_PACKET_ID);
     }
 
     @Test
@@ -225,7 +249,7 @@ public class PacketAppServiceTest {
 
     @Test
     public void testSaveAllChanges16() throws DatabaseException {
-        testSaveAllChangesToBaseWithParams(false, false, false, true, false, true, true, testPacketId);
+        testSaveAllChangesToBaseWithParams(false, false, false, true, false, true, true, TEST_PACKET_ID);
     }
 
     @Test
@@ -235,7 +259,7 @@ public class PacketAppServiceTest {
 
     @Test
     public void testSaveAllChanges18() throws DatabaseException {
-        testSaveAllChangesToBaseWithParams(false, false, false, false, true, false, false, testPacketId);
+        testSaveAllChangesToBaseWithParams(false, false, false, false, true, false, false, TEST_PACKET_ID);
     }
 
     @Test
@@ -245,7 +269,7 @@ public class PacketAppServiceTest {
 
     @Test
     public void testSaveAllChanges20() throws DatabaseException {
-        testSaveAllChangesToBaseWithParams(false, false, false, false, true, true, false, testPacketId);
+        testSaveAllChangesToBaseWithParams(false, false, false, false, true, true, false, TEST_PACKET_ID);
     }
 
     @Test
@@ -255,7 +279,7 @@ public class PacketAppServiceTest {
 
     @Test
     public void testSaveAllChanges22() throws DatabaseException {
-        testSaveAllChangesToBaseWithParams(false, false, false, false, true, false, true, testPacketId);
+        testSaveAllChangesToBaseWithParams(false, false, false, false, true, false, true, TEST_PACKET_ID);
     }
 
     @Test
@@ -265,7 +289,7 @@ public class PacketAppServiceTest {
 
     @Test
     public void testSaveAllChanges24() throws DatabaseException {
-        testSaveAllChangesToBaseWithParams(false, false, false, false, true, true, true, testPacketId);
+        testSaveAllChangesToBaseWithParams(false, false, false, false, true, true, true, TEST_PACKET_ID);
     }
 
     private void testSaveAllChangesToBaseWithParams(boolean comptIdsToDeleteIsEmpty,

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.dao;
 
 import com.somecode.domain.*;
@@ -6,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by alexc_000 on 2016-06-24.
+ * The dao interface.
  */
 public interface PacketAppDao {
 

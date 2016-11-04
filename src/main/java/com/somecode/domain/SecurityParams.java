@@ -1,7 +1,11 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 /**
- * Created by alexc_000 on 2016-09-07.
+ * The self-explanatory class for passing of the security data from the back-end to the front-end.
  */
 public class SecurityParams {
     private String username;

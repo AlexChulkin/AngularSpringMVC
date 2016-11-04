@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.aspect;
 
 import com.google.gson.Gson;
@@ -42,8 +46,10 @@ import java.util.stream.Collectors;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by alexc_000 on 2016-10-30.
+ * The fairly self-explanatory Logging Aspect Test class.
+ * Tests every separate method that is an object for the aspect logging.
  */
+
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DaoTestConfig.class})
 @WebAppConfiguration
@@ -86,6 +92,10 @@ public class LoggingAspectTest extends AbstractDbunitTransactionalJUnit4SpringCo
     @Autowired
     private LoggingAspect loggingAspect;
 
+    /**
+     * The restful controller, service and dao all are injected, their proxies are built
+     * in the {@link #setUpProxies()}.
+     */
     @Autowired
     private RestfulController controller;
     private RestfulController proxyController;
@@ -98,19 +108,27 @@ public class LoggingAspectTest extends AbstractDbunitTransactionalJUnit4SpringCo
     private PacketAppDao dao;
     private PacketAppDao proxyDao;
 
+    /**
+     * Sets up the proxies with the logging aspect weaved.
+     */
     @PostConstruct
     public void setUpProxies() {
-        AspectJProxyFactory setviceFactory = new AspectJProxyFactory(service);
-        setviceFactory.addAspect(loggingAspect);
-        proxyService = setviceFactory.getProxy();
+        AspectJProxyFactory serviceFactory = new AspectJProxyFactory(service);
+        serviceFactory.addAspect(loggingAspect);
+        proxyService = serviceFactory.getProxy();
+
         AspectJProxyFactory controllerFactory = new AspectJProxyFactory(controller);
         controllerFactory.addAspect(loggingAspect);
         proxyController = controllerFactory.getProxy();
+
         AspectJProxyFactory daoFactory = new AspectJProxyFactory(dao);
         daoFactory.addAspect(loggingAspect);
         proxyDao = daoFactory.getProxy();
     }
 
+    /**
+     * Resets the log appender before each test.
+     */
     @Before
     public void resetLogAppender() {
         testAppender = new TestLogAppender();

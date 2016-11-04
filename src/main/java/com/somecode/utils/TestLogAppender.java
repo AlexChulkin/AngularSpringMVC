@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.utils;
 
 import org.apache.log4j.AppenderSkeleton;
@@ -7,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by alexc_000 on 2016-10-25.
+ * The self-explanatory class used for the tests of the logging.
  */
 public class TestLogAppender extends AppenderSkeleton {
         private final List<LoggingEvent> log = new ArrayList<>();

@@ -1,9 +1,14 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 import java.util.List;
 
 /**
- * Created by alexc_000 on 2016-08-19.
+ * The self-explanatory {@link Data} class containing the lists of different entities loaded from the DB as a result
+ * of the front-end reques.
  */
 public class Data {
     private List<ComptInfo> compts;

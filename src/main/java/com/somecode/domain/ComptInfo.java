@@ -1,7 +1,11 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 /**
- * Created by alexc_000 on 2016-07-16.
+ * The self-explanatory {@link ComptInfo} POJO class: the brief version of the {@link Compt} entity.
  */
 
 import static com.somecode.utils.Utils.getMessage;

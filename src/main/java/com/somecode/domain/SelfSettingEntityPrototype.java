@@ -1,8 +1,14 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 /**
- * Created by alexc_000 on 2016-10-26.
+ * The entity class with the id setter returning the entity instance itself.
+ * It's used for the testing.
  */
+
 public interface SelfSettingEntityPrototype {
     Long getId();
     SelfSettingEntityPrototype setId(Long id);

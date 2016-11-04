@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.controller;
 
 import com.google.gson.Gson;
@@ -15,16 +19,26 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import static com.somecode.utils.Utils.getMessage;
 
+/**
+ * The Restful Controller mapping the Angular UI http requests to the Java backend.
+ */
 
 @Controller
 @PropertySource(value = "classpath:messages.properties")
 @Log4j
 public class RestfulController {
+    /**
+     * Mapping values
+     */
     private final static String HOME_MAPPING = "/home";
     private final static String HOME_MAPPING_FILE = "/resources/admin.jsp";
     private final static String USER_LOGIN_MAPPING = "/users/login";
     private final static String LOAD_DATA_MAPPING = "/loadData";
     private final static String SAVE_ALL_CHANGES_MAPPING = "/saveAllChangesToBase";
+
+    /**
+     * Resources messages
+     */
     private final static String LOAD_DATA_FOR_ALL_PACKETS = "restful.loadDataForAllPackets";
     private final static String LOAD_DATA_FOR_SPECIFIC_PACKET = "restful.loadDataForSpecificPacket";
     private final static String SAVE_ALL_CHANGES_TO_BASE_FOR_SPECIFIC_PACKET
@@ -32,28 +46,49 @@ public class RestfulController {
     private final static String SAVE_ALL_CHANGES_TO_BASE_FOR_ALL_PACKETS
             = "restful.saveAllChangesToBaseForAllPackets";
 
+    /**
+     * GSON instance for JSON transformations
+     */
     private static Gson GSON = new Gson();
 
+    /** Injected service */
     @Autowired
     private PacketAppService packetAppService;
 
+    /**
+     * The home mapping method.
+     *
+     * @return the home mapping filename.
+     */
     @RequestMapping({HOME_MAPPING, ""})
     public String home(){
         return HOME_MAPPING_FILE;
     }
 
+    /**
+     * The get User Role mapping method.
+     *
+     * @param json the JSON transformation of the http front-end request.
+     * @return the JSON transformation of the service's
+     *         {@link com.somecode.service.PacketAppService#getUserRole(String, String)} method.
+     */
     @RequestMapping(value = USER_LOGIN_MAPPING, method = RequestMethod.POST)
     @ResponseBody
-    public String getUserRole(@RequestBody String request) {
-        RequestObj requestObj = GSON.fromJson(request, RequestObj.class);
-        String result = GSON.toJson(packetAppService.getUserRole(requestObj.getSecurityParams().getUsername(),
+    public String getUserRole(@RequestBody String json) {
+        RequestObj requestObj = GSON.fromJson(json, RequestObj.class);
+        return GSON.toJson(packetAppService.getUserRole(requestObj.getSecurityParams().getUsername(),
                 requestObj.getSecurityParams().getPassword()));
-        return result;
     }
 
+    /**
+     * Loads and returns the json transformation of the bulk data needed for the front-end.
+     *
+     * @param json the JSON transformation of the http front-end request.
+     * @return the JSON bulk data transformation.
+     */
     @RequestMapping(value = LOAD_DATA_MAPPING, method = RequestMethod.POST)
     @ResponseBody
-    public String loadData(@RequestBody String json) throws Exception {
+    public String loadData(@RequestBody String json) {
         RequestObj requestObj = GSON.fromJson(json, RequestObj.class);
         Long packetId = requestObj.getDataParams().getPacketId();
         log.debug(packetId == null
@@ -63,8 +98,14 @@ public class RestfulController {
         return GSON.toJson(packetAppService.loadData(packetId));
     }
 
+    /**
+     * Saves all changes from the front-end and returns the json transformation of the saving error report.
+     *
+     * @param json the JSON transformation of the http front-end request.
+     * @return the json transformation of the saving error report
+     */
     @RequestMapping(value = SAVE_ALL_CHANGES_MAPPING, method = RequestMethod.POST)
-    public String saveAllChangesToBase(@RequestBody String json) throws Exception {
+    public String saveAllChangesToBase(@RequestBody String json) {
         RequestObj requestObj = GSON.fromJson(json, RequestObj.class);
         DataParams params = requestObj.getDataParams();
         Long packetId = params.getPacketId();

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 import java.util.List;
@@ -5,13 +9,22 @@ import java.util.List;
 import static com.somecode.utils.Utils.getMessage;
 
 /**
- * Created by alexc_000 on 2016-07-22.
+ * The fairly self-explanatory class containing the info for the {@link Compt} save/update.
  */
 public class ComptParams implements SelfSettingEntityPrototype {
     private static final String STRING_VERSION = "comptParams.toString";
 
+    /**
+     * The checked {@link ComboData} labels associated with the given {@link Compt} entity
+     */
     private List<String> vals;
+    /**
+     * The label of the given {@link Compt} entity
+     */
     private String label;
+    /**
+     * The id of the given {@link Compt} entity
+     */
     private Long id;
 
     public Long getId() {

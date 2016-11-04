@@ -42,7 +42,7 @@ public class Config extends WebMvcConfigurerAdapter {
     /**
      * Adds the resources handler to the config.
      *
-     * @param registry the {@code ResourceHandlerRegistry} instance.
+     * @param registry the {@link org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry} instance.
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

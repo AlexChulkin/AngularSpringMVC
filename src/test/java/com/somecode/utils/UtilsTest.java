@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.utils;
 
 import com.somecode.dao.DaoTestConfig;
@@ -12,13 +16,16 @@ import static com.somecode.utils.Utils.getMessage;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by alexc_000 on 2016-10-31.
+ * The fairly self-explanatory {@link Utils} test class.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DaoTestConfig.class})
 @WebAppConfiguration
 @ActiveProfiles("test")
 public class UtilsTest {
+    /**
+     * The constants used in testing
+     */
     private static final Long COMPT_ID = 1L;
     private static final Long DATA_COMPT_ID = 5L;
     private static final Long STATE_ID = 2L;
@@ -26,6 +33,10 @@ public class UtilsTest {
     private static final Long PACKET_ID = 3L;
     private static final String COMPT_LABEL = "COMPT_LABEL_1";
     private static final boolean CHECKED = true;
+
+    /**
+     * The expected parametrized message source constants
+     */
     private static final String LOAD_DATA_FOR_ALL_PACKETS_PATTERN = "packetAppService.loadDataForAllPackets";
     private static final String LOAD_DATA_FOR_ALL_PACKETS_FULL_MSG = "Load data for all packets";
     private static final String COMPT_UPDATE_NON_EXISTING_COMPT_PATTERN = "packetAppDao.comptUpdate.nonExistingCompt";

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.controller;
 
 import com.google.gson.Gson;
@@ -40,7 +44,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Created by alexc_000 on 2016-10-28.
+ * The fairly self-explanatory restful controller test.
+ * Works with the help of the service mock and mockMvc instance.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DaoTestConfig.class})
@@ -80,6 +85,9 @@ public class RestfulControllerTest {
     private Logger root = Logger.getRootLogger();
     private TestLogAppender testAppender;
 
+    /**
+     * The mockMvc, serviceMock and text appender are reconstructed before each test run.
+     */
     @Before
     public void beforeEach() {
         mockMvc = MockMvcBuilders

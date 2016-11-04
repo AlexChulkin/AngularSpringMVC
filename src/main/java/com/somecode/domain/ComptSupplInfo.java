@@ -1,21 +1,39 @@
-package com.somecode.domain;
-
-/**
- * Created by alexc_000 on 2016-07-16.
+/*
+ * Copyright (c) 2016.  Alex Chulkin
  */
 
+package com.somecode.domain;
+
 import static com.somecode.utils.Utils.getMessage;
+
+/**
+ * The fairly self-explanatory {@link ComptSupplInfo} class containing the supplementary info
+ * for the convenient {@link Compt} entities front-end representation.
+ */
 
 public class ComptSupplInfo implements EntityProtoType {
 
     private static final String CHECKED_STRING_VERSION = "comptSupplInfo.checked.toString";
     private static final String UNCHECKED_STRING_VERSION = "comptSupplInfo.unchecked.toString";
-
+    /**
+     * The {@link Compt} id
+     */
     private Long comptId;
+
+    /**
+     * The {@link DataCompt} state id,
+     * {@link DataCompt} is connected to the {@link Compt} via the foreign key.
+     */
     private Long stateId;
+    /**
+     * The {@link ComboData} label,
+     * {@link ComboData} is connected to the {@link DataCompt} via the foreign key.
+     */
     private String label;
+    /** The {@link DataCompt} checked flag,
+     *  {@link DataCompt} is connected to the {@link Compt} via the foreign key.
+     */
     private boolean checked;
-    private Long id;
 
     public ComptSupplInfo() {
     }
@@ -28,11 +46,11 @@ public class ComptSupplInfo implements EntityProtoType {
     }
 
     public Long getId() {
-        return id;
+        return comptId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setId(Long comptId) {
+        this.comptId = comptId;
     }
 
     public Long getComptId() {

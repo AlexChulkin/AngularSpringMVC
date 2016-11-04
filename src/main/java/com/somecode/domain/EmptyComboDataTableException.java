@@ -1,10 +1,21 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 /**
- * Created by alexc_000 on 2016-08-19.
+ * The custom database exception used to indicate the problems with the empty COMBO_DATA database table.
  */
 public class EmptyComboDataTableException extends EmptyDBTableException {
     private static final String DELIMITER = ". ";
+
+    /**
+     * Returns the message containing the info about the exception. Used for logging.
+     *
+     * @return the message containing the info about the exception.
+     */
+    @Override
     public String getMessage() {
         return ComboData.class.getSimpleName() + DELIMITER + super.getMessage();
     }

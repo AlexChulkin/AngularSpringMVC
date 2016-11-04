@@ -83,6 +83,8 @@ public class PacketAppDaoImpl implements PacketAppDao {
             = "packetAppDao.packetAddOrUpdate.updatePacket.updateState.successReport";
     private static final String PACKET_ADDING_STATE_SET_SUCCESS_REPORT
             = "packetAppDao.packetAddOrUpdate.addPacket.setState.successReport";
+    private static final String PACKET_UPDATE_STATE_UPDATE_NULL_NEW_STATE
+            = "packetAppDao.packetAddOrUpdate.updatePacket.updateState.nullNewState";
     private static final String PACKET_UPDATE_STATE_UPDATE_NOT_EXISTING_STATE
             = "packetAppDao.packetAddOrUpdate.updatePacket.updateState.notExistingState";
     private static final String PACKET_ADDING_STATE_SET_NOT_EXISTING_STATE
@@ -113,9 +115,9 @@ public class PacketAppDaoImpl implements PacketAppDao {
      * Empty DB Table messages and stack traces used for testing convenience.
      */
     private String emptyStateTableExceptionMessage;
-    private String emptyCombodataTableExceptionMessage;
+    private String emptyComboDataTableExceptionMessage;
     private String emptyStateTableExceptionStackTrace;
-    private String emptyCombodataTableExceptionStackTrace;
+    private String emptyComboDataTableExceptionStackTrace;
 
     /** A simple entity manager.   */
     @PersistenceContext
@@ -155,20 +157,20 @@ public class PacketAppDaoImpl implements PacketAppDao {
     }
 
     /**
-     * Returns the list of the {@code PacketInfo} instances (brief version of the Packet entity) for all the
-     * {@code Packet}  instances already persisted to the DB if the {@code packetId} parameter is null or the list
-     * containing the single {@code PacketInfo} instance, otherwise (corresponding to the {@code packetId} in this case)
+     * Returns the list of the {@link PacketInfo} instances (brief version of the Packet entity) for all the
+     * {@literal Packet}  instances already persisted to the DB if the {@literal packetId} parameter is null or the list
+     * containing the single {@link PacketInfo} instance, otherwise (corresponding to the {@literal packetId} in this case)
      *
-     * @param packetId the id of the packet if the single {@code PacketInfo} is to be found or null if the
-     * {@code PacketInfo} views of all the persisted {@code Packet} entities are to be found
-     * @return list of the {@code PacketInfo}
+     * @param packetId the id of the packet if the single {@link PacketInfo} is to be found or null if the
+     *                 {@link PacketInfo} views of all the persisted {@link Packet} entities are to be found
+     * @return list of the {@link PacketInfo}
      */
     @Override
     public List<PacketInfo> loadPackets(Long packetId) {
         List<PacketInfo> result = new LinkedList<>();
-        if (packetId != null) {
+        if (Optional.ofNullable(packetId).isPresent()) {
             Packet onlyResult = packetRepository.findOne(packetId);
-            if (onlyResult == null) {
+            if (!Optional.ofNullable(onlyResult).isPresent()) {
                 log.error(getMessage(PACKET_NOT_LOADED, new Object[]{packetId}));
                 return result;
             }
@@ -187,11 +189,15 @@ public class PacketAppDaoImpl implements PacketAppDao {
 
     /**
      * Returns the list of the ComptSupplInfo entities (they contain the supplementary info containing the details of
-     *  the compt entity connection to the other entities like Combodata, Datacompt, etc) corresponding to the given
-     *  {@code packetId}.
+     *  the compt entity connection to the other entities like ComboData, Datacompt, etc) corresponding to the given
+     *  {@literal #packetId}.
      *
      * @param packetId the id of the packet the compts of which we are going to find.
      * @return the list of the ComptSupplInfo instances.
+     * @throws org.springframework.dao.QueryTimeoutException if the query execution exceeds the query timeout value set
+     *         and only the statement is rolled back
+     * @throws javax.persistence.PersistenceException if the query execution exceeds the query timeout value set and
+     *         the transaction is rolled back
      */
     @Override
     public List<ComptSupplInfo> loadComptsSupplInfo(Long packetId) {
@@ -213,7 +219,8 @@ public class PacketAppDaoImpl implements PacketAppDao {
      * Loads the packet from the DB using its id.
      *
      * @param packetId the packet id.
-     * @return the {@code Packet} emtity.
+     * @throws IllegalArgumentException - if the {@literal packetId} is null.
+     * @return the {@link Packet} entity.
      */
     private Packet loadPacket(Long packetId) {
         return em.find(Packet.class, packetId);
@@ -222,7 +229,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
     /**
      * Loads all the entities from the STATE table.
      *
-     * @return List of the {@code State} entities found.
+     * @return List of the {@link State} entities found.
      * @throws DatabaseException if the STATE table is empty.
      */
     @Override
@@ -235,10 +242,10 @@ public class PacketAppDaoImpl implements PacketAppDao {
     }
 
     /**
-     * Returns the upper-level {@code DatabaseException} chained with the causing {@code EmptyDBTableException}
+     * Returns the upper-level {@link DatabaseException} chained with the causing {@link EmptyDBTableException}
      * and logs the error.
      *
-     * @param cause the causing {@code EmptyDBTableException}.
+     * @param cause the causing {@link EmptyDBTableException}.
      * @return DatabaseException instance chained with the cause.
      */
     private DatabaseException logDBErrorAndReturnDBTableException(EmptyDBTableException cause) {
@@ -248,11 +255,11 @@ public class PacketAppDaoImpl implements PacketAppDao {
             log.error(getMessage(STATE_TABLE_IS_EMPTY,
                     new Object[]{emptyStateTableExceptionMessage, emptyStateTableExceptionStackTrace}));
         } else if (cause.getClass().equals(EmptyComboDataTableException.class)) {
-            emptyCombodataTableExceptionMessage = cause.getMessage();
-            emptyCombodataTableExceptionStackTrace = ExceptionUtils.getStackTrace(cause);
+            emptyComboDataTableExceptionMessage = cause.getMessage();
+            emptyComboDataTableExceptionStackTrace = ExceptionUtils.getStackTrace(cause);
             log.error(getMessage(COMBODATA_TABLE_IS_EMPTY,
-                    new Object[]{emptyCombodataTableExceptionMessage,
-                            emptyCombodataTableExceptionStackTrace}));
+                    new Object[]{emptyComboDataTableExceptionMessage,
+                            emptyComboDataTableExceptionStackTrace}));
         }
         DatabaseException exc = new DatabaseException();
         exc.initCause(cause);
@@ -278,7 +285,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
     /**
      * Loads all the entities from the COMBO_DATA table.
      *
-     * @return List of the {@code Combodata} entities found.
+     * @return List of the {@link ComboData} entities found.
      * @throws DatabaseException if the COMBO_DATA table is empty.
      */
     @Override
@@ -351,7 +358,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
     @Override
     public List<ComptInfo> loadCompts(Long packetId) {
         List<ComptInfo> result;
-        if (packetId != null) {
+        if (Optional.ofNullable(packetId).isPresent()) {
             result = comptRepository.findByPacket_Id(packetId).stream().map(ComptInfo::new).collect(Collectors.toList());
         } else {
             List<ComptInfo> listOfCompts = new LinkedList<>();
@@ -416,7 +423,8 @@ public class PacketAppDaoImpl implements PacketAppDao {
         } else if (Optional.ofNullable(packetId).isPresent()) {
             errorReport = sb.append(
                     getMessage(NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_ADD_NEW_COMPTS_TO_PERSISTED_PACKET,
-                            new Object[]{packetId})).append(errorReport).toString();
+                            new Object[]{packetId}))
+                    .append(errorReport).toString();
         } else {
             errorReport = sb.append(
                     getMessage(NON_EXISTING_COMBODATA_LABEL_ERROR_REPORT_ADD_NEW_COMPTS_TO_UNPERSISTED_PACKET, null))
@@ -429,12 +437,13 @@ public class PacketAppDaoImpl implements PacketAppDao {
      * Updates the given compts and returns the map containing the packet ids as keys and the corresponding lists of the
      * compt ids as values
      *
-     * @param comptParamsList list of the {@code ComptParams} instances containing all the necessary info about update
+     * @param comptParamsList list of the {@link ComptParams} instances containing all the necessary info about update
      * @return map containing the packet ids as keys and the corresponding lists of the
      * compt ids as values
      * @throws DatabaseException if the COMBO_DATA table is empty
      * @throws IllegalArgumentException if any of the compt ids from the {@param comptParamsList} is null
-     * @throws OptimisticLockException if the optimistic version check for any {@code Compt} id in question fails
+     * @throws javax.persistence.OptimisticLockException if the optimistic version check for any {@link Compt}
+     *         id in question fails
      */
     @Override
     @Transactional
@@ -553,7 +562,9 @@ public class PacketAppDaoImpl implements PacketAppDao {
      * @param packetParamsList list of the packet params containinf the packet info.
      * @param operationType the operation type (ADD or UPDATE).
      * @throws DatabaseException if the STATE or COMBO_DATA table is empty.
-     * @throws IllegalArgumentException - in case the given entity is null.
+     * @throws javax.persistence.TransactionRequiredException if the entity manager has not been joined to the current
+     *         transaction.
+     * @throws javax.persistence.PersistenceException - if the flush fails.
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -570,7 +581,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
             if (operationType == OperationType.UPDATE) {
                 long packetId = packetParams.getId();
                 packet = loadPacket(packetId);
-                if (packet == null) {
+                if (!Optional.ofNullable(packet).isPresent()) {
                     log.error(getMessage(PACKET_UPDATE_NOT_EXISTING_PACKET, new Object[]{packetId}));
                     continue;
                 }
@@ -625,7 +636,6 @@ public class PacketAppDaoImpl implements PacketAppDao {
      * @return true if the given packet's state is changed in the result of the method's execution, otherwise returns
      * false. The latter could happen if the state is updated and (a) the new state is the same as the old one;
      * (b) the new state is null and (c) the new state does not exist in the DB.
-     *
      */
     @Transactional
     private boolean setOrUpdateState(Packet packet, Long stateId, OperationType operationType) {
@@ -681,9 +691,12 @@ public class PacketAppDaoImpl implements PacketAppDao {
             return true;
         } else if (operationType == OperationType.UPDATE) {
             if (error == PacketDaoErrorType.NULL_NEW_STATE_ID) {
-                report = getMessage(PACKET_UPDATE_STATE_UPDATE_NOT_EXISTING_STATE, new Object[]{stateId});
-                log.error(report);
+                report = getMessage(PACKET_UPDATE_STATE_UPDATE_NULL_NEW_STATE, new Object[]{packet.getId()});
+            } else if (error == PacketDaoErrorType.NOT_EXISTING_STATE_ID) {
+                report = getMessage(PACKET_UPDATE_STATE_UPDATE_NOT_EXISTING_STATE, new Object[]{packet.getId(),
+                        stateId});
             }
+            log.error(report);
         }
         return false;
     }

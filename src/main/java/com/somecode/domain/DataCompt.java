@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 
@@ -8,6 +12,9 @@ import javax.validation.constraints.NotNull;
 
 import static com.somecode.utils.Utils.getMessage;
 
+/**
+ * The self-explanatory {@link DataCompt} entity POJO class(for the {@literal DATA_COMPT} table).
+ */
 
 @Entity
 @Table(name = "DATA_COMPT",

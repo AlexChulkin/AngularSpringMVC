@@ -1,8 +1,13 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 import static com.somecode.utils.Utils.getMessage;
+
 /**
- * Created by alexc_000 on 2016-07-16.
+ * The self-explanatory {@link PacketInfo} POJO class: the brief version of the {@link Compt} entity.
  */
 
 

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 
@@ -8,6 +12,9 @@ import javax.validation.constraints.Size;
 
 import static com.somecode.utils.Utils.getMessage;
 
+/**
+ * The self-explanatory {@link ComboData} entity POJO class(for the {@literal COMBO_DATA} table).
+ */
 
 @Entity
 @Table(name = "COMBO_DATA", uniqueConstraints = @UniqueConstraint(columnNames = {"LABEL"}))

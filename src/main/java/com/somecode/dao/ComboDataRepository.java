@@ -1,15 +1,16 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.dao;
 
 import com.somecode.domain.ComboData;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
 /**
- * Created by alexc_000 on 2016-06-24.
+ * The CrudRepository implementation for the {@link ComboData} entity
  */
 @Repository
 public interface ComboDataRepository extends CrudRepository<ComboData, Long> {
-    List<ComboData> findAllByOrderByIdAsc();
 }

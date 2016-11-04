@@ -1,8 +1,14 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 /**
- * Created by alexc_000 on 2016-09-06.
+ * The self-explanatory role used for the authentication.
  */
+
 public enum Role {
-    ADMIN, USER
+    ADMIN,
+    USER
 }

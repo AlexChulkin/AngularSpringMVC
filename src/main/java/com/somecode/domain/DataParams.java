@@ -1,19 +1,36 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 import java.util.List;
 
 /**
- * Created by vharutyunyan on 20.06.2014.
+ * The fairly self-explanatory {@link DataParams} POJO class containing the lists of different entities and ids.
+ * This class is used for the passing of the data that is going to be persisted to the DB from the front-end to
+ * the back-end.
  */
 public class DataParams {
 
+    /**
+     * List of the {@link Compt} ids set for removal
+     */
     private List<Long> comptIdsToDelete;
+    /**
+     * List of the {@link Packet} ids set for removal
+     */
     private List<Long> packetIdsToDelete;
+    /**
+     * List of the {@link ComptParams} instances representing the {@link Compt}s set for removal
+     */
     private List<ComptParams> comptsToUpdateParamsList;
+    /** List of the {@link PacketParams} instances representing the {@link Packet}s set for adding to the DB */
     private List<PacketParams> packetsToAddParamsList;
+    /** List of the {@link PacketParams} instances representing the {@link Packet}s set for update in the DB */
     private List<PacketParams> packetsToUpdateParamsList;
+    /** The {@link Packet} id */
     private Long packetId;
-
 
     public List<PacketParams> getPacketsToAddParamsList() {
         return packetsToAddParamsList;

@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 
@@ -7,6 +11,11 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static com.somecode.utils.Utils.getMessage;
+
+/**
+ * The self-explanatory {@link Packet} entity POJO class(for the {@literal PACKET} table).
+ */
+
 @Entity
 public class Packet implements EntityType {
     private static final String ID_COLUMN = "PACKET_ID";
@@ -20,7 +29,8 @@ public class Packet implements EntityType {
     private State state;
     private List<Compt> compts = new LinkedList<>();
 
-    public Packet() {  }
+    public Packet() {
+    }
 
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)

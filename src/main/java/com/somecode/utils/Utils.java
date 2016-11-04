@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.utils;
 
 import org.springframework.beans.BeansException;
@@ -8,8 +12,9 @@ import org.springframework.stereotype.Service;
 import java.util.Locale;
 
 /**
- * Created by alexc_000 on 2016-09-21.
+ * The self-explanatory utils class. Contains the english-locale logging method only so far.
  */
+
 @Service
 public class Utils implements ApplicationContextAware {
     private static ApplicationContext ctx;

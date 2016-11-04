@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -9,8 +13,9 @@ import javax.validation.constraints.Size;
 import static com.somecode.utils.Utils.getMessage;
 
 /**
- * Created by alexc_000 on 2016-09-06.
+ * The self-explanatory {@link User} entity POJO class(for the {@literal USER} table).
  */
+
 @Entity
 public class User {
     private static final String ID_COLUMN = "USER_ID";

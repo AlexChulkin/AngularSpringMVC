@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 
@@ -6,8 +10,9 @@ import javax.persistence.*;
 import static com.somecode.utils.Utils.getMessage;
 
 /**
- * Created by achulkin on 03.06.14.
+ * The self-explanatory {@link State} entity POJO class(for the {@literal STATE} table).
  */
+
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"LABEL"}))
 public class State implements EntityType {

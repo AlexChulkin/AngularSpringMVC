@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 import org.hibernate.validator.constraints.NotEmpty;
@@ -9,6 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.somecode.utils.Utils.getMessage;
+
+/**
+ * The self-explanatory {@link Compt} entity POJO class(for the {@literal COMPT} table).
+ * <p>
+ * Contains the {@link ComptSupplInfo} named load queries.
+ */
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"PACKET_ID_FK", "LABEL"}))

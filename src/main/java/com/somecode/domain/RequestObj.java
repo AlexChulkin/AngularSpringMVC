@@ -1,10 +1,20 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 package com.somecode.domain;
 
 /**
- * Created by vharutyunyan on 20.06.2014.
+ * The fairly self-explained class used for passing the data from the front-end to the back-end.
  */
 public class RequestObj {
+    /**
+     * The params for the application data passing
+     */
     private DataParams dataParams;
+    /**
+     * The params for the credentials passing
+     */
     private SecurityParams securityParams;
 
     public SecurityParams getSecurityParams() {
