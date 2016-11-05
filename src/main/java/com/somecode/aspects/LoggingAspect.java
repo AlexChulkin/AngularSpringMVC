@@ -45,7 +45,7 @@ public class LoggingAspect {
     /**
      * Returns the restful controller methods pointcut
      */
-    @Pointcut("execution(* com.somecode.controller..*.*(..))")
+    @Pointcut("execution(* com.somecode.controller.RestfulController.*(..))")
     public void allControllerMethods() {
     }
 
@@ -62,7 +62,7 @@ public class LoggingAspect {
     /**
      * Returns the service methods pointcut
      */
-    @Pointcut("execution(* com.somecode.service..*.*(..))")
+    @Pointcut("execution(* com.somecode.controller.PacketAppService.*(..))")
     public void allServiceMethods() {
     }
 
