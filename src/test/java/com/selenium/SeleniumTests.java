@@ -13,6 +13,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,6 +28,7 @@ import static org.junit.Assert.*;
  * The fairly self-explanatory selenium tests class.
  */
 
+@ActiveProfiles
 public class SeleniumTests {
     /**
      * The time to wait after the button click.
