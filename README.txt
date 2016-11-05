@@ -6,7 +6,7 @@ It's the restful mvc web app with:
         <hibernate-version>5.1.0.Final</hibernate-version> - with named queries;
         Angular v1.5, JSP, HTML;
         H2 database, H2SQL;
-        JUnit + Mockito, Selenium, Jasmine testing,
+        JUnit + Mockito, xls data file loader + database tester, Selenium, Jasmine testing,
         Lombok log4j;
         javadoc;
         design patterns: MVC, DAO, defensive copies and immutable objects(at least collections), etc...
