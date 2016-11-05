@@ -2,7 +2,7 @@
  * Copyright (c) 2016.  Alex Chulkin
  */
 
-package com.somecode.service;
+package com.somecode.controller;
 
 import com.somecode.dao.DaoTestConfig;
 import com.somecode.dao.PacketAppDao;
@@ -33,7 +33,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
- * The fairly self-explanatory service test class.
+ * The fairly self-explanatory parameterized service test class.
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -173,122 +173,122 @@ public class PacketAppServiceTest {
     }
 
     @Test
-    public void testSaveAllChanges1() throws DatabaseException {
+    public void testSaveAllChangesNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, false, false, false, false, false, null);
     }
 
     @Test
-    public void testSaveAllChanges2() throws DatabaseException {
+    public void testSaveAllChangesNotNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, false, false, false, false, false, TEST_PACKET_ID);
     }
 
     @Test
-    public void testSaveAllChanges3() throws DatabaseException {
+    public void testSaveAllChangesEmptyComptsToDeleteNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(true, false, false, false, false, false, false, null);
     }
 
     @Test
-    public void testSaveAllChanges4() throws DatabaseException {
+    public void testSaveAllChangesEmptyComptsToDeleteNotNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(true, false, false, false, false, false, false, TEST_PACKET_ID);
     }
 
     @Test
-    public void testSaveAllChanges5() throws DatabaseException {
+    public void testSaveAllChangesEmptyPacketsToDeleteNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, true, false, false, false, false, false, null);
     }
 
     @Test
-    public void testSaveAllChanges6() throws DatabaseException {
+    public void testSaveAllChangesEmptyPacketsToDeleteNotNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, true, false, false, false, false, false, TEST_PACKET_ID);
     }
 
     @Test
-    public void testSaveAllChanges7() throws DatabaseException {
+    public void testSaveAllChangesEmptyComptsToUpdateNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, true, false, false, false, false, null);
     }
 
     @Test
-    public void testSaveAllChanges8() throws DatabaseException {
+    public void testSaveAllChangesEmptyComptsToUpdateNotNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, true, false, false, false, false, TEST_PACKET_ID);
     }
 
     @Test
-    public void testSaveAllChanges9() throws DatabaseException {
+    public void testSaveAllChangesEmptyComboDataComptsToUpdateNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, true, false, false, false, true, null);
     }
 
     @Test
-    public void testSaveAllChanges10() throws DatabaseException {
+    public void testSaveAllChangesEmptyComboDataComptsToUpdateNotNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, true, false, false, false, true, TEST_PACKET_ID);
     }
 
     @Test
-    public void testSaveAllChanges11() throws DatabaseException {
+    public void testSaveAllChangesEmptyComboDataPacketsToAddNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, false, true, false, false, true, null);
     }
 
     @Test
-    public void testSaveAllChanges12() throws DatabaseException {
+    public void testSaveAllChangesEmptyComboDataPacketsToAddNotNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, false, true, false, false, true, TEST_PACKET_ID);
     }
 
     @Test
-    public void testSaveAllChanges13() throws DatabaseException {
+    public void testSaveAllChangesEmptyStatesPacketsToAddNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, false, true, false, true, false, null);
     }
 
     @Test
-    public void testSaveAllChanges14() throws DatabaseException {
+    public void testSaveAllChangesEmptyStatesPacketsToAddNotNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, false, true, false, true, false, TEST_PACKET_ID);
     }
 
     @Test
-    public void testSaveAllChanges15() throws DatabaseException {
+    public void testSaveAllChangesEmptyComboDataStatesPacketsToAddNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, false, true, false, true, true, null);
     }
 
     @Test
-    public void testSaveAllChanges16() throws DatabaseException {
+    public void testSaveAllChangesEmptyComboDataStatesPacketsToAddNotNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, false, true, false, true, true, TEST_PACKET_ID);
     }
 
     @Test
-    public void testSaveAllChanges17() throws DatabaseException {
+    public void testSaveAllChangesEmptyPacketsToUpdateNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, false, false, true, false, false, null);
     }
 
     @Test
-    public void testSaveAllChanges18() throws DatabaseException {
+    public void testSaveAllChangesEmptyPacketsToUpdateNotNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, false, false, true, false, false, TEST_PACKET_ID);
     }
 
     @Test
-    public void testSaveAllChanges19() throws DatabaseException {
+    public void testSaveAllChangesEmptyStatesPacketsToUpdateNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, false, false, true, true, false, null);
     }
 
     @Test
-    public void testSaveAllChanges20() throws DatabaseException {
+    public void testSaveAllChangesEmptyStatesPacketsToUpdateNotNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, false, false, true, true, false, TEST_PACKET_ID);
     }
 
     @Test
-    public void testSaveAllChanges21() throws DatabaseException {
+    public void testSaveAllChangesEmptyComboDataPacketsToUpdateNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, false, false, true, false, true, null);
     }
 
     @Test
-    public void testSaveAllChanges22() throws DatabaseException {
+    public void testSaveAllChangesEmptyComboDataPacketsToUpdateNotNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, false, false, true, false, true, TEST_PACKET_ID);
     }
 
     @Test
-    public void testSaveAllChanges23() throws DatabaseException {
+    public void testSaveAllChangesEmptyStatesComboDataPacketsToUpdateNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, false, false, true, true, true, null);
     }
 
     @Test
-    public void testSaveAllChanges24() throws DatabaseException {
+    public void testSaveAllChangesEmptyStatesComboDataPacketsToUpdateNotNullPacketId() throws DatabaseException {
         testSaveAllChangesToBaseWithParams(false, false, false, false, true, true, true, TEST_PACKET_ID);
     }
 
@@ -476,6 +476,13 @@ public class PacketAppServiceTest {
         }
     }
 
+    /**
+     * Returns the instance of the given implementation of the {@link EntityProtoType} class.
+     *
+     * @param entityClass the entity class that is to be instantiated.
+     * @param <T>         the formal type parameter of the {@param entityClass}.
+     * @return the instance of the given entity class.
+     */
     private <T extends EntityProtoType> T instantiateEntity(Class<T> entityClass) {
         T entity;
         try {
@@ -486,6 +493,13 @@ public class PacketAppServiceTest {
         return entity;
     }
 
+    /**
+     * Returns the list of the elements of the given implementation type of the {@link EntityProtoType}.
+     *
+     * @param entityClass the class of the list elements.
+     * @param <T> the formal type parameter of the {@param entityClass}.
+     * @return the list of the elements of the given type.
+     */
     private <T extends EntityProtoType> List<T> buildEntityList(Class<T> entityClass) {
         List<T> result = new ArrayList<>();
         IntStream.rangeClosed(1, TEST_LIST_SIZE)
@@ -499,6 +513,13 @@ public class PacketAppServiceTest {
         return result;
     }
 
+    /**
+     * Checks the length of the given list to be equal to the {@link #TEST_LIST_SIZE} and the ids of the elements 
+     * of the given list to be sequentially equal to the values 1..{@link #TEST_LIST_SIZE}
+     *
+     * @param entities the list that is to be checked.
+     * @param <T> the formal type parameter of the {@param entities}.
+     */
     private <T extends EntityProtoType> void checkEntities(List<T> entities) {
         assertEquals(TEST_LIST_SIZE, entities.size());
         IntStream.range(0, TEST_LIST_SIZE)
@@ -506,7 +527,15 @@ public class PacketAppServiceTest {
                 .forEach(i -> assertEquals(Long.valueOf(i + 1), entities.get(i).getId()));
     }
 
-    private <T extends SelfSettingEntityPrototype> T selfSettingInstantiateEntity(Class<T> entityClass) {
+    /**
+     * Returns the instance of the given implementation of the {@link SelfSettingEntityPrototype} class.
+     *
+     * @param entityClass the entity class that is to be instantiated.
+     * @param <T>         the formal type parameter of the {@param entityClass}.
+     * @return the entity of the given type or null if {@link InstantiationException} or {@link IllegalAccessException}
+     * is thrown.
+     */
+    private <T extends SelfSettingEntityPrototype> T instantiateSelfSettingEntity(Class<T> entityClass) {
         T entity;
         try {
             entity = entityClass.newInstance();
@@ -516,13 +545,20 @@ public class PacketAppServiceTest {
         return entity;
     }
 
+    /**
+     * Returns the list of the elements of the given implementation type of the {@link SelfSettingEntityPrototype}.
+     *
+     * @param entityClass the class of the list elements.
+     * @param <T> the formal type parameter of the {@param entityClass}.
+     * @return the list of the elements of the given type.
+     */
     private <T extends SelfSettingEntityPrototype> List<T> buildSelfSettingEntityList(Class<T> entityClass) {
         List<T> result = new ArrayList<>();
         IntStream.rangeClosed(1, TEST_LIST_SIZE)
                 .boxed()
                 .forEach(i ->
-                        {
-                            T entity = selfSettingInstantiateEntity(entityClass);
+                {
+                    T entity = instantiateSelfSettingEntity(entityClass);
                             entity.setId((long) i);
                             result.add(entity);
                         });

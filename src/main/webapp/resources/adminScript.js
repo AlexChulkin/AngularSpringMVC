@@ -1,7 +1,12 @@
-/**
- * Created by alexc_000 on 2016-09-30.
+/*
+ * Copyright (c) 2016.  Alex Chulkin
  */
+
 'use strict';
+
+/**
+ * The script for the admin.jsp.
+ */
 
 angular.module("packetAdminApp", ["ngRoute", "ngCookies"])
     .config(function ($routeProvider) {

@@ -1,7 +1,12 @@
-/**
- * Created by achulkin on 04.06.14.
+/*
+ * Copyright (c) 2016.  Alex Chulkin
  */
+
 'use strict';
+
+/**
+ * The controller of the adminMain.html page.
+ */
 
 angular.module("packetAdminApp")
     .constant("packetListPageCount", 10)
@@ -9,7 +14,7 @@ angular.module("packetAdminApp")
     .constant("loadDataUrl", "/loadData")
     .constant("initialPacketIndex", -1)
     .controller("mainCtrl", function ($scope, $http, packetListPageCount, labelLabel, loadDataUrl,
-                                      initialPacketIndex, exchangeService, helperService) {
+                                      initialPacketIndex, exchangeService, utilsService) {
 
         var loadedNoCompts;
 
@@ -81,7 +86,7 @@ angular.module("packetAdminApp")
         };
 
         var prepareCompts = function (uploadedCompts, initialPacketInd, packetId, isPacketIdUndefined) {
-            loadedNoCompts = helperService.isEmpty(uploadedCompts);
+            loadedNoCompts = utilsService.isEmpty(uploadedCompts);
             var packetInd = initialPacketInd;
             var visitedPackets = {};
             angular.forEach(uploadedCompts, function (compt) {
@@ -108,7 +113,7 @@ angular.module("packetAdminApp")
         };
 
         var preparePackets = function (packets, packetId, isPacketIdUndefined, numOfOtherPkts) {
-            var isPacketsEmpty = helperService.isEmpty(packets);
+            var isPacketsEmpty = utilsService.isEmpty(packets);
             var loadedNoPackets = isPacketsEmpty && (isPacketIdUndefined || numOfOtherPkts === 0);
             var selPktId = exchangeService.getSelectedPacketId();
             var loadedNoSelectedPacket = isPacketsEmpty && !isPacketIdUndefined && packetId === selPktId;
@@ -135,13 +140,13 @@ angular.module("packetAdminApp")
         };
 
         var prepareStates = function (states) {
-            exchangeService.setLoadedNoStates(helperService.isEmpty(states));
+            exchangeService.setLoadedNoStates(utilsService.isEmpty(states));
             exchangeService.setAllStates(states);
             exchangeService.setAllStateLabels(states, labelLabel);
         };
 
         var prepareComboData = function (comboData) {
-            exchangeService.setLoadedNoComboData(helperService.isEmpty(comboData));
+            exchangeService.setLoadedNoComboData(utilsService.isEmpty(comboData));
             exchangeService.setComboDataDefaultSet(comboData);
             exchangeService.initializeNewComptCheckedVals();
         };

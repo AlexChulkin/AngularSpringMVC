@@ -1,7 +1,12 @@
-/**
- * Created by alexc_000 on 2016-08-10.
+/*
+ * Copyright (c) 2016.  Alex Chulkin
  */
+
 'use strict';
+
+/**
+ * The "range" and "pageCount" filters for the compts panel controller (pagination).
+ */
 
 angular.module("packetAdminApp")
     .filter("range", function ($filter) {

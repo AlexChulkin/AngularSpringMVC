@@ -1,5 +1,9 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
 // Karma configuration
-// Generated on Fri Sep 30 2016 17:25:26 GMT+0300 (Турция (лето))
+// Generated on Fri Sep 30 2016 17:25:26 GMT+0300 (Turkey (summer))
 
 module.exports = function (config) {
     config.set({

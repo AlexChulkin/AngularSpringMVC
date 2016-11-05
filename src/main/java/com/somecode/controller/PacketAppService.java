@@ -2,7 +2,7 @@
  * Copyright (c) 2016.  Alex Chulkin
  */
 
-package com.somecode.service;
+package com.somecode.controller;
 
 import com.somecode.dao.PacketAppDao;
 import com.somecode.domain.*;
@@ -67,6 +67,7 @@ public class PacketAppService {
 
     /**
      * Loads the data from the back-end to the front-end.
+     *
      * @param packetId the {@link Packet} id that is to be loaded or null if all the packets are to be loaded.
      * @return the {@link Data} instance containing {@link Packet}s, {@link Compt}s, {@link State}s and
      *         {@link ComboData}s together with the {@link ComptSupplInfo}s.
@@ -76,7 +77,7 @@ public class PacketAppService {
                 ? getMessage(LOAD_DATA_FOR_SPECIFIC_PACKET, new Object[]{packetId})
                 : getMessage(LOAD_DATA_FOR_ALL_PACKETS, null));
 
-        Data result = new Data();
+        Data.Builder result = Data.createBuilder();
         List<State> states;
 
         try {
@@ -84,8 +85,6 @@ public class PacketAppService {
         } catch (DatabaseException e) {
             states = Collections.emptyList();
         }
-
-        result.setStates(states);
 
         List<ComboData> comboDatas;
 
@@ -95,19 +94,21 @@ public class PacketAppService {
             comboDatas = Collections.emptyList();
         }
 
-        result.setComboData(comboDatas);
+        List<ComptInfo> compts = packetAppDao.loadCompts(packetId);
 
-        result.setPackets(packetAppDao.loadPackets(packetId)).setCompts(packetAppDao.loadCompts(packetId));
+        result.comboData(comboDatas).states(states).packets(packetAppDao.loadPackets(packetId)).compts(compts);
 
-        if (!result.getCompts().isEmpty() && !result.getStates().isEmpty() && !result.getComboData().isEmpty()) {
-            result.setComptSupplInfo(packetAppDao.loadComptsSupplInfo(packetId));
-            return result;
+        if (!compts.isEmpty() && !states.isEmpty() && !states.isEmpty()) {
+            result.comptSupplInfo(packetAppDao.loadComptsSupplInfo(packetId));
+        } else {
+            result.comptSupplInfo(Collections.emptyList());
         }
 
-        return result.setComptSupplInfo(Collections.emptyList());
+        return result.build();
     }
 
     /**
+     * The method saves the front-end data to the DB and returns the immutable error map.
      *
      * @param comptIdsToDelete list of the {@link Compt} ids that are to be saved.
      * @param packetIdsToDelete list of the {@link Packet} ids that are to be saved. Has no meaning if the
@@ -120,8 +121,8 @@ public class PacketAppService {
      *                                  that are to be saved.
      * @param packetId the {@link Packet} id that is to be saved or null if all the {@link Packet}s are to be
      *                 saved.
-     * @return the error map. Empty if no errors occurred. Contains special constants for the cases when either
-     *         the {@link Compt}s update or {@link Packet} update or {@link Packet} adding caused errors.
+     * @return the immutable error map. Empty if no errors occurred. Contains special constants for the cases when
+     *         either the {@link Compt}s update or {@link Packet} update or {@link Packet} adding caused errors.
      */
     public Map<String, Boolean> saveAllChangesToBase(List<Long> comptIdsToDelete,
                                                      List<Long> packetIdsToDelete,
@@ -180,6 +181,6 @@ public class PacketAppService {
             }
         }
 
-        return persistErrors;
+        return Collections.unmodifiableMap(persistErrors);
     }
 }

@@ -1,10 +1,15 @@
-/**
- * Created by alexc_000 on 2016-09-01.
+/*
+ * Copyright (c) 2016.  Alex Chulkin
  */
+
 'use strict';
 
+/**
+ * The main service allowing to exchange data among the controllers.
+ */
+
 angular.module("packetAdminApp")
-    .service('exchangeService', function ($rootScope, helperService) {
+    .service('exchangeService', function ($rootScope, utilsService) {
     var comptIdToInd;
     var loadError;
     var loadedNoStates;
@@ -97,7 +102,7 @@ angular.module("packetAdminApp")
     };
 
         var checkIfTheSameExistingPacketIsReselected = function (pkt1, pkt2) {
-        return !helperService.isUndefinedOrNull(pkt1) && !helperService.isUndefinedOrNull(pkt2) && pkt1.id === pkt2.id;
+            return !utilsService.isUndefinedOrNull(pkt1) && !utilsService.isUndefinedOrNull(pkt2) && pkt1.id === pkt2.id;
     };
 
     var getSelectedPacket = function () {
@@ -181,20 +186,20 @@ angular.module("packetAdminApp")
         };
 
     var setLoadedNoSelectedPacket = function (value) {
-        if (!helperService.isUndefinedOrNull(selectedPacketId)) {
+        if (!utilsService.isUndefinedOrNull(selectedPacketId)) {
             loadedNoPacket[selectedPacketId] = value;
         }
     };
 
     var getLoadedNoSelectedPacket = function () {
-        if (!helperService.isUndefinedOrNull(selectedPacketId)) {
+        if (!utilsService.isUndefinedOrNull(selectedPacketId)) {
             return loadedNoPacket[selectedPacketId];
         }
         return false;
     };
 
     var setLoadedNoUnSelectedPacket = function (value, pktId) {
-        if (!helperService.isUndefinedOrNull(pktId)) {
+        if (!utilsService.isUndefinedOrNull(pktId)) {
             loadedNoPacket[pktId] = value;
         }
     };
@@ -809,8 +814,12 @@ angular.module("packetAdminApp")
     };
 });
 
+/**
+ * The small utils service.
+ */
+
 angular.module("packetAdminApp")
-    .service('helperService', function () {
+    .service('utilsService', function () {
 
         var isUndefinedOrNull = function (value) {
             return angular.isUndefined(value) || value === null

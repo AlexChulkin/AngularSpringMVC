@@ -1,7 +1,12 @@
-/**
- * Created by alexc_000 on 2016-09-20.
+/*
+ * Copyright (c) 2016.  Alex Chulkin
  */
+
 'use strict';
+
+/**
+ * The blacklist directive for the comptsPanel controller.
+ */
 
 angular.module("packetAdminApp")
     .directive('blacklist', function (exchangeService) {

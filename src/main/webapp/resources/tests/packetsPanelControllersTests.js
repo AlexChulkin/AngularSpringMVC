@@ -1,10 +1,17 @@
-/**
- * Created by alexc_000 on 2016-10-05.
+/*
+ * Copyright (c) 2016.  Alex Chulkin
  */
+
+'use strict';
+
+/**
+ * The packetsPanelControllers tests
+ */
+
 describe("Packets Panel Controller Test", function () {
     var backend;
-    var mockExchangeService, mockHelperService, controller, mockScope, mockCookies;
-    var fakeSelectedPktId, fakeComptIdsToUpdate, fakeAllStates, fakeNewComptLabels,
+    var mockExchangeService, mockUtilsService, controller, mockScope, mockCookies;
+    var fakeSelectedPktId, fakeComptIdsToUpdate, fakeComptIdsToDelete, fakeAllStates, fakeNewComptLabels,
         fakeAllCheckedComboData, fakeInitialStateId, fakeAllPackets, fakeNewPackets, fakeSavedPktId, fakeDeletedPktId,
         fakeLoadErrorValue, fakeLoadedNoComboDataValue, fakeLoadedNoStatesValue, fakeMinOrMaxValue, fakeNewPktId;
     var forbiddenCallTriggered;
@@ -68,7 +75,7 @@ describe("Packets Panel Controller Test", function () {
         fakeDeletedPktId = 2;
         fakeNewPktId = 3;
 
-        mockHelperService = {
+        mockUtilsService = {
             isEmpty: function () {
             }
         };
@@ -382,7 +389,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildHttpError(errorStatusBadRequest_);
                 buildDataParams_fullStuff();
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpError);
@@ -414,7 +421,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildHttpError(errorStatusNotFound_);
                 buildDataParams_fullStuff();
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpError);
@@ -446,7 +453,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildHttpError(errorStatusBadRequest_);
                 buildDataParams_fullStuff(fakeSavedPktId);
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpError);
@@ -473,7 +480,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildHttpError(errorStatusNotFound_);
                 buildDataParams_fullStuff(fakeSavedPktId);
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpError);
@@ -500,7 +507,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildHttpError(errorStatusNotFound_);
                 buildDataParams_fullStuff();
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpError);
@@ -532,7 +539,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildHttpError(errorRequestTimeout);
                 buildDataParams_fullStuff();
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpError);
@@ -563,7 +570,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildHttpError(errorRequestTimeout);
                 buildDataParams_fullStuff(fakeSavedPktId);
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpError);
@@ -594,7 +601,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildDataParams_fullStuff(fakeSavedPktId);
                 buildResponse_error_addPackets();
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
@@ -619,7 +626,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildDataParams_fullStuff();
                 buildResponse_error_updatePackets();
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
@@ -649,7 +656,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildDataParams_fullStuff(fakeSavedPktId);
                 buildResponse_error_updatePackets();
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
@@ -674,7 +681,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildDataParams_fullStuff();
                 buildResponse_error_updateCompts();
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
@@ -704,7 +711,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildDataParams_fullStuff(fakeSavedPktId);
                 buildResponse_error_updateCompts();
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
@@ -728,7 +735,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildDataParams_fullStuff();
                 buildResponse_success();
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
@@ -757,7 +764,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildDataParams_fullStuff(fakeSavedPktId);
                 buildResponse_success();
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
@@ -783,7 +790,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildDataParams_fullStuff();
                 buildResponse_allErrors();
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
@@ -818,7 +825,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildDataParams_fullStuff(fakeSavedPktId);
                 buildResponse_allErrors();
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
@@ -849,7 +856,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildDataParams_fullStuff(fakeSavedPktId);
                 buildResponse_allErrors();
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 buildSpyOnWindowService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
@@ -880,7 +887,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildDataParams_fullStuff(fakeSavedPktId);
                 buildResponse_success();
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
             }));
@@ -905,7 +912,7 @@ describe("Packets Panel Controller Test", function () {
                 buildSpiesReturnValues_fullStuff();
                 buildDataParams_fullStuff();
                 buildResponse_success();
-                buildSpiesOnMockHelperService(false);
+                buildSpiesOnMockUtilsService(false);
                 buildSpiesOnMockExchangeService();
                 backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
             }));
@@ -925,7 +932,7 @@ describe("Packets Panel Controller Test", function () {
             buildSpiesReturnValues_woutDelCompts();
             buildDataParams_woutDelCompts();
             buildResponse_success();
-            buildSpiesOnMockHelperService(true);
+            buildSpiesOnMockUtilsService(true);
             buildSpiesOnMockExchangeService();
             backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
@@ -945,7 +952,7 @@ describe("Packets Panel Controller Test", function () {
             buildSpiesReturnValues_woutDelCompts();
             buildDataParams_woutDelCompts(fakeSavedPktId);
             buildResponse_success();
-            buildSpiesOnMockHelperService(true);
+            buildSpiesOnMockUtilsService(true);
             buildSpiesOnMockExchangeService();
             backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
@@ -964,7 +971,7 @@ describe("Packets Panel Controller Test", function () {
             buildSpiesReturnValues_woutUpdCompts();
             buildDataParams_woutUpdCompts();
             buildResponse_success();
-            buildSpiesOnMockHelperService(false);
+            buildSpiesOnMockUtilsService(false);
             buildSpiesOnMockExchangeService();
             backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
@@ -983,7 +990,7 @@ describe("Packets Panel Controller Test", function () {
             buildSpiesReturnValues_woutAddPktsAndAddCompts();
             buildDataParams_woutAddPktsAndAddCompts();
             buildResponse_success();
-            buildSpiesOnMockHelperService(false);
+            buildSpiesOnMockUtilsService(false);
             buildSpiesOnMockExchangeService();
             backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
@@ -1002,7 +1009,7 @@ describe("Packets Panel Controller Test", function () {
             buildSpiesReturnValues_woutUpdPktAndWithEmptyNewPkt();
             buildDataParams_woutUpdPktAndWithEmptyNewPkt();
             buildResponse_success();
-            buildSpiesOnMockHelperService(false);
+            buildSpiesOnMockUtilsService(false);
             buildSpiesOnMockExchangeService();
             backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
@@ -1021,7 +1028,7 @@ describe("Packets Panel Controller Test", function () {
             buildSpiesReturnValues_woutUpdPktAndWithEmptyNewPkt();
             buildDataParams_woutUpdPktAndWithEmptyNewPkt(fakeSavedPktId);
             buildResponse_success();
-            buildSpiesOnMockHelperService(false);
+            buildSpiesOnMockUtilsService(false);
             buildSpiesOnMockExchangeService();
             backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
@@ -1040,7 +1047,7 @@ describe("Packets Panel Controller Test", function () {
             buildSpiesReturnValues_woutUpdPktState();
             buildDataParams_woutUpdPktState();
             buildResponse_success();
-            buildSpiesOnMockHelperService(false);
+            buildSpiesOnMockUtilsService(false);
             buildSpiesOnMockExchangeService();
             backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
@@ -1059,7 +1066,7 @@ describe("Packets Panel Controller Test", function () {
             buildSpiesReturnValues_woutUpdPktState();
             buildDataParams_woutUpdPktState(fakeSavedPktId);
             buildResponse_success();
-            buildSpiesOnMockHelperService(false);
+            buildSpiesOnMockUtilsService(false);
             buildSpiesOnMockExchangeService();
             backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
@@ -1078,7 +1085,7 @@ describe("Packets Panel Controller Test", function () {
             buildSpiesReturnValues_woutDelPkts();
             buildDataParams_woutDelPkts();
             buildResponse_success();
-            buildSpiesOnMockHelperService(false);
+            buildSpiesOnMockUtilsService(false);
             buildSpiesOnMockExchangeService();
             backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
@@ -1096,7 +1103,7 @@ describe("Packets Panel Controller Test", function () {
             buildSpiesReturnValues_woutDelPkts();
             buildDataParams_woutDelPkts(fakeSavedPktId);
             buildResponse_success();
-            buildSpiesOnMockHelperService(false);
+            buildSpiesOnMockUtilsService(false);
             buildSpiesOnMockExchangeService();
             backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
@@ -1114,7 +1121,7 @@ describe("Packets Panel Controller Test", function () {
             buildSpiesReturnValues_woutDelPkts();
             buildDataParams_woutDelPkts();
             buildResponse_success();
-            buildSpiesOnMockHelperService(false);
+            buildSpiesOnMockUtilsService(false);
             buildSpiesOnMockExchangeService();
             backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
@@ -1132,7 +1139,7 @@ describe("Packets Panel Controller Test", function () {
             buildSpiesReturnValues_woutDelPkts();
             buildDataParams_woutDelPkts(fakeSavedPktId);
             buildResponse_success();
-            buildSpiesOnMockHelperService(false);
+            buildSpiesOnMockUtilsService(false);
             buildSpiesOnMockExchangeService();
             backend.expect("POST", saveAllChangesToBaseUrl_, {dataParams: dataParams}).respond(httpResponse);
         }));
@@ -1148,7 +1155,7 @@ describe("Packets Panel Controller Test", function () {
         "w/out upd/del compts as well as w/out add/upd/del packets", function () {
         beforeEach(inject(function () {
             buildSpiesReturnValues_woutEverything();
-            buildSpiesOnMockHelperService(false);
+            buildSpiesOnMockUtilsService(false);
             buildSpiesOnMockExchangeService();
             backend.when(saveAllChangesToBaseUrl_).respond(function () {
                 forbiddenCallTriggered = true;
@@ -1166,7 +1173,7 @@ describe("Packets Panel Controller Test", function () {
         "w/out upd/del compts as well as w/out add/upd/del packets", function () {
         beforeEach(inject(function () {
             buildSpiesReturnValues_woutEverything();
-            buildSpiesOnMockHelperService(false);
+            buildSpiesOnMockUtilsService(false);
             buildSpiesOnMockExchangeService();
             backend.when(saveAllChangesToBaseUrl_).respond(function () {
                 forbiddenCallTriggered = true;
@@ -1636,8 +1643,8 @@ describe("Packets Panel Controller Test", function () {
         }
     };
 
-    var buildSpiesOnMockHelperService = function (isEmpty) {
-        spyOn(mockHelperService, 'isEmpty').and.returnValue(isEmpty);
+    var buildSpiesOnMockUtilsService = function (isEmpty) {
+        spyOn(mockUtilsService, 'isEmpty').and.returnValue(isEmpty);
     };
 
     var buildSpyOnWindowService = function () {
@@ -1656,7 +1663,7 @@ describe("Packets Panel Controller Test", function () {
             $scope: mockScope,
             $http: $http,
             exchangeService: mockExchangeService,
-            helperService: mockHelperService
+            utilsService: mockUtilsService
         });
     }
 });

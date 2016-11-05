@@ -172,19 +172,19 @@ public class PacketAppDaoImpl implements PacketAppDao {
             Packet onlyResult = packetRepository.findOne(packetId);
             if (!Optional.ofNullable(onlyResult).isPresent()) {
                 log.error(getMessage(PACKET_NOT_LOADED, new Object[]{packetId}));
-                return result;
+                return Collections.unmodifiableList(result);
             }
             result.add(new PacketInfo(onlyResult));
         } else {
             packetRepository.findAll().forEach(p -> result.add(new PacketInfo(p)));
             if (result.isEmpty()) {
                 log.error(getMessage(NO_PACKETS_LOADED, null));
-                return result;
+                return Collections.unmodifiableList(result);
             }
         }
         log.info(getMessage(ALL_PACKETS_LOADED_MESSAGE,
                 new Object[]{result.stream().map(PacketInfo::getId).collect(Collectors.toList())}));
-        return result;
+        return Collections.unmodifiableList(result);
     }
 
     /**
@@ -212,7 +212,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
         }
 
         log.info(getMessage(ALL_COMPTSSUPPLINFO_LOADED, new Object[]{result}));
-        return result;
+        return Collections.unmodifiableList(result);
     }
 
     /**
@@ -279,7 +279,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
             throw new EmptyStateTableException();
         }
         log.info(getMessage(ALL_STATES_LOADED_MESSAGE, new Object[]{allStates}));
-        return allStates;
+        return Collections.unmodifiableList(allStates);
     }
 
     /**
@@ -312,7 +312,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
         log.info(getMessage(ALL_COMBODATA_LOADED_MESSAGE, new Object[]{allComboData}));
 
         if (checkComboDataListsForEquality(allComboData, oldAllComboData)) {
-            return allComboData;
+            return Collections.unmodifiableList(allComboData);
         }
         mapComboLabelsToIndices = IntStream
                 .range(0, allComboData.size())
@@ -322,7 +322,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
 
         log.info(getMessage(MAP_COMBODATA_LABELS_TO_INDICES_MESSAGE, new Object[]{mapComboLabelsToIndices}));
 
-        return allComboData;
+        return Collections.unmodifiableList(allComboData);
     }
 
     /**
@@ -347,7 +347,8 @@ public class PacketAppDaoImpl implements PacketAppDao {
      */
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     private List<String> getSortedLabels(List<ComboData> comboDataList) {
-        return comboDataList.stream().map(ComboData::getLabel).sorted().collect(Collectors.toList());
+        List<String> result = comboDataList.stream().map(ComboData::getLabel).sorted().collect(Collectors.toList());
+        return Collections.unmodifiableList(result);
     }
 
     /**
@@ -369,7 +370,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
                 ? getMessage(ALL_COMPTS_FROM_SPECIFIC_PACKET_LOADED_MESSAGE, new Object[]{packetId, result})
                 : getMessage(ALL_COMPTS_FROM_ALL_PACKETS_LOADED_MESSAGE, new Object[]{result})
         );
-        return result;
+        return Collections.unmodifiableList(result);
     }
 
     /**
@@ -382,7 +383,9 @@ public class PacketAppDaoImpl implements PacketAppDao {
      */
     @Transactional
     private List<Integer> getIndicesFromVals(List<String> labels, Long comptId, Long packetId) {
-        return labels.stream().map(v -> mapLabelToIndex(v, comptId, packetId)).collect(Collectors.toList());
+        List<Integer> result
+                = labels.stream().map(v -> mapLabelToIndex(v, comptId, packetId)).collect(Collectors.toList());
+        return Collections.unmodifiableList(result);
     }
 
     /**
@@ -476,7 +479,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
         }
         result.forEach((k, v) -> log.info(getMessage(COMPT_UPDATE_SUCCESS_REPORT, new Object[]{k, v})));
 
-        return result;
+        return Collections.unmodifiableMap(result);
     }
 
     /**
@@ -511,7 +514,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
                     new Object[]{idsToDeleteSet}));
         }
 
-        return result;
+        return Collections.unmodifiableList(result);
     }
 
     /**
@@ -521,7 +524,8 @@ public class PacketAppDaoImpl implements PacketAppDao {
      */
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     private List<Long> getIdsFromEntities(EntityType[] entities) {
-        return Arrays.stream(entities).mapToLong(EntityType::getId).boxed().collect(Collectors.toList());
+        List<Long> result = Arrays.stream(entities).mapToLong(EntityType::getId).boxed().collect(Collectors.toList());
+        return Collections.unmodifiableList(result);
     }
 
     /**
@@ -553,7 +557,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
             log.info(getMessage(PACKETS_DELETE_NON_EXISTING_IDS, new Object[]{idsToDeleteSet.removeAll(result)}));
         }
 
-        return result;
+        return Collections.unmodifiableList(result);
     }
 
     /**
@@ -734,6 +738,6 @@ public class PacketAppDaoImpl implements PacketAppDao {
             }
             result.add(newCompt);
         }
-        return result;
+        return Collections.unmodifiableList(result);
     }
 }

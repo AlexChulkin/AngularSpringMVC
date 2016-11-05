@@ -120,7 +120,7 @@ public abstract class AbstractDbunitTransactionalJUnit4SpringContextTests
         }
 
         /**
-         * Gets the bean implementing the given class {@param <T>} from the context.
+         * Gets the bean implementing the given class {@param {@literal <T>}} from the context.
          *
          * @param testCtx the test context.
          * @param tClass the Class class.

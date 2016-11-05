@@ -1,6 +1,13 @@
-/**
- * Created by alexc_000 on 2016-10-12.
+/*
+ * Copyright (c) 2016.  Alex Chulkin
  */
+
+'use strict';
+
+/**
+ * The comptsPanelControllers tests
+ */
+
 describe("Compts Panel Controller Test", function () {
     var mockExchangeService, controller, mockScope;
     var fakeComptIdsToUpdate, fakeComptIdsToDelete, fakeAllStates, fakeAllStateLabels,

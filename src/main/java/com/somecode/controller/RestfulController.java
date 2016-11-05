@@ -7,7 +7,6 @@ package com.somecode.controller;
 import com.google.gson.Gson;
 import com.somecode.domain.DataParams;
 import com.somecode.domain.RequestObj;
-import com.somecode.service.PacketAppService;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
@@ -70,7 +69,7 @@ public class RestfulController {
      *
      * @param json the JSON transformation of the http front-end request.
      * @return the JSON transformation of the service's
-     *         {@link com.somecode.service.PacketAppService#getUserRole(String, String)} method.
+     *         {@link com.somecode.controller.PacketAppService#getUserRole(String, String)} method.
      */
     @RequestMapping(value = USER_LOGIN_MAPPING, method = RequestMethod.POST)
     @ResponseBody

@@ -1,10 +1,16 @@
+/*
+ * Copyright (c) 2016.  Alex Chulkin
+ */
+
+'use strict';
+
 /**
- * Created by alexc_000 on 2016-10-01.
+ * The adminMainControllers tests
  */
 
 describe("Admin Main Controller Test", function () {
     var backend;
-    var mockExchangeService, mockHelperService, controller, mockScope;
+    var mockExchangeService, mockUtilsService, controller, mockScope;
     var initialPacketIndex_, labelLabel_, loadDataUrl_;
     var fakeComptsLength, fakeMinOrMaxValue, fakePacketIndValue, fakeSelectedPktId, fakeLoadErrorValue,
         fakeLoadedNoComboDataValue, fakeLoadedNoStatesValue, fakePacketIsAlreadySelectedAtLeastOnceValue;
@@ -31,7 +37,7 @@ describe("Admin Main Controller Test", function () {
         fakePacketIsAlreadySelectedAtLeastOnceValue = true;
         errorStatus = 500;
 
-        mockHelperService = {
+        mockUtilsService = {
             isEmpty: function () {
             }
         };
@@ -405,7 +411,7 @@ describe("Admin Main Controller Test", function () {
 
         it("Prepare packets performs correctly", function () {
             isPacketIdUndefined = angular.isUndefined(packetId);
-            expect(mockHelperService.isEmpty).toHaveBeenCalledWith(response.packets);
+            expect(mockUtilsService.isEmpty).toHaveBeenCalledWith(response.packets);
             expect(mockExchangeService.getSelectedPacketId).toHaveBeenCalledWith();
             expect(mockExchangeService.setLoadedNoPackets).toHaveBeenCalledWith(isEmpty
                 && (isPacketIdUndefined || numOfOtherPkts === 0));
@@ -433,7 +439,7 @@ describe("Admin Main Controller Test", function () {
         });
 
         it("Prepare states performs correctly", function () {
-            expect(mockHelperService.isEmpty).toHaveBeenCalledWith(response.states);
+            expect(mockUtilsService.isEmpty).toHaveBeenCalledWith(response.states);
             expect(mockExchangeService.setLoadedNoStates).toHaveBeenCalledWith(isEmpty);
             expect(mockExchangeService.setLoadedNoStates).not.toHaveBeenCalledWith(!isEmpty);
             expect(mockExchangeService.setAllStates).toHaveBeenCalledWith(response.states);
@@ -441,7 +447,7 @@ describe("Admin Main Controller Test", function () {
         });
 
         it("Prepare ComboData performs correctly", function () {
-            expect(mockHelperService.isEmpty).toHaveBeenCalledWith(response.comboData);
+            expect(mockUtilsService.isEmpty).toHaveBeenCalledWith(response.comboData);
             expect(mockExchangeService.setLoadedNoComboData).toHaveBeenCalledWith(isEmpty);
             expect(mockExchangeService.setLoadedNoStates).not.toHaveBeenCalledWith(!isEmpty);
             expect(mockExchangeService.setComboDataDefaultSet).toHaveBeenCalledWith(response.comboData);
@@ -529,7 +535,7 @@ describe("Admin Main Controller Test", function () {
     var buildLoadedComptSupplInfo = function (comptIds, stateIds, comboDataIds, checkeds) {
         var comptSupplInfo = [];
         for (var i = 1; i <= comptIds.length; i++) {
-            csi = {};
+            var csi = {};
             csi.id = i;
             csi.label = 'cd' + comboDataIds[i - 1];
             csi.comptId = comptIds[i - 1];
@@ -589,14 +595,14 @@ describe("Admin Main Controller Test", function () {
     };
 
     var buildController = function ($controller, $rootScope, $http, isEmptyVal, dataParams, response) {
-        spyOn(mockHelperService, 'isEmpty').and.returnValue(isEmptyVal);
+        spyOn(mockUtilsService, 'isEmpty').and.returnValue(isEmptyVal);
         mockScope = $rootScope.$new();
         backend.expect("POST", loadDataUrl_, {dataParams: dataParams}).respond(response);
         controller = $controller("mainCtrl", {
             $scope: mockScope,
             $http: $http,
             exchangeService: mockExchangeService,
-            helperService: mockHelperService
+            utilsService: mockUtilsService
         });
     }
 });

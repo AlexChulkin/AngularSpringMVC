@@ -1,6 +1,13 @@
-/**
- * Created by alexc_000 on 2016-10-13.
+/*
+ * Copyright (c) 2016.  Alex Chulkin
  */
+
+'use strict';
+
+/**
+ * The Exchange and Utils services tests
+ */
+
 describe("Exchange and Helper Services Test", function () {
 
     beforeEach(function () {
@@ -43,7 +50,7 @@ describe("Exchange and Helper Services Test", function () {
 
     describe('Test mockExchangeService functions', function () {
         var mockExchangeService;
-        var mockHelperService;
+        var mockUtilsService;
         var mockScope;
         var selPkt = {id: "1", stateId: "1"};
         var selPktInd = 1;
@@ -54,9 +61,9 @@ describe("Exchange and Helper Services Test", function () {
         var selComptLabels = {"1": "lbl1", "2": "lbl2"};
         var oldComptLabels = {"3": "lbl3", "4": "lbl4"};
 
-        beforeEach(inject(function ($rootScope, exchangeService, helperService) {
+        beforeEach(inject(function ($rootScope, exchangeService, utilsService) {
             mockScope = $rootScope;
-            mockHelperService = helperService;
+            mockUtilsService = utilsService;
             mockExchangeService = exchangeService;
             mockExchangeService.init();
             prepareSpies();
@@ -1116,20 +1123,20 @@ describe("Exchange and Helper Services Test", function () {
                 });
             });
 
-        describe('Helper service test', function () {
+        describe('Utils service test', function () {
             it('IsUndefinedOrNull() test', function () {
-                expect(mockHelperService.isUndefinedOrNull(selCompts[0])).toBeFalsy();
-                expect(mockHelperService.isUndefinedOrNull(2)).toBeFalsy();
-                expect(mockHelperService.isUndefinedOrNull(false)).toBeFalsy();
-                expect(mockHelperService.isUndefinedOrNull('text')).toBeFalsy();
-                expect(mockHelperService.isUndefinedOrNull(null)).toBeTruthy();
-                expect(mockHelperService.isUndefinedOrNull(undefined)).toBeTruthy();
+                expect(mockUtilsService.isUndefinedOrNull(selCompts[0])).toBeFalsy();
+                expect(mockUtilsService.isUndefinedOrNull(2)).toBeFalsy();
+                expect(mockUtilsService.isUndefinedOrNull(false)).toBeFalsy();
+                expect(mockUtilsService.isUndefinedOrNull('text')).toBeFalsy();
+                expect(mockUtilsService.isUndefinedOrNull(null)).toBeTruthy();
+                expect(mockUtilsService.isUndefinedOrNull(undefined)).toBeTruthy();
             });
 
             it('IsUndefinedOrNull() test', function () {
-                expect(mockHelperService.isEmpty(selCompts)).toBeFalsy();
-                expect(mockHelperService.isEmpty([2, 'false'])).toBeFalsy();
-                expect(mockHelperService.isEmpty([])).toBeTruthy();
+                expect(mockUtilsService.isEmpty(selCompts)).toBeFalsy();
+                expect(mockUtilsService.isEmpty([2, 'false'])).toBeFalsy();
+                expect(mockUtilsService.isEmpty([])).toBeTruthy();
             });
         });
 

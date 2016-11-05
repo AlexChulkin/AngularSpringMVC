@@ -1,7 +1,12 @@
-/**
- * Created by alexc_000 on 2016-08-30.
+/*
+ * Copyright (c) 2016.  Alex Chulkin
  */
+
 'use strict';
+
+/**
+ * The packetsPanel.html controller.
+ */
 
 angular.module("packetAdminApp")
     .constant("packetListActiveClass", "btn-primary btn-md")
@@ -31,7 +36,7 @@ angular.module("packetAdminApp")
     .constant("updatePacketsErrorRoot", "updated")
     .constant("addOrUpdatePacketsErrorSuffix", " packets were not persisted to the DB. Try to solve the problem and " +
         "then re-push the saving button. DON'T RESTORE THE DATA FROM THE BASE! Otherwise you may loose your changes.")
-    .controller("packetsPanelCtrl", function ($scope, $http, $window, $cookies, exchangeService, helperService,
+    .controller("packetsPanelCtrl", function ($scope, $http, $window, $cookies, exchangeService, utilsService,
                                               packetListActiveClass, packetListNonActiveClass, updateCompts,
                                               updatePackets, addPackets, updatePacketsErrorRoot,
                                               saveAllChangesToBaseUrl, errorStatusNotFound, errorStatusBadRequest,
@@ -198,7 +203,7 @@ angular.module("packetAdminApp")
             var comptIdsToDelete = [];
             angular.forEach(packetsToSave, function (unused, pktId) {
                 var comptIdsTaggedToDelete = exchangeService.getComptIdsToDelete(pktId);
-                if (!helperService.isEmpty(comptIdsTaggedToDelete)) {
+                if (!utilsService.isEmpty(comptIdsTaggedToDelete)) {
                     comptIdsToDelete = comptIdsToDelete.concat(comptIdsTaggedToDelete);
                 }
             });

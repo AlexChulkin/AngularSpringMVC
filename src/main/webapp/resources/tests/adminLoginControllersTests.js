@@ -1,7 +1,12 @@
-/**
- * Created by alexc_000 on 2016-09-30.
+/*
+ * Copyright (c) 2016.  Alex Chulkin
  */
+
 'use strict';
+
+/**
+ * The adminLoginControllers tests
+ */
 
 describe("Login Controller Test", function () {
     var mockScope;
@@ -19,7 +24,7 @@ describe("Login Controller Test", function () {
     var backend;
     var error;
     var errorStatus;
-    var mockExchangeService, mockHelperService;
+    var mockExchangeService, mockUtilsService;
 
     beforeEach(function () {
         module("packetAdminApp");
@@ -48,11 +53,11 @@ describe("Login Controller Test", function () {
         mockCookies.put(username_label, initial_username_value);
         mockCookies.put(role_label, initial_role_value);
 
-        mockHelperService = {
+        mockUtilsService = {
             isUndefinedOrNull: function () {
             }
         };
-        spyOn(mockHelperService, 'isUndefinedOrNull').and.returnValue(false);
+        spyOn(mockUtilsService, 'isUndefinedOrNull').and.returnValue(false);
 
         mockExchangeService = {
             init: function () {
@@ -65,7 +70,7 @@ describe("Login Controller Test", function () {
             $http: $http,
             $timeout: mockTimeout,
             exchangeService: mockExchangeService,
-            helperService: mockHelperService
+            utilsService: mockUtilsService
         });
     }));
 
@@ -93,7 +98,7 @@ describe("Login Controller Test", function () {
         it("isUserAuthorized() performs correctly", function () {
             mockScope.data.authorizationIsInProcess = true;
             expect(mockScope.isUserAuthorized()).toBeFalsy();
-            expect(mockHelperService.isUndefinedOrNull).toHaveBeenCalledWith(mockScope.data.role);
+            expect(mockUtilsService.isUndefinedOrNull).toHaveBeenCalledWith(mockScope.data.role);
             mockScope.data.authorizationIsInProcess = false;
             expect(mockScope.isUserAuthorized()).toBeTruthy();
         });

@@ -7,7 +7,6 @@ package com.somecode.controller;
 import com.google.gson.Gson;
 import com.somecode.dao.DaoTestConfig;
 import com.somecode.domain.*;
-import com.somecode.service.PacketAppService;
 import com.somecode.utils.TestLogAppender;
 import com.somecode.utils.Utils;
 import org.apache.log4j.Level;
@@ -321,10 +320,11 @@ public class RestfulControllerTest {
                 testComptSupplInfos.add(comptSupplInfo);
             }
         }
-        
-        Data data = new Data();
-        data.setComboData(testComboDatas).setStates(testStates).setPackets(testPackets).setCompts(testCompts)
-                .setComptSupplInfo(testComptSupplInfos);
+
+        Data.Builder builder = Data.createBuilder();
+        builder.comboData(testComboDatas).states(testStates).packets(testPackets).compts(testCompts)
+                .comptSupplInfo(testComptSupplInfos);
+        Data data = builder.build();
 
         doReturn(data).when(serviceMock).loadData(any(Long.class));
 

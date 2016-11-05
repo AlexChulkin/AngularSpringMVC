@@ -1,6 +1,13 @@
-/**
- * Created by alexc_000 on 2016-10-17.
+/*
+ * Copyright (c) 2016.  Alex Chulkin
  */
+
+'use strict';
+
+/**
+ * The directive tests
+ */
+
 describe("Directive Tests", function () {
     var $rootScope,
         mockExchangeService,
@@ -8,7 +15,7 @@ describe("Directive Tests", function () {
         el,
         $body = angular.element('<div>'),
         simpleHtml = '<input id="newComptLabel" class="text" name="newLabelName" ng-model="data.newLabel"' +
-            'ng-trim="true" ng-maxlength="70" blacklist="blacklist" required/>';
+            ' ng-trim="true" ng-maxlength="70" blacklist="blacklist" required/>';
     
     beforeEach(module("packetAdminApp"));
 

@@ -1,7 +1,12 @@
-/**
- * Created by alexc_000 on 2016-08-30.
+/*
+ * Copyright (c) 2016.  Alex Chulkin
  */
+
 'use strict';
+
+/**
+ * The comptsPanel.html controller.
+ */
 
 var app = angular.module("packetAdminApp");
 app

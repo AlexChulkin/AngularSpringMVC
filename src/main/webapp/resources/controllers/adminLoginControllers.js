@@ -1,7 +1,12 @@
-/**
- * Created by alexc_000 on 2016-09-06.
+/*
+ * Copyright (c) 2016.  Alex Chulkin
  */
+
 'use strict';
+
+/**
+ * The controller of the adminLogin.html page.
+ */
 
 angular.module("packetAdminApp")
     .constant("authUrl", "/users/login")
@@ -9,7 +14,7 @@ angular.module("packetAdminApp")
     .constant("loginUrl", "/login")
     .constant("timeoutLogoutDelay", 30 * 60 * 1000)
     .controller("loginCtrl", function ($scope, $http, $location, $cookies, $timeout, authUrl, mainUrl, loginUrl,
-                                       timeoutLogoutDelay, exchangeService, helperService) {
+                                       timeoutLogoutDelay, exchangeService, utilsService) {
 
         var timeoutLogoutPromise;
 
@@ -43,7 +48,7 @@ angular.module("packetAdminApp")
         };
 
         $scope.isUserAuthorized = function () {
-            return !helperService.isUndefinedOrNull($scope.data.role) && !$scope.data.authorizationIsInProcess;
+            return !utilsService.isUndefinedOrNull($scope.data.role) && !$scope.data.authorizationIsInProcess;
         };
 
         $scope.logout = function () {

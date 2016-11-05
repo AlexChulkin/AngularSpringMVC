@@ -1,9 +1,17 @@
-/**
- * Created by alexc_000 on 2016-10-17.
+/*
+ * Copyright (c) 2016.  Alex Chulkin
  */
+
+'use strict';
+
+/**
+ * The filters tests
+ */
+
 describe("Filters Tests", function () {
     var rangeFilter;
     var pageCountFilter;
+    var fakeData, fakePage, fakeSize;
 
     beforeEach(
         module("packetAdminApp")
@@ -15,9 +23,9 @@ describe("Filters Tests", function () {
     }));
 
     it("Range filter test", function () {
-        var fakeData = 2;
-        var fakePage = 1;
-        var fakeSize = 3;
+        fakeData = 2;
+        fakePage = 1;
+        fakeSize = 3;
         expect(rangeFilter(fakeData)).toEqual(fakeData);
         expect(rangeFilter(fakeData, fakePage)).toEqual(fakeData);
         expect(rangeFilter(fakeData, fakePage, fakeSize)).toEqual(fakeData);
@@ -42,16 +50,16 @@ describe("Filters Tests", function () {
         expect(rangeFilter(fakeData, fakePage, fakeSize)).toEqual(['c']);
     });
 
-    it("Range filter test", function () {
-        var fakeData = 2;
-        var fakeSize = 3;
+    it("Page count filter test", function () {
+        fakeData = 2;
+        fakeSize = 3;
         expect(pageCountFilter(fakeData)).toEqual(fakeData);
         expect(pageCountFilter(fakeData, fakeSize)).toEqual(fakeData);
-        var fakeData = ['a', 'b', 'c', 'd'];
+        fakeData = ['a', 'b', 'c', 'd'];
         expect(pageCountFilter(fakeData, fakeSize)).toEqual([1, 2]);
-        var fakeSize = 2;
+        fakeSize = 2;
         expect(pageCountFilter(fakeData, fakeSize)).toEqual([1, 2]);
-        var fakeSize = 1;
+        fakeSize = 1;
         expect(pageCountFilter(fakeData, fakeSize)).toEqual([1, 2, 3, 4]);
     });
 });
