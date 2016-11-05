@@ -77,7 +77,7 @@ public class SeleniumTests {
 
         WebElement loginBtn = webDriver.findElement(By.cssSelector("#loginBtn"));
         loginBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
 
         assertEquals("Unsuccessful authentication URL is improper",
                 "http://localhost:8084/" + "#/login",
@@ -100,17 +100,17 @@ public class SeleniumTests {
 
         WebElement saveAllBtn = webDriver.findElement(By.id("saveAllBtn"));
         saveAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
 
         checkComptsPanel(true, true, true, atLeastOnePktIsLoaded);
 
         WebElement addPktBtn = webDriver.findElement(By.id("addPacketBtn"));
         addPktBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         checkComptsPanel(false, true, true, atLeastOnePktIsLoaded);
         WebElement selectBtn = webDriver.findElement(By.cssSelector("div.packet-buttons-div>a:nth-child(1)"));
         selectBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         checkComptsPanel(false, false, true, true);
 
         WebElement addComptBtnEl = webDriver.findElement(By.cssSelector("#addComptBtn"));
@@ -157,7 +157,7 @@ public class SeleniumTests {
         );
         newComptLabelEl.sendKeys(weirdButProperLabel);
         addComptBtnEl.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         WebElement blacklistDiv = webDriver.findElement(By.cssSelector("#blacklist"));
         assertFalse("Compt adding button is enabled for already used label", addComptBtnEl.isEnabled());
         assertNotNull("Error 'Label is not unique' is not shown", blacklistDiv);
@@ -238,12 +238,12 @@ public class SeleniumTests {
         inputSelect2.selectByVisibleText(textForSelect[1]);
         newComptLabelEl.sendKeys("newInputSelectVals");
         addComptBtnEl.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 2", 2, paginationBtns.size());
 
         paginationBtns.get(1).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
 
         List<WebElement> comptsSpans2 = webDriver.findElements(By.cssSelector("td>span"));
         assertEquals("Improper number of compts and spans was added after clicking the 'addComptBtn'",
@@ -272,17 +272,17 @@ public class SeleniumTests {
         }
 
         saveAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
 
         WebElement reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
         reloadAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
         assertTrue("More or less than ten compts on the first(full) page", deleteComptBtns.size() == 10);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 2", 2, paginationBtns.size());
         paginationBtns.get(1).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
         assertTrue("More or less than one compt on the second page", deleteComptBtns.size() == 1);
 
@@ -290,29 +290,29 @@ public class SeleniumTests {
         newComptLabelEl.sendKeys("thisNewComptWontBeSaved");
         addComptBtnEl = webDriver.findElement(By.cssSelector("#addComptBtn"));
         addComptBtnEl.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
         assertTrue("More or less than 2 compts on the second page", deleteComptBtns.size() == 2);
 
         reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
         reloadAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 2", 2, paginationBtns.size());
         paginationBtns.get(1).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
         assertTrue("More or less than one compt on the second page", deleteComptBtns.size() == 1);
 
         deleteComptBtns.get(0).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
         reloadAllBtn.click();
         TimeUnit.MILLISECONDS.sleep(300);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 2", 2, paginationBtns.size());
         paginationBtns.get(1).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
         assertTrue("More or less than one compt on the second page", deleteComptBtns.size() == 1);
 
@@ -320,10 +320,10 @@ public class SeleniumTests {
         TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         saveAllBtn = webDriver.findElement(By.id("saveAllBtn"));
         saveAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
         reloadAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 1", 1, paginationBtns.size());
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
@@ -333,53 +333,53 @@ public class SeleniumTests {
         newComptLabelEl.sendKeys("thisNewComptWillBeSaved");
         addComptBtnEl = webDriver.findElement(By.cssSelector("#addComptBtn"));
         addComptBtnEl.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 2", 2, paginationBtns.size());
         paginationBtns.get(1).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
         assertTrue("More or less than 1 compt in the second page", deleteComptBtns.size() == 1);
         List<WebElement> saveBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(2)"));
         assertEquals("save pkt buttons quantity is != 1", 1, saveBtns.size());
         saveBtns.get(0).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         List<WebElement> reloadBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(3)"));
         assertEquals("reload pkt buttons quantity is != 1", 1, reloadBtns.size());
         reloadBtns.get(0).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 2", 2, paginationBtns.size());
         paginationBtns.get(1).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
         assertTrue("More or less than 1 compt in the second page", deleteComptBtns.size() == 1);
         reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
         reloadAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 2", 2, paginationBtns.size());
         paginationBtns.get(1).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
         assertTrue("More or less than 1 compt in the second page", deleteComptBtns.size() == 1);
         deleteComptBtns.get(0).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         saveBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(2)"));
         assertEquals("save pkt buttons quantity is != 1", 1, saveBtns.size());
         saveBtns.get(0).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         reloadBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(3)"));
         assertEquals("reload pkt buttons quantity is != 1", 1, reloadBtns.size());
         reloadBtns.get(0).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 1", 1, paginationBtns.size());
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
         assertTrue("More or less than 10 compts in the first page", deleteComptBtns.size() == 10);
         reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
         reloadAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 1", 1, paginationBtns.size());
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
@@ -400,35 +400,35 @@ public class SeleniumTests {
         reloadBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(3)"));
         assertEquals("reload pkt buttons quantity is != 1", 1, reloadBtns.size());
         reloadBtns.get(0).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 1", 1, paginationBtns.size());
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
         assertTrue("More or less than 10 compts in the first page", deleteComptBtns.size() == 10);
         reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
         reloadAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 1", 1, paginationBtns.size());
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
         assertTrue("More or less than 10 compts in the first page", deleteComptBtns.size() == 10);
 
         deleteComptBtns.get(9).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
         assertTrue("More or less than 9 compts in the first page", deleteComptBtns.size() == 9);
 
         reloadBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(3)"));
         assertEquals("reload pkt buttons quantity is != 1", 1, reloadBtns.size());
         reloadBtns.get(0).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 1", 1, paginationBtns.size());
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
         assertTrue("More or less than 10 compts in the first page", deleteComptBtns.size() == 10);
         reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
         reloadAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 1", 1, paginationBtns.size());
         deleteComptBtns = webDriver.findElements(By.cssSelector("td>button"));
@@ -497,12 +497,12 @@ public class SeleniumTests {
 
         reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
         reloadAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
 
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 2", 2, paginationBtns.size());
         paginationBtns.get(1).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
 
         comptsSpans2 = webDriver.findElements(By.cssSelector("td>span"));
         for (int j = 0; j < radioBtnsSize; j++) {
@@ -527,17 +527,17 @@ public class SeleniumTests {
         saveBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(2)"));
         assertEquals("save pkt buttons quantity is != 1", 1, saveBtns.size());
         saveBtns.get(0).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
 
         reloadBtns = webDriver.findElements(By.cssSelector("div.packet-buttons-div>a:nth-child(3)"));
         assertEquals("reload pkt buttons quantity is != 1", 1, reloadBtns.size());
         reloadBtns.get(0).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
 
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 2", 2, paginationBtns.size());
         paginationBtns.get(1).click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
 
         comptsSpans2 = webDriver.findElements(By.cssSelector("td>span"));
 
@@ -559,10 +559,10 @@ public class SeleniumTests {
 
         saveAllBtn = webDriver.findElement(By.id("saveAllBtn"));
         saveAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         reloadAllBtn = webDriver.findElement(By.id("reloadAllBtn"));
         reloadAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
 
         paginationBtns = webDriver.findElements(By.cssSelector("div#pagination>a"));
         assertEquals("pagination buttons quantity is != 2", 2, paginationBtns.size());
@@ -595,7 +595,7 @@ public class SeleniumTests {
 
         WebElement addPktBtn = webDriver.findElement(By.id("addPacketBtn"));
         addPktBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         WebElement saveBtn = webDriver.findElement(By.cssSelector("div.packet-buttons-div>a:nth-child(2)"));
         assertEquals("true", saveBtn.getAttribute("disabled"));
     }
@@ -683,7 +683,7 @@ public class SeleniumTests {
         removeAllPackets();
         WebElement saveAllBtn = webDriver.findElement(By.id("saveAllBtn"));
         saveAllBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
     }
 
     private void checkLoginPageBeforeLoggingIn() throws InterruptedException {
@@ -721,14 +721,14 @@ public class SeleniumTests {
         for (WebElement btn : pktBtns) {
             btn.click();
         }
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         checkComptsPanel(true, false, false, false);
     }
 
     private void checkLogout() throws InterruptedException {
         WebElement logoutBtn = webDriver.findElement(By.cssSelector("#logoutBtn"));
         logoutBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
         checkLoginPageBeforeLoggingIn();
     }
 
@@ -786,7 +786,7 @@ public class SeleniumTests {
         WebElement loginBtn = webDriver.findElement(By.cssSelector("#loginBtn"));
         assertNotNull("Login button is not found", loginBtn);
         loginBtn.click();
-        TimeUnit.MILLISECONDS.sleep(500);
+        TimeUnit.MILLISECONDS.sleep(TIME_TO_WAIT_AFTER_CLICK);
 
         assertEquals("Successful authentication URL is improper",
                 "http://localhost:8084/" + "#/main",
