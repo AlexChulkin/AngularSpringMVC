@@ -1,3 +1,17 @@
+It's the restful mvc web app with:
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <spring-version>4.3.1.RELEASE</spring-version> - without the xml config, AOP, Spring Data JPA,
+                                                         Servlet 3 Code-Based Configuration,
+                                                         Spring support for transaction
+        <hibernate-version>5.1.0.Final</hibernate-version> - with named queries
+        Angular v1.5,
+        H2 database,
+        JUnit + Mockito, Selenium, Jasmine testing,
+        Lombok log4j,
+        javadoc,
+        design patterns: MVC, DAO, defensive copies and immutable objects(at least collections), etc...
+
 0) Install Java 8(at least), Maven, Tomcat 7 or 8 (VM options: '-Dspring.profiles.active=dev'), IDE (DEA is preferable).
 1)Build and Test
   1.1) move to the root folder;
