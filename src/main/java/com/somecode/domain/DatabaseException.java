@@ -8,6 +8,7 @@ import com.somecode.utils.Utils;
 
 /**
  * The custom database exception used to indicate the problems with the database.
+ * @version 1.0
  */
 public class DatabaseException extends Exception {
     private static final String DATABASE_EXCEPTION_MESSAGE = "database.exception.message";

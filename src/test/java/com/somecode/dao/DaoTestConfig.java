@@ -22,7 +22,8 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * The DAO test config that extends the {@link com.somecode.config.PersistenceJPAConfig}.
+ * The DAO test config that extends the {@link com.somecode.config.PersistenceJPAConfig} ({@inheritDoc})
+ * @version 1.0
  */
 @Profile("test")
 @Configuration

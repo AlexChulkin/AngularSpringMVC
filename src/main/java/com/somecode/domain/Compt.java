@@ -18,6 +18,7 @@ import static com.somecode.utils.Utils.getMessage;
  * The self-explanatory {@link Compt} entity POJO class(for the {@literal COMPT} table).
  * <p>
  * Contains the {@link ComptSupplInfo} named load queries.
+ * @version 1.0
  */
 
 @Entity

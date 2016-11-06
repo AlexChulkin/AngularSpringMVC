@@ -25,7 +25,8 @@ import java.util.stream.IntStream;
 import static com.somecode.utils.Utils.getMessage;
 
 /**
- * The DAO class implementing the full functionality of the interaction with model
+ * The DAO class implementing the full functionality of the interaction with model.
+ * @version 1.0
  */
 @Repository
 @Transactional(readOnly = true)

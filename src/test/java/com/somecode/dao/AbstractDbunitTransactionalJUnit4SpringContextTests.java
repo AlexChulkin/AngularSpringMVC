@@ -20,6 +20,7 @@ import java.util.Optional;
 /**
  * The intermediate superclass of the {@link PacketAppDaoTest}
  * that interweaves the After-Transaction method and execution listener into the test class.
+ * @version 1.0
  */
 
 public abstract class AbstractDbunitTransactionalJUnit4SpringContextTests

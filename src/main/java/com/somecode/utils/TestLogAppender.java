@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The self-explanatory class used for the tests of the logging.
+ * The self-explanatory class used for the logging testing
+ * @version 1.0
  */
 public class TestLogAppender extends AppenderSkeleton {
         private final List<LoggingEvent> log = new ArrayList<>();

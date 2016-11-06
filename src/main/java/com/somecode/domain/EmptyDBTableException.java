@@ -8,6 +8,7 @@ import com.somecode.utils.Utils;
 
 /**
  * The custom database exception used to indicate the problems with the empty database tables.
+ * @version 1.0
  */
 public class EmptyDBTableException extends Exception {
     private static final String EMPTY_DB_TABLE_REPORT = "emptyDbTable.exception.report";

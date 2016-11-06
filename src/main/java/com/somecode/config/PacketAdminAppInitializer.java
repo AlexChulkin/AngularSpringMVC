@@ -14,6 +14,7 @@ import javax.servlet.ServletRegistration;
 
 /**
  * The Servlet 3 Code-Based Configuration initializer.
+ * @version 1.0
  */
 public class PacketAdminAppInitializer implements WebApplicationInitializer {
     /**

@@ -13,6 +13,7 @@ import java.util.Locale;
 
 /**
  * The self-explanatory utils class. Contains the english-locale logging method only so far.
+ * @version 1.0
  */
 
 @Service

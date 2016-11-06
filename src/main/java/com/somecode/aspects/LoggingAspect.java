@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import static com.somecode.utils.Utils.getMessage;
 /**
  * The AOP module. Used for logging in service, restful controller and dao methods.
+ * @version 1.0
  */
 @Aspect
 @Component

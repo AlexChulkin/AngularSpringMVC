@@ -10,6 +10,7 @@ import java.util.List;
  * The fairly self-explanatory {@link DataParams} POJO class containing the lists of different entities and ids.
  * This class is used for the passing of the data that is going to be persisted to the DB from the front-end to
  * the back-end.
+ * @version 1.0
  */
 public class DataParams {
 

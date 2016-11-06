@@ -10,7 +10,8 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 /**
- * The CrudRepository implementation for the User.java class
+ * The CrudRepository implementation for the User.java class.
+ * @version 1.0
  */
 public interface UserRepository extends CrudRepository<User, Long> {
     /**

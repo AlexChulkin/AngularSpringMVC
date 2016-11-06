@@ -5,7 +5,8 @@
 package com.somecode.domain;
 
 /**
- * The type of operation used in the DAO methods
+ * The type of operation used in the DAO methods.
+ * @version 1.0
  */
 public enum OperationType {
     /**

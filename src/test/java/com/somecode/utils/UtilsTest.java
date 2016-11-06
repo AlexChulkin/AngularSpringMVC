@@ -17,6 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * The fairly self-explanatory {@link Utils} test class.
+ * @version 1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DaoTestConfig.class})

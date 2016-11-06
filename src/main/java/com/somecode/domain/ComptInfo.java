@@ -6,6 +6,7 @@ package com.somecode.domain;
 
 /**
  * The self-explanatory {@link ComptInfo} POJO class: the brief version of the {@link Compt} entity.
+ * @version 1.0
  */
 
 import static com.somecode.utils.Utils.getMessage;

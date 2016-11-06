@@ -9,7 +9,8 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;
 /**
- * The CrudRepository implementation for the {@link Packet} entity
+ * The CrudRepository implementation for the {@link Packet} entity.
+ * @version 1.0
  */
 public interface PacketRepository extends CrudRepository<Packet, Long> {
     /**

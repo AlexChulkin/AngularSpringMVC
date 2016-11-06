@@ -6,6 +6,7 @@ package com.somecode.domain;
 
 /**
  * The self-explanatory class for passing of the security data from the back-end to the front-end.
+ * @version 1.0
  */
 public class SecurityParams {
     private String username;

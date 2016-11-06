@@ -20,6 +20,7 @@ import java.util.Locale;
 
 /**
  * The main config class.
+ * @version 1.0
  */
 @Profile("dev")
 @Configuration

@@ -11,6 +11,7 @@ import static com.somecode.utils.Utils.getMessage;
 
 /**
  * The self-explanatory {@link State} entity POJO class(for the {@literal STATE} table).
+ * @version 1.0
  */
 
 @Entity

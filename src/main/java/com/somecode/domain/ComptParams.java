@@ -10,6 +10,7 @@ import static com.somecode.utils.Utils.getMessage;
 
 /**
  * The fairly self-explanatory class containing the info for the {@link Compt} save/update.
+ * @version 1.0
  */
 public class ComptParams implements SelfSettingEntityPrototype {
     private static final String STRING_VERSION = "comptParams.toString";

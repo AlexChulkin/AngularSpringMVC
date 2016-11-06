@@ -7,6 +7,7 @@ package com.somecode.domain;
 /**
  * The DAO Error Type related with the {@link Packet} operations.
  * Used in the tests.
+ * @version 1.0
  */
 public enum PacketDaoErrorType {
     /**

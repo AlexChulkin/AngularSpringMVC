@@ -7,6 +7,7 @@ package com.somecode.aspects;
 
 /*
  * Enum showing what module is chosen to implement AOP or test: service, restful controller or dao.
+ * @version 1.0
  */
 public enum ClassType {
     /**

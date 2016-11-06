@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 /**
  * The CrudRepository implementation for the {@link ComboData} entity
+ * @version 1.0
  */
 @Repository
 public interface ComboDataRepository extends CrudRepository<ComboData, Long> {

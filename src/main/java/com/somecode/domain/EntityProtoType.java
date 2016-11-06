@@ -5,7 +5,8 @@
 package com.somecode.domain;
 
 /**
- * The self-expaining EntityProtoType interface used in the tests
+ * The self-expaining EntityProtoType interface used in the tests.
+ * @version 1.0
  */
 public interface EntityProtoType {
     Long getId();

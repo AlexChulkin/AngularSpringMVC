@@ -13,6 +13,7 @@ import java.lang.annotation.Target;
  * Indicates that the annotated method is a test method that uses the {@link #before()} parameter
  * to set the initial DB state and the {@link #after()} parameter to set the expected DB state after the method that
  * is tested runs.
+ * @version 1.0
  */
 
 @Retention(RetentionPolicy.RUNTIME)

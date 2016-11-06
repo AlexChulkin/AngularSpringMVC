@@ -38,6 +38,7 @@ import static org.junit.Assert.assertNull;
 /**
  * The self-explanatory DAO test class using the xls DB test data loading mechanism from the
  * {@literal AbstractDbunitTransactionalJUnit4SpringContextTests} and the {@link DataSets} annotation.
+ * @version 1.0
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)

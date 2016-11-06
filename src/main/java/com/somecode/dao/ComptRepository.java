@@ -10,6 +10,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 /**
  * The CrudRepository implementation for the {@link Compt} entity
+ * @version 1.0
  */
 public interface ComptRepository extends CrudRepository<Compt,Long> {
     /**

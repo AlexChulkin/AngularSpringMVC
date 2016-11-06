@@ -12,6 +12,7 @@ import java.util.List;
 /**
  * The self-explanatory immutable {@link Data} class containing the lists of different entities loaded from the DB as
  * a result of the front-end reques.
+ * @version 1.0
  */
 public class Data {
     private List<ComptInfo> compts;

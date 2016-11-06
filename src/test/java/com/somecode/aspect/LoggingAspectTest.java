@@ -48,6 +48,7 @@ import static org.junit.Assert.assertEquals;
 /**
  * The fairly self-explanatory Logging Aspect Test class.
  * Tests every separate method that is an object for the aspect logging.
+ * @version 1.0
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)

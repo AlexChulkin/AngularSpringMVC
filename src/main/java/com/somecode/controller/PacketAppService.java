@@ -17,6 +17,7 @@ import static com.somecode.utils.Utils.getMessage;
 
 /**
  * The service connecting the restful controller and dao.
+ * @version 1.0
  */
 
 @Service("packetAppService")

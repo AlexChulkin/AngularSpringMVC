@@ -9,6 +9,7 @@ import static com.somecode.utils.Utils.getMessage;
 /**
  * The fairly self-explanatory {@link ComptSupplInfo} class containing the supplementary info
  * for the convenient {@link Compt} entities front-end representation.
+ * @version 1.0
  */
 
 public class ComptSupplInfo implements EntityProtoType {

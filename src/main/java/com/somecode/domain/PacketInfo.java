@@ -8,6 +8,7 @@ import static com.somecode.utils.Utils.getMessage;
 
 /**
  * The self-explanatory {@link PacketInfo} POJO class: the brief version of the {@link Compt} entity.
+ * @version 1.0
  */
 
 

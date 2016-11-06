@@ -34,6 +34,7 @@ import static org.mockito.Mockito.*;
 
 /**
  * The fairly self-explanatory parameterized service test class.
+ * @version 1.0
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)

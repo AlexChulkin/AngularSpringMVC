@@ -26,6 +26,7 @@ import static org.junit.Assert.*;
 
 /**
  * The fairly self-explanatory selenium tests class.
+ * @version 1.0
  */
 
 @ActiveProfiles

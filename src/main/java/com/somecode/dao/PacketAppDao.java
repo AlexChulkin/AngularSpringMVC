@@ -11,6 +11,7 @@ import java.util.Map;
 
 /**
  * The dao interface.
+ * @version 1.0
  */
 public interface PacketAppDao {
 

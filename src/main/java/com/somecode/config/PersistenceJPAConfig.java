@@ -30,6 +30,7 @@ import static com.somecode.utils.Utils.getMessage;
 
 /**
  * The persistence jpa config class.
+ * @version 1.0
  */
 
 @Configuration

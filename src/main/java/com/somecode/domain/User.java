@@ -14,6 +14,7 @@ import static com.somecode.utils.Utils.getMessage;
 
 /**
  * The self-explanatory {@link User} entity POJO class(for the {@literal USER} table).
+ * @version 1.0
  */
 
 @Entity

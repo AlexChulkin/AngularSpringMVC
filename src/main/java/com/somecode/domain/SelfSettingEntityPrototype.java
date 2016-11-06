@@ -6,7 +6,8 @@ package com.somecode.domain;
 
 /**
  * The entity class with the id setter returning the entity instance itself.
- * It's used for the testing.
+ * This was used for the unit testing.
+ * @version 1.0
  */
 
 public interface SelfSettingEntityPrototype {

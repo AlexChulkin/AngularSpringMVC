@@ -45,6 +45,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * The fairly self-explanatory restful controller test.
  * Works with the help of the service mock and mockMvc instance.
+ * @version 1.0
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {DaoTestConfig.class})

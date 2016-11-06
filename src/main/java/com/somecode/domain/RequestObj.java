@@ -6,6 +6,7 @@ package com.somecode.domain;
 
 /**
  * The fairly self-explained class used for passing the data from the front-end to the back-end.
+ * @version 1.0
  */
 public class RequestObj {
     /**

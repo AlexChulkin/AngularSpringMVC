@@ -20,6 +20,7 @@ import static com.somecode.utils.Utils.getMessage;
 
 /**
  * The Restful Controller mapping the Angular UI http requests to the Java backend.
+ * @version 1.0
  */
 
 @Controller
