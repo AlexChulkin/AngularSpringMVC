@@ -1,9 +1,7 @@
-It's the restful mvc web app with:
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <spring-version>4.3.1.RELEASE</spring-version> - AOP, Spring Data JPA, Servlet 3 Code-Based Configuration
-                                                         (and in general zero xml config), Spring transactions support
-        <hibernate-version>5.1.0.Final</hibernate-version> - with named queries;
+It's the restful mvc web app with
+        java 1.8
+        Spring 4.3.1: AOP, Spring Data JPA, Servlet 3 Code-Based Configuration (and in general zero xml config), Spring transactions support
+        Hibernate JPA 5.1 - with named queries;
         Angular v1.5, JSP, HTML;
         H2 database, H2SQL;
         JUnit + Mockito, xls data file loader + database tester, Selenium, Jasmine testing,
