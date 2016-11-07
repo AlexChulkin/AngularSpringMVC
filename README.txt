@@ -16,5 +16,5 @@ It's the restful mvc web app with
        maven can't find the web.xml and becomes angry);
   1.3) in order to run java unit(JUnit) and integration(JUnit) tests type "mvn verify";
   1.4) in order to run integration(Selenium) tests run com.selenium.SeleniumTests;
-  1.5) in order to run JS(Jasmine) tests go to src/main/webapp/resources and run the following
+  1.5) in order to run unit JS(Jasmine) tests go to src/main/webapp/resources and run the following
        "karma start karma.config.js"
