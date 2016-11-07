@@ -1133,7 +1133,7 @@ describe("Exchange and Helper Services Test", function () {
                 expect(mockUtilsService.isUndefinedOrNull(undefined)).toBeTruthy();
             });
 
-            it('IsUndefinedOrNull() test', function () {
+            it('IsEmpty() test', function () {
                 expect(mockUtilsService.isEmpty(selCompts)).toBeFalsy();
                 expect(mockUtilsService.isEmpty([2, 'false'])).toBeFalsy();
                 expect(mockUtilsService.isEmpty([])).toBeTruthy();

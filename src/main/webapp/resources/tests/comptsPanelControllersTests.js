@@ -325,9 +325,8 @@ describe("Compts Panel Controller Test", function () {
                 fakeDeletedComptId);
         });
 
-        it('updateComptLocally() with null compts to update and null new compt labels and not empty initial ' +
-            'checked combo data  and not equal initial all checked combo data and checked combo data ' +
-            'proper work test', function () {
+        it('updateComptLocally() with null compts to update and null new compt labels and equal initial ' +
+            'all checked combo data and checked combo data proper work test', function () {
             buildSpiesReturnValues_NullComptIdsToUpdateAndNewComptLabels();
             buildSpiesOnMockExchangeService();
             buildEqualInitialAllCheckedComboDataAndAllCheckedComboData(fakeDeletedComptId, fakeStateId);

@@ -783,7 +783,7 @@ describe("Packets Panel Controller Test", function () {
             })));
         });
 
-    describe("Ensure that saveAllChangesToBase()'s http response is properly elaborated: all errors possible:" +
+    describe("Ensure that saveAllChangesToBase() http response is properly elaborated: all errors possible:" +
         "add/upd/del packets, upd/del compts",
         function () {
             beforeEach(inject(function () {
@@ -818,8 +818,8 @@ describe("Packets Panel Controller Test", function () {
             })));
         });
 
-    describe("Ensure that saveAllChangesToBase()'s http response is properly elaborated: all errors possible:" +
-        "add/upd/del packets, upd/del compts",
+    describe("Ensure that saveAllChangesToBase(fakeSavedPktId)'s http response is properly elaborated: " +
+        "all errors possible: add/upd/del packets, upd/del compts",
         function () {
             beforeEach(inject(function () {
                 buildSpiesReturnValues_fullStuff();

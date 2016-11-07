@@ -632,15 +632,16 @@ public class PacketAppDaoImpl implements PacketAppDao {
     }
 
     /**
-     * either sets/updates the given packet's state, returning true, or doesn't do anything and returns false if the
+     * Either sets/updates the given packet's state, returning true, or doesn't do anything and returns false if the
      * state update is not possible
      *
      * @param packet the packet a state of which could be changed/set
      * @param stateId the new state id
      * @param operationType the packet operation type, may be ADD or UPDATE. Used for the logging.
      * @return true if the given packet's state is changed in the result of the method's execution, otherwise returns
-     * false. The latter could happen if the state is updated and (a) the new state is the same as the old one;
-     * (b) the new state is null and (c) the new state does not exist in the DB.
+     *         false. The latter could happen if the state is updated and:
+     *         (a) the new state is the same as the old one;
+     *         (b) the new state is null and (c) the new state does not exist in the DB.
      */
     @Transactional
     private boolean setOrUpdateState(Packet packet, Long stateId, OperationType operationType) {
