@@ -6,6 +6,11 @@
 
 /**
  * The main service allowing to exchange data among the controllers.
+ *
+ * One remark: the newPackets, the allPackets, comptIdsToDelete, comptIdsToUpdate  and many other collections
+ * were set as objects(maps) - not as arrays. This could like kinda premature optimization from one side and some kind
+ * of experiment given this project was not commercial one from another side. The idea was just to use the map's
+ * search O(1) friendliness instead of the array's unpleasant O(n/2).
  */
 
 angular.module("packetAdminApp")
