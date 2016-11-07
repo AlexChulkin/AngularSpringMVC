@@ -26,6 +26,7 @@ import static org.junit.Assert.*;
 
 /**
  * The fairly self-explanatory selenium tests class.
+ * To run this please download the chrome driver and edit the WEB_DRIVER_FILE_PATH and STARTING_URL if needed.
  * @version 1.0
  */
 
@@ -37,8 +38,16 @@ public class SeleniumTests {
     private static final int TIME_TO_WAIT_AFTER_CLICK = 500;
 
     /**
-     * The web driver
+     * The web driver file path.
      */
+    private static final String WEB_DRIVER_FILE_PATH = "E:\\Java\\ChromeDriver\\chromedriver.exe";
+
+    /**
+     * The srarting url for testing.
+     */
+    private static final String STARTING_URL = "http://localhost:8084";
+
+    /** The web driver */
     private static WebDriver webDriver;
 
     /**
@@ -46,9 +55,9 @@ public class SeleniumTests {
      */
     @Before
     public void beforeEachTest() {
-        System.setProperty("webdriver.chrome.driver", "E:\\Java\\ChromeDriver\\chromedriver.exe");
+        System.setProperty("webdriver.chrome.driver", WEB_DRIVER_FILE_PATH);
         webDriver = new ChromeDriver();
-        webDriver.get("http://localhost:8084");
+        webDriver.get(STARTING_URL);
     }
 
     /**
