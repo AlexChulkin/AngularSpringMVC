@@ -351,6 +351,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
 
         final List<State> result = packetAppDao.loadAllStates();
 
+        @SuppressWarnings("unchecked")
         final List<String> testAllStates = (List<String>) ReflectionTestUtils.getField(packetAppDao, ALL_STATES);
         final int testLogSize = testLogAppender.getLog().size();
         final LoggingEvent statesLoggingEvent = testLogAppender.getLog().get(testLogSize - 1);
@@ -1074,8 +1075,12 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                     assertEquals((long) (i + 1), result.get(i).getId().longValue());
                 });
         final int testLogSize = testLogAppender.getLog().size();
+
+        @SuppressWarnings("unchecked")
         final Map<String, Integer> testMapComboDataLabelsToIndices
                 = (Map<String, Integer>) ReflectionTestUtils.getField(packetAppDao, MAP_COMBODATA_LABELS_TO_INDICES);
+
+        @SuppressWarnings("unchecked")
         final List<String> testAllComboData
                 = (List<String>) ReflectionTestUtils.getField(packetAppDao, ALL_COMBODATA);
         final LoggingEvent mapComboDataLoggingEvent = testLogAppender.getLog().get(testLogSize - 1);
@@ -1336,6 +1341,8 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
 
         final String testAllStatesLoadedMessage
                 = (String) ReflectionTestUtils.getField(packetAppDao, ALL_STATES_LOADED_MESSAGE);
+
+        @SuppressWarnings("unchecked")
         final List<String> testAllStates = (List<String>) ReflectionTestUtils.getField(packetAppDao, ALL_STATES);
         final LoggingEvent statesLoggingEvent = testLogAppender.getLog().get(testLogSize - (expectedNumOfLogEventsLeft--));
         assertEquals(Utils.getMessage(testAllStatesLoadedMessage, new Object[]{testAllStates}),
@@ -1344,6 +1351,8 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
 
         final String testAllComboDataLoadedMessage
                 = (String) ReflectionTestUtils.getField(packetAppDao, ALL_COMBODATA_LOADED_MESSAGE);
+
+        @SuppressWarnings("unchecked")
         final List<String> testAllComboData
                 = (List<String>) ReflectionTestUtils.getField(packetAppDao, ALL_COMBODATA);
         final LoggingEvent comboDataLoadingEvent
@@ -1352,6 +1361,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                 comboDataLoadingEvent.getMessage());
         assertEquals(Level.INFO, comboDataLoadingEvent.getLevel());
 
+        @SuppressWarnings("unchecked")
         final Map<String, Integer> testMapComboDataLabelsToIndices
                 = (Map<String, Integer>) ReflectionTestUtils.getField(packetAppDao, MAP_COMBODATA_LABELS_TO_INDICES);
         final String testMapComboDataLabelsToIndicesMessage
