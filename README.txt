@@ -1,14 +1,14 @@
-It's the restful mvc web app with
-        java 1.8
-        Spring 4.3.1: Spring MVC, AOP, Spring Data JPA,
-                Servlet 3 Code-Based Configuration (and in general zero xml config), Spring transactions support
-        Hibernate JPA 5.1 - with named queries;
-        Angular v1.5, JSP, HTML;
-        H2 database, H2SQL;
-        JUnit + Mockito, xls data file loader + database tester, Selenium, Jasmine testing,
-        Lombok log4j;
-        Tomcat 8;
-        design patterns: MVC, DAO, defensive copies and immutable objects(at least collections), etc...
+It's the restful mvc web app with:
+        - java 1.8
+        - Spring 4.3.1: Spring MVC, AOP, Spring Data JPA, Servlet 3 Code-Based Configuration
+          (and in general zero xml config), Spring transactions support
+        - Hibernate JPA 5.1 - with named queries;
+        - Angular v1.5, JSP, HTML;
+        - H2 database, H2SQL;
+        - JUnit + Mockito, xls data file loader + database tester, Selenium, Jasmine testing,
+        - Lombok log4j;
+        - Tomcat 8;
+        - design patterns: MVC, DAO, defensive copies and immutable objects(at least collections), etc...
 
 0) Install Java 8(at least), Maven, Tomcat 7 or 8 (VM options: '-Dspring.profiles.active=dev'), IDE (DEA is preferable).
 1)Build and Test
