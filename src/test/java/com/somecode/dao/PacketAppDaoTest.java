@@ -351,6 +351,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
 
         final List<State> result = packetAppDao.loadAllStates();
 
+        //Safe cause we cast the real variable to its natural type.
         @SuppressWarnings("unchecked")
         final List<String> testAllStates = List.class.cast(ReflectionTestUtils.getField(packetAppDao, ALL_STATES));
         final int testLogSize = testLogAppender.getLog().size();
@@ -1076,10 +1077,12 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                 });
         final int testLogSize = testLogAppender.getLog().size();
 
+        //Safe cause we cast the real variable to its natural type.
         @SuppressWarnings("unchecked")
         final Map<String, Integer> testMapComboDataLabelsToIndices
                 = Map.class.cast(ReflectionTestUtils.getField(packetAppDao, MAP_COMBODATA_LABELS_TO_INDICES));
 
+        //Safe cause we cast the real variable to its natural type.
         @SuppressWarnings("unchecked")
         final List<String> testAllComboData
                 = List.class.cast(ReflectionTestUtils.getField(packetAppDao, ALL_COMBODATA));
@@ -1344,6 +1347,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         final String testAllStatesLoadedMessage
                 = (String) ReflectionTestUtils.getField(packetAppDao, ALL_STATES_LOADED_MESSAGE);
 
+        //Safe cause we cast the real variable to its natural type.
         @SuppressWarnings("unchecked")
         final List<String> testAllStates = List.class.cast(ReflectionTestUtils.getField(packetAppDao, ALL_STATES));
         final LoggingEvent statesLoggingEvent = testLogAppender.getLog().get(testLogSize - (expectedNumOfLogEventsLeft--));
@@ -1354,6 +1358,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         final String testAllComboDataLoadedMessage
                 = (String) ReflectionTestUtils.getField(packetAppDao, ALL_COMBODATA_LOADED_MESSAGE);
 
+        //Safe cause we cast the real variable to its natural type.
         @SuppressWarnings("unchecked")
         final List<String> testAllComboData
                 = List.class.cast(ReflectionTestUtils.getField(packetAppDao, ALL_COMBODATA));
@@ -1363,6 +1368,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                 comboDataLoadingEvent.getMessage());
         assertEquals(Level.INFO, comboDataLoadingEvent.getLevel());
 
+        //Safe cause we cast the real variable to its natural type.
         @SuppressWarnings("unchecked")
         final Map<String, Integer> testMapComboDataLabelsToIndices
                 = Map.class.cast(ReflectionTestUtils.getField(packetAppDao, MAP_COMBODATA_LABELS_TO_INDICES));

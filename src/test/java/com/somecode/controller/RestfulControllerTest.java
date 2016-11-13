@@ -278,7 +278,9 @@ public class RestfulControllerTest {
         assertEquals(Level.DEBUG, loggingEvent.getLevel());
 
         String result = controller.saveAllChangesToBase(requestObjJson);
-        Map<String, Boolean> fromJsonData = (Map<String, Boolean>) GSON.fromJson(result, Map.class);
+        //Safe due to the fact that the GSON.toJson() of the Map<String, Boolean>
+        @SuppressWarnings("unchecked")
+        Map<String, Boolean> fromJsonData = Map.class.cast(GSON.fromJson(result, Map.class));
         assertEquals(fromJsonData.size(), resultMap.size());
         if (!testPacketIdIsNull) {
             assertTrue(fromJsonData.get(serviceMockMethodForNotNullPacketId));
