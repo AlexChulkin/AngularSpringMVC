@@ -1321,12 +1321,13 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         final int testLogSize = testLogAppender.getLog().size();
 
         int expectedNumOfLogEventsLeft = 6;
+        boolean packetStateIdIsNull = !Optional.ofNullable(packetStateId).isPresent();
         EnumSet<PacketDaoErrorType> fiveElsLogErrorsSet = buildFiveLogErrorsSet();
         EnumSet<PacketDaoErrorType> sixElsLogErrorsSet = buildSixLogErrorsSet();
         if (fiveElsLogErrorsSet.contains(error) && operationType == OperationType.ADD) {
             expectedNumOfLogEventsLeft = 5;
         } else if (operationType == OperationType.UPDATE
-                && (error == PacketDaoErrorType.NULL_NEW_STATE_ID || packetStateId == null)
+                && (error == PacketDaoErrorType.NULL_NEW_STATE_ID || packetStateIdIsNull)
                 && (numOfComptsToAddInsideAddedPacket == 0)) {
             expectedNumOfLogEventsLeft = 4;
         } else if (!sixElsLogErrorsSet.contains(error)) {
@@ -1374,13 +1375,12 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
         assertEquals(Level.INFO, mapComboDataLoggingEvent.getLevel());
 
         if (operationType == OperationType.UPDATE
-                && (error == PacketDaoErrorType.NULL_NEW_STATE_ID || packetStateId == null)
+                && (error == PacketDaoErrorType.NULL_NEW_STATE_ID || packetStateIdIsNull)
                 && (numOfComptsToAddInsideAddedPacket == 0)) {
             return;
         }
 
-        if (operationType == OperationType.UPDATE && error == PacketDaoErrorType.NONE
-                && !Optional.ofNullable(packetStateId).isPresent()) {
+        if (operationType == OperationType.UPDATE && error == PacketDaoErrorType.NONE && packetStateIdIsNull) {
             LoggingEvent loggingEvent = testLogAppender.getLog().get(testLogSize - (expectedNumOfLogEventsLeft--));
             String testNullNewState
                     = (String) ReflectionTestUtils.getField(packetAppDao,
@@ -1396,9 +1396,9 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
             LoggingEvent loggingEvent = testLogAppender.getLog().get(testLogSize - (expectedNumOfLogEventsLeft--));
             assertEquals(
                     Utils.getMessage(testPacketUpdateNotExistingPacket,
-                            new Object[]{secondPacketIdIfExists == null
-                                    ? expectedPersistedNewOrUpdatedPacketId
-                                    : secondPacketIdIfExists}),
+                            new Object[]{Optional.ofNullable(secondPacketIdIfExists).isPresent()
+                                    ? secondPacketIdIfExists
+                                    : expectedPersistedNewOrUpdatedPacketId}),
                     loggingEvent.getMessage()
             );
             assertEquals(Level.ERROR, loggingEvent.getLevel());
@@ -1476,7 +1476,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                 return;
             }
         }
-        if (operationType != OperationType.UPDATE || packetStateId != null) {
+        if (operationType != OperationType.UPDATE || Optional.ofNullable(packetStateId).isPresent()) {
             final LoggingEvent stateUpdateLoggingEvent
                     = testLogAppender.getLog().get(testLogSize - (expectedNumOfLogEventsLeft--));
             String testStateUpdateSuccessReport = null;
@@ -1568,7 +1568,7 @@ public class PacketAppDaoTest extends AbstractDbunitTransactionalJUnit4SpringCon
                 = testLogAppender.getLog().get(testLogSize - (expectedNumOfLogEventsLeft--));
         List<Compt> packetComptsList = new ArrayList<>();
 
-        if (expectedFirstNewComptId != null) {
+        if (Optional.ofNullable(expectedFirstNewComptId).isPresent()) {
             IntStream.range(1, expectedFirstNewComptId.intValue())
                     .boxed()
                     .forEach(id -> packetComptsList.add(buildCompt(id.longValue(), packet, comptLabelPrefix)));

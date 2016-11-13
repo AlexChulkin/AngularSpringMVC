@@ -203,7 +203,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
     @Override
     public List<ComptSupplInfo> loadComptsSupplInfo(Long packetId) {
         List<ComptSupplInfo> result;
-        if (packetId == null) {
+        if (!Optional.ofNullable(packetId).isPresent()) {
             result = em.createNamedQuery(LOAD_ALL_COMPTSSUPPLINFO_QUERY_NAME, ComptSupplInfo.class)
                     .getResultList();
         } else {
@@ -360,14 +360,15 @@ public class PacketAppDaoImpl implements PacketAppDao {
     @Override
     public List<ComptInfo> loadCompts(Long packetId) {
         List<ComptInfo> result;
-        if (Optional.ofNullable(packetId).isPresent()) {
+        boolean packetIdIsNotNull = Optional.ofNullable(packetId).isPresent();
+        if (packetIdIsNotNull) {
             result = comptRepository.findByPacket_Id(packetId).stream().map(ComptInfo::new).collect(Collectors.toList());
         } else {
             List<ComptInfo> listOfCompts = new LinkedList<>();
             comptRepository.findAll().forEach(c -> listOfCompts.add(new ComptInfo(c)));
             result = listOfCompts;
         }
-        log.info(packetId != null
+        log.info(packetIdIsNotNull
                 ? getMessage(ALL_COMPTS_FROM_SPECIFIC_PACKET_LOADED_MESSAGE, new Object[]{packetId, result})
                 : getMessage(ALL_COMPTS_FROM_ALL_PACKETS_LOADED_MESSAGE, new Object[]{result})
         );
@@ -458,7 +459,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
         for (ComptParams comptParams : comptParamsList) {
             Long comptId = comptParams.getId();
             Compt compt = em.find(Compt.class, comptId, LockModeType.OPTIMISTIC_FORCE_INCREMENT);
-            if (compt == null) {
+            if (!Optional.ofNullable(compt).isPresent()) {
                 log.error(getMessage(COMPT_UPDATE_NON_EXISTING_COMPT, new Object[]{comptId}));
                 continue;
             }
@@ -541,7 +542,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
         List<Packet> packets = packetRepository
                 .findByIdIn(idsToDelete)
                 .stream()
-                .filter(p -> p != null)
+                .filter(p -> Optional.ofNullable(p).isPresent())
                 .collect(Collectors.toList());
 
         int packetsSize = packets.size();
@@ -647,7 +648,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
     private boolean setOrUpdateState(Packet packet, Long stateId, OperationType operationType) {
         String report = "";
         Long packetId = packet.getId();
-        if (stateId == null) {
+        if (!Optional.ofNullable(stateId).isPresent()) {
             return setDefaultState(operationType, PacketDaoErrorType.NULL_NEW_STATE_ID, packet, null);
         } else if (operationType == OperationType.UPDATE && packet.getState().getId().equals(stateId)) {
             report = getMessage(PACKET_UPDATE_STATE_UPDATE_NOT_DIFFERENT_NEW_STATE, new Object[]{stateId});
@@ -655,7 +656,7 @@ public class PacketAppDaoImpl implements PacketAppDao {
             return false;
         }
         State state = em.find(State.class, stateId);
-        if (state != null) {
+        if (Optional.ofNullable(state).isPresent()) {
             packet.setState(state);
             if (operationType == OperationType.UPDATE) {
                 report = getMessage(PACKET_UPDATE_STATE_UPDATE_SUCCESS_REPORT,

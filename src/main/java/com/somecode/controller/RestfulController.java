@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Optional;
+
 import static com.somecode.utils.Utils.getMessage;
 
 /**
@@ -91,7 +93,7 @@ public class RestfulController {
     public String loadData(@RequestBody String json) {
         RequestObj requestObj = GSON.fromJson(json, RequestObj.class);
         Long packetId = requestObj.getDataParams().getPacketId();
-        log.debug(packetId == null
+        log.debug(!Optional.ofNullable(packetId).isPresent()
                 ? getMessage(LOAD_DATA_FOR_ALL_PACKETS, null)
                 : getMessage(LOAD_DATA_FOR_SPECIFIC_PACKET, new Object[]{packetId})
         );
@@ -109,7 +111,7 @@ public class RestfulController {
         RequestObj requestObj = GSON.fromJson(json, RequestObj.class);
         DataParams params = requestObj.getDataParams();
         Long packetId = params.getPacketId();
-        if (packetId != null) {
+        if (Optional.ofNullable(packetId).isPresent()) {
             log.debug(getMessage(SAVE_ALL_CHANGES_TO_BASE_FOR_SPECIFIC_PACKET, new Object[] {packetId}));
         } else {
             log.debug(getMessage(SAVE_ALL_CHANGES_TO_BASE_FOR_ALL_PACKETS, null));

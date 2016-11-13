@@ -47,7 +47,7 @@ public abstract class AbstractDbunitTransactionalJUnit4SpringContextTests
      */
     @AfterTransaction
     public void assertAfterTransaction() throws Exception {
-        if (databaseTester == null) {
+        if (!Optional.ofNullable(databaseTester).isPresent()) {
             return;
         }
         if (StringUtils.isEmpty(afterDatasetFileName)) {

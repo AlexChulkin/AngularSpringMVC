@@ -22,10 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 
 import static org.junit.Assert.assertEquals;
@@ -346,8 +343,9 @@ public class PacketAppServiceTest {
         }
 
         final String testSaveAllChanges
-                = (String) ReflectionTestUtils.getField(service, packetId == null ? PERSIST_ALL_PACKETS
-                                                                                  : PERSIST_SPECIFIC_PACKET);
+                = (String) ReflectionTestUtils.getField(service, Optional.ofNullable(packetId).isPresent()
+                ? PERSIST_SPECIFIC_PACKET
+                : PERSIST_ALL_PACKETS);
 
         Map<String, Boolean> result = service.saveAllChangesToBase(test_comptIdsToDelete, test_packetIdsToDelete,
                 test_comptsToUpdateParamsList, test_packetsToAddParamsList, test_packetsToUpdateParamsList, packetId);
@@ -355,7 +353,9 @@ public class PacketAppServiceTest {
         assertEquals(testLogSize, testAppender.getLog().size());
 
         final LoggingEvent loggingEvent = testAppender.getLog().get(currentLogIndex++);
-        assertEquals(Utils.getMessage(testSaveAllChanges, packetId == null ? null : new Object[]{packetId}),
+        assertEquals(Utils.getMessage(testSaveAllChanges, Optional.ofNullable(packetId).isPresent()
+                        ? new Object[]{packetId}
+                        : null),
                      loggingEvent.getMessage());
         assertEquals(Level.INFO, loggingEvent.getLevel());
 
@@ -366,7 +366,7 @@ public class PacketAppServiceTest {
             verify(mockDao, never()).deleteCompts(any());
         }
 
-        if (packetId == null && !packetIdsToDeleteIsEmpty) {
+        if (!Optional.ofNullable(packetId).isPresent() && !packetIdsToDeleteIsEmpty) {
             verify(mockDao, times(1)).deletePackets(test_packetIdsToDelete);
         } else {
             verify(mockDao, never()).deletePackets(any());
@@ -447,16 +447,18 @@ public class PacketAppServiceTest {
         doReturn(test_comptSupplInfo).when(mockDao).loadComptsSupplInfo(packetId);
 
         final String testLoadData
-                = (String) ReflectionTestUtils.getField(service, packetId == null
-                ? TEST_LOAD_DATA_FOR_ALL_PACKETS
-                : TEST_LOAD_DATA_FOR_SPECIFIC_PACKET);
+                = (String) ReflectionTestUtils.getField(service,
+                Optional.ofNullable(packetId).isPresent()
+                        ? TEST_LOAD_DATA_FOR_SPECIFIC_PACKET
+                        : TEST_LOAD_DATA_FOR_ALL_PACKETS);
         Data result = service.loadData(packetId);
 
         final int testLogSize = 1;
         assertEquals(testLogSize, testAppender.getLog().size());
 
         final LoggingEvent loggingEvent = testAppender.getLog().get(testLogSize - 1);
-        assertEquals(Utils.getMessage(testLoadData, packetId == null ? null : new Object[]{packetId}),
+        assertEquals(Utils.getMessage(testLoadData,
+                Optional.ofNullable(packetId).isPresent() ? new Object[]{packetId} : null),
                 loggingEvent.getMessage());
         assertEquals(Level.INFO, loggingEvent.getLevel());
 

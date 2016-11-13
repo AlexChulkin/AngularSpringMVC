@@ -172,8 +172,8 @@ public class RestfulControllerTest {
 
     private void getUserRoleTestSetUp(String testUserName, String testPassword,  Role serviceMockReturnRole) {
         doReturn(serviceMockReturnRole).when(serviceMock)
-                .getUserRole(testUserName != null ? testUserName : anyString(),
-                        testPassword != null ? testPassword : anyString());
+                .getUserRole(Optional.ofNullable(testUserName).isPresent() ? testUserName : anyString(),
+                        Optional.ofNullable(testPassword).isPresent() ? testPassword : anyString());
     }
 
     private void testControllerGetUserRoleMethod(String testUserName, String testPassword, Role serviceMockReturnRole)
@@ -204,11 +204,12 @@ public class RestfulControllerTest {
     }
 
     private void testSaveAllChangesToBase(Long testPacketId) throws Exception {
+        boolean testPacketIdIsNull = !Optional.ofNullable(testPacketId).isPresent();
         List<Long> testComptIdsToDelete = new ArrayList<>();
         IntStream.rangeClosed(3, 3).boxed().forEach(id -> testComptIdsToDelete.add(id.longValue()));
 
         List<Long> testPacketIdsToDelete = new ArrayList<>();
-        if (testPacketId == null) {
+        if (testPacketIdIsNull) {
             IntStream.rangeClosed(1, 2).boxed().forEach(id -> testPacketIdsToDelete.add(id.longValue()));
         }
 
@@ -217,14 +218,14 @@ public class RestfulControllerTest {
                 .boxed().forEach(id -> testComptsToUpdateParamsList.add(new ComptParams().setId(Long.valueOf(id))));
 
         List<PacketParams> testPacketsToAddParamsList = new ArrayList<>();
-        if (testPacketId == null) {
+        if (testPacketIdIsNull) {
             IntStream.rangeClosed(3, 4)
                     .boxed().forEach(id -> testPacketsToAddParamsList.add(new PacketParams().setId(Long.valueOf(id))));
         }
 
         List<PacketParams> testPacketsToUpdateParamsList = new ArrayList<>();
         int upperPacketToUpdateId = 1;
-        if (testPacketId == null) {
+        if (testPacketIdIsNull) {
             upperPacketToUpdateId = 2;
         }
         IntStream.rangeClosed(1, upperPacketToUpdateId)
@@ -232,7 +233,7 @@ public class RestfulControllerTest {
 
         Map<String, Boolean> resultMap = new HashMap<>();
         String serviceMockMethodForNotNullPacketId = ADD_PACKETS;
-        if (testPacketId != null) {
+        if (!testPacketIdIsNull) {
             resultMap.put(serviceMockMethodForNotNullPacketId, true);
         }
         doReturn(resultMap).when(serviceMock).saveAllChangesToBase(anyListOf(Long.class), anyListOf(Long.class),
@@ -269,7 +270,7 @@ public class RestfulControllerTest {
 
         final LoggingEvent loggingEvent = testAppender.getLog().get(0);
         final String testSaveAllChangesToBase
-                = (String) ReflectionTestUtils.getField(controller, testPacketId == null
+                = (String) ReflectionTestUtils.getField(controller, testPacketIdIsNull
                                                                         ? SAVE_ALL_CHANGES_TO_BASE_FOR_ALL_PACKETS
                                                                         : SAVE_ALL_CHANGES_TO_BASE_FOR_SPECIFIC_PACKET);
         assertEquals(Utils.getMessage(testSaveAllChangesToBase,
@@ -279,7 +280,7 @@ public class RestfulControllerTest {
         String result = controller.saveAllChangesToBase(requestObjJson);
         Map<String, Boolean> fromJsonData = (Map<String, Boolean>) GSON.fromJson(result, Map.class);
         assertEquals(fromJsonData.size(), resultMap.size());
-        if (testPacketId != null) {
+        if (!testPacketIdIsNull) {
             assertTrue(fromJsonData.get(serviceMockMethodForNotNullPacketId));
         }
     }
@@ -305,7 +306,7 @@ public class RestfulControllerTest {
         testPackets.add(packet);
 
         List<ComptInfo> testCompts = new ArrayList<>();
-        if (testPacketId == null){
+        if (!Optional.ofNullable(testPacketId).isPresent()) {
             for (long id = 1L; id < 3L; id++) {
                 ComptInfo compt = new ComptInfo();
                 compt.setId(id);
@@ -314,7 +315,7 @@ public class RestfulControllerTest {
         }
         
         List<ComptSupplInfo> testComptSupplInfos = new ArrayList<>();
-        if (testPacketId == null) {
+        if (!Optional.ofNullable(testPacketId).isPresent()) {
             for (long id = 1L; id < 19L; id++) {
                 ComptSupplInfo comptSupplInfo = new ComptSupplInfo();
                 comptSupplInfo.setId(id);
@@ -330,7 +331,7 @@ public class RestfulControllerTest {
         doReturn(data).when(serviceMock).loadData(any(Long.class));
 
         DataParams dataParams = new DataParams();
-        if(testPacketId != null) {
+        if (Optional.ofNullable(testPacketId).isPresent()) {
             dataParams.setPacketId(testPacketId);
         }
         RequestObj requestObj = new RequestObj();
@@ -348,9 +349,9 @@ public class RestfulControllerTest {
 
         final LoggingEvent loggingEvent = testAppender.getLog().get(0);
         final String testSaveAllChangesToBase
-                = (String) ReflectionTestUtils.getField(controller, testPacketId == null
-                ? LOAD_DATA_FOR_ALL_PACKETS
-                : LOAD_DATA_FOR_SPECIFIC_PACKET);
+                = (String) ReflectionTestUtils.getField(controller, Optional.ofNullable(testPacketId).isPresent()
+                ? LOAD_DATA_FOR_SPECIFIC_PACKET
+                : LOAD_DATA_FOR_ALL_PACKETS);
         assertEquals(Utils.getMessage(testSaveAllChangesToBase,
                 new Object[]{testPacketId}), loggingEvent.getMessage());
         assertEquals(Level.DEBUG, loggingEvent.getLevel());
