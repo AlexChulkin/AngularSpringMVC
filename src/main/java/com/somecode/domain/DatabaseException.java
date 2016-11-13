@@ -15,8 +15,8 @@ public class DatabaseException extends Exception {
 
     /**
      * Returns the message containing the info about the exception. Used for logging.
-     *
-     * @return the message containing the info about the exception.
+     * The pattern is the following:
+     * Database exception occurred.
      */
     public String getMessage() {
         return Utils.getMessage(DATABASE_EXCEPTION_MESSAGE, null);

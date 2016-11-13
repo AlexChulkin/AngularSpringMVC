@@ -43,6 +43,11 @@ public class ComptInfo implements EntityProtoType {
         return packetId;
     }
 
+    /**
+     * Returns a brief description of an instance of this class.
+     * The pattern is the following:
+     * Compt Info with id: {link #id}, label: {@link #label} and packet#{@link #packetId}
+     */
     @Override
     public String toString() {
         return getMessage(STRING_VERSION, new Object[]{id, label, packetId});

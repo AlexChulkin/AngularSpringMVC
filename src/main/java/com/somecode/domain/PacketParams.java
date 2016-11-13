@@ -57,6 +57,12 @@ public class PacketParams implements SelfSettingEntityPrototype {
         return this;
     }
 
+    /**
+     * Returns a brief description of an instance of this class.
+     * The pattern is the following:
+     * PacketParams with id = }{@link #id} and stateId = {@link #stateId}
+     * and comptParams: {@link #newComptParamsList}
+     */
     @Override
     public String toString() {
         return getMessage(STRING_VERSION, new Object[]{id, stateId, newComptParamsList});

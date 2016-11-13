@@ -110,6 +110,12 @@ public class DataCompt implements EntityType {
         this.checked = checked;
     }
 
+    /**
+     * Returns a brief description of this entity.
+     * The pattern is the following:
+     * Data Component #{@link #id} and checked flag: {@link #checked} and component#{@link #compt#id}
+     * and state#{@link #state#id} and combo data #{@link #comboData#id}
+     */
     @Override
     public String toString() {
         return getMessage(STRING_VERSION, new Object[]{id, checked, compt.getId(), state.getId(), comboData.getId()});

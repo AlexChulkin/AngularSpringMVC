@@ -15,8 +15,8 @@ public class EmptyDBTableException extends Exception {
 
     /**
      * Returns the message containing the info about the exception. Used for logging.
-     *
-     * @return the message containing the info about the exception.
+     * The pattern is the following:
+     * This necessary DB table is empty. DB save/update operation is therefore forbidden.
      */
     @Override
     public String getMessage() {

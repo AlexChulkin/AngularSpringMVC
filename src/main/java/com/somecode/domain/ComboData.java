@@ -64,6 +64,11 @@ public class ComboData implements EntityType {
         this.label = label;
     }
 
+    /**
+     * Returns a brief description of this entity.
+     * The pattern is the following:
+     * Component with id: {link #id} and label: {@link #label}.
+     */
     @Override
     public String toString() {
         return getMessage(STRING_VERSION, new Object[]{id, label});

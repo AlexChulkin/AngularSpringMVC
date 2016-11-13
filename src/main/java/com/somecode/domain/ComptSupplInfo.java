@@ -74,6 +74,12 @@ public class ComptSupplInfo implements EntityProtoType {
         return checked;
     }
 
+    /**
+     * Returns a brief description of an instance of this class.
+     * The pattern is the following:
+     * ComptSupplInfo with compt Id: {link {@link #comptId}}, label: {@link #label}, state Id: {@link #stateId}
+     * and (un)checked
+     */
     @Override
     public String toString() {
         return getMessage(checked ? CHECKED_STRING_VERSION : UNCHECKED_STRING_VERSION,

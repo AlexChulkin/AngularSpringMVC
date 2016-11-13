@@ -78,6 +78,11 @@ public class Packet implements EntityType {
         getCompts().add(compt);
     }
 
+    /**
+     * Returns a brief description of this entity.
+     * The pattern is the following:
+     * Packet with id: {@link #id} and state: {@link #state}
+     */
     @Override
     public String toString() {
         return getMessage(STRING_VERSION, new Object[]{id, state});

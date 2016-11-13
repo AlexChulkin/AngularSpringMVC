@@ -38,6 +38,11 @@ public class PacketInfo implements EntityProtoType {
         return stateId;
     }
 
+    /**
+     * Returns a brief description of an instance of this class.
+     * The pattern is the following:
+     * Packet Info with id: {@link #id} and state Id: {@link #stateId}
+     */
     @Override
     public String toString() {
         return getMessage(STRING_VERSION, new Object[]{id, stateId});

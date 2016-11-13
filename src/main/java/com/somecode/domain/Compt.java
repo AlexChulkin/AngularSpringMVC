@@ -111,6 +111,11 @@ public class Compt implements EntityType {
         this.packet = packet;
     }
 
+    /**
+     * Returns a brief description of this entity.
+     * The pattern is the following:
+     * Component with id: {link #id}, label: {@link #label} and packet#{@link #packet#id}
+     */
     @Override
     public String toString() {
         return getMessage(STRING_VERSION, new Object[]{id, label, packet.getId()});

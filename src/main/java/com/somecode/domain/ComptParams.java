@@ -55,6 +55,11 @@ public class ComptParams implements SelfSettingEntityPrototype {
         return this;
     }
 
+    /**
+     * Returns a brief description of an instance of this class.
+     * The pattern is the following:
+     * ComptParams with id = {@link #id} and label = {@link #label} and comboData values: {@link #vals}
+     */
     @Override
     public String toString() {
         return getMessage(STRING_VERSION, new Object[]{id, label, vals});

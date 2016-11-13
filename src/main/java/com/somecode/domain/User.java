@@ -88,6 +88,12 @@ public class User {
         this.version = version;
     }
 
+    /**
+     * Returns a brief description of this entity.
+     * The pattern is the following:
+     * User with name: {@link #username} and role: {@link #role}.
+     */
+    @Override
     public String toString() {
         return getMessage(STRING_VERSION, new Object[]{username, role});
     }

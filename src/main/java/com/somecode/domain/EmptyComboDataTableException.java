@@ -13,8 +13,8 @@ public class EmptyComboDataTableException extends EmptyDBTableException {
 
     /**
      * Returns the message containing the info about the exception. Used for logging.
-     *
-     * @return the message containing the info about the exception.
+     * The pattern is the following:
+     * EmptyComboDataTableException. {@link EmptyDBTableException#getMessage()}
      */
     @Override
     public String getMessage() {
