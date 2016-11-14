@@ -154,9 +154,14 @@ angular.module("packetAdminApp")
         var prepareComptsSupplInfo = function (comptSupplInfo, packetId, isPacketIdUndefined) {
             var comptSupplInfoLength = comptSupplInfo.length;
             var counter = 0;
+            var comptIdsAlreadyLoaded = {};
             angular.forEach(comptSupplInfo, function (item) {
                 var broadcast = counter === comptSupplInfoLength - 1;
                 var comptId = item.comptId;
+                if (!(comptId in comptIdsAlreadyLoaded)) {
+                    exchangeService.setAllComboData(true, {}, comptId);
+                    comptIdsAlreadyLoaded[comptId] = true;
+                }
                 var stateId = item.stateId;
                 var label = item.label;
                 var checked = item.checked;

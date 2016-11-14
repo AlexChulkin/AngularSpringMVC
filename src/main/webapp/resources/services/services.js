@@ -455,14 +455,14 @@ angular.module("packetAdminApp")
         var pushToAllComboData = function (broadcast, value, comptId, stateId) {
             if (angular.isUndefined(allComboData[comptId])) {
                 allComboData[comptId] = {};
-            }
+        }
             if (angular.isUndefined(allComboData[comptId][stateId])) {
                 allComboData[comptId][stateId] = [];
             }
-        allComboData[comptId][stateId].push(value);
+            allComboData[comptId][stateId].push(value);
             if (broadcast) {
-            $rootScope.$broadcast('allComboData:update', allComboData);
-        }
+                $rootScope.$broadcast('allComboData:update', allComboData);
+            }
     };
 
     var getAllComboData = function (comptId, stateId) {

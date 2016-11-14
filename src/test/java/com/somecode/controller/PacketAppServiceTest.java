@@ -483,14 +483,14 @@ public class PacketAppServiceTest {
      * Returns the instance of the given implementation of the {@link EntityProtoType} class.
      *
      * @param entityClass the entity class that is to be instantiated.
-     * @param <T>         the formal type parameter of the {@param entityClass}.
+     * @param <E>         the formal type parameter of the {@param entityClass}.
      * @return the instance of the given entity class.
      */
-    private <T extends EntityProtoType> T instantiateEntity(Class<T> entityClass) {
-        T entity;
+    private <E extends EntityProtoType> E instantiateEntity(Class<E> entityClass) {
+        E entity;
         try {
             entity = entityClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException x) {
             entity = null;
         }
         return entity;
@@ -500,16 +500,16 @@ public class PacketAppServiceTest {
      * Returns the list of the elements of the given implementation type of the {@link EntityProtoType}.
      *
      * @param entityClass the class of the list elements.
-     * @param <T> the formal type parameter of the {@param entityClass}.
+     * @param <E> the formal type parameter of the {@param entityClass}.
      * @return the list of the elements of the given type.
      */
-    private <T extends EntityProtoType> List<T> buildEntityList(Class<T> entityClass) {
-        List<T> result = new ArrayList<>();
+    private <E extends EntityProtoType> List<E> buildEntityList(Class<E> entityClass) {
+        List<E> result = new ArrayList<>();
         IntStream.rangeClosed(1, TEST_LIST_SIZE)
                 .boxed()
                 .forEach(i ->
                         {
-                            T entity = instantiateEntity(entityClass);
+                            E entity = instantiateEntity(entityClass);
                             entity.setId((long) i);
                             result.add(entity);
                         });
@@ -521,9 +521,9 @@ public class PacketAppServiceTest {
      * of the given list to be sequentially equal to the values 1..{@link #TEST_LIST_SIZE}
      *
      * @param entities the list that is to be checked.
-     * @param <T> the formal type parameter of the {@param entities}.
+     * @param <E> the formal type parameter of the {@param entities}.
      */
-    private <T extends EntityProtoType> void checkEntities(List<T> entities) {
+    private <E extends EntityProtoType> void checkEntities(List<E> entities) {
         assertEquals(TEST_LIST_SIZE, entities.size());
         IntStream.range(0, TEST_LIST_SIZE)
                 .boxed()
@@ -534,15 +534,15 @@ public class PacketAppServiceTest {
      * Returns the instance of the given implementation of the {@link SelfSettingEntityPrototype} class.
      *
      * @param entityClass the entity class that is to be instantiated.
-     * @param <T>         the formal type parameter of the {@param entityClass}.
+     * @param <E>         the formal type parameter of the {@param entityClass}.
      * @return the entity of the given type or null if {@link InstantiationException} or {@link IllegalAccessException}
      * is thrown.
      */
-    private <T extends SelfSettingEntityPrototype> T instantiateSelfSettingEntity(Class<T> entityClass) {
-        T entity;
+    private <E extends SelfSettingEntityPrototype> E instantiateSelfSettingEntity(Class<E> entityClass) {
+        E entity;
         try {
             entity = entityClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException x) {
             entity = null;
         }
         return entity;
@@ -552,16 +552,16 @@ public class PacketAppServiceTest {
      * Returns the list of the elements of the given implementation type of the {@link SelfSettingEntityPrototype}.
      *
      * @param entityClass the class of the list elements.
-     * @param <T> the formal type parameter of the {@param entityClass}.
+     * @param <E> the formal type parameter of the {@param entityClass}.
      * @return the list of the elements of the given type.
      */
-    private <T extends SelfSettingEntityPrototype> List<T> buildSelfSettingEntityList(Class<T> entityClass) {
-        List<T> result = new ArrayList<>();
+    private <E extends SelfSettingEntityPrototype> List<E> buildSelfSettingEntityList(Class<E> entityClass) {
+        List<E> result = new ArrayList<>();
         IntStream.rangeClosed(1, TEST_LIST_SIZE)
                 .boxed()
                 .forEach(i ->
                 {
-                    T entity = instantiateSelfSettingEntity(entityClass);
+                    E entity = instantiateSelfSettingEntity(entityClass);
                             entity.setId((long) i);
                             result.add(entity);
                         });

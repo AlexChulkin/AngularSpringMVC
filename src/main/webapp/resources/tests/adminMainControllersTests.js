@@ -459,12 +459,18 @@ describe("Admin Main Controller Test", function () {
             if (!isEmpty) {
                 var comptSupplInfoLength = response.comptSupplInfo.length;
                 var counter = 0;
+                var comptIdsAlreadyLoaded = {};
                 angular.forEach(response.comptSupplInfo, function (item) {
                     var broadcast = counter === comptSupplInfoLength - 1;
                     var comptId = item.comptId;
                     var stateId = item.stateId;
                     var label = item.label;
                     var checked = item.checked;
+                    if (!(comptId in comptIdsAlreadyLoaded)) {
+                        expect(mockExchangeService.setAllComboData)
+                            .toHaveBeenCalledWith(true, {}, comptId);
+                        comptIdsAlreadyLoaded[comptId] = true;
+                    }
                     expect(mockExchangeService.pushToAllComboData)
                         .toHaveBeenCalledWith(broadcast, label, comptId, stateId);
                     if (checked) {
