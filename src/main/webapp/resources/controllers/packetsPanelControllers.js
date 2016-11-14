@@ -107,6 +107,9 @@ angular.module("packetAdminApp")
 
         $scope.saveAllChangesToBase = function (savedPktId) {
             var dataParams = generateDataParamsForSaving(savedPktId);
+            if (angular.equals({}, dataParams)) {
+                return;
+            }
             var errorMap = generateErrorMap();
 
             $http
@@ -211,7 +214,7 @@ angular.module("packetAdminApp")
             if (packetsToUpdateParamsList.length == 0 && packetsToAddParamsList.length == 0
                 && comptIdsToDelete.length == 0 && comptsToUpdateParamsList.length == 0
                 && (savedPktId || packetIdsToDelete.length == 0)) {
-                return;
+                return {};
             }
 
             var params = {
