@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 import static com.somecode.utils.Utils.getMessage;
 
@@ -19,7 +20,9 @@ import static com.somecode.utils.Utils.getMessage;
 
 @Entity
 @Table(name = "COMBO_DATA", uniqueConstraints = @UniqueConstraint(columnNames = {"LABEL"}))
-public class ComboData implements EntityType {
+public class ComboData implements EntityType, Serializable {
+    private static final long serialVersionUID = 1L;
+
     private final static String ID_COLUMN = "COMBO_DATA_ID";
     private final static String NOT_EMPTY_LABEL_MESSAGE = "ComboData label can't be empty";
     private final static String LABEL_SIZE_MESSAGE = "ComboData label length can't exceed 20 symbols";

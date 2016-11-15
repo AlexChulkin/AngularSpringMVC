@@ -6,6 +6,7 @@ package com.somecode.domain;
 
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 import static com.somecode.utils.Utils.getMessage;
 
@@ -16,7 +17,9 @@ import static com.somecode.utils.Utils.getMessage;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"LABEL"}))
-public class State implements EntityType {
+public class State implements EntityType, Serializable {
+    private static final long serialVersionUID = 1L;
+
     private static final String ID_COLUMN = "STATE_ID";
     private static final String STRING_VERSION = "state.toString";
     private static final int ID_COLUMN_LENTGTH = 2;

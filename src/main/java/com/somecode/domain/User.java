@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 import static com.somecode.utils.Utils.getMessage;
 
@@ -18,7 +19,9 @@ import static com.somecode.utils.Utils.getMessage;
  */
 
 @Entity
-public class User {
+public class User implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     private static final String ID_COLUMN = "USER_ID";
     private static final String NOT_EMPTY_USERNAME_MESSAGE = "Username can't be empty";
     private static final String SIZE_USERNAME_MESSAGE = "Username length can't exceed 16 symbols";

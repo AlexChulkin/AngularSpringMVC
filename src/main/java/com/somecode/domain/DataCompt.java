@@ -9,6 +9,7 @@ import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 import static com.somecode.utils.Utils.getMessage;
 
@@ -20,7 +21,8 @@ import static com.somecode.utils.Utils.getMessage;
 @Entity
 @Table(name = "DATA_COMPT",
         uniqueConstraints = @UniqueConstraint(columnNames = {"COMPT_ID_FK", "STATE_ID_FK", "COMBO_DATA_ID_FK"}))
-public class DataCompt implements EntityType {
+public class DataCompt implements EntityType, Serializable {
+    private static final long serialVersionUID = 1L;
 
     private static final String ID_COLUMN = "DATA_COMPT_ID";
     private static final String COMBO_DATA_ID_FK = "COMBO_DATA_ID_FK";

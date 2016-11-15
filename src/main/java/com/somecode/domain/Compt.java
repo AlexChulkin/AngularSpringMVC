@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +33,8 @@ import static com.somecode.utils.Utils.getMessage;
                 query = "SELECT NEW com.somecode.domain.ComptSupplInfo(c.id, dc.state.id, cd.label, dc.checked) " +
                         "FROM Compt c JOIN c.dataCompts dc JOIN dc.comboData cd ORDER BY dc.id ASC")
 })
-public class Compt implements EntityType {
+public class Compt implements EntityType, Serializable {
+    private static final long serialVersionUID = 1L;
 
     private final static String COMPT_ID = "COMPT_ID";
     private final static String PACKET_ID_FK = "PACKET_ID_FK";

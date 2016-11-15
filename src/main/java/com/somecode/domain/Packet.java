@@ -7,6 +7,7 @@ package com.somecode.domain;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,7 +19,9 @@ import static com.somecode.utils.Utils.getMessage;
  */
 
 @Entity
-public class Packet implements EntityType {
+public class Packet implements EntityType, Serializable {
+    private static final long serialVersionUID = 1L;
+
     private static final String ID_COLUMN = "PACKET_ID";
     private static final String STATE_ID_FK = "STATE_ID_FK";
     private static final String PACKET_FOREIGN_COLUMN_MAPPING = "packet";
