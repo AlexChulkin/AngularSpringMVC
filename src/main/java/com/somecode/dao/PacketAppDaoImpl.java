@@ -332,7 +332,6 @@ public class PacketAppDaoImpl implements PacketAppDao {
      * @param oldAllComboData the old combo data list
      * @return true if the lists are equal, or false - if not
      */
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     private boolean checkComboDataListsForEquality(List<ComboData> newAllComboData,
                                                    List<ComboData> oldAllComboData) {
         int size = newAllComboData.size();
@@ -346,7 +345,6 @@ public class PacketAppDaoImpl implements PacketAppDao {
      * @param comboDataList the combo data list the labels of which are to be sorted.
      * @return the equality result.
      */
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     private List<String> getSortedLabels(List<ComboData> comboDataList) {
         List<String> result = comboDataList.stream().map(ComboData::getLabel).sorted().collect(Collectors.toList());
         return Collections.unmodifiableList(result);
@@ -524,7 +522,6 @@ public class PacketAppDaoImpl implements PacketAppDao {
      * @param entities the entities list.
      * @return the list of the ids.
      */
-    @Transactional(propagation = Propagation.NOT_SUPPORTED)
     private List<Long> getIdsFromEntities(EntityType[] entities) {
         List<Long> result = Arrays.stream(entities).mapToLong(EntityType::getId).boxed().collect(Collectors.toList());
         return Collections.unmodifiableList(result);
