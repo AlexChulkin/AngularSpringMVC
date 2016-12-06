@@ -10,12 +10,12 @@ import com.somecode.domain.RequestObj;
 import lombok.extern.log4j.Log4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Optional;
 
 import static com.somecode.utils.Utils.getMessage;
@@ -76,7 +76,7 @@ public class RestfulController {
      */
     @RequestMapping(value = USER_LOGIN_MAPPING, method = RequestMethod.POST)
     @ResponseBody
-    public String getUserRole(@RequestBody String json) {
+    public String getUserRole(@Valid @RequestBody String json) {
         RequestObj requestObj = GSON.fromJson(json, RequestObj.class);
         return GSON.toJson(packetAppService.getUserRole(requestObj.getSecurityParams().getUsername(),
                 requestObj.getSecurityParams().getPassword()));
@@ -90,7 +90,7 @@ public class RestfulController {
      */
     @RequestMapping(value = LOAD_DATA_MAPPING, method = RequestMethod.POST)
     @ResponseBody
-    public String loadData(@RequestBody String json) {
+    public String loadData(@Valid @RequestBody String json) {
         RequestObj requestObj = GSON.fromJson(json, RequestObj.class);
         Long packetId = requestObj.getDataParams().getPacketId();
         log.debug(!Optional.ofNullable(packetId).isPresent()
@@ -107,7 +107,7 @@ public class RestfulController {
      * @return the json transformation of the saving error report
      */
     @RequestMapping(value = SAVE_ALL_CHANGES_MAPPING, method = RequestMethod.POST)
-    public String saveAllChangesToBase(@RequestBody String json) {
+    public String saveAllChangesToBase(@Valid @RequestBody String json) {
         RequestObj requestObj = GSON.fromJson(json, RequestObj.class);
         DataParams params = requestObj.getDataParams();
         Long packetId = params.getPacketId();
@@ -124,6 +124,16 @@ public class RestfulController {
                 params.getPacketsToUpdateParamsList(),
                 params.getPacketId()
         ));
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ValidationError handleException(MethodArgumentNotValidException exception) {
+        return createValidationError(exception);
+    }
+
+    private ValidationError createValidationError(MethodArgumentNotValidException exception) {
+        return ValidationError.fromBindingErrors(exception.getBindingResult());
     }
 }
 
