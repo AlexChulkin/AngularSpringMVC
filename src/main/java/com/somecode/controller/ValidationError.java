@@ -11,9 +11,10 @@ import org.springframework.validation.ObjectError;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.somecode.utils.Utils.getMessage;
+
 class ValidationError {
-    private final static String VALIDATION_FAILED = "Validation failed. ";
-    private final static String ERRORS = " error(s)";
+    private final static String VALIDATION_FAILED = "validationError.validationFailed";
     private final String errorMessage;
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<String> errors = new ArrayList<>();
@@ -23,7 +24,8 @@ class ValidationError {
     }
 
     static ValidationError fromBindingErrors(Errors errors) {
-        ValidationError error = new ValidationError(VALIDATION_FAILED + errors.getErrorCount() + ERRORS);
+        ValidationError error
+                = new ValidationError(getMessage(VALIDATION_FAILED, new Object[]{errors.getErrorCount()}));
         for (ObjectError objectError : errors.getAllErrors()) {
             error.addValidationError(objectError.getDefaultMessage());
         }
