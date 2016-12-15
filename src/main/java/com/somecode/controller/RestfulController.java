@@ -106,6 +106,7 @@ public class RestfulController {
      * @param json the JSON transformation of the http front-end request.
      * @return the json transformation of the saving error report
      */
+    @ResponseBody
     @RequestMapping(value = SAVE_ALL_CHANGES_MAPPING, method = RequestMethod.POST)
     public String saveAllChangesToBase(@Valid @RequestBody String json) {
         RequestObj requestObj = GSON.fromJson(json, RequestObj.class);
