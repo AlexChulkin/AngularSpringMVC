@@ -65,6 +65,7 @@ public class PacketAppServiceTest {
     private static final String ADD_PACKETS_EXCEPTION_REPORT = "ADD_PACKETS_EXCEPTION_REPORT";
     private static final String UPDATE_COMPTS_EXCEPTION_REPORT = "UPDATE_COMPTS_EXCEPTION_REPORT";
     private static final String UPDATE_PACKETS_EXCEPTION_REPORT = "UPDATE_PACKETS_EXCEPTION_REPORT";
+    private static final String EXCEPTION_STACK_TRACE = "EXCEPTION_STACK_TRACE";
     private static final String UPDATE_COMPTS = "UPDATE_COMPTS";
     private static final String UPDATE_PACKETS = "UPDATE_PACKETS";
     private static final String ADD_PACKETS = "ADD_PACKETS";
@@ -331,14 +332,14 @@ public class PacketAppServiceTest {
 
         int testLogSize = 1;
         if (!comptsToUpdateParamsListIsEmpty && comboDatasIsEmpty) {
-            testLogSize++;
+            testLogSize += 2;
         }
         if (comboDatasIsEmpty || statesIsEmpty) {
             if (!packetsToAddParamsListIsEmpty) {
-                testLogSize++;
+                testLogSize += 2;
             }
             if (!packetsToUpdateParamsListIsEmpty) {
-                testLogSize++;
+                testLogSize += 2;
             }
         }
 
@@ -410,14 +411,22 @@ public class PacketAppServiceTest {
                                  String exceptionStackTraceVar) {
         final String exceptionReport
                 = (String) ReflectionTestUtils.getField(service, exceptionReportVar);
+        final String exceptionStackTraceMessage
+                = (String) ReflectionTestUtils.getField(service, EXCEPTION_STACK_TRACE);
         final String exceptionStackTrace
                 = (String) ReflectionTestUtils.getField(service, exceptionStackTraceVar);
         final String exceptionMessage
                 = (String) ReflectionTestUtils.getField(service, exceptionMessageVar);
-        final LoggingEvent loggingEvent = testAppender.getLog().get(currentLogIndex++);
-        assertEquals(Utils.getMessage(exceptionReport, new Object[]{exceptionMessage, exceptionStackTrace}),
-                     loggingEvent.getMessage());
-        assertEquals(Level.ERROR, loggingEvent.getLevel());
+
+        final LoggingEvent loggingEventReportAndMessage = testAppender.getLog().get(currentLogIndex++);
+        assertEquals(Utils.getMessage(exceptionReport, new Object[]{exceptionMessage}),
+                loggingEventReportAndMessage.getMessage());
+        assertEquals(Level.ERROR, loggingEventReportAndMessage.getLevel());
+
+        final LoggingEvent loggingEventStackTrace = testAppender.getLog().get(currentLogIndex++);
+        assertEquals(Utils.getMessage(exceptionStackTraceMessage, new Object[]{exceptionStackTrace}),
+                loggingEventStackTrace.getMessage());
+        assertEquals(Level.ERROR, loggingEventReportAndMessage.getLevel());
     }
 
     private void testLoadDataWithParams(Long packetId, boolean emptyStates, boolean emptyComboDatas,

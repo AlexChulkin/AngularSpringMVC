@@ -33,6 +33,7 @@ public class PacketAppService {
     private static final String UPDATE_COMPTS_EXCEPTION_REPORT = "packetAppService.updateCompts.exceptionReport";
     private static final String UPDATE_PACKETS_EXCEPTION_REPORT = "packetAppService.updatePackets.exceptionReport";
     private static final String ADD_PACKETS_EXCEPTION_REPORT = "packetAppService.addPackets.exceptionReport";
+    private static final String EXCEPTION_STACK_TRACE = "packetAppService.exceptionStackTrace";
 
     /**
      * The String constants
@@ -54,6 +55,11 @@ public class PacketAppService {
     /** The dao injected */
     @Autowired
     private PacketAppDao packetAppDao;
+
+    private static void logError(String exceptionReport, String exceptionMessage, String exceptionStackTrace) {
+        log.error(getMessage(exceptionReport, new Object[]{exceptionMessage}));
+        log.error(getMessage(EXCEPTION_STACK_TRACE, new Object[]{exceptionStackTrace}));
+    }
 
     /**
      * Returns the result of dao  {@link com.somecode.dao #getUserRole(String, String)} method.
@@ -152,8 +158,7 @@ public class PacketAppService {
             } catch (DatabaseException e) {
                 updateComptsExceptionMessage = e.getMessage();
                 updateComptsExceptionStackTrace = ExceptionUtils.getStackTrace(e);
-                log.error(getMessage(UPDATE_COMPTS_EXCEPTION_REPORT, new Object[]{updateComptsExceptionMessage,
-                                                                                  updateComptsExceptionStackTrace}));
+                logError(UPDATE_COMPTS_EXCEPTION_REPORT, updateComptsExceptionMessage, updateComptsExceptionStackTrace);
                 persistErrors.put(UPDATE_COMPTS, true);
             }
         }
@@ -164,8 +169,7 @@ public class PacketAppService {
             } catch (DatabaseException e) {
                 addPacketsExceptionMessage = e.getMessage();
                 addPacketsExceptionStackTrace = ExceptionUtils.getStackTrace(e);
-                log.error(getMessage(ADD_PACKETS_EXCEPTION_REPORT, new Object[]{addPacketsExceptionMessage,
-                                                                                addPacketsExceptionStackTrace}));
+                logError(ADD_PACKETS_EXCEPTION_REPORT, addPacketsExceptionMessage, addPacketsExceptionStackTrace);
                 persistErrors.put(ADD_PACKETS, true);
             }
         }
@@ -176,8 +180,8 @@ public class PacketAppService {
             } catch (DatabaseException e) {
                 updatePacketsExceptionMessage = e.getMessage();
                 updatePacketsExceptionStackTrace = ExceptionUtils.getStackTrace(e);
-                log.error(getMessage(UPDATE_PACKETS_EXCEPTION_REPORT, new Object[]{updatePacketsExceptionMessage,
-                        updatePacketsExceptionStackTrace}));
+                logError(UPDATE_PACKETS_EXCEPTION_REPORT, updatePacketsExceptionMessage,
+                        updatePacketsExceptionStackTrace);
                 persistErrors.put(UPDATE_PACKETS, true);
             }
         }
