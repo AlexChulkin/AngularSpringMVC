@@ -24,7 +24,7 @@ import static com.somecode.utils.Utils.getMessage;
 
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"PACKET_ID_FK", "LABEL"}))
-@NamedQueries( {
+@NamedQueries({
         @NamedQuery(name = "Compt.loadComptsSupplInfoByPacketId",
                 query = "SELECT NEW com.somecode.domain.ComptSupplInfo(c.id, dc.state.id, cd.label, dc.checked) " +
                         "FROM Packet p JOIN p.compts c JOIN c.dataCompts dc JOIN dc.comboData cd " +

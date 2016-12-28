@@ -7,8 +7,6 @@ package com.somecode.config;
 
 import lombok.extern.log4j.Log4j;
 import org.apache.commons.dbcp.BasicDataSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -72,9 +70,9 @@ public class PersistenceJPAConfig {
     /** The DB properties */
     protected Properties dbProperties;
 
-    /** The application context */
-    @Autowired
-    ApplicationContext context;
+//    /** The application context */
+//    @Autowired
+//    ApplicationContext context;
 
     /**
      * Method that sets the necessary config properties after the construction.
